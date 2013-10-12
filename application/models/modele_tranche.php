@@ -386,6 +386,12 @@ class Modele_tranche extends CI_Model {
 			echo 'Pas de decalage'."\n";
 		
 	}
+	
+	function get_preview_existe($options_json) {
+		$requete='SELECT ID_Preview FROM tranches_previews WHERE Options LIKE \''.$options_json.'\' AND ID_Session LIKE \''.self::$id_session.'\'';
+		$resultat=$this->db->query($requete)->result();
+		return count($resultat) > 0;
+	}
 
 	function ajouter_preview($options_json) {
 		$requete='INSERT INTO tranches_previews(ID_Session,Options) VALUES (\''.self::$id_session.'\',\''.$options_json.'\')';
@@ -529,7 +535,7 @@ class Modele_tranche extends CI_Model {
 		}
 		else {
 			$requete_get_options=
-				 ' SELECT 1 AS EC_v2, '.implode(', ', Modele_tranche_Wizard::$content_fields).' '
+				 ' SELECT 1 AS EC_v2, '.implode(', ', Modele_tranche_Wizard::$content_fields).', Numero '
 				.' FROM tranches_en_cours_modeles_vue '
 				.' WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\''
 				.' AND Numero IN ('.implode(',', $numeros_esc).') '
@@ -540,7 +546,7 @@ class Modele_tranche extends CI_Model {
 		}
 		
 		$requete_get_options=
-			 ' SELECT 0 AS EC_v2, '.implode(', ', self::$fields).',username '
+			 ' SELECT 0 AS EC_v2, '.implode(', ', self::$fields).', username '
 			.' FROM edgecreator_modeles2 AS modeles '
 			.' INNER JOIN edgecreator_valeurs AS valeurs ON modeles.ID = valeurs.ID_Option '
 			.' INNER JOIN edgecreator_intervalles AS intervalles ON valeurs.ID = intervalles.ID_Valeur '
@@ -555,12 +561,12 @@ class Modele_tranche extends CI_Model {
 			$option_nom=is_null($resultat->Option_nom) ? 'NULL' : ('\''.mysql_real_escape_string($resultat->Option_nom).'\'');
 			$option_valeur=is_null($resultat->Option_valeur) ? 'NULL' : ('\''.mysql_real_escape_string($resultat->Option_valeur).'\'');
 			$est_ec_v2 = $resultat->EC_v2 == 1;
-			
 			foreach($numeros as $numero) {
-				if ($est_ec_v2
-				 || est_dans_intervalle(
+				if (( $est_ec_v2 && $numero === $resultat->Numero)
+				 || (!$est_ec_v2 && est_dans_intervalle(
 						$numero,
-						$this->getIntervalleShort($this->getIntervalle($resultat->Numero_debut, $resultat->Numero_fin)))) {
+						$this->getIntervalleShort($this->getIntervalle($resultat->Numero_debut, $resultat->Numero_fin))))
+				) {
 					$option = new stdClass();
 					$option->Ordre=$resultat->Ordre;
 					$option->Nom_fonction=$resultat->Nom_fonction;
