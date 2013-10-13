@@ -2521,7 +2521,7 @@ var isMyFontsError = false;
 function load_myfonts_preview(preview1, preview2, preview3, callback) {
 	var dialogue=$('.wizard.preview_etape.modif').d();
 	var form_options=dialogue.find('[name="form_options"]');
-	var selectors=[];
+	var selectors=['.image_position'];
 	if (preview1)
 		selectors.push('.proprietes_texte .apercu_myfonts');
 	if (preview2)
@@ -2541,7 +2541,7 @@ function load_myfonts_preview(preview1, preview2, preview3, callback) {
 		$.each($(['URL','Couleur_texte','Couleur_fond','Largeur','Chaine','Demi_hauteur']),function(i,nom_option) {
 			url_appel+="/"+form_options.valeur(nom_option).val();
 		});
-		if ($(this).parent().parent().is('body')) // Preview globale donc avec rotation
+		if ($(this).parent().parent().is('body') || $(this).closest('.image_position').length !== 0) // Preview globale donc avec rotation
 			url_appel+="/"+form_options.valeur('Rotation').val();
 		else
 			url_appel+='/0.01';
