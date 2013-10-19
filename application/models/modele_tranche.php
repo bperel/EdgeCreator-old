@@ -1680,7 +1680,7 @@ class TexteMyFonts extends Fonction_executable {
 		//fond=imagecolorallocatealpha($texte, $r, $g, $b, 127);
 		//imagefill($texte,0,0,$fond);
 		
-		if (!is_null($this->options->Rotation)) {
+		if (!is_null($this->options->Rotation) && $this->options->Rotation !== '0') {
 			$texte=imagerotate($texte, $this->options->Rotation, $fond);
 		}
 		
