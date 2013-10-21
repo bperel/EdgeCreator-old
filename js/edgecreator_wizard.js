@@ -1,4 +1,4 @@
-(function($,undefined){
+(function($){
 	$.fn.d = function(){
 		return this.closest('.ui-dialog');
 	};
@@ -19,7 +19,7 @@ $.widget("ui.tooltip", $.ui.tooltip, {
     }
 });
 
-$(window).scroll(function(a,b) {
+$(window).scroll(function() {
 	if (modification_etape != null 
 	 && modification_etape.find('#options-etape--Polygone').length != 0) {
 		var options=modification_etape.find('[name="form_options"]');
@@ -136,7 +136,8 @@ var pos_x_courante=null,
 	pos_y_courante=null;
 
 zoom=1.5;
-var url_viewer='viewer_wizard';
+var nom_photo_tranches_multiples;
+
 var NB_MAX_TRANCHES_SIMILAIRES_PROPOSEES=10/2;
 var LARGEUR_DIALOG_TRANCHE_FINALE=65;
 var LARGEUR_INTER_ETAPES=40;
@@ -151,7 +152,7 @@ var TEMPLATES ={'numero':/\[Numero\]/,
 	            'numero[]':/\[Numero\[([0-9]+)\]\]/ig,
 	            'largeur':/(?:([0-9.]+)(\*))?\[Largeur\](?:(\*)([0-9.]+))?/i,
 	            'hauteur':/(?:([0-9.]+)(\*))?\[Hauteur\](?:(\*)([0-9.]+))?/i,
-	            'caracteres_speciaux':/\°/i};
+	            'caracteres_speciaux':/°/i};
 
 var REGEX_FICHIER_PHOTO=/\/([^\/]+\.([^.]+)\.photo_([^.]+?)\.[a-z]+)$/;
 var REGEX_NUMERO=/tranche_([^_]+)_([^_]+)_([^_]+)/;
@@ -179,10 +180,11 @@ function launch_wizard(id, p) {
 	p = p || {}; // Param�tres de surcharge
 	var buttons={},
 		dialogue = $('#'+id),
-		first 	 = dialogue.hasClass('first') 	 || (p.first 	 !== undefined	&& p.first),
-		deadend = dialogue.hasClass('deadend') 	 || (p.deadend 	 !== undefined	&& p.deadend),
-		modal	 = dialogue.hasClass('modal')	 || (p.modal 	 !== undefined	&& p.modal);
-		closeable= dialogue.hasClass('closeable')|| (p.closeable !== undefined	&& p.closeable);
+		first 	 = dialogue.hasClass('first') 	  || (p.first 	  !== undefined	&& p.first),
+		deadend = dialogue.hasClass('deadend') 	  || (p.deadend   !== undefined	&& p.deadend),
+		modal	 = dialogue.hasClass('modal')	  || (p.modal 	  !== undefined	&& p.modal),
+		closeable= dialogue.hasClass('closeable') || (p.closeable !== undefined	&& p.closeable),
+        extensible=dialogue.hasClass('extensible')|| (p.extensible!== undefined	&& p.extensible);
 	
 	$('#'+id+' .buttonset').buttonset();
 	$('#'+id+' .button').button();
@@ -291,12 +293,12 @@ function launch_wizard(id, p) {
 					$.ajax({
 		                url: urls['valider_modele']+['index',pays,magazine,numero,nom_image,designers,photographes].join('/'),
 		                type: 'post',
-		                success:function(data) {
+		                success:function() {
 		        			jqueryui_alert_from_d($('#wizard-confirmation-validation-modele-ok'), function() {
 		        				location.reload();
 		        			});
 		                },
-		                error:function(data) {
+		                error:function() {
 		                	jqueryui_alert("Une erreur est survenue pendant la validation de la tranche.<br />"
 		                				  +"Contactez le webmaster", 
 		                				  "Erreur");
@@ -333,7 +335,7 @@ function launch_wizard(id, p) {
 		break;
 	}
 	dialogue.dialog({
-		width:  p.width || 475,
+		width:  extensible ? 'auto' : (p.width || 475),
 		height: p.height|| 'auto',
 		position: 'top',
 		modal: modal,
@@ -341,7 +343,7 @@ function launch_wizard(id, p) {
 		resizable: dialogue.hasClass('resizable'),
 		buttons: buttons,
 		draggable: false,
-		open:function(event,ui) {
+		open:function() {
 			var dialog=$(this).d();
 			if ($(this).hasClass('main'))
 				dialog.addClass('main');
@@ -359,11 +361,12 @@ function launch_wizard(id, p) {
 			
 			wizard_init($(this).attr('id'));
 		},
-		close: function(event,ui) {
+		close: function() {
 			if (closeable) {
-				var hasOnClose = $('#'+id+' form').serializeObject().onClose;
+                var form = $('#'+id+' form');
+				var hasOnClose = form.serializeObject().onClose;
 				if (hasOnClose) {
-					wizard_goto($('#id'), $('#'+id+' form').serializeObject().onClose.replace(REGEX_TO_WIZARD,'$1'));
+					wizard_goto($('#id'), form.serializeObject().onClose.replace(REGEX_TO_WIZARD,'$1'));
 				}
 			}
 		}
@@ -399,10 +402,12 @@ function wizard_do(wizard_courant, action) {
 
 							var numero_image = decoupage_nom[2];
 							var nom = decoupage_nom[3];
-							var x1 = parseInt(100 * ($('.jrac_crop').position().left / image.width())),
-								x2 = parseInt(100 * ($('.jrac_crop').position().left + $('.jrac_crop').width()) / image.width()),
-								y1 = parseInt(100 * ($('.jrac_crop').position().top  / image.height())),
-								y2 = parseInt(100 * ($('.jrac_crop').position().top  + $('.jrac_crop').height()) / image.height());
+                            var jrac_crop = $('.jrac_crop');
+                            var jrac_crop_position = $('.jrac_crop').position();
+							var x1 = parseInt(100 * (jrac_crop_position.left / image.width())),
+								x2 = parseInt(100 * (jrac_crop_position.left + jrac_crop.width()) / image.width()),
+								y1 = parseInt(100 * (jrac_crop_position.top  / image.height())),
+								y2 = parseInt(100 * (jrac_crop_position.top  + jrac_crop.height()) / image.height());
 							$.ajax({
 								url: urls['rogner_image']+['index',pays,magazine,numero_image,numero,nom,destination,x1,x2,y1,y2].join('/'),
 								type: 'post',
@@ -569,6 +574,14 @@ function wizard_init(wizard_id) {
 			});
 			
 		break;
+
+        case 'wizard-envoyer-photo':
+            $('#'+wizard_id).parent().find('button').filter(function() { return $(this).text() === 'Suivant'; }).button('option','disabled', true);
+        break;
+
+        case 'wizard-decouper-photo':
+            $('#'+wizard_id).find('img').attr({src: base_url+'../edges/tranches_multiples/'+nom_photo_tranches_multiples});
+        break;
 		
 		case 'wizard-creer-collection':
 			chargement_listes=true;

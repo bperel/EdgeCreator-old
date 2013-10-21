@@ -5,11 +5,11 @@
 </div>
 <div id="wizard-accueil2" class="wizard" title="Bienvenue sur EdgeCreator !">
 	<p>
-		L'objectif d'EdgeCreator est de cr&eacute;er des images de tranches.
+		L'objectif d'EdgeCreator est de créer des images de tranches.
 		<br />
-		L'image d'une tranche que vous cr&eacute;erez appara&icirc;tra ensuite 
-		dans la section "Ma biblioth&egrave;que" de tous les utilisateurs de DucksManager 
-		poss&eacute;dant le num&eacute;ro correspondant.
+		L'image d'une tranche que vous créerez apparaîtra ensuite 
+		dans la section "Ma bibliothèque" de tous les utilisateurs de DucksManager 
+		possédant le numéro correspondant.
 		<br />
 		<img style="height:300px" src="images/construction_tranche.png" />
 	</p>
@@ -17,20 +17,20 @@
 
 <div id="wizard-accueil3" class="wizard" title="Bienvenue sur EdgeCreator !">
 	<p>
-		Pour cr&eacute;er une tranche, vous aurez besoin :<br />
+		Pour créer une tranche, vous aurez besoin :<br />
 		<div style="float: left;width:50%">
 			<img style="width: 100%" src="images/regle.png" />
-			D'une r&egrave;gle
+			D'une règle
 		</div>
 		<div style="float: left;width:50%">
 			<img style="width: 100%" src="images/appareil_photo.png" />
-			D'un scanner ou un appareil photo (les capteurs photo des t&eacute;l&eacute;phones donnent parfois des photos floues)
+			D'un scanner ou un appareil photo (les capteurs photo des téléphones donnent parfois des photos floues)
 		</div>
 		
 	</p>
 </div>
 
-<div id="login-form" class="wizard" title="Connexion &agrave; EdgeCreator">
+<div id="login-form" class="wizard" title="Connexion à EdgeCreator">
 	<p>
 		Entrez vos identifiants DucksManager habituels ci-dessous et cliquez sur "Connexion".
 	</p>
@@ -48,19 +48,24 @@
 
 <div id="wizard-1" class="first wizard" title="Accueil EdgeCreator">
 	<p>
-		Vous &ecirc;tes &agrave; pr&eacute;sent connect&eacute;(e) sur EdgeCreator.
+		Vous êtes à présent connecté(e) sur EdgeCreator.
 	</p>
 	<p>
-		Commen&ccedil;ons par le d&eacute;but... Que voulez-vous faire ?<br />
+		Commençons par le début... Que voulez-vous faire ?<br />
 		<form>
 			<div class="buttonset">
+				<input type="radio" name="choix" value="to-wizard-envoyer-photo" id="to-wizard-envoyer-photo" />
+				<label for="to-wizard-envoyer-photo">Envoyer des photos de tranche</label><br />
+				
+				<div></div>
+				
 				<input type="radio" name="choix" value="to-wizard-creer" id="to-wizard-creer" />
-				<label for="to-wizard-creer">Cr&eacute;er une tranche de magazine</label><br />
+				<label for="to-wizard-creer">Créer une tranche de magazine</label><br />
 				<input type="radio" name="choix" value="to-wizard-modifier" id="to-wizard-modifier"/>
 				<label for="to-wizard-modifier">Modifier une tranche de magazine</label><br />
 				<input type="radio" name="choix" value="to-wizard-conception" id="to-wizard-conception"/>
 				<label for="to-wizard-conception">Poursuivre une conception de tranche</label>
-    			<button id="selectionner_tranche_en_cours">S&eacute;lectionnez une tranche</button>
+    			<button id="selectionner_tranche_en_cours">Sélectionnez une tranche</button>
 			</div>
 			<ul id="tranches_en_cours" class="liste_numeros cache">
 				<li class="init">
@@ -73,9 +78,31 @@
 </div>
 
 
-	<div id="wizard-creer" class="wizard" title="Assistant DucksManager - Cr&eacute;ation de tranche">
+	<div id="wizard-envoyer-photo" class="wizard" title="Assistant DucksManager - Envoi de photo">
 		<p>
-			Poss&eacute;dez-vous d&eacute;j&agrave; le num&eacute;ro dont vous souhaitez cr&eacute;er la tranche 
+            <form>
+                <input type="hidden" name="choix" value="to-wizard-decouper-photo" id="to-wizard-decouper-photo" />
+            </form>
+			Envoyez une photo contenant une ou plusieurs tranches à l'aide du formulaire ci-dessous.<br />
+			Les tranches doivent apparaître verticales sur la photo.<br /><br />
+			La photo doit être nette, bien éclairée, et les couleurs fidèles aux tranches originales.
+
+			<iframe src="<?=base_url()?>index.php/helper/index/image_upload.php?photo_tranche=1&multiple"></iframe>
+		</p>
+	</div>
+
+
+    <div id="wizard-decouper-photo" class="wizard extensible" title="Assistant DucksManager - Envoi de photo">
+        <p>
+            Sélectionnez avec la souris les zones de la photo correspondant à chaque tranche.
+            <br />
+            <img />
+    </div>
+
+
+	<div id="wizard-creer" class="wizard" title="Assistant DucksManager - Création de tranche">
+		<p>
+			Possédez-vous déjà le numéro dont vous souhaitez créer la tranche 
 			dans votre collection DucksManager ?
 			<form>
 				<div class="buttonset">
@@ -88,9 +115,9 @@
 	
 
 
-		<div id="wizard-creer-collection" class="wizard" title="Assistant DucksManager - Choix de num&eacute;ro">
+		<div id="wizard-creer-collection" class="wizard" title="Assistant DucksManager - Choix de numéro">
 			<p>
-				<span class="explication cache">S&eacute;lectionnez le num&eacute;ro dont vous souhaitez cr&eacute;er la tranche.</span>
+				<span class="explication cache">Sélectionnez le numéro dont vous souhaitez créer la tranche.</span>
 				<span class="chargement">Veuillez patienter...</span>
 				<form>
 					<ul id="tranches_non_pretes" class="liste_numeros cache">
@@ -100,16 +127,16 @@
 						</li>
 					</ul>
 					<div class="buttonset cache">
-						<input type="radio" checked="checked" name="choix" value="to-wizard-proposition-clonage" id="to-wizard-proposition-clonage" /><label for="to-wizard-proposition-clonage">J'ai trouv&eacute; mon num&eacute;ro</label>
+						<input type="radio" checked="checked" name="choix" value="to-wizard-proposition-clonage" id="to-wizard-proposition-clonage" /><label for="to-wizard-proposition-clonage">J'ai trouvé mon numéro</label>
 					</div>
 				</form>
-				<p class="pas_de_numero cache">Pas de num&eacute;ro.</p>
+				<p class="pas_de_numero cache">Pas de numéro.</p>
 			</p>
 		</div>
 			
-		<div id="wizard-creer-hors-collection" class="wizard" title="Assistant DucksManager - Choix de num&eacute;ro">
+		<div id="wizard-creer-hors-collection" class="wizard" title="Assistant DucksManager - Choix de numéro">
 			<p>
-				Choisissez le num&eacute;ro que vous souhaitez mod&eacute;liser.<br />
+				Choisissez le numéro que vous souhaitez modéliser.<br />
 				<form>
 					<fieldset>
 						<label for="wizard_pays">Pays: </label>
@@ -120,17 +147,17 @@
 						<select name="wizard_magazine" id="wizard_magazine">
 							<option>Chargement...</option>
 						</select><br />
-						<label for="wizard_numero">Num&eacute;ro: </label>
+						<label for="wizard_numero">Numéro: </label>
 						<select name="wizard_numero" id="wizard_numero">
 							<option>Chargement...</option>
 						</select><br />
-						Les tranches sous fond vert sont d&eacute;j&agrave; disponibles. 
-						Si vous souhaitez les modifier, repassez &agrave; l'&eacute;cran pr&eacute;c&eacute;dent
+						Les tranches sous fond vert sont déjà disponibles. 
+						Si vous souhaitez les modifier, repassez à l'écran précédent
 						et choisissez "Modifier une tranche de magazine".
 					</fieldset>
 					<div class="buttonset">
-						<input type="radio" checked="checked" name="choix" value="to-wizard-proposition-clonage" id="to-wizard-proposition-clonage" /><label for="to-wizard-proposition-clonage">J'ai trouv&eacute; mon num&eacute;ro</label>
-						<input type="radio" name="choix" value="to-wizard-numero-inconnu" id="to-wizard-numero-inconnu" /><label for="to-wizard-numero-inconnu">Mon num&eacute;ro n'est pas dans la liste</label>
+						<input type="radio" checked="checked" name="choix" value="to-wizard-proposition-clonage" id="to-wizard-proposition-clonage" /><label for="to-wizard-proposition-clonage">J'ai trouvé mon numéro</label>
+						<input type="radio" name="choix" value="to-wizard-numero-inconnu" id="to-wizard-numero-inconnu" /><label for="to-wizard-numero-inconnu">Mon numéro n'est pas dans la liste</label>
 					</div>
 				</form>
 			</p>
@@ -141,7 +168,7 @@
 					<form name="form_options">
 						<span id="nom_complet_numero"></span>
 						Pour concevoir la tranche du magazine, nous devons connaitre ses dimensions.<br />
-						Indiquez ci-dessous l'<b>&eacute;paisseur</b> et la <b>hauteur</b> de la tranche, en millim&egrave;tres.
+						Indiquez ci-dessous l'<b>épaisseur</b> et la <b>hauteur</b> de la tranche, en millimètres.
 						
 						Dimensions de la tranche : 
 						<input type="text" id="Nouvelle_dimension_x" name="Dimension_x" maxlength="3" size="2"> mm 
@@ -153,9 +180,9 @@
 					</form>
 				</p>
 			</div>	
-	<div id="wizard-modifier" class="wizard" title="Assistant DucksManager - Choix de num&eacute;ro">
+	<div id="wizard-modifier" class="wizard" title="Assistant DucksManager - Choix de numéro">
 		<p>
-			Choisissez le num&eacute;ro dont vous souhaitez modifier la mod&eacute;lisation.<br />
+			Choisissez le numéro dont vous souhaitez modifier la modélisation.<br />
 			<form>
 				<fieldset>
 					<label for="wizard_pays_modifier">Pays: </label>
@@ -166,26 +193,26 @@
 					<select name="wizard_magazine" id="wizard_magazine_modifier">
 						<option>Chargement...</option>
 					</select><br />
-					<label for="wizard_numero_modifier">Num&eacute;ro: </label>
+					<label for="wizard_numero_modifier">Numéro: </label>
 					<select name="wizard_numero" id="wizard_numero_modifier">
 						<option>Chargement...</option>
 					</select><br />
 					Les tranches sous fond vert sont modifiables. 
-					Si vous souhaitez en cr&eacute;er une nouvelle, repassez &agrave; l'&eacute;cran pr&eacute;c&eacute;dent
-					et choisissez "Cr&eacute;er une tranche de magazine".
+					Si vous souhaitez en créer une nouvelle, repassez à l'écran précédent
+					et choisissez "Créer une tranche de magazine".
 				</fieldset>
 				<div class="buttonset cache">
-					<input type="radio" checked="checked" name="choix" value="to-wizard-clonage-silencieux" id="to-wizard-clonage-silencieux" /><label for="to-wizard-clonage-silencieux">J'ai trouv&eacute; mon num&eacute;ro</label>
+					<input type="radio" checked="checked" name="choix" value="to-wizard-clonage-silencieux" id="to-wizard-clonage-silencieux" /><label for="to-wizard-clonage-silencieux">J'ai trouvé mon numéro</label>
 				</div>
 			</form>
 		</p>
 	</div>
 	
-		<div id="wizard-proposition-clonage" class="wizard" title="Assistant DucksManager - Cr&eacute;ation">
+		<div id="wizard-proposition-clonage" class="wizard" title="Assistant DucksManager - Création">
 			<p>
-				Certaines tranches ont d&eacute;j&agrave; &eacute;t&eacute; con&ccedil;ues pour le magazine s&eacute;lectionn&eacute;. 
-				Si l'une des tranches si-dessous est identique &agrave; la v&ocirc;tre, ou bien que seules quelques couleurs ou quelques textes sont diff&eacute;rents, s&eacute;lectionnez cette tranche. 
-				Sinon, cliquez sur "Cr&eacute;er une tranche originale".
+				Certaines tranches ont déjà été conçues pour le magazine sélectionné. 
+				Si l'une des tranches si-dessous est identique à la vôtre, ou bien que seules quelques couleurs ou quelques textes sont différents, sélectionnez cette tranche. 
+				Sinon, cliquez sur "Créer une tranche originale".
 				<form>
 					<div class="chargement">
 						Veuillez patienter...
@@ -193,8 +220,8 @@
 					<div class="tranches_pretes_magazine"></div>
 					<br />
 					<div class="buttonset">
-						<input type="radio" checked="checked" name="choix" value="to-wizard-clonage" id="to-wizard-clonage" /><label for="to-wizard-clonage">J'ai trouv&eacute; une tranche similaire</label>
-						<input type="radio" name="choix" value="to-wizard-dimensions" id="to-wizard-dimensions1" /><label for="to-wizard-dimensions1">Cr&eacute;er une tranche originale</label>
+						<input type="radio" checked="checked" name="choix" value="to-wizard-clonage" id="to-wizard-clonage" /><label for="to-wizard-clonage">J'ai trouvé une tranche similaire</label>
+						<input type="radio" name="choix" value="to-wizard-dimensions" id="to-wizard-dimensions1" /><label for="to-wizard-dimensions1">Créer une tranche originale</label>
 					</div>
 				</form>
 			</p>
@@ -202,20 +229,20 @@
 		
 			<div id="wizard-clonage" class="wizard" title="Assistant DucksManager - Clonage">
 				<p>
-					Le num&eacute;ro <span class="nouveau_numero"></span> va &eacute;tre cr&eacute;&eacute; &agrave; partir du num&eacute;ro <span class="numero_similaire"></span>.<br />
-					Ce processus peut durer plus d'une minute dans certains cas. Veuillez patienter tant que le clonage est en cours, ne fermez pas cette fen&ecirc;tre.
+					Le numéro <span class="nouveau_numero"></span> va étre créé à partir du numéro <span class="numero_similaire"></span>.<br />
+					Ce processus peut durer plus d'une minute dans certains cas. Veuillez patienter tant que le clonage est en cours, ne fermez pas cette fenêtre.
 					<div class="loading">Clonage en cours...</div>
-					<div class="done cache">Clonage termin&eacute;. Vous pouvez passer &agrave; l'&eacute;tape suivante.</div>
+					<div class="done cache">Clonage terminé. Vous pouvez passer à l'étape suivante.</div>
 					<form>
 						<input type="hidden" checked="checked" name="choix" value="to-wizard-conception" id="to-wizard-conception2" />
 					</form>
 				</p>
 			</div>
 		
-			<div id="wizard-clonage-silencieux" class="wizard" title="Assistant DucksManager - Pr&eacute;paration de la tranche">
+			<div id="wizard-clonage-silencieux" class="wizard" title="Assistant DucksManager - Préparation de la tranche">
 				<p>
 					<div class="loading">Veuillez patienter...</div>
-					<div class="done cache">La tranche est pr&ecirc;te &agrave; &ecirc;tre modifi&eacute;e. Vous pouvez passer &agrave; l'&eacute;tape suivante.</div>
+					<div class="done cache">La tranche est prête à être modifiée. Vous pouvez passer à l'étape suivante.</div>
 					<form>
 						<input type="hidden" checked="checked" name="choix" value="to-wizard-conception" id="to-wizard-conception3" />
 					</form>
@@ -234,13 +261,13 @@
 					<input type="text" id="Dimension_y" name="Dimension_y" maxlength="3" size="2"> mm
 					<button id="modifier_dimensions" class="cache small">Modifier</button>
 					<br />
-					Chacune des manipulations permettant de cr&eacute;er la tranche sont appel&eacute;es des <b>&eacute;tapes</b>.
+					Chacune des manipulations permettant de créer la tranche sont appelées des <b>étapes</b>.
 					<br />
-					&lt; Les &eacute;tapes de votre tranche sont pr&eacute;sent&eacute;es &agrave; gauche, dans leur ordre d'utilisation.<br />
-					&lt; Cliquez sur une &eacute;tape pour la modifier.<br />
-					&lt; Passez la souris entre 2 &eacute;tapes pour en ins&eacute;rer une nouvelle.<br />
+					&lt; Les étapes de votre tranche sont présentées à gauche, dans leur ordre d'utilisation.<br />
+					&lt; Cliquez sur une étape pour la modifier.<br />
+					&lt; Passez la souris entre 2 étapes pour en insérer une nouvelle.<br />
 					<p class="texte_presentation_tranche_finale">
-						La tranche telle qu'elle sera affich&eacute;e dans la biblioth&egrave;que DucksManager est pr&eacute;sent&eacute;e &agrave; gauche de la photo de la tranche. &gt;
+						La tranche telle qu'elle sera affichée dans la bibliothèque DucksManager est présentée à gauche de la photo de la tranche. &gt;
 					</p> 
 				</form>
 			</p>
@@ -254,26 +281,26 @@
 			<div class="premiere agrafe"></div>
 			<div class="deuxieme agrafe"></div>
 			<p>
-				&gt; D&eacute;placez et redimensionnez les agrafes.<br />
+				&gt; Déplacez et redimensionnez les agrafes.<br />
 			</p>
 		</div>
 		
 		<div id="options-etape--Degrade" class="options_etape cache">
 			<div class="rectangle_degrade"></div>
 			<p>
-				&gt; D&eacute;placez et redimensionnez la zone de d&eacute;grad&eacute;.<br />
+				&gt; Déplacez et redimensionnez la zone de dégradé.<br />
 				
-				&gt; D&eacute;finissez la premi&egrave;re couleur.<br />
-				<label for="option-Couleur_debut">Couleur s&eacute;lectionn&eacute;e : </label>
+				&gt; Définissez la première couleur.<br />
+				<label for="option-Couleur_debut">Couleur sélectionnée : </label>
 				<input class="couleur" type="text" name="option-Couleur_debut" maxlength="7"/>
 				<br />
 				
-				&gt; D&eacute;finissez la deuxi&egrave;me couleur.<br />
-				<label for="option-Couleur_fin">Couleur s&eacute;lectionn&eacute;e : </label>
+				&gt; Définissez la deuxième couleur.<br />
+				<label for="option-Couleur_fin">Couleur sélectionnée : </label>
 				<input class="couleur" type="text" name="option-Couleur_fin" maxlength="7"/>
 				<br />
 				
-				&gt; Indiquez le sens du d&eacute;grad&eacute;.<br />
+				&gt; Indiquez le sens du dégradé.<br />
 				<div style="font-size:16px">
 					<div class="small buttonset">
 						<input type="radio" name="option-Sens" value="Horizontal" id="Horizontal" /><label for="Horizontal">Gauche vers droite</label>
@@ -289,8 +316,8 @@
 			<div class="premier rectangle_degrade"></div>
 			<div class="deuxieme rectangle_degrade"></div>
 			<p>
-				&gt; D&eacute;finissez la couleur de fond de la tranche.<br />
-				<label for="option-Couleur">Couleur s&eacute;lectionn&eacute;e : </label>
+				&gt; Définissez la couleur de fond de la tranche.<br />
+				<label for="option-Couleur">Couleur sélectionnée : </label>
 				<input class="couleur" type="text" name="option-Couleur" maxlength="7"/>
 			</p>
 		</div>
@@ -299,11 +326,11 @@
 			<div class="rectangle_position" class="cache"></div>
 			<img class="point_remplissage cache" src="images/cross.png" />
 			<p>
-				&gt; D&eacute;placez le curseur en forme de croix pour modifier le point de remplissage.<br />
-				&gt; S&eacute;lectionnez une couleur pour modifier la couleur de remplissage.
+				&gt; Déplacez le curseur en forme de croix pour modifier le point de remplissage.<br />
+				&gt; Sélectionnez une couleur pour modifier la couleur de remplissage.
 			</p>
 			<form id="options_etape">
-				<label for="option-Couleur">Couleur s&eacute;lectionn&eacute;e : </label>
+				<label for="option-Couleur">Couleur sélectionnée : </label>
 				<input class="couleur" type="text" name="option-Couleur" maxlength="6"/>
 			</form>
 		</div>
@@ -311,12 +338,12 @@
 		<div id="options-etape--Arc_cercle" class="options_etape cache">
 			<img class="arc_position cache">
 			<p>
-				&gt; D&eacute;placez et redimensionnez l'arc de cercle.<br />
-				&gt; S&eacute;lectionnez une couleur pour modifier la couleur de remplissage ou de contour.<br />
+				&gt; Déplacez et redimensionnez l'arc de cercle.<br />
+				&gt; Sélectionnez une couleur pour modifier la couleur de remplissage ou de contour.<br />
 			</p>
 			<form id="options_etape">
 				<div class="buttonset">
-					<input type="radio" name="option-drag-resize" value="deplacement" id="Arc_deplacement" /><label for="Arc_deplacement">D&eacute;placement</label>
+					<input type="radio" name="option-drag-resize" value="deplacement" id="Arc_deplacement" /><label for="Arc_deplacement">Déplacement</label>
 					<input type="radio" name="option-drag-resize" value="redimensionnement"  id="Arc_redimensionnement"/><label for="Arc_redimensionnement">Redimensionnement</label><br /><br />
 				</div>
 				<label for="option-Couleur">Couleur : </label>
@@ -331,24 +358,24 @@
 			<img class="polygone_position cache">
 			<div class="point_polygone modele cache"></div>
 			<p>
-				&gt; Ajoutez et d&eacute;placer les points du polygone.<br />
+				&gt; Ajoutez et déplacer les points du polygone.<br />
 				&gt; Indiquez la couleur de remplissage du polygone.<br />
 			</p>
 			<form id="options_etape">
 				<div class="buttonset">
 					<input type="radio" name="option-action" value="ajout" id="Point_ajout" /><label for="Point_ajout">Ajout de point</label>
-					<input type="radio" name="option-action" value="deplacement" id="Point_deplacement" /><label for="Point_deplacement">D&eacute;placement de point</label>
+					<input type="radio" name="option-action" value="deplacement" id="Point_deplacement" /><label for="Point_deplacement">Déplacement de point</label>
 					<input type="radio" name="option-action" value="suppression" id="Point_suppression" /><label for="Point_suppression">Suppression de point</label>
 				</div>
 				<div id="descriptions_actions">
 					<div id="description_ajout" class="cache">
-						Cliquez sur le point apr&egrave;s lequel le nouveau point sera plac&eacute;.
+						Cliquez sur le point après lequel le nouveau point sera placé.
 					</div>
 					<div id="description_deplacement" class="cache">
-						Glissez-d&eacute;posez le point &agrave; d&eacute;placer.
+						Glissez-déposez le point à déplacer.
 					</div>
 					<div id="description_suppression" class="cache">
-						Cliquez sur le point &agrave; supprimer.
+						Cliquez sur le point à supprimer.
 					</div>
 				</div>
 				<label for="option-Couleur">Couleur du polygone : </label>
@@ -360,8 +387,8 @@
 		<div id="options-etape--Rectangle" class="options_etape cache">
 			<div class="rectangle_position" class="cache"></div>
 			<p>
-				&gt; D&eacute;placez et redimensionnez le rectangle.<br />
-				&gt; S&eacute;lectionnez une couleur pour modifier la couleur de remplissage ou de contour.<br />
+				&gt; Déplacez et redimensionnez le rectangle.<br />
+				&gt; Sélectionnez une couleur pour modifier la couleur de remplissage ou de contour.<br />
 			</p>
 			<form id="options_etape">
 				<label for="option-Couleur">Couleur : </label>
@@ -375,10 +402,10 @@
 		<div id="options-etape--Image" class="options_etape cache">
 			<div class="image_position cache"></div>
 			<p>
-				&gt; D&eacute;placez et redimensionnez l'image incrust&eacute;e.<br />
+				&gt; Déplacez et redimensionnez l'image incrustée.<br />
 			</p>
 			<form id="options_etape">
-				Image utilis&eacute;e : 
+				Image utilisée : 
 				<input type="text" name="option-Source" readonly="readonly" />
 				<button class="small" name="parcourir">Parcourir</button>
 				<br />
@@ -391,11 +418,11 @@
 			<input type="hidden" name="original_preview_height" />
 			<div class="image_position cache"></div>
 			<div class="accordion">
-				<h3><a href="#">Propri&eacute;t&eacute;s du texte</a></h3>
+				<h3><a href="#">Propriétés du texte</a></h3>
 				<div class="proprietes_texte">
 					<table style="border:0" cellspacing="0" cellpadding="1">
 						<tr>
-							<td>Police de caract&egrave;res : </td>
+							<td>Police de caractères : </td>
 							<td style="white-space:nowrap"><input name="option-URL" type="text" maxlength="90" size="19" />
 								<button class="small">
 									<span class="modifier_police">Modifier</span>
@@ -425,7 +452,7 @@
 						<tr>
 							<td colspan="2" style="text-align: center">
 								<br />
-								Texte g&eacute;n&eacute;r&eacute; : <br />
+								Texte généré : <br />
 								<div class="apercu_myfonts">
 									<img />
 								</div>
@@ -434,11 +461,11 @@
 						<tr>
 					</table>
 				</div>
-				<h3><a href="#">Finition du texte g&eacute;n&eacute;r&eacute;</a></h3>
+				<h3><a href="#">Finition du texte généré</a></h3>
 				<div class="finition_texte_genere">
-					Faites glisser le bord droit du texte g&eacute;n&eacute;r&eacute; de fa&ccedil;on &agrave; ce qu'il soit enti&egrave;rement visible.
+					Faites glisser le bord droit du texte généré de façon à ce qu'il soit entièrement visible.
 					<br />
-					<input type="checkbox" name="option-Demi_hauteur" id="option-Demi_hauteur" />&nbsp;<label for="option-Demi_hauteur">Cochez cette case pour &eacute;viter que le texte apparaisse sur 2 lignes.</label> 
+					<input type="checkbox" name="option-Demi_hauteur" id="option-Demi_hauteur" />&nbsp;<label for="option-Demi_hauteur">Cochez cette case pour éviter que le texte apparaisse sur 2 lignes.</label> 
 					<br /><br />
 					<div>
 						<div class="extension_largeur cache">&nbsp;</div>
@@ -460,10 +487,10 @@
 					<table style="border:0" cellspacing="0" cellpadding="1">
 						<tr style="height: 320px">
 							<td>
-								<a href="javascript:void(0)" name="fixer_rotation -90">Fixer &agrave; -90 &deg;</a><br />
-								<a href="javascript:void(0)" name="fixer_rotation 0">Fixer &agrave; 0 &deg;</a><br />
-								<a href="javascript:void(0)" name="fixer_rotation 90">Fixer &agrave; 90 &deg;</a><br />
-								<a href="javascript:void(0)" name="fixer_rotation 180">Fixer &agrave; 180 &deg;</a><br />
+								<a href="javascript:void(0)" name="fixer_rotation -90">Fixer à -90 &deg;</a><br />
+								<a href="javascript:void(0)" name="fixer_rotation 0">Fixer à 0 &deg;</a><br />
+								<a href="javascript:void(0)" name="fixer_rotation 90">Fixer à 90 &deg;</a><br />
+								<a href="javascript:void(0)" name="fixer_rotation 180">Fixer à 180 &deg;</a><br />
 							</td>
 							<td><input name="option-Rotation" type="text" maxlength="90" size="35" readonly="readonly"
 									   value="Faites tourner cette zone (Rotation=0.00&deg;)" /></td>
@@ -473,36 +500,36 @@
 			</div>
 		</div>
 	
-		<div id="wizard-numero-inconnu" class="wizard deadend" title="Num&eacute;ro non r&eacute;f&eacute;renc&eacute;">
+		<div id="wizard-numero-inconnu" class="wizard deadend" title="Numéro non référencé">
 			<p>
-				Les tranches ne peuvent &ecirc;tre reproduites que pour les num&eacute;ros 
-				r&eacute;f&eacute;renc&eacute;s sur la base <a target="_blank" href="http://coa.inducks.org">Inducks</a>.
-				R&eacute;f&eacute;rencez votre num&eacute;ro pour Inducks pour qu'il apparaisse dans les listes.
+				Les tranches ne peuvent être reproduites que pour les numéros 
+				référencés sur la base <a target="_blank" href="http://coa.inducks.org">Inducks</a>.
+				Référencez votre numéro pour Inducks pour qu'il apparaisse dans les listes.
 			</p>
 		</div>
 
 <!--  Dialogues issus du menu et utilitaires -->
 
-<div id="wizard-ajout-etape" class="first wizard modal" title="Ajouter une &eacute;tape">
+<div id="wizard-ajout-etape" class="first wizard modal" title="Ajouter une étape">
 	<p>
 		<form>
 			<div class="accordion">
-				<h3><a href="#">Cr&eacute;er une &eacute;tape &agrave; partir de z&eacute;ro</a></h3>
+				<h3><a href="#">Créer une étape à partir de zéro</a></h3>
 				<div>
 					Que souhaitez-vous faire ? 
 					<div id="liste_fonctions"></div>
 					<input type="hidden" name="etape" />
 					<input type="hidden" name="pos" />
 				</div>
-				<h3><a href="#">Cr&eacute;er une &eacute;tape &agrave; partir d'une &eacute;tape similaire</a></h3>
+				<h3><a href="#">Créer une étape à partir d'une étape similaire</a></h3>
 				<div>
-					<div class="aucune_etape">Aucune &eacute;tape n'a &eacute;t&eacute; cr&eacute;&eacute;e pour le moment.</div>
+					<div class="aucune_etape">Aucune étape n'a été créée pour le moment.</div>
 					<div class="etape_existante">
 						<a id="selectionner_etape_base" style="text-decoration:underline" href="#">
-							S&eacute;lectionner l'&eacute;tape de base
+							Sélectionner l'étape de base
 						</a>
 						<span id="section_etape_a_cloner" class="cache">
-							Etape <input id="etape_a_cloner" name="etape_a_cloner" readonly="readonly" /> s&eacute;lectionn&eacute;e pour le clonage
+							Etape <input id="etape_a_cloner" name="etape_a_cloner" readonly="readonly" /> sélectionnée pour le clonage
 						</span>
 					</div>
 				</div>
@@ -513,8 +540,8 @@
 
 <div id="wizard-upload" class="wizard" title="Stockage d'une photo de tranche">
 	<p>
-		S&eacute;lectionnez une photo de tranche stock&eacute;e sur votre ordinateur 
-		pour la placer &agrave; c&ocirc;t&eacute; de votre mod&egrave;le de tranche et ainsi pouvoir les comparer facilement.
+		Sélectionnez une photo de tranche stockée sur votre ordinateur 
+		pour la placer à côté de votre modèle de tranche et ainsi pouvoir les comparer facilement.
 	</p>
 	<iframe src="<?=base_url().'index.php/helper/index/image_upload.php?photo_tranche=1'?>"></iframe>
 </div>
@@ -524,29 +551,29 @@
 		<form name="form_options">
 			<span class="photo_principale">
 				Afin d'assurer la meilleure conception de tranche possible, une photo de la tranche est requise.<br />
-				La photo doit contenir uniquement la tranche souhait&eacute;e, en position verticale.
-				Cette photo sera mise &agrave; c&ocirc;t&eacute; de votre tranche en cours de conception.
+				La photo doit contenir uniquement la tranche souhaitée, en position verticale.
+				Cette photo sera mise à côté de votre tranche en cours de conception.
 			</span> 
 			<span class="autres_photos">
 				<!-- Si certaines parties de la tranche (des logos par exemple) ne sont pas assez visibles depuis cette photo, 
-				cela peut &ecirc;tre une bonne id&eacute;e de les photographier &agrave; part.<br /> -->
-				Les photos doivent &ecirc;tre nettes, bien &eacute;clair&eacute;es, et les couleurs fid&egrave;les &agrave; la tranche originale.
+				cela peut être une bonne idée de les photographier à part.<br /> -->
+				Les photos doivent être nettes, bien éclairées, et les couleurs fidèles à la tranche originale.
 			</span>
 			<span class="photos_texte">
-				S&eacute;lectionnez une image contenant le texte, et <u>uniquement</u> le texte. <br />
-				Le texte doit &ecirc;tre horizontal et net sur la photo. Pour des r&eacute;sultats optimaux,
-				modifiez manuellement l'image pour en retirer tout &eacute;l&eacute;ment pouvant nuire &agrave; 
-				la d&eacute;tection de la police de caract&egrave;res.
+				Sélectionnez une image contenant le texte, et <u>uniquement</u> le texte. <br />
+				Le texte doit être horizontal et net sur la photo. Pour des résultats optimaux,
+				modifiez manuellement l'image pour en retirer tout élément pouvant nuire à 
+				la détection de la police de caractères.
 			</span>
 			<br />
 			<!-- <span class="photo_principale">
-				Vous pourrez revenir &agrave; cet &eacute;cran &agrave; tout moment lors de la conception de la tranche.<br />
+				Vous pourrez revenir à cet écran à tout moment lors de la conception de la tranche.<br />
 			</span> -->
 			<div class="accordion">
 				<h3 id="upload">
 					<a href="#">
 						<span class="photo_principale">Envoyer une photo</span>
-						<span class="autres_photos photos_texte">Envoyer une image d'&eacute;l&eacute;ment</span>
+						<span class="autres_photos photos_texte">Envoyer une image d'élément</span>
 					</a>
 				</h3>
 				<div name="upload" class="envoyer_photo">
@@ -573,14 +600,14 @@
 				
 				<h3 id="gallery">
 					<a href="#">
-						<span class="photo_principale">S&eacute;lectionner une photo existante</span>
-						<span class="autres_photos photos_texte">S&eacute;lectionner une image existante</span>
+						<span class="photo_principale">Sélectionner une photo existante</span>
+						<span class="autres_photos photos_texte">Sélectionner une image existante</span>
 					</a>
 				</h3>
 				<div name="gallery" class="selectionner_photo">
 					<p class="chargement_images" >Chargement des images</p>
-					<p class="pas_d_image autres_photos photos_texte cache" >Aucune image r&eacute;pertori&eacute;e pour ce pays</p>
-					<p class="pas_d_image photo_principale cache" >Aucune image r&eacute;pertori&eacute;e pour ce magazine</p>
+					<p class="pas_d_image autres_photos photos_texte cache" >Aucune image répertoriée pour ce pays</p>
+					<p class="pas_d_image photo_principale cache" >Aucune image répertoriée pour ce magazine</p>
 					<ul class="gallery cache">
 						<li class="template">
 							<img />
@@ -590,12 +617,12 @@
 				</div>
 			</div>
 			<button id="to-wizard-resize" class="cache" value="to-wizard-resize">
-				<span class="photo_principale">Rogner la photo s&eacute;lectionn&eacute;e</span>
-				<span class="autres_photos photos_texte">Rogner l'image s&eacute;lectionn&eacute;e</span>
+				<span class="photo_principale">Rogner la photo sélectionnée</span>
+				<span class="autres_photos photos_texte">Rogner l'image sélectionnée</span>
 			</button>
 			<br />
-			<span class="photo_principale">S&eacute;lectionnez une photo pour poursuivre.</span>
-			<span class="autres_photos photos_texte">S&eacute;lectionnez une image pour poursuivre.</span>
+			<span class="photo_principale">Sélectionnez une photo pour poursuivre.</span>
+			<span class="autres_photos photos_texte">Sélectionnez une image pour poursuivre.</span>
 			
 			<input type="hidden" name="selected" />
 			<input type="hidden" id="numeroPhotoPrincipale" name="numeroPhotoPrincipale" value=""/>
@@ -611,7 +638,7 @@
 		Rognez l'image.
 	</p>
 	<img /><br />
-	<div class="error crop_inconsistent cache">Une partie de votre s&eacute;lection est situ&eacute;e en dehors de l'image.</div>
+	<div class="error crop_inconsistent cache">Une partie de votre sélection est située en dehors de l'image.</div>
 	<form>
 		<input type="hidden" name="destination" />
 		<div class="buttonset">
@@ -621,77 +648,77 @@
 	</form>
 </div>
 
-<div id="wizard-myfonts" class="wizard first closeable" title="Recherche d'une police de caract&egrave;res">
+<div id="wizard-myfonts" class="wizard first closeable" title="Recherche d'une police de caractères">
 	<form>
 		<div class="explication">
-			Suivez l'assistant ci-dessous : le site MyFonts permet de retrouver la police de caract&egrave;res d'un texte.
+			Suivez l'assistant ci-dessous : le site MyFonts permet de retrouver la police de caractères d'un texte.
 			<br />
-			Une fois que vous parvenez &agrave; la page de proposition de polices de caract&egrave;res 
+			Une fois que vous parvenez à la page de proposition de polices de caractères 
 			(vous verrez l'image <img class="exemple_resultats" src="images/whatthefont_results.png" />en haut de la page),
 			<br />
-			faites un clic droit sur la police ressemblant le plus &agrave; celle de votre image, puis un clic gauche sur "Copier l'adresse du lien" 
+			faites un clic droit sur la police ressemblant le plus à celle de votre image, puis un clic gauche sur "Copier l'adresse du lien" 
 			(<a class="exemple_cache toggle_exemple" href="#">Voir un exemple</a>
 			 <a class="exemple_affiche toggle_exemple cache" href="#">Cacher l'exemple</a>).
 			<br />
 			<img src="images/whatthefont_selection_exemple.png" class="exemple_affiche cache" /><br />
-			Collez ce lien (Ctrl+V ou Cmd+V sur Mac) dans le champ ci-apr&egrave;s : 
+			Collez ce lien (Ctrl+V ou Cmd+V sur Mac) dans le champ ci-après : 
 			<input type="text" name="url_police" size="100"/>
 		</div>
 		<iframe></iframe>
 	</form>
 </div>
 
-<div id="wizard-confirmation-supprimer" class="wizard" title="Supprimer l'&eacute;tape ?">
+<div id="wizard-confirmation-supprimer" class="wizard" title="Supprimer l'étape ?">
 	<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>
-	Vous allez supprimer cette &eacute;tape. Continuer ?</p>
+	Vous allez supprimer cette étape. Continuer ?</p>
 </div>
 
 <div id="wizard-confirmation-rechargement" class="wizard" title="Sauvegarder les changements ?">
 	<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>
-	Vous avez modifi&eacute; l'&eacute;tape ouverte sans valider ses modifications. 
+	Vous avez modifié l'étape ouverte sans valider ses modifications. 
 	Souhaitez-vous valider ces modifications ?</p>
 </div>
 
 <div id="wizard-confirmation-annulation" class="wizard" title="Sauvegarder les changements ?">
 	<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>
-	Vous avez modifi&eacute; l'&eacute;tape que vous souhaitez fermer. 
+	Vous avez modifié l'étape que vous souhaitez fermer. 
 	Souhaitez-vous sauvegarder ces modifications ?</p>
 </div>
 
-<div id="wizard-confirmation-suppression" class="wizard" title="Supprimer cette &eacute;tape ?">
+<div id="wizard-confirmation-suppression" class="wizard" title="Supprimer cette étape ?">
 	<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>
-	Cette &eacute;tape va &ecirc;tre supprim&eacute;e. Continuer ?</p>
+	Cette étape va être supprimée. Continuer ?</p>
 	<span id="num_etape_a_supprimer" class="cache"></span>
 </div>
 
 <div id="wizard-confirmation-suppression-point" class="wizard" title="Supprimer ce point ?">
 	<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>
-	Ce point du polygone va &ecirc;tre supprim&eacute;. Continuer ?</p>
+	Ce point du polygone va être supprimé. Continuer ?</p>
 	<span id="nom_point_a_supprimer" class="cache"></span>
 </div>
 
 <div id="wizard-confirmation-resize" class="wizard" title="Nom de l'image ?">
 	<p>
-	Une nouvelle image va &ecirc;etre cr&eacute;e. Indiquez le nom que vous souhaitez lui donner.
+	Une nouvelle image va êetre crée. Indiquez le nom que vous souhaitez lui donner.
 	(Exemples : <i>Tete Donald</i> ; <i>Motif arriere plan</i>, etc.</p>
 	<form>
 		<input type="text" name="nom_image" />
 	</form>
 </div>
 
-<div id="wizard-confirmation-desactivation-modele" class="wizard" title="Suppression d'un mod&egrave;le EdgeCreator">
+<div id="wizard-confirmation-desactivation-modele" class="wizard" title="Suppression d'un modèle EdgeCreator">
 	<p>
-	Le mod&egrave;le EdgeCreator en cours de conception va &ecirc;tre d&eacute;sactiv&eacute;. Confirmer ?
+	Le modèle EdgeCreator en cours de conception va être désactivé. Confirmer ?
 	</p>
 </div>
 
-<div id="wizard-confirmation-validation-modele" class="wizard" title="Validation d'un mod&egrave;le EdgeCreator">
+<div id="wizard-confirmation-validation-modele" class="wizard" title="Validation d'un modèle EdgeCreator">
 	<p>
-	Votre tranche appara&icirc;tra aux c&ocirc;t&eacute;s des tranches suivantes dans la biblioth&egrave;que DucksManager : <br />
+	Votre tranche apparaîtra aux côtés des tranches suivantes dans la bibliothèque DucksManager : <br />
 	
 	<div class="tranches_pretes_magazine"></div>
 	
-	Le mod&egrave;le EdgeCreator en cours de conception va &ecirc;tre verrouill&eacute; en attendant sa validation. <br />
+	Le modèle EdgeCreator en cours de conception va être verrouillé en attendant sa validation. <br />
 	<br /><br />
 	Confirmer ?
 	<form>
@@ -700,10 +727,10 @@
 	</p>
 </div>
 
-<div id="wizard-confirmation-validation-modele-contributeurs" class="wizard" title="Validation d'un mod&egrave;le EdgeCreator - Contributeurs">
+<div id="wizard-confirmation-validation-modele-contributeurs" class="wizard" title="Validation d'un modèle EdgeCreator - Contributeurs">
 	<p>
-		Veuillez s&eacute;lectionner les photographes (utilisateurs qui ont photographi&eacute; la tranche)
-	    et les designers (utilisateurs qui ont recr&eacute;&eacute; la tranche via EdgeCreator) :
+		Veuillez sélectionner les photographes (utilisateurs qui ont photographié la tranche)
+	    et les designers (utilisateurs qui ont recréé la tranche via EdgeCreator) :
 	    <form id="form_save_png">
 	    	<span id="photographes">Photographes</span>
 	    	<span id="designers" style="margin-left:30px">Designers</span>
@@ -713,34 +740,34 @@
 	</p>
 </div>
 
-<div id="wizard-confirmation-validation-modele-ok" class="wizard" title="Mod&egrave;le envoy&eacute;">
+<div id="wizard-confirmation-validation-modele-ok" class="wizard" title="Modèle envoyé">
 	<p>
-	Le mod&egrave;le d'image a &eacute;t&eacute; envoy&eacute; pour validation.
+	Le modèle d'image a été envoyé pour validation.
 	</p>
 </div>
 
-<div id="wizard-erreur-image-myfonts" class="wizard" title="Param&egrave;tres de texte invalides">
+<div id="wizard-erreur-image-myfonts" class="wizard" title="Paramètres de texte invalides">
 	<p>
-		Les param&egrave;tres du texte &agrave; g&eacute;n&eacute;rer sont invalides. <br />
-		V&eacute;rifiez notamment que la police de caract&egrave;res sp&eacute;cifi&eacute;e est valide.
+		Les paramètres du texte à générer sont invalides. <br />
+		Vérifiez notamment que la police de caractères spécifiée est valide.
 	</p>
 </div>
 
 
-<div id="wizard-erreur-generation-image" class="wizard" title="Erreur de g&eacute;n&eacute;ration d'image">
+<div id="wizard-erreur-generation-image" class="wizard" title="Erreur de génération d'image">
 	<p>
-		La g&eacute;n&eacute;ration de l'image pour l'&eacute;tape <span name="etape"></span> a &eacute;chou&eacute;. <br />
-		La g&eacute;n&eacute;ration des images des &eacute;tapes suivantes a &eacute;t&eacute; annul&eacute;e. <br /><br />
-		Merci de reporter ce probl&egrave;me au webmaster en indiquant le message d'erreur suivant : <br /><br />
+		La génération de l'image pour l'étape <span name="etape"></span> a échoué. <br />
+		La génération des images des étapes suivantes a été annulée. <br /><br />
+		Merci de reporter ce problème au webmaster en indiquant le message d'erreur suivant : <br /><br />
 		<iframe></iframe>
 	</p>
 </div>
 
-<div id="wizard-session-expiree" class="wizard" title="Session expir&eacute;e">
+<div id="wizard-session-expiree" class="wizard" title="Session expirée">
 	<p>
-	Votre session a expir&eacute;. 
+	Votre session a expiré. 
 	<br />
-	Retour &agrave; la page d'accueil d'EdgeCreator.
+	Retour à la page d'accueil d'EdgeCreator.
 	</p>
 </div>
 
@@ -748,12 +775,12 @@
 	<div id="selecteur_couleur">
 		<button class="small" id="fermer_selecteur_couleur" name="fermer_selecteur_couleur">Fermer</button>
 		<ul>
-	    	<li><a href="#picker_container">S&eacute;lection de couleur</a></li>
-	    	<li><a href="#couleurs_frequentes">Couleurs fr&eacute;quemment utilis&eacute;es</a></li>
+	    	<li><a href="#picker_container">Sélection de couleur</a></li>
+	    	<li><a href="#couleurs_frequentes">Couleurs fréquemment utilisées</a></li>
 	    	<li><a href="#depuis_photo">Depuis la photo de tranche</a></li>
 	  	</ul>
 		<div id="picker_container">
-			S&eacute;lectionnez une couleur
+			Sélectionnez une couleur
 			<div id="picker"></div>
 		</div>
 		<div id="couleurs_frequentes">
@@ -761,8 +788,8 @@
 		</div>
 		<div id="depuis_photo">
 			<div name="description_selection_couleur">
-				D&eacute;placez le curseur de la souris vers votre photo de tranche et cliquez
-				&agrave; l'endroit o&ugrave; se situe la couleur d&eacute;sir&eacute;e.
+				Déplacez le curseur de la souris vers votre photo de tranche et cliquez
+				à l'endroit où se situe la couleur désirée.
 			</div>
 			<div name="pas_de_photo_tranche" id="pas_de_photo_tranche"></div>
 		</div>
@@ -772,15 +799,15 @@
 <div id="libelles-messages" class="cache">
 	<div id="message-aucune-image-de-tranche">
 		<div class="titre">
-			Aucune photo g&eacute;n&eacute;rale de tranche.
+			Aucune photo générale de tranche.
 		</div>
 		<div class="libelle">
-			Le mod&egrave;le EdgeCreator en cours de conception ne contient aucune photo g&eacute;n&eacute;rale 
+			Le modèle EdgeCreator en cours de conception ne contient aucune photo générale 
 			de la tranche. <br />
-			Sp&eacute;cifier une photo g&eacute;n&eacute;rale de tranche est fortement recommand&eacute;
+			Spécifier une photo générale de tranche est fortement recommandé
 			car cela permet de faciliter sa conception. <br />
-			Cliquez sur l'ic&ocirc;ne <img src="images/photo.png" /> de la barre de menu 
-			pour s&eacute;lectionner une photo de tranche.
+			Cliquez sur l'icône <img src="images/photo.png" /> de la barre de menu 
+			pour sélectionner une photo de tranche.
 		</div>
 	</div>
 </div>
