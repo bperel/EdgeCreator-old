@@ -994,13 +994,7 @@ function wizard_init(wizard_id) {
 		case 'wizard-resize':
 			$('#'+wizard_id+' img')
 			  .jrac({image_height:480})
-				.bind('jrac_events', function(event, $viewport) {
-					var crop_inconsistent_element=$(this).d().find('.error.crop_inconsistent');
-					if ($viewport.observator.crop_consistent())
-						crop_inconsistent_element.addClass('cache');
-					else
-						crop_inconsistent_element.removeClass('cache');
-				});
+				.bind('jrac_events', surveiller_selection_jrac);
 		break;
 		
 		case 'wizard-confirmation-validation-modele':
@@ -2619,7 +2613,7 @@ function wizard_charger_liste_pays() {
 						   .val(i)
 						   .html(data.pays[i]));
 			}
-			wizard_pays.val(get_option_wizard('wizard_pays') || 'fr');
+			wizard_pays.val(get_option_wizard(id_wizard_courant, 'wizard_pays') || 'fr');
 
 			wizard_charger_liste_magazines(pays_sel);
 		}
@@ -2641,8 +2635,8 @@ function wizard_charger_liste_magazines(pays_sel) {
 							   .val(i)
 							   .html(data.magazines[i]));
 			}
-			if (get_option_wizard('wizard_magazine') != undefined)
-				wizard_magazine.val(get_option_wizard('wizard_magazine'));
+			if (get_option_wizard(id_wizard_courant, 'wizard_magazine') != undefined)
+				wizard_magazine.val(get_option_wizard(id_wizard_courant, 'wizard_magazine'));
 			wizard_charger_liste_numeros(wizard_magazine.val());
 		}
 	});
@@ -2679,8 +2673,8 @@ function wizard_charger_liste_numeros(magazine_sel) {
 				wizard_numero.append(option);
 			}
 		}
-		if (get_option_wizard('wizard_numero') != undefined)
-			wizard_numero.val(get_option_wizard('wizard_numero'));
+		if (get_option_wizard(id_wizard_courant, 'wizard_numero') != undefined)
+			wizard_numero.val(get_option_wizard(id_wizard_courant, 'wizard_numero'));
 		chargement_listes=false;
 	});
 }
@@ -2692,11 +2686,6 @@ function charger_liste_numeros(pays_sel,magazine_sel, callback) {
 		dataType: 'json',
 		success: callback
 	});
-}
-
-
-function get_option_wizard(nom_option) {
-	return get_option_wizard(id_wizard_courant, nom_option);
 }
 
 function get_option_wizard(id_wizard, nom_option) {
@@ -2867,6 +2856,14 @@ function afficher_gallerie(type_images, data, container) {
 		ul.removeClass('cache');
 		container.find('.chargement_images').addClass('cache');
 	}
+}
+
+function surveiller_selection_jrac(event, $viewport) {
+    var crop_inconsistent_element=$(this).d().find('.error.crop_inconsistent');
+    if ($viewport.observator.crop_consistent())
+        crop_inconsistent_element.addClass('cache');
+    else
+        crop_inconsistent_element.removeClass('cache');
 }
 
 function templatedToVal(templatedString) {
