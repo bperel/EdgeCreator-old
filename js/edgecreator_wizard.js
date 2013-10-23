@@ -12,11 +12,11 @@
 })(jQuery);
 
 $.widget("ui.tooltip", $.ui.tooltip, {
-    options: {
-        content: function () {
-            return $(this).prop('title');
-        }
-    }
+	options: {
+		content: function () {
+			return $(this).prop('title');
+		}
+	}
 });
 
 $(window).scroll(function() {
@@ -56,7 +56,7 @@ $(function() {
 						.addClass('cross')
 						.click(function(e) {
 							var frac = [ e.offsetX / $(this).width(),
-							             e.offsetY / $(this).height() ];
+										 e.offsetY / $(this).height() ];
 							$.ajax({
 								url: urls['couleur_point_photo']+['index',pays,magazine,numero,frac[0],frac[1]].join('/'),
 								type: 'post',
@@ -74,31 +74,31 @@ $(function() {
 	
 	// Déplacement des objets
 	$('body').on('keyup', function(e) {
-	    // Don't scroll page
-	    e.preventDefault();
-	    
-	    var position, 
-	        draggable = $('.ui-draggable:visible');
-	        distance = 1; // Distance in pixels the draggable should be moved
-	    
-	    if (draggable.length  == 0) {
-	    	return false;
-	    }
-	    position = draggable.position();
+		// Don't scroll page
+		e.preventDefault();
+		
+		var position, 
+			draggable = $('.ui-draggable:visible');
+			distance = 1; // Distance in pixels the draggable should be moved
+		
+		if (draggable.length  == 0) {
+			return false;
+		}
+		position = draggable.position();
 	
-	    // Reposition if one of the directional keys is pressed
-	    switch (e.keyCode) {
-	        case 37: position.left -= distance; break; // Left
-	        case 38: position.top  -= distance; break; // Up
-	        case 39: position.left += distance; break; // Right
-	        case 40: position.top  += distance; break; // Down
-	        default: return true; // Exit and bubble
-	    }
-	    draggable
-	    	.css(position);
-	    	
-	    tester_options_preview('TexteMyFonts',['Pos_x','Pos_y']);
-	    tester();
+		// Reposition if one of the directional keys is pressed
+		switch (e.keyCode) {
+			case 37: position.left -= distance; break; // Left
+			case 38: position.top  -= distance; break; // Up
+			case 39: position.left += distance; break; // Right
+			case 40: position.top  += distance; break; // Down
+			default: return true; // Exit and bubble
+		}
+		draggable
+			.css(position);
+			
+		tester_options_preview('TexteMyFonts',['Pos_x','Pos_y']);
+		tester();
 	});
 	
 	farb=$.farbtastic($('#picker'))
@@ -149,10 +149,10 @@ var COTE_CARRE_DEPLACEMENT=10;
 var PADDING_PARAMETRAGE_ETAPE=10;
 
 var TEMPLATES ={'numero':/\[Numero\]/,
-	            'numero[]':/\[Numero\[([0-9]+)\]\]/ig,
-	            'largeur':/(?:([0-9.]+)(\*))?\[Largeur\](?:(\*)([0-9.]+))?/i,
-	            'hauteur':/(?:([0-9.]+)(\*))?\[Hauteur\](?:(\*)([0-9.]+))?/i,
-	            'caracteres_speciaux':/Â°/i};
+				'numero[]':/\[Numero\[([0-9]+)\]\]/ig,
+				'largeur':/(?:([0-9.]+)(\*))?\[Largeur\](?:(\*)([0-9.]+))?/i,
+				'hauteur':/(?:([0-9.]+)(\*))?\[Hauteur\](?:(\*)([0-9.]+))?/i,
+				'caracteres_speciaux':/Â°/i};
 
 var REGEX_FICHIER_PHOTO=/\/([^\/]+\.([^.]+)\.photo_([^.]+?)\.[a-z]+)$/;
 var REGEX_NUMERO=/tranche_([^_]+)_([^_]+)_([^_]+)/;
@@ -184,7 +184,7 @@ function launch_wizard(id, p) {
 		deadend = dialogue.hasClass('deadend') 	  || (p.deadend   !== undefined	&& p.deadend),
 		modal	 = dialogue.hasClass('modal')	  || (p.modal 	  !== undefined	&& p.modal),
 		closeable= dialogue.hasClass('closeable') || (p.closeable !== undefined	&& p.closeable),
-        extensible=dialogue.hasClass('extensible')|| (p.extensible!== undefined	&& p.extensible);
+		extensible=dialogue.hasClass('extensible')|| (p.extensible!== undefined	&& p.extensible);
 	
 	$('#'+id+' .buttonset').buttonset();
 	$('#'+id+' .button').button();
@@ -265,7 +265,7 @@ function launch_wizard(id, p) {
 							}
 						break;
 						case 'autres_photos':
-			   		    	tester_options_preview('Image',['Source']); 
+			   				tester_options_preview('Image',['Source']); 
 							$(this).dialog().dialog( "close" );
 						break;
 						case 'photos_texte':
@@ -288,21 +288,21 @@ function launch_wizard(id, p) {
 				if (wizard_check(id)) {
 				   	var form=$('#'+id+' form').serializeObject();
 				   	var photographes=typeof(form.photographes) === "string" ? form.photographes : form.photographes.join(',') .replace(/ /g, "+");
-				   	var designers=	 typeof(form.designers)    === "string" ? form.designers 	: form.designers.join(',') .replace(/ /g, "+");
+				   	var designers=	 typeof(form.designers)	=== "string" ? form.designers 	: form.designers.join(',') .replace(/ /g, "+");
 					var nom_image=$('.image_etape.finale .image_preview').attr('src').match(/[.0-9]+$/g)[0];
 					$.ajax({
-		                url: urls['valider_modele']+['index',pays,magazine,numero,nom_image,designers,photographes].join('/'),
-		                type: 'post',
-		                success:function() {
-		        			jqueryui_alert_from_d($('#wizard-confirmation-validation-modele-ok'), function() {
-		        				location.reload();
-		        			});
-		                },
-		                error:function() {
-		                	jqueryui_alert("Une erreur est survenue pendant la validation de la tranche.<br />"
-		                				  +"Contactez le webmaster", 
-		                				  "Erreur");
-		                }
+						url: urls['valider_modele']+['index',pays,magazine,numero,nom_image,designers,photographes].join('/'),
+						type: 'post',
+						success:function() {
+							jqueryui_alert_from_d($('#wizard-confirmation-validation-modele-ok'), function() {
+								location.reload();
+							});
+						},
+						error:function() {
+							jqueryui_alert("Une erreur est survenue pendant la validation de la tranche.<br />"
+										  +"Contactez le webmaster", 
+										  "Erreur");
+						}
 					});
 				}
 			};
@@ -342,7 +342,7 @@ function launch_wizard(id, p) {
 		autoResize: true,
 		resizable: dialogue.hasClass('resizable'),
 		buttons: buttons,
-		draggable: false,
+		draggable: dialogue.hasClass('draggable'),
 		open:function() {
 			var dialog=$(this).d();
 			if ($(this).hasClass('main'))
@@ -363,7 +363,7 @@ function launch_wizard(id, p) {
 		},
 		close: function() {
 			if (closeable) {
-                var form = $('#'+id+' form');
+				var form = $('#'+id+' form');
 				var hasOnClose = form.serializeObject().onClose;
 				if (hasOnClose) {
 					wizard_goto($('#id'), form.serializeObject().onClose.replace(REGEX_TO_WIZARD,'$1'));
@@ -402,8 +402,8 @@ function wizard_do(wizard_courant, action) {
 
 							var numero_image = decoupage_nom[2];
 							var nom = decoupage_nom[3];
-                            var jrac_crop = $('.jrac_crop');
-                            var jrac_crop_position = $('.jrac_crop').position();
+							var jrac_crop = $('.jrac_crop');
+							var jrac_crop_position = $('.jrac_crop').position();
 							var x1 = parseInt(100 * (jrac_crop_position.left / image.width())),
 								x2 = parseInt(100 * (jrac_crop_position.left + jrac_crop.width()) / image.width()),
 								y1 = parseInt(100 * (jrac_crop_position.top  / image.height())),
@@ -414,12 +414,37 @@ function wizard_do(wizard_courant, action) {
 								dataType:'json'
 							});
 						}
+					wizard_goto(wizard_courant,'wizard-images');
+					break;
+				}
+			break;
+			case 'wizard-selectionner-numero-photo-multiple':
+				switch(action) {
+					case 'affectation-numero-tranche':
+						var zone = wizard_courant.data('zone');
+						zone.find('.renseigne').removeClass('cache');
+						zone.find('.non_renseigne').addClass('cache');
+
+
+						$.each(wizard_courant.find('form').serializeObject(), function(nom, valeur) {
+							var element_form=wizard_courant.find('form [name="'+nom+'"]');
+							var element = zone.find('[name="'+nom+'"]');
+							zone.data()[nom] = valeur;
+							if (nom === 'wizard_pays') {
+								element.attr({src: '../images/flags/'+valeur+'.png'});
+							}
+							else if (element_form.is('select')) {
+								element.text(element_form.find('option:selected').text());
+							}
+							else {
+								element.text(valeur);
+							}
+						});
 					break;
 				}
 			break;
 		}
 		wizard_courant.dialog().dialog("close");
-		wizard_goto(wizard_courant,'wizard-images');
 	}
 }
 
@@ -459,7 +484,7 @@ function wizard_check(wizard_id) {
 							  +'ou s&eacute;lectionnez un autre num&eacute;ro.';
 					}
 				break;
-				case 'wizard-dimensions':
+				case 'wizard-dimensions':case 'wizard-selectionner-numero-photo-multiple':
 					$.each($(['Dimension_x','Dimension_y']),function(i,nom_champ) {
 						var valeur= $('#'+wizard_id+' [name="'+nom_champ+'"]').val();
 						var bornes_valeur=nom_champ == 'Dimension_x' ? [3, 60] : [100, 450];
@@ -532,38 +557,39 @@ function wizard_init(wizard_id) {
 	// Transfert vers un autre assistant
 	$('#'+wizard_id+' button[value^="to-wizard-"]').click(function() {
 		wizard_do($('#'+id_wizard_courant),'goto_'+$(this).val().replace(REGEX_TO_WIZARD,'$1'));
-    	event.preventDefault();
+		event.preventDefault();
 	});
 	
 	// Action en restant dans l'assistant
 	$('#'+wizard_id+' button[value^="do-in-wizard-"]').click(function() {
 		var action = $(this).val().replace(REGEX_DO_IN_WIZARD,'$1');
 		wizard_do($('#'+id_wizard_courant),action);
-    	event.preventDefault();
+		event.preventDefault();
 	});
 	
 	// Actions à l'initialisation de l'assistant
 	switch(wizard_id) {
 		case 'wizard-1':
 			$('#selectionner_tranche_en_cours')
-		        .button({
-		            text: false,
-		            icons: {
-		              primary: "ui-icon-triangle-1-s"
-		            }
-		          })
-		          .click(function() {
-		            $( this ).parent().next().show().position({
-		              my: "right",
-		              at: "right bottom",
-		              of: this
-		            });
-		            return false;
-		          })
-		          .parent()
-		            .buttonset()
-		            .next()
-		              .hide();
+				.button({
+					text: false,
+					icons: {
+					  primary: "ui-icon-triangle-1-s"
+					}
+				  })
+				  .click(function() {
+					$( this ).parent().next().show().position({
+					  my: "right",
+					  at: "right bottom",
+					  of: this
+					});
+					return false;
+				  })
+				  .parent()
+					.buttonset()
+					.next()
+					  .hide();
+
 			$.ajax({
 				url: urls['tranchesencours']+['load'].join('/'),
 				dataType:'json',
@@ -572,16 +598,43 @@ function wizard_init(wizard_id) {
 					afficher_liste_magazines(wizard_id,'tranches_en_cours',data);
 				}
 			});
-			
+			break;
+
+		case 'wizard-envoyer-photo':
+			$('#'+wizard_id).parent().find('button').filter(function() { return $(this).text() === 'Suivant'; }).button('option','disabled', true);
 		break;
 
-        case 'wizard-envoyer-photo':
-            $('#'+wizard_id).parent().find('button').filter(function() { return $(this).text() === 'Suivant'; }).button('option','disabled', true);
-        break;
+		case 'wizard-decouper-photo':
+			$('#image_tranche_multiples').attr({src: base_url+'../edges/tranches_multiples/'+nom_photo_tranches_multiples});
+			$('#ajouter_zone_photo_multiple').click(function() {
+				var nouvelle_zone = $('#'+wizard_id).find('.rectangle_selection_tranche.template').clone(true).removeClass('template');
+				nouvelle_zone.find('.suppression').click(function() {
+					$(this).closest('.rectangle_selection_tranche').remove();
+				})
+				nouvelle_zone.find('.zone_intitule_numero').click(function() {
+					$('#wizard-selectionner-numero-photo-multiple').data({zone: $(this).closest('.rectangle_selection_tranche')})
+					launch_wizard('wizard-selectionner-numero-photo-multiple')
+				})
+				nouvelle_zone
+					.draggable({
+						containment: '#zone_selection_tranches_multiples'
+					})
+					.resizable({
+						containment: '#zone_selection_tranches_multiples'
+					})
+					.mouseover(function() {
+						$(this).find('.edition_numero_tranche').removeClass('cache');
+					})
+					.mouseout(function() {
+						$(this).find('.edition_numero_tranche').addClass('cache');
+					});
+				$('#zone_selection_tranches_multiples').prepend(nouvelle_zone);
+			});
+		break;
 
-        case 'wizard-decouper-photo':
-            $('#'+wizard_id).find('img').attr({src: base_url+'../edges/tranches_multiples/'+nom_photo_tranches_multiples});
-        break;
+		case 'wizard-selectionner-numero-photo-multiple':
+			wizard_charger_liste_pays();
+		break;
 		
 		case 'wizard-creer-collection':
 			chargement_listes=true;
@@ -696,16 +749,16 @@ function wizard_init(wizard_id) {
 		case 'wizard-images':
 			$('#'+wizard_id).find('.accordion').accordion({
 				activate: function( event, ui ) {
-        			$('#to-wizard-resize').addClass('cache');
+					$('#to-wizard-resize').addClass('cache');
 					switch ($(ui.newHeader).attr('id')) {
 						case 'gallery':
 							var type_gallerie = $('#'+wizard_id).hasClass('photo_principale') ? 'Photos' : 'Source';
 							lister_images_gallerie(type_gallerie);
 						break;
 						case 'section_photo':
-		        			$('#to-wizard-resize').removeClass('cache');
-		        			var nom_fichier_photo = $('#photo_tranche img').attr('src').match(/\/([^\/]+$)/)[1];
-		        			afficher_gallerie('Photos', [nom_fichier_photo], $('#wizard-images .selectionner_photo_tranche'));
+							$('#to-wizard-resize').removeClass('cache');
+							var nom_fichier_photo = $('#photo_tranche img').attr('src').match(/\/([^\/]+$)/)[1];
+							afficher_gallerie('Photos', [nom_fichier_photo], $('#wizard-images .selectionner_photo_tranche'));
 						break;
 					}
 				}
@@ -738,8 +791,8 @@ function wizard_init(wizard_id) {
 						// Ajout du modèle de tranche et de la fonction Dimensions avec les paramètres par défaut
 						$.ajax({
 							url: urls['insert_wizard']+['index',pays,magazine,numero,'_',-1,'Dimensions'].join('/'),
-						    type: 'post',
-						    async: false
+							type: 'post',
+							async: false
 						});
 						// Mise à jour de la fonction Dimensions avec les valeurs entrées
 						var dimension_x = get_option_wizard('wizard-dimensions','Dimension_x');
@@ -748,8 +801,8 @@ function wizard_init(wizard_id) {
 													+'&Dimension_y='+dimension_y;
 						$.ajax({
 							url: urls['update_wizard']+['index',pays,magazine,numero,-1,parametrage_dimensions].join('/'),
-						    type: 'post',
-						    async: false
+							type: 'post',
+							async: false
 						});
 						dimensions = {x: parseInt(dimension_x), y: parseInt(dimension_y)};
 					}
@@ -759,11 +812,11 @@ function wizard_init(wizard_id) {
 
 			$.ajax({
 				url: urls['tranchesencours']+['load','null',pays,magazine,numero].join('/'),
-			    type: 'post',
+				type: 'post',
 				dataType:'json',
-			    async: false,
-			    success: function(data) {
-			    	var tranche=traiter_tranches_en_cours(data)[0];
+				async: false,
+				success: function(data) {
+					var tranche=traiter_tranches_en_cours(data)[0];
 					pays=tranche.Pays;
 					magazine=tranche.Magazine;
 					numero=tranche.Numero;
@@ -771,7 +824,7 @@ function wizard_init(wizard_id) {
 					$('#nom_complet_tranche_en_cours')
 						.html($('<img>').attr({src:'../images/flags/'+pays+'.png'}))
 						.append(' '+tranche.str_userfriendly);
-			    }
+				}
 			});
 
 			afficher_photo_tranche();
@@ -809,8 +862,8 @@ function wizard_init(wizard_id) {
 						success:function(data) {
 							$('#zoom').removeClass('cache');
 							$('#zoom_slider').slider({change:function(event,ui) {
-					            zoom=valeurs_possibles_zoom[ui.value];
-					            $('#zoom_value').html(zoom);
+								zoom=valeurs_possibles_zoom[ui.value];
+								$('#zoom_value').html(zoom);
 								reload_all_previews();
 								if (modification_etape != null) {
 									modification_etape.find('.preview_etape')
@@ -819,7 +872,7 @@ function wizard_init(wizard_id) {
 									var valeurs=modification_etape.find('[name="form_options"]').serializeObject();
 									var section_preview_etape = modification_etape.find('.preview_etape');
 									var nom_fonction=modification_etape.data('nom_fonction');
-							    	alimenter_options_preview(valeurs, section_preview_etape, nom_fonction);
+									alimenter_options_preview(valeurs, section_preview_etape, nom_fonction);
 								}
 								$('#zoom_slider .ui-slider-handle').blur();
 							}});
@@ -850,17 +903,17 @@ function wizard_init(wizard_id) {
 								.removeClass('cache')
 								.button()
 								.click(function(event) {
-							    	event.preventDefault();
+									event.preventDefault();
 									verifier_changements_etapes_sauves($('.modif').d(),'wizard-confirmation-rechargement',function() {
 										var form_options=$(event.currentTarget).d().find('[name="form_options"]');
 										var parametrage=form_options.serialize();
 										
 										$.ajax({
-										    url: urls['update_wizard']+['index',pays,magazine,numero,-1,parametrage].join('/'),
-										    type: 'post',
-										    success:function(data) {
-										    	reload_all_previews();
-										    }
+											url: urls['update_wizard']+['index',pays,magazine,numero,-1,parametrage].join('/'),
+											type: 'post',
+											success:function(data) {
+												reload_all_previews();
+											}
 										});
 									});
 								});
@@ -912,20 +965,20 @@ function wizard_init(wizard_id) {
 							});
 
 							charger_previews();
-				            
-				            $('.ajout_etape').click(function() {
-				            	if (modification_etape == null) {
-				            		etape_ajout=$(this).data().etape;
-				            		etape_ajout_pos=$(this).data().pos;
-				            		launch_wizard('wizard-ajout-etape');
-				            	}
-				            	else {
-				            		verifier_changements_etapes_sauves(modification_etape,'wizard-confirmation-annulation', function() { 
-				            			launch_wizard('wizard-ajout-etape');
-				            		});
-				            	}
-				            });
-				            
+							
+							$('.ajout_etape').click(function() {
+								if (modification_etape == null) {
+									etape_ajout=$(this).data().etape;
+									etape_ajout_pos=$(this).data().pos;
+									launch_wizard('wizard-ajout-etape');
+								}
+								else {
+									verifier_changements_etapes_sauves(modification_etape,'wizard-confirmation-annulation', function() { 
+										launch_wizard('wizard-ajout-etape');
+									});
+								}
+							});
+							
 							$('.wizard.preview_etape:not(.final)').click(function() {
 								var dialogue=$(this).d();
 								if (dialogue.hasClass('cloneable')) {
@@ -956,41 +1009,41 @@ function wizard_init(wizard_id) {
 			});
 		break;
 		case 'wizard-ajout-etape':
-    		var etape_existe = $('.wizard.preview_etape:not(".initial"):not(".final")').length > 0;
-    		var accordeon = $('#'+wizard_id).find('.accordion');
-    		accordeon.accordion({
+			var etape_existe = $('.wizard.preview_etape:not(.initial):not(.final)').length > 0;
+			var accordeon = $('#'+wizard_id).find('.accordion');
+			accordeon.accordion({
 				active: etape_existe ? 1 : 0
 			});
-    		$('#'+wizard_id+' .aucune_etape').toggle(!etape_existe);
-    		$('#'+wizard_id+' .etape_existante').toggle(etape_existe);
-    		
-        	$.ajax({
-                url: urls['listerg']+['index','Fonctions'].join('/'),
-                dataType:'json',
-                type: 'post',
-                success:function(data) {
-                	var select=$('<select>',{'name':'nom_fonction'});
-                	for (var i in data) {
-                		select.append($('<option>',{'value':i}).html(data[i]));
-                	}
-                	$('#liste_fonctions').html(select);
-                }
-        	});
-        	$('#selectionner_etape_base').click(function() {
+			$('#'+wizard_id+' .aucune_etape').toggle(!etape_existe);
+			$('#'+wizard_id+' .etape_existante').toggle(etape_existe);
+			
+			$.ajax({
+				url: urls['listerg']+['index','Fonctions'].join('/'),
+				dataType:'json',
+				type: 'post',
+				success:function(data) {
+					var select=$('<select>',{'name':'nom_fonction'});
+					for (var i in data) {
+						select.append($('<option>',{'value':i}).html(data[i]));
+					}
+					$('#liste_fonctions').html(select);
+				}
+			});
+			$('#selectionner_etape_base').click(function() {
 				$('#'+wizard_id).dialog().dialog("close");
-        		$('.dialog-preview-etape')
-        			.addClass('cloneable')
-        			.click(function() {
-        				$('#section_etape_a_cloner')
-    						.removeClass('cache');
-        				$('#etape_a_cloner')
-        					.val($(this).data('etape'));
-        				$('#'+wizard_id).dialog().dialog("open");
-        				$('.dialog-preview-etape')
-            				.removeClass('cloneable');
-        			});
-        	});
-        break;
+				$('.dialog-preview-etape')
+					.addClass('cloneable')
+					.click(function() {
+						$('#section_etape_a_cloner')
+							.removeClass('cache');
+						$('#etape_a_cloner')
+							.val($(this).data('etape'));
+						$('#'+wizard_id).dialog().dialog("open");
+						$('.dialog-preview-etape')
+							.removeClass('cloneable');
+					});
+			});
+		break;
 		case 'wizard-resize':
 			$('#'+wizard_id+' img')
 			  .jrac({image_height:480})
@@ -1004,35 +1057,35 @@ function wizard_init(wizard_id) {
 		
 		case 'wizard-confirmation-validation-modele-contributeurs':
 			$.ajax({
-		        url: urls['listerg']+['index','Utilisateurs',[pays,magazine,numero_chargement].join('_')].join('/'),
-		        type: 'post',
-			    dataType:'json',
-		        success:function(data) {
-		           var utilisateur_courant=$('#utilisateur').html();
-		     	   
-		     	   $.each($('#'+wizard_id+' span'),function(i,span) {
-		     		   var div=$('<div>');
-		     		   var type_contribution=$(span).attr('id');
-		     		   for (var username in data) {
-		     			   var id = $(span).attr('id')+'_'+username;
-		     			   var option = $('<input>',{
-		     				   id:   id,
-		     				   name: $(span).attr('id'),
-		     				   type: 'checkbox'
-		     			   }).val(username);
-		     			   var coche=(type_contribution == 'photographes' &&  data[username].indexOf('p') != -1)
-							      || (type_contribution == 'designers' 	  && (data[username].indexOf('d') != -1
-							    		  								   || utilisateur_courant===username));
-		     			   option.prop({'checked': coche, 'readOnly': coche});
-		     			   $(div).append(
-		     					$('<div>')
-		     					   	.css({'font-weight':coche?'bold':'normal'})
-		     					   	.append(option)
-		     					   	.append($('<label>',{'for': id}).text(username)));
-		     		   }
-		     		   $(span).append(div);
-		     	   });
-		        }
+				url: urls['listerg']+['index','Utilisateurs',[pays,magazine,numero_chargement].join('_')].join('/'),
+				type: 'post',
+				dataType:'json',
+				success:function(data) {
+				   var utilisateur_courant=$('#utilisateur').html();
+			 	   
+			 	   $.each($('#'+wizard_id+' span'),function(i,span) {
+			 		   var div=$('<div>');
+			 		   var type_contribution=$(span).attr('id');
+			 		   for (var username in data) {
+			 			   var id = $(span).attr('id')+'_'+username;
+			 			   var option = $('<input>',{
+			 				   id:   id,
+			 				   name: $(span).attr('id'),
+			 				   type: 'checkbox'
+			 			   }).val(username);
+			 			   var coche=(type_contribution == 'photographes' &&  data[username].indexOf('p') != -1)
+								  || (type_contribution == 'designers' 	  && (data[username].indexOf('d') != -1
+										  								   || utilisateur_courant===username));
+			 			   option.prop({'checked': coche, 'readOnly': coche});
+			 			   $(div).append(
+			 					$('<div>')
+			 					   	.css({'font-weight':coche?'bold':'normal'})
+			 					   	.append(option)
+			 					   	.append($('<label>',{'for': id}).text(username)));
+			 		   }
+			 		   $(span).append(div);
+			 	   });
+				}
 			});
 		break;
 		case 'wizard-myfonts':
@@ -1137,8 +1190,8 @@ function afficher_tranches_proches(pays, magazine, numero, est_contexte_clonage)
 		if (est_contexte_clonage) { // Filtrage des tranches qui sont prêtes mais sans modèle
 			var tranches_clonables = $.ajax({
 				url: urls['cloner']+['est_clonable',pays,magazine,tranches_pretes.join(',')].join('/'),
-			    type: 'post',
-			    async: false
+				type: 'post',
+				async: false
 			}).responseText.replace(/[\[\]"]/g,'').split(/,/);
 			
 			var tranches_pretes_clonables = [];
@@ -1233,7 +1286,7 @@ function ajouter_preview_etape(num_etape, nom_fonction) {
 		minWidth: 0,
 		minHeight: div_preview_vide.height()+'px',
 		position: [posX,0],
-	    closeOnEscape: false,
+		closeOnEscape: false,
 		modal: false,
 		open:function(event,ui) {
 			$(this).removeClass('initial');
@@ -1244,7 +1297,7 @@ function ajouter_preview_etape(num_etape, nom_fonction) {
 			$(this).d().find('.ui-dialog-titlebar').addClass('logo_option')
 												   .css({'padding':'.3em .6em;'})
 										 		   .prepend($('<img>',{'height':18,'src':base_url+'images/fonctions/'+nom_fonction+'.png',
- 	   											    		     	   'alt':nom_fonction}));
+ 	   															 	   'alt':nom_fonction}));
 			$(this).d().find('.ui-dialog-title').addClass('cache').html(nom_fonction);
 		},
 		beforeClose:function(event,ui) {
@@ -1295,11 +1348,11 @@ function charger_previews(forcer_placement_dialogues) {
 	
 	numero_chargement=numero;
 	chargement_courant=0;
-    charger_preview_etape(chargements[0],true,'_',function() {
+	charger_preview_etape(chargements[0],true,'_',function() {
 		if (etapes_valides.length == 1 || forcer_placement_dialogues) {
 			placer_dialogues_preview();
 		}
-    });
+	});
 }
 
 function largeur_max_preview_etape_ouverte() {
@@ -1427,18 +1480,18 @@ function recuperer_et_alimenter_options_preview(num_etape) {
 	var section_preview_etape=$('.wizard.preview_etape').getElementsWithData('etape',num_etape);
 	var nom_fonction=section_preview_etape.d().data('nom_fonction');
 	$.ajax({
-	    url: urls['parametrageg_wizard']+['index',pays,magazine,numero,num_etape,'null','null'].join('/'),
-	    type: 'post',
-	    dataType:'json',
-	    success:function(data) {
-	    	var valeurs={};
-	    	for (var option_nom in data) {
-	            if (typeof(data[option_nom]['valeur']) =='undefined')
-	                data[option_nom]['valeur']=data[option_nom]['valeur_defaut'];
-	            valeurs[option_nom]=data[option_nom]['valeur'];
-	    	}
-	    	alimenter_options_preview(valeurs, section_preview_etape, nom_fonction);
-	    }
+		url: urls['parametrageg_wizard']+['index',pays,magazine,numero,num_etape,'null','null'].join('/'),
+		type: 'post',
+		dataType:'json',
+		success:function(data) {
+			var valeurs={};
+			for (var option_nom in data) {
+				if (typeof(data[option_nom]['valeur']) =='undefined')
+					data[option_nom]['valeur']=data[option_nom]['valeur_defaut'];
+				valeurs[option_nom]=data[option_nom]['valeur'];
+			}
+			alimenter_options_preview(valeurs, section_preview_etape, nom_fonction);
+		}
 	});
 }
 
@@ -1477,26 +1530,26 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 			var pos_y_agrafe2=image.position().top +parseFloat(templatedToVal(valeurs['Y2']))*zoom;
 			var hauteur= parseFloat(templatedToVal(valeurs['Taille_agrafe']))*zoom;
 	
-			agrafe1.css({'top':    pos_y_agrafe1+'px'});
-			agrafe2.css({'top':    pos_y_agrafe2+'px'});
+			agrafe1.css({'top':	pos_y_agrafe1+'px'});
+			agrafe2.css({'top':	pos_y_agrafe2+'px'});
 			$('.agrafe')
 				.css({'left':   pos_x_debut	+'px', 
 					  'width':  largeur	  	+'px',
 					  'height': hauteur	  	+'px'})
-			    .removeClass('cache')
-			    .draggable({
-			    	axis: 'y',
-			    	stop:function(event, ui) {
-			    		var element=$(event.target);
-			    		tester_options_preview(nom_fonction,[element.hasClass('premiere') ? 'Y1' : 'Y2'],element);
-			    	}
-			    })
-			    .resizable({
-			    	handles:'s',
-			    	resize:function(event, ui) {
-			    		tester_options_preview(nom_fonction,['Taille_agrafe'],ui.element);
-			    	}
-			    });
+				.removeClass('cache')
+				.draggable({
+					axis: 'y',
+					stop:function(event, ui) {
+						var element=$(event.target);
+						tester_options_preview(nom_fonction,[element.hasClass('premiere') ? 'Y1' : 'Y2'],element);
+					}
+				})
+				.resizable({
+					handles:'s',
+					resize:function(event, ui) {
+						tester_options_preview(nom_fonction,['Taille_agrafe'],ui.element);
+					}
+				});
 		break;
 		
 		case 'Degrade':
@@ -1508,14 +1561,14 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 
 			var rectangle = form_userfriendly.find('.rectangle_degrade');
 
-			rectangle.css({'top':    pos_y_debut 		   +'px', 
+			rectangle.css({'top':	pos_y_debut 		   +'px', 
 						   'left':   pos_x_debut 		   +'px', 
 						   'width':  (pos_x_fin-pos_x_debut)+'px',
 						   'height': (pos_y_fin-pos_y_debut)+'px'})
 					 .removeClass('cache')
 					 .draggable({//containment:limites_drag, 
 						 stop:function(event, ui) {
-			   		    	tester_options_preview(nom_fonction, ['Pos_x_debut','Pos_y_debut','Pos_x_fin','Pos_y_fin']);
+			   				tester_options_preview(nom_fonction, ['Pos_x_debut','Pos_y_debut','Pos_x_fin','Pos_y_fin']);
 						 }
 					 })
 					 .resizable({
@@ -1527,8 +1580,8 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 			
 			var choix = form_userfriendly.find('[name="option-Sens"]');
 			choix.click(function() {
-   		    	tester_options_preview(nom_fonction,['Sens']);
-   		    	coloriser_rectangle_degrade(rectangle,null,null,$(this).val());
+   				tester_options_preview(nom_fonction,['Sens']);
+   				coloriser_rectangle_degrade(rectangle,null,null,$(this).val());
 			});
 		break;
 		
@@ -1542,13 +1595,13 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 			var pos_y_agrafe2=image.position().top +0.8*image.height();
 			var hauteur= image.height()*0.05;
 				
-			agrafe1.css({'top':    pos_y_agrafe1+'px'});
-			agrafe2.css({'top':    pos_y_agrafe2+'px'});
+			agrafe1.css({'top':	pos_y_agrafe1+'px'});
+			agrafe2.css({'top':	pos_y_agrafe2+'px'});
 			form_userfriendly.find('.agrafe')
 				.css({'left':   pos_x_debut	+'px', 
 					  'width':  largeur	  	+'px',
 					  'height': hauteur	  	+'px'})
-			    .removeClass('cache');
+				.removeClass('cache');
 
 			var rectangle1 = form_userfriendly.find('.premier.rectangle_degrade');
 			var rectangle2 = form_userfriendly.find('.deuxieme.rectangle_degrade');
@@ -1558,10 +1611,10 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 			rectangle1.css({'left':image.position().left+'px'});
 			rectangle2.css({'left':parseInt(image.position().left+image.width()/2)+'px'});
 			form_userfriendly.find('.rectangle_degrade')
-				.css({'top':    image.position().top +'px', 
+				.css({'top':	image.position().top +'px', 
 					  'width':  image.width()/2	  	 +'px',
 					  'height': image.height()		 +'px'})
-			    .removeClass('cache');
+				.removeClass('cache');
 			coloriser_rectangles_degrades(c1);
 	
 		break;
@@ -1570,16 +1623,16 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 			
 			var largeur_croix=form_userfriendly.find('.point_remplissage').width()/2;
 			var limites_drag=[(image.offset().left			 	 -largeur_croix+1),
-			                  (image.offset().top 			 	 -largeur_croix+1),
-			                  (image.offset().left+image.width() -largeur_croix-1),
-			                  (image.offset().top +image.height()-largeur_croix-1)];
+							  (image.offset().top 			 	 -largeur_croix+1),
+							  (image.offset().left+image.width() -largeur_croix-1),
+							  (image.offset().top +image.height()-largeur_croix-1)];
 			form_userfriendly.find('.point_remplissage').css({'left':(image.position().left-largeur_croix+1+parseFloat(valeurs['Pos_x'])*zoom)+'px', 
 										 					  'top': (image.position().top -largeur_croix+1+parseFloat(valeurs['Pos_y'])*zoom)+'px'})
 										 				.removeClass('cache')
-													    .draggable({containment:limites_drag,
-														   		    stop:function(event, ui) {
-														   		    	tester_options_preview(nom_fonction,['Pos_x', 'Pos_y']);
-														   		    }});
+														.draggable({containment:limites_drag,
+														   			stop:function(event, ui) {
+														   				tester_options_preview(nom_fonction,['Pos_x', 'Pos_y']);
+														   			}});
 		break;
 		case 'Arc_cercle':
 			
@@ -1672,13 +1725,13 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 						  .removeClass('cache')
 						  .draggable({//containment:limites_drag, 
 					  		  stop:function(event, ui) {
-				   		    	tester_options_preview(nom_fonction,['Pos_x_debut','Pos_y_debut','Pos_x_fin','Pos_y_fin']);
-				   		      }
+				   				tester_options_preview(nom_fonction,['Pos_x_debut','Pos_y_debut','Pos_x_fin','Pos_y_fin']);
+				   			  }
 						  })
 						  .resizable({
 								stop:function(event, ui) {
-					   		    	tester_options_preview(nom_fonction,['Pos_x_fin','Pos_y_fin']);
-					   		    }
+					   				tester_options_preview(nom_fonction,['Pos_x_fin','Pos_y_fin']);
+					   			}
 						  });
 			
 			checkboxes.push('Rempli');
@@ -1857,8 +1910,8 @@ function positionner_points_polygone(form_options) {
 		var x=zoom*parseFloat(liste_x[i]);
 		var y=zoom*parseFloat(liste_y[i]);
 		points_a_placer.push([i,
-		                      x-COTE_CARRE_DEPLACEMENT/2,
-		                      y-COTE_CARRE_DEPLACEMENT/2]);
+							  x-COTE_CARRE_DEPLACEMENT/2,
+							  y-COTE_CARRE_DEPLACEMENT/2]);
 		
 	}
 	
@@ -1868,8 +1921,8 @@ function positionner_points_polygone(form_options) {
 		var nouveau_point= options_etape.find('.point_polygone.modele')
 			.clone(true)
 				.removeClass('modele cache')
-			    .attr({'name':'point'+point[0]})
-			    .css({'margin-left':point[1]+'px', 
+				.attr({'name':'point'+point[0]})
+				.css({'margin-left':point[1]+'px', 
 			 		  'margin-top': point[2]+'px'})
 			 	.mouseleave(function() {
 			 		$(this).removeClass('focus');
@@ -1901,9 +1954,9 @@ function positionner_points_polygone(form_options) {
 								$('.point_polygone[name="point'+i+'"]').attr({'name':'point'+(i+1)});
 							}
 							var nouveau_point={'margin-left':(parseFloat(point1.css('margin-left').replace(/px$/,''))
-							                   				 +parseFloat(point2.css('margin-left').replace(/px$/,'')))/2,
-							                   'margin-top': (parseFloat(point1.css('margin-top' ).replace(/px$/,''))
-							                		   		 +parseFloat(point2.css('margin-top' ).replace(/px$/,'')))/2};
+											   				 +parseFloat(point2.css('margin-left').replace(/px$/,'')))/2,
+											   'margin-top': (parseFloat(point1.css('margin-top' ).replace(/px$/,''))
+													   		 +parseFloat(point2.css('margin-top' ).replace(/px$/,'')))/2};
 							
 							point1.after($('<div>').addClass('point_polygone')
 												   .attr({'name':'point'+(num_point1+1)})
@@ -1983,9 +2036,9 @@ function positionner_image(preview) {
 	}
 	
 	var limites_drag=[(image.offset().left-parseFloat(largeur)),
-	                  (image.offset().top -parseFloat(hauteur)),
-	                  (image.offset().left+image.width()),
-	                  (image.offset().top +image.height())];
+					  (image.offset().top -parseFloat(hauteur)),
+					  (image.offset().left+image.width()),
+					  (image.offset().top +image.height())];
 	
 	if (position_image.hasClass('ui-resizable')) {
 		position_image.resizable('destroy');
@@ -1993,9 +2046,9 @@ function positionner_image(preview) {
 	
 	position_image.addClass('outlined')
 				  .css({'outline-color':'#000000',
-					    'background-image':'',
-					    'background-color':'white',
-					    'left':pos_x+'px', 
+						'background-image':'',
+						'background-color':'white',
+						'left':pos_x+'px', 
 						'top': pos_y+'px',
 						'width':largeur+'px',
 						'height':hauteur+'px'})
@@ -2009,13 +2062,13 @@ function positionner_image(preview) {
 					})) 
 			  	  .draggable({//containment:limites_drag, 
 			  		  stop:function(event, ui) {
-		   		    	tester_options_preview('Image',['Decalage_x','Decalage_y']);
-		   		      }
+		   				tester_options_preview('Image',['Decalage_x','Decalage_y']);
+		   			  }
 				  })
 				  .resizable({
 						stop:function(event, ui) {
-			   		    	tester_options_preview('Image',['Compression_x','Compression_y']);
-			   		    }
+			   				tester_options_preview('Image',['Compression_x','Compression_y']);
+			   			}
 				  });
 }
 
@@ -2132,12 +2185,12 @@ function valider(callback) {
 	else {
 		callback = callback || function(){};
 		$.ajax({
-		    url: urls['update_wizard']+['index',pays,magazine,numero,num_etape_courante,parametrage].join('/'),
-		    type: 'post',
-		    success:function(data) {
-		    	charger_couleurs_frequentes();
+			url: urls['update_wizard']+['index',pays,magazine,numero,num_etape_courante,parametrage].join('/'),
+			type: 'post',
+			success:function(data) {
+				charger_couleurs_frequentes();
 				reload_current_and_final_previews(callback);
-		    }
+			}
 		});
 	}
 }
@@ -2214,8 +2267,8 @@ function tester_options_preview(nom_fonction, noms_options, element) {
 						case 'Pos_y_centre':
 							val = toFloat2Decimals(parseFloat(form_options.valeur('Hauteur').val())/2 
 									 			 + parseFloat(arc.position().top 
-									 					    + ($('.ui-wrapper').length > 0 ? $('.ui-wrapper').position().top : 0)
-									 					    - image.position().top)/zoom);
+									 						+ ($('.ui-wrapper').length > 0 ? $('.ui-wrapper').position().top : 0)
+									 						- image.position().top)/zoom);
 						break;
 						case 'Largeur':
 							val=arc.width()/zoom;
@@ -2379,24 +2432,24 @@ function generer_et_positionner_preview_myfonts(gen_preview_proprietes, gen_prev
 		}
 		
 		var limites_drag=[(image.offset().left-parseFloat(largeur)),
-		                  (image.offset().top -parseFloat(hauteur)),
-		                  (image.offset().left+image.width()),
-		                  (image.offset().top +image.height())];
+						  (image.offset().top -parseFloat(hauteur)),
+						  (image.offset().left+image.width()),
+						  (image.offset().top +image.height())];
 		position_texte.css({'left':pos_x+'px', 
-						    'top': pos_y+'px',
-						    'width':largeur+'px',
-						    'height':hauteur+'px'})
+							'top': pos_y+'px',
+							'width':largeur+'px',
+							'height':hauteur+'px'})
 					  .removeClass('cache')
 					  .draggable({//containment:limites_drag, 
 				  		  stop:function(event, ui) {
-			   		    	tester_options_preview('TexteMyFonts',['Pos_x','Pos_y']);
-			   		    	tester();
-			   		      }
+			   				tester_options_preview('TexteMyFonts',['Pos_x','Pos_y']);
+			   				tester();
+			   			  }
 					  })
 					  .resizable({
 							stop:function(event, ui) {
-				   		    	tester_options_preview('TexteMyFonts',['Compression_x','Compression_y']);
-				   		    }
+				   				tester_options_preview('TexteMyFonts',['Compression_x','Compression_y']);
+				   			}
 					  });
 		var image_a_positionner = image_preview_ajustee.clone(false);
 		if (position_texte.find('img').length == 0) {
@@ -2420,10 +2473,10 @@ function generer_et_positionner_preview_myfonts(gen_preview_proprietes, gen_prev
 function reload_current_and_final_previews(callback) {
 	chargements=[modification_etape.data('etape')];
 	fermer_dialogue_preview(modification_etape);
-    charger_preview_etape(chargements[0],true, undefined, function() {
-    	chargements=['final'];
-        charger_preview_etape(chargements[0],true, undefined, callback);
-    });
+	charger_preview_etape(chargements[0],true, undefined, function() {
+		chargements=['final'];
+		charger_preview_etape(chargements[0],true, undefined, callback);
+	});
 }
 
 function reload_all_previews() {
@@ -2446,7 +2499,7 @@ function reload_all_previews() {
 			if (dialogue.data('etape') == modification_etape.data('etape'))
 				recuperer_et_alimenter_options_preview(num_etape);
 		}
-    });
+	});
 }
 
 function charger_couleurs_frequentes() {
@@ -2720,11 +2773,11 @@ function init_action_bar() {
 				case 'corbeille':
 					jqueryui_alert_from_d($('#wizard-confirmation-desactivation-modele'), function() {
 						$.ajax({
-			                url: urls['desactiver_modele']+['index',pays,magazine,numero].join('/'),
-			                type: 'post',
-			                success:function(data) {
-			                	location.reload();
-			                }
+							url: urls['desactiver_modele']+['index',pays,magazine,numero].join('/'),
+							type: 'post',
+							success:function(data) {
+								location.reload();
+							}
 						});
 					});
 				break;
@@ -2780,23 +2833,23 @@ function maj_photo_principale() {
 	}
 	$.ajax({
 		url: urls['update_photo']+['index',pays,magazine,numero,nom_photo_principale].join('/'),
-	    type: 'post',
-	    success:function(data) {
+		type: 'post',
+		success:function(data) {
 			if ($('#wizard-conception').is(':visible')) {
 				afficher_photo_tranche();
 			}
-	    }
+		}
 	});
 }
 
 function lister_images_gallerie(type_images) {	
 	$.ajax({
-        url: urls['listerg']+['index',type_images,pays,magazine].join('/'),
-        dataType:'json',
-        type: 'post',
-        success: function(data) {
-        	afficher_gallerie(type_images, data);
-        }
+		url: urls['listerg']+['index',type_images,pays,magazine].join('/'),
+		dataType:'json',
+		type: 'post',
+		success: function(data) {
+			afficher_gallerie(type_images, data);
+		}
 	});
 }
 
@@ -2824,34 +2877,34 @@ function afficher_gallerie(type_images, data, container) {
 			}
 			container.find('.pas_d_image').addClass('cache');
 			container.find('ul.gallery li:not(.template) img').remove();
-	    	for (var i in data) {
-	    		var li=ul.find('li.template').clone(true).removeClass('template');
-	    		li.find('em').html(data[i].replace(/[^\.]+\./g,''));
-	    		li.find('img').prop({'src':base_url+'../edges/'+pays+'/'+sous_repertoire+'/'+data[i],
-	    							 'title':data[i]});
-	    		li.find('input').val(data[i]);
-	    		ul.append(li);
-	    	}
+			for (var i in data) {
+				var li=ul.find('li.template').clone(true).removeClass('template');
+				li.find('em').html(data[i].replace(/[^\.]+\./g,''));
+				li.find('img').prop({'src':base_url+'../edges/'+pays+'/'+sous_repertoire+'/'+data[i],
+									 'title':data[i]});
+				li.find('input').val(data[i]);
+				ul.append(li);
+			}
 			container.find('ul.gallery li img').removeClass('selected')
 										  .unbind('click')
-	    								  .click(function() {
-	    		var selected = !$(this).hasClass('selected');
-	    		
+										  .click(function() {
+				var selected = !$(this).hasClass('selected');
+				
 				container.find('ul.gallery li img').removeClass('selected');
 				container.find('#to-wizard-resize').toggleClass('cache', !selected);
 				
-	    		if (selected) {
-	        		$(this).addClass('selected');
-	        		$('#wizard-images [name="selected"]').val($(this).attr('src'));
+				if (selected) {
+					$(this).addClass('selected');
+					$('#wizard-images [name="selected"]').val($(this).attr('src'));
 
-	    			var destination_rognage = container.attr('name') === 'section_photo' ? 'elements' : 'photos';
-	    			$('#wizard-resize [name="destination"]').val(destination_rognage);
-	        		$('#wizard-resize img').attr({'src':$(this).attr('src')});
-	        	}
-	    	});
-	    	if (type_images === 'Photos' && nom_photo_principale !== null) {
-	    		container.find('ul.gallery li img[src$="'+nom_photo_principale+'"]').click();
-	    	}
+					var destination_rognage = container.attr('name') === 'section_photo' ? 'elements' : 'photos';
+					$('#wizard-resize [name="destination"]').val(destination_rognage);
+					$('#wizard-resize img').attr({'src':$(this).attr('src')});
+				}
+			});
+			if (type_images === 'Photos' && nom_photo_principale !== null) {
+				container.find('ul.gallery li img[src$="'+nom_photo_principale+'"]').click();
+			}
 		}
 		ul.removeClass('cache');
 		container.find('.chargement_images').addClass('cache');
@@ -2859,11 +2912,11 @@ function afficher_gallerie(type_images, data, container) {
 }
 
 function surveiller_selection_jrac(event, $viewport) {
-    var crop_inconsistent_element=$(this).d().find('.error.crop_inconsistent');
-    if ($viewport.observator.crop_consistent())
-        crop_inconsistent_element.addClass('cache');
-    else
-        crop_inconsistent_element.removeClass('cache');
+	var crop_inconsistent_element=$(this).d().find('.error.crop_inconsistent');
+	if ($viewport.observator.crop_consistent())
+		crop_inconsistent_element.addClass('cache');
+	else
+		crop_inconsistent_element.removeClass('cache');
 }
 
 function templatedToVal(templatedString) {

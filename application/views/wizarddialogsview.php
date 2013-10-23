@@ -94,10 +94,63 @@
 
     <div id="wizard-decouper-photo" class="wizard extensible" title="Assistant DucksManager - Envoi de photo">
         <p>
-            Sélectionnez avec la souris les zones de la photo correspondant à chaque tranche.
+            Sélectionnez avec la souris les zones de la photo correspondant à chaque tranche.<br />
+            <a href="javascript:void(0)" id="ajouter_zone_photo_multiple">Ajouter une zone</a>
             <br />
-            <img />
+            <div id="zone_selection_tranches_multiples">
+                <img id="image_tranche_multiples"/>
+                <div class="rectangle_selection_tranche template">
+                    <div class="edition_numero_tranche cache">
+                        <span class="zone_intitule_numero">
+                            <img class="edition" src="images/modifier.png" title="Modifier le magazine correspondant à cette tranche"/>
+                            <span class="intitule_numero">
+                                <span class="renseigne cache">
+                                    <img name="wizard_pays" src="" />&nbsp;
+                                    <b><span name="wizard_magazine"></span></b>&nbsp;n&deg;
+                                    <span name="wizard_numero"></span>&nbsp;
+                                    <span name="Dimension_x"></span> x <span name="Dimension_y"></span> mm
+                                </span>
+                                <span class="non_renseigne">
+                                    Cliquez ici pour modifier le numéro de la tranche sélectionnée
+                                </span>
+                            </span>
+                        </span>
+                        <br />
+                        <img class="suppression" src="images/supprimer.png" title="Supprimer cette zone"/>
+                    </div>
+                </div>
+            </div>
+        </p>
     </div>
+
+        <div id="wizard-selectionner-numero-photo-multiple" class="wizard first" title="Assistant DucksManager - Choix de numéro">
+            <p>
+                Choisissez le numéro dont vous avez sélectionné la tranche.<br />
+                <form>
+                    <fieldset>
+                        <label for="wizard_pays_photo_multiple">Pays: </label>
+                        <select name="wizard_pays" id="wizard_pays_photo_multiple">
+                            <option>Chargement...</option>
+                        </select><br />
+                        <label for="wizard_magazine_photo_multiple">Magazine: </label>
+                        <select name="wizard_magazine" id="wizard_magazine_photo_multiple">
+                            <option>Chargement...</option>
+                        </select><br />
+                        <label for="wizard_numero_photo_multiple">Numéro: </label>
+                        <select name="wizard_numero" id="wizard_numero_photo_multiple">
+                            <option>Chargement...</option>
+                        </select><br />
+                        Les tranches sous fond vert sont déjà disponibles.
+
+                        Dimensions de la tranche :
+                        <input type="text" name="Dimension_x" maxlength="3" size="2"> mm
+                        x
+                        <input type="text" name="Dimension_y" maxlength="3" size="2"> mm
+                    </fieldset>
+                    <input type="hidden" name="choix" value="do-in-wizard-affectation-numero-tranche" id="do-in-wizard-affectation-numero-tranche" />
+                </form>
+            </p>
+        </div>
 
 
 	<div id="wizard-creer" class="wizard" title="Assistant DucksManager - Création de tranche">

@@ -542,7 +542,7 @@ function charger_previews_numeros(numero,est_visu,est_externe) {
     var zoom_utilise= est_visu ? zoom : 1.5;
         
     $('#chargement').html('Chargement de la preview de la tranche');
-    charger_image('numero',urls[url_viewer]+['index',pays,magazine,numero,zoom_utilise,'all',URLEncode(JSON.stringify(parametrage)),(est_visu?'false':'save'),'false',est_externe].join('/'),numero);
+    charger_image('numero',urls['viewer_wizard']+['index',pays,magazine,numero,zoom_utilise,'all',URLEncode(JSON.stringify(parametrage)),(est_visu?'false':'save'),'false',est_externe].join('/'),numero);
 }
 
 function charger_preview_etape(etapes_preview,est_visu, parametrage, callback) {
@@ -566,7 +566,7 @@ function charger_preview_etape(etapes_preview,est_visu, parametrage, callback) {
         if (typeof(etapes_preview) == 'string')
             etapes_preview=etapes_preview.split(/,/g);
     }
-    charger_image('etape',urls[url_viewer]+['index',pays,magazine,numero_chargement,zoom_utilise,etapes_preview.join("-"),parametrage,(est_visu?'false':'save'),fond_noir,'false'].join('/'),etapes_preview.join("-"),callback);
+    charger_image('etape',urls['viewer_wizard']+['index',pays,magazine,numero_chargement,zoom_utilise,etapes_preview.join("-"),parametrage,(est_visu?'false':'save'),fond_noir,'false'].join('/'),etapes_preview.join("-"),callback);
 }
 
 var selecteur_cellules_preview=null;
