@@ -180,9 +180,11 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		}
 		$requete='SELECT ID FROM tranches_en_cours_modeles '
 				.'WHERE Pays=\''.$pays.'\' AND Magazine=\''.$magazine.'\' AND Numero=\''.$numero.'\'';
-		if (!is_null($username)) {
+		if (isset($username) && !is_null($username)) {
 			$requete.=' AND username=\''.$username.'\' AND Active=1';
 		}
+
+        echo $requete;
 		$resultat=$this->db->query($requete)->row(0);
 		return $resultat->ID;
 	}
@@ -195,8 +197,9 @@ class Modele_tranche_Wizard extends Modele_tranche {
 	}
 	
 	function creer_modele($pays, $magazine, $numero) {
+        $username = isset(self::$username) ? '\''.self::$username.'\'' : 'NULL';
 		$requete='INSERT INTO tranches_en_cours_modeles (Pays, Magazine, Numero, username, Active) '
-				.'VALUES (\''.$pays.'\',\''.$magazine.'\',\''.$numero.'\',\''.self::$username.'\', 1)';
+				.'VALUES (\''.$pays.'\',\''.$magazine.'\',\''.$numero.'\','.$username.', 1)';
 		$this->db->query($requete);
 		echo $requete."\n";
 	}

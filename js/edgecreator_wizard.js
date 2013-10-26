@@ -20,11 +20,10 @@ $.widget("ui.tooltip", $.ui.tooltip, {
 });
 
 $.fn.remplirIntituleNumero = function(data) {
-	var conteneur = this;
 	var conteneur_intitule = $('.intitule_magazine.template').clone(true).removeClass('template');
 
 	$.each(data, function(nom, valeur) {
-		conteneur.data()[nom] = valeur;
+		conteneur_intitule.data()[nom] = valeur;
 
 		var element = conteneur_intitule.find('[name="'+nom+'"]');
 		if (nom === 'wizard_pays') {
@@ -447,7 +446,7 @@ function wizard_do(wizard_courant, action) {
 						zone.find('.non_renseigne').addClass('cache');
 
 						var magazine_complet = wizard_courant.find('form [name="wizard_magazine"] option:selected').text();
-						var data = $.extend({}, wizard_courant.find('form').serializeObject(), {wizard_magazine: magazine_complet});
+						var data = $.extend({}, wizard_courant.find('form').serializeObject(), {wizard_magazine_complet: magazine_complet});
 
 						zone.find('.intitule_numero .renseigne').remplirIntituleNumero(data);
 					break;
@@ -469,6 +468,18 @@ function wizard_check(wizard_id) {
 		var is_to_wizard = valeur_choix !== undefined && valeur_choix.match(REGEX_TO_WIZARD);
 		var is_do_in_wizard = valeur_choix !== undefined && valeur_choix.match(REGEX_DO_IN_WIZARD);
 		if (is_to_wizard || is_do_in_wizard) {
+			if ($('#'+wizard_id+' form [name="wizard_numero"]').length > 0) {
+				if (chargement_listes) {
+					erreur='Veuillez attendre que la liste des num&eacute;ros soit charg&eacute;e';
+				}
+				else if (valeur_choix != 'to-wizard-numero-inconnu'
+					  && $('#'+wizard_id+' [name="wizard_numero"]').find('option:selected').is('.tranche_prete,.cree_par_moi,.en_cours')) {
+					erreur='La tranche de ce num&eacute;ro est d&eacute;j&agrave; disponible ou en cours de conception.<br />'
+						  +'S&eacute;lectionnez "Modifier une tranche de magazine" dans l\'&eacute;cran pr&eacute;c&eacute;dent pour la modifier '
+						  +'ou s&eacute;lectionnez un autre num&eacute;ro.';
+				}
+			}
+
 			switch(wizard_id) {
 				case 'wizard-1':
 					if (valeur_choix == 'to-wizard-conception'
@@ -484,17 +495,8 @@ function wizard_check(wizard_id) {
 						erreur='Veuillez s&eacute;lectionner un num&eacute;ro.';
 					}
 				break;
-				case 'wizard-creer-hors-collection':
-					if (chargement_listes)
-						erreur='Veuillez attendre que la liste des num&eacute;ros soit charg&eacute;e';
-					else if (valeur_choix != 'to-wizard-numero-inconnu'
-						  && $('#'+wizard_id+' [name="wizard_numero"]').find('option:selected').is('.tranche_prete,.cree_par_moi,.en_cours')) {
-						erreur='La tranche de ce num&eacute;ro est d&eacute;j&agrave; disponible ou en cours de conception.<br />'
-							  +'S&eacute;lectionnez "Modifier une tranche de magazine" dans l\'&eacute;cran pr&eacute;c&eacute;dent pour la modifier '
-							  +'ou s&eacute;lectionnez un autre num&eacute;ro.';
-					}
-				break;
-				case 'wizard-dimensions':case 'wizard-selectionner-numero-photo-multiple':
+				case 'wizard-dimensions':
+				case 'wizard-selectionner-numero-photo-multiple':
 					$.each($(['Dimension_x','Dimension_y']),function(i,nom_champ) {
 						var valeur= $('#'+wizard_id+' [name="'+nom_champ+'"]').val();
 						var bornes_valeur=nom_champ == 'Dimension_x' ? [3, 60] : [100, 450];
@@ -648,7 +650,8 @@ function wizard_init(wizard_id) {
 
 		case 'wizard-confirmation-photo-multiple':
 			$.each($('.rectangle_selection_tranche:not(.template)'), function() {
-				creer_modele_tranche
+				var data=$(this).find('.intitule_magazine').data();
+				creer_modele_tranche(data.wizard_pays, data.wizard_magazine, data.wizard_numero, data.Dimension_x, data.Dimension_y, false);
 			});
 		break;
 		
@@ -676,19 +679,7 @@ function wizard_init(wizard_id) {
 			if (get_option_wizard('wizard-creer-hors-collection', 'wizard_pays') 
 			 || get_option_wizard('wizard-creer-collection', 'wizard_pays') != undefined)
 				break;
-			
-			$('#'+wizard_id+' [name="wizard_pays"]').change(function() {
-				chargement_listes=true;
-				var element=$(this);
-				var nouveau_pays=element.val();
-				wizard_charger_liste_magazines(nouveau_pays);
-			});
 
-			$('#'+wizard_id+' [name="wizard_magazine"]').change(function() {
-				chargement_listes=true;
-				wizard_charger_liste_numeros($(this).val());
-			});
-			chargement_listes=true;
 			wizard_charger_liste_pays();
 		break;
 		
@@ -804,11 +795,13 @@ function wizard_init(wizard_id) {
 					}
 					
 					if (get_option_wizard('wizard-clonage','choix')=== undefined) { // S'il n'y a pas eu clonage, on ne connait pas les dimensions de la tranche
-						// Ajout du modèle de tranche et de la fonction Dimensions avec les paramètres par défaut
 
+						// Ajout du modèle de tranche et de la fonction Dimensions avec les paramètres par défaut
 						var dimension_x = get_option_wizard('wizard-dimensions','Dimension_x');
 						var dimension_y = get_option_wizard('wizard-dimensions','Dimension_y');
-						creer_modele_tranche(pays, magazine, numero, dimension_x, dimension_y);
+						creer_modele_tranche(pays, magazine, numero, dimension_x, dimension_y, true);
+
+						dimensions = {x: parseInt(dimension_x), y: parseInt(dimension_y)};
 					}
 					maj_photo_principale();
 				}
@@ -2658,7 +2651,9 @@ function placer_extension_largeur_preview() {
 }
 
 function wizard_charger_liste_pays() {
+	chargement_listes=true;
 	var wizard_pays=$('#'+id_wizard_courant+' [name="wizard_pays"]');
+
 	$.ajax({
 		url: urls['numerosdispos']+['index'].join('/'),
 		dataType:'json',
@@ -2672,6 +2667,10 @@ function wizard_charger_liste_pays() {
 			}
 			wizard_pays.val(get_option_wizard(id_wizard_courant, 'wizard_pays') || 'fr');
 
+			$('#'+id_wizard_courant+' [name="wizard_pays"]').change(function() {
+				wizard_charger_liste_magazines($(this).val());
+			});
+
 			wizard_charger_liste_magazines(pays_sel);
 		}
 	});
@@ -2679,8 +2678,11 @@ function wizard_charger_liste_pays() {
 
 
 function wizard_charger_liste_magazines(pays_sel) {
-	pays=pays_sel;
+	chargement_listes=true;
 	var wizard_magazine=$('#'+id_wizard_courant+' [name="wizard_magazine"]');
+
+	pays=pays_sel;
+
 	$.ajax({
 		url: urls['numerosdispos']+['index',pays].join('/'),
 		type:'post',
@@ -2694,14 +2696,23 @@ function wizard_charger_liste_magazines(pays_sel) {
 			}
 			if (get_option_wizard(id_wizard_courant, 'wizard_magazine') != undefined)
 				wizard_magazine.val(get_option_wizard(id_wizard_courant, 'wizard_magazine'));
+
+			$('#'+id_wizard_courant+' [name="wizard_magazine"]').change(function() {
+				chargement_listes=true;
+				wizard_charger_liste_numeros($(this).val());
+			});
+
 			wizard_charger_liste_numeros(wizard_magazine.val());
 		}
 	});
 }
 
 function wizard_charger_liste_numeros(magazine_sel) {
-	magazine=magazine_sel;
+	chargement_listes=true;
 	var wizard_numero=$('#'+id_wizard_courant+' [name="wizard_numero"]');
+
+	magazine=magazine_sel;
+
 	charger_liste_numeros(pays,magazine,function(data) {
 		numeros_dispos=data.numeros_dispos;
 		var tranches_pretes=data.tranches_pretes;
@@ -2710,7 +2721,7 @@ function wizard_charger_liste_numeros(magazine_sel) {
 		for (var numero_dispo in numeros_dispos) {
 			if (numero_dispo != 'Aucun') {
 				var option=$('<option>').val(numero_dispo).html(numero_dispo);
-				var est_dispo=typeof(tranches_pretes[numero_dispo]) != 'undefined';
+				var est_dispo=tranches_pretes[numero_dispo] !== undefined;
 				if (est_dispo) {
 					var classe='';
 					switch(tranches_pretes[numero_dispo]) {
@@ -2736,9 +2747,9 @@ function wizard_charger_liste_numeros(magazine_sel) {
 	});
 }
 
-function creer_modele_tranche(pays, magazine, numero, dimension_x, dimension_y) {
+function creer_modele_tranche(pays, magazine, numero, dimension_x, dimension_y, with_user) {
 	$.ajax({
-		url: urls['insert_wizard']+['index',pays,magazine,numero,'_',-1,'Dimensions'].join('/'),
+		url: urls['creer_modele_wizard']+['index',pays,magazine,numero,with_user].join('/'),
 		type: 'post',
 		async: false
 	});
@@ -2746,11 +2757,10 @@ function creer_modele_tranche(pays, magazine, numero, dimension_x, dimension_y) 
 	// Mise à jour de la fonction Dimensions avec les valeurs entrées
 	var parametrage_dimensions =  'Dimension_x='+dimension_x +'&Dimension_y='+dimension_y;
 	$.ajax({
-		url: urls['update_wizard']+['index',pays,magazine,numero,-1,parametrage_dimensions].join('/'),
+		url: urls['update_wizard']+['index',pays,magazine,numero,-1,parametrage_dimensions,with_user].join('/'),
 		type: 'post',
 		async: false
 	});
-	dimensions = {x: parseInt(dimension_x), y: parseInt(dimension_y)};
 }
 	
 function charger_liste_numeros(pays_sel,magazine_sel, callback) {

@@ -122,7 +122,7 @@
         </p>
     </div>
 
-        <div id="wizard-selectionner-numero-photo-multiple" class="wizard first" title="Assistant DucksManager - Choix de numéro">
+        <div id="wizard-selectionner-numero-photo-multiple" class="wizard first closeable" title="Assistant DucksManager - Choix de numéro">
             <p>
                 Choisissez le numéro dont vous avez sélectionné la tranche.<br />
                 <form>
@@ -151,10 +151,10 @@
             </p>
         </div>
 
-    <div id="wizard-confirmation-photo-multiple" class="wizard first dead-end" title="Assistant DucksManager - Confirmation">
+    <div id="wizard-confirmation-photo-multiple" class="wizard first deadend" title="Assistant DucksManager - Confirmation">
         <p>
             Les modèles des tranches sélectionnées ont été initialisés.
-            <a href="javascript:window.reload()">Retour à l'accueil</a>
+            <a href="javascript:location.reload()">Retour à l'accueil</a>
         </p>
     </div>
 
@@ -873,7 +873,7 @@
 
 <span class="intitule_magazine template">
     <img name="wizard_pays" src="" />&nbsp;
-    <b><span name="wizard_magazine"></span></b>&nbsp;n&deg;
+    <b><span name="wizard_magazine_complet"></span></b>&nbsp;n&deg;
     <span name="wizard_numero"></span>&nbsp;
     <span name="Dimension_x"></span> x <span name="Dimension_y"></span> mm
 </span>

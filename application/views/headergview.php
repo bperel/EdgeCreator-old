@@ -50,7 +50,7 @@ header("Content-Type: text/html; charset=ISO-8859-1"); ?>
 		var urls=new Array();
 		<?php
 		$controleurs=array('update_wizard','edgecreatorg','tranchesencours','numerosdispos','parametrageg','parametrageg_wizard',
-		   				   'modifierg','supprimerg','listerg','etendre','insert_wizard','cloner','upload_wizard','supprimer_wizard','viewer_wizard','viewer_myfonts',
+		   				   'modifierg','supprimerg','listerg','etendre','creer_modele_wizard','insert_wizard','cloner','upload_wizard','supprimer_wizard','viewer_wizard','viewer_myfonts',
 						   'dessiner','photo_principale','update_photo','rogner_image','desactiver_modele','valider_modele','check_logged_in','couleurs_frequentes','couleur_point_photo');
 		foreach($controleurs as $controleur) {
 			?>urls['<?=$controleur?>']='<?=site_url($controleur)?>/';<?php
