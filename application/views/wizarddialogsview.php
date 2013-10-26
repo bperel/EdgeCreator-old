@@ -95,6 +95,7 @@
     <div id="wizard-decouper-photo" class="wizard extensible" title="Assistant DucksManager - Envoi de photo">
         <p>
             Sélectionnez avec la souris les zones de la photo correspondant à chaque tranche.<br />
+            Déplacez et redimensionnez les zones et positionnez une zone par tranche.<br />
             <a href="javascript:void(0)" id="ajouter_zone_photo_multiple">Ajouter une zone</a>
             <br />
             <div id="zone_selection_tranches_multiples">
@@ -104,12 +105,7 @@
                         <span class="zone_intitule_numero">
                             <img class="edition" src="images/modifier.png" title="Modifier le magazine correspondant à cette tranche"/>
                             <span class="intitule_numero">
-                                <span class="renseigne cache">
-                                    <img name="wizard_pays" src="" />&nbsp;
-                                    <b><span name="wizard_magazine"></span></b>&nbsp;n&deg;
-                                    <span name="wizard_numero"></span>&nbsp;
-                                    <span name="Dimension_x"></span> x <span name="Dimension_y"></span> mm
-                                </span>
+                                <span class="renseigne cache"></span>
                                 <span class="non_renseigne">
                                     Cliquez ici pour modifier le numéro de la tranche sélectionnée
                                 </span>
@@ -120,6 +116,9 @@
                     </div>
                 </div>
             </div>
+            <form>
+                <input type="hidden" name="choix" value="to-wizard-confirmation-photo-multiple" id="to-wizard-confirmation-photo-multiple" />
+            </form>
         </p>
     </div>
 
@@ -151,6 +150,13 @@
                 </form>
             </p>
         </div>
+
+    <div id="wizard-confirmation-photo-multiple" class="wizard first dead-end" title="Assistant DucksManager - Confirmation">
+        <p>
+            Les modèles des tranches sélectionnées ont été initialisés.
+            <a href="javascript:window.reload()">Retour à l'accueil</a>
+        </p>
+    </div>
 
 
 	<div id="wizard-creer" class="wizard" title="Assistant DucksManager - Création de tranche">
@@ -864,3 +870,10 @@
 		</div>
 	</div>
 </div>
+
+<span class="intitule_magazine template">
+    <img name="wizard_pays" src="" />&nbsp;
+    <b><span name="wizard_magazine"></span></b>&nbsp;n&deg;
+    <span name="wizard_numero"></span>&nbsp;
+    <span name="Dimension_x"></span> x <span name="Dimension_y"></span> mm
+</span>

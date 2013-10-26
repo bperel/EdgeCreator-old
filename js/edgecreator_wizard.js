@@ -19,6 +19,27 @@ $.widget("ui.tooltip", $.ui.tooltip, {
 	}
 });
 
+$.fn.remplirIntituleNumero = function(data) {
+	var conteneur = this;
+	var conteneur_intitule = $('.intitule_magazine.template').clone(true).removeClass('template');
+
+	$.each(data, function(nom, valeur) {
+		conteneur.data()[nom] = valeur;
+
+		var element = conteneur_intitule.find('[name="'+nom+'"]');
+		if (nom === 'wizard_pays') {
+			element.attr({src: '../images/flags/'+valeur+'.png'});
+		}
+		else {
+			element.text(valeur);
+		}
+	});
+
+	this.html(conteneur_intitule);
+
+	return this;
+};
+
 $(window).scroll(function() {
 	if (modification_etape != null 
 	 && modification_etape.find('#options-etape--Polygone').length != 0) {
@@ -425,21 +446,10 @@ function wizard_do(wizard_courant, action) {
 						zone.find('.renseigne').removeClass('cache');
 						zone.find('.non_renseigne').addClass('cache');
 
+						var magazine_complet = wizard_courant.find('form [name="wizard_magazine"] option:selected').text();
+						var data = $.extend({}, wizard_courant.find('form').serializeObject(), {wizard_magazine: magazine_complet});
 
-						$.each(wizard_courant.find('form').serializeObject(), function(nom, valeur) {
-							var element_form=wizard_courant.find('form [name="'+nom+'"]');
-							var element = zone.find('[name="'+nom+'"]');
-							zone.data()[nom] = valeur;
-							if (nom === 'wizard_pays') {
-								element.attr({src: '../images/flags/'+valeur+'.png'});
-							}
-							else if (element_form.is('select')) {
-								element.text(element_form.find('option:selected').text());
-							}
-							else {
-								element.text(valeur);
-							}
-						});
+						zone.find('.intitule_numero .renseigne').remplirIntituleNumero(data);
 					break;
 				}
 			break;
@@ -635,6 +645,12 @@ function wizard_init(wizard_id) {
 		case 'wizard-selectionner-numero-photo-multiple':
 			wizard_charger_liste_pays();
 		break;
+
+		case 'wizard-confirmation-photo-multiple':
+			$.each($('.rectangle_selection_tranche:not(.template)'), function() {
+				creer_modele_tranche
+			});
+		break;
 		
 		case 'wizard-creer-collection':
 			chargement_listes=true;
@@ -789,22 +805,10 @@ function wizard_init(wizard_id) {
 					
 					if (get_option_wizard('wizard-clonage','choix')=== undefined) { // S'il n'y a pas eu clonage, on ne connait pas les dimensions de la tranche
 						// Ajout du modèle de tranche et de la fonction Dimensions avec les paramètres par défaut
-						$.ajax({
-							url: urls['insert_wizard']+['index',pays,magazine,numero,'_',-1,'Dimensions'].join('/'),
-							type: 'post',
-							async: false
-						});
-						// Mise à jour de la fonction Dimensions avec les valeurs entrées
+
 						var dimension_x = get_option_wizard('wizard-dimensions','Dimension_x');
 						var dimension_y = get_option_wizard('wizard-dimensions','Dimension_y');
-						var parametrage_dimensions =  'Dimension_x='+dimension_x
-													+'&Dimension_y='+dimension_y;
-						$.ajax({
-							url: urls['update_wizard']+['index',pays,magazine,numero,-1,parametrage_dimensions].join('/'),
-							type: 'post',
-							async: false
-						});
-						dimensions = {x: parseInt(dimension_x), y: parseInt(dimension_y)};
+						creer_modele_tranche(pays, magazine, numero, dimension_x, dimension_y);
 					}
 					maj_photo_principale();
 				}
@@ -2730,6 +2734,23 @@ function wizard_charger_liste_numeros(magazine_sel) {
 			wizard_numero.val(get_option_wizard(id_wizard_courant, 'wizard_numero'));
 		chargement_listes=false;
 	});
+}
+
+function creer_modele_tranche(pays, magazine, numero, dimension_x, dimension_y) {
+	$.ajax({
+		url: urls['insert_wizard']+['index',pays,magazine,numero,'_',-1,'Dimensions'].join('/'),
+		type: 'post',
+		async: false
+	});
+
+	// Mise à jour de la fonction Dimensions avec les valeurs entrées
+	var parametrage_dimensions =  'Dimension_x='+dimension_x +'&Dimension_y='+dimension_y;
+	$.ajax({
+		url: urls['update_wizard']+['index',pays,magazine,numero,-1,parametrage_dimensions].join('/'),
+		type: 'post',
+		async: false
+	});
+	dimensions = {x: parseInt(dimension_x), y: parseInt(dimension_y)};
 }
 	
 function charger_liste_numeros(pays_sel,magazine_sel, callback) {
