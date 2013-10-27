@@ -175,6 +175,8 @@ var TEMPLATES ={'numero':/\[Numero\]/,
 				'caracteres_speciaux':/°/i};
 
 var REGEX_FICHIER_PHOTO=/\/([^\/]+\.([^.]+)\.photo_([^.]+?)\.[a-z]+)$/;
+var REGEX_FICHIER_PHOTO_MULTIPLE=/.*_([^\.]+)\.jpg$/;
+
 var REGEX_NUMERO=/tranche_([^_]+)_([^_]+)_([^_]+)/;
 var REGEX_TO_WIZARD=/to\-(wizard\-[0-9]*)/g;
 var REGEX_DO_IN_WIZARD=/do\-in\-wizard\-(.*)/g;
@@ -413,6 +415,7 @@ function wizard_do(wizard_courant, action) {
 					case 'enregistrer':
 						if (wizard_check('wizard-resize') !== undefined) {
 							var image = wizard_courant.find('.jrac_viewport img');
+							var source = 'photos';
 							var destination = wizard_courant.find('[name="destination"]').val();
 							var decoupage_nom = image.attr('src').match(REGEX_FICHIER_PHOTO);
 							if (!decoupage_nom) {
@@ -424,15 +427,11 @@ function wizard_do(wizard_courant, action) {
 							var nom = decoupage_nom[3];
 							var jrac_crop = $('.jrac_crop');
 							var jrac_crop_position = $('.jrac_crop').position();
-							var x1 = parseInt(100 * (jrac_crop_position.left / image.width())),
-								x2 = parseInt(100 * (jrac_crop_position.left + jrac_crop.width()) / image.width()),
-								y1 = parseInt(100 * (jrac_crop_position.top  / image.height())),
-								y2 = parseInt(100 * (jrac_crop_position.top  + jrac_crop.height()) / image.height());
-							$.ajax({
-								url: urls['rogner_image']+['index',pays,magazine,numero_image,numero,nom,destination,x1,x2,y1,y2].join('/'),
-								type: 'post',
-								dataType:'json'
-							});
+							var x1 = jrac_crop_position.left,
+								x2 = jrac_crop_position.left + jrac_crop.width(),
+								y1 = jrac_crop_position.top,
+								y2 = jrac_crop_position.top  + jrac_crop.height();
+							rogner_image(image, nom, source, destination, pays, magazine, numero, x1, x2, y1, y2, numero_image);
 						}
 					wizard_goto(wizard_courant,'wizard-images');
 					break;
@@ -649,10 +648,27 @@ function wizard_init(wizard_id) {
 		break;
 
 		case 'wizard-confirmation-photo-multiple':
+			var image_tranches_multiples = $('#image_tranche_multiples');
+			$('#wizard-decouper-photo').parent().addClass('invisible');
+			var id_fichier_image_multiple = image_tranches_multiples.attr('src').replace(REGEX_FICHIER_PHOTO_MULTIPLE,'$1');
+			var pos_image = image_tranches_multiples.position();
 			$.each($('.rectangle_selection_tranche:not(.template)'), function() {
 				var data=$(this).find('.intitule_magazine').data();
+
 				creer_modele_tranche(data.wizard_pays, data.wizard_magazine, data.wizard_numero, data.Dimension_x, data.Dimension_y, false);
+
+				var element_pos = $(this).position();
+				var x1 = element_pos.left - pos_image.left,
+					y1 = element_pos.top  - pos_image.top;
+				var x2 = x1 + $(this).width(),
+					y2 = y1 + $(this).height();
+
+				rogner_image(
+					image_tranches_multiples, id_fichier_image_multiple, 'photo_multiple', 'photos',
+					data.wizard_pays, data.wizard_magazine, data.wizard_numero,
+					x1, x2, y1, y2);
 			});
+			$('#wizard-decouper-photo').removeClass('invisible');
 		break;
 		
 		case 'wizard-creer-collection':
@@ -2760,6 +2776,19 @@ function creer_modele_tranche(pays, magazine, numero, dimension_x, dimension_y, 
 		url: urls['update_wizard']+['index',pays,magazine,numero,-1,parametrage_dimensions,with_user].join('/'),
 		type: 'post',
 		async: false
+	});
+}
+
+function rogner_image(image, nom, source, destination, pays_destination, magazine_destination, numero_destination, x1, x2, y1, y2, numero_image) {
+	var x1 = parseFloat(100 * x1 / image.width()),
+		x2 = parseFloat(100 * x2 / image.width()),
+		y1 = parseFloat(100 * y1 / image.height()),
+		y2 = parseFloat(100 * y2 / image.height());
+	$.ajax({
+		url: urls['rogner_image'] + ['index', pays_destination, magazine_destination, numero_image || 'null', numero_destination,
+											  nom, source, destination, x1, x2, y1, y2].join('/'),
+		type: 'post',
+		dataType: 'json'
 	});
 }
 	

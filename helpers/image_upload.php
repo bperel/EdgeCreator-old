@@ -15,7 +15,7 @@ $est_photo_tranche=(isset($_GET ['photo_tranche']) && $_GET ['photo_tranche'] ==
 		</script>
 	</head>
 	<body>
-<form method="POST" action="upload.php" enctype="multipart/form-data">
+<form method="POST" action="../../upload_wizard" enctype="multipart/form-data">
 	 <input type="hidden" name="MAX_FILE_SIZE" value="<?=$est_photo_tranche ? 4000000 : 400000?>" />
 	 <?php if (!isset($_GET['multiple'])) {?>
 		 <input type="hidden" id="pays" name="pays" value="" />

@@ -8,6 +8,11 @@ iframe {
     display: none;
 }
 
+.invisible {
+    display: inherit !important;
+    visibility: hidden !important;
+}
+
 #action_bar {
 	text-align:center;
 }

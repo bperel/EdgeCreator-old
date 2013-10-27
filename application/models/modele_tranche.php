@@ -613,7 +613,7 @@ class Modele_tranche extends CI_Model {
 					$tranches_pretes[$numero_affiche]='en_cours';
 				}
 				else {
-					$id_createur = array_search($resultat['contributeurs'], self::$utilisateurs);
+					$id_createur = array_search($numero['contributeurs'], self::$utilisateurs);
 					$tranches_pretes[$numero_affiche]=$id_createur == $id_user ? 'par_moi' : 'global';
 				}
 			}
@@ -1420,6 +1420,10 @@ class Fonction_executable extends Fonction {
 			$pays=self::$pays;
 		return BASEPATH.'../../edges/'.$pays.'/photos';
 	}
+
+    static function getCheminPhotosMultiples() {
+        return BASEPATH.'../../edges/tranches_multiples';
+    }
 	
 	static function getCheminElements($pays=null) {
 		if (is_null($pays))
@@ -1676,11 +1680,11 @@ class TexteMyFonts extends Fonction_executable {
 				}
 			}
 		}
-		
-		//fond=imagecolorallocatealpha($texte, $r, $g, $b, 127);
-		//imagefill($texte,0,0,$fond);
+
 		
 		if (!is_null($this->options->Rotation) && $this->options->Rotation !== '0') {
+            $fond=imagecolorallocatealpha($texte, $r, $g, $b, 127);
+            imagefill($texte,0,0,$fond);
 			$texte=imagerotate($texte, $this->options->Rotation, $fond);
 		}
 		
@@ -1869,7 +1873,7 @@ class Degrade extends Fonction_executable {
 				foreach($couleurs_inter as $i=>$couleur) {
 					list($rouge_inter,$vert_inter,$bleu_inter)=$couleur;
 					$couleur_allouee=imagecolorallocate(Viewer_wizard::$image, $rouge_inter,$vert_inter,$bleu_inter);
-					imageline(Viewer_wizard::$image, ($this->options->Pos_x_debut)-$i, $this->options->Pos_y_debut, ($this->options->$fin)-$i, $this->options->Pos_y_debut, $couleur_allouee);
+					imageline(Viewer_wizard::$image, ($this->options->Pos_x_debut)-$i, $this->options->Pos_y_debut, ($this->options->Pos_x_fin)-$i, $this->options->Pos_y_debut, $couleur_allouee);
 				}
 			}
 		}
@@ -2018,20 +2022,29 @@ class Dessiner_contour {
 }
 
 class Rogner {
-	function Rogner($pays,$magazine,$numero_original,$numero,$nom,$destination,$x1,$x2,$y1,$y2) {
+    private $source;
+
+    function Rogner($pays, $magazine, $numero_original, $numero, $nom, $source, $destination, $x1, $x2, $y1, $y2) {
 		$extension='.jpg';
-		$nom_image_origine = Fonction_executable::getCheminPhotos($pays)
-							.'/'.$magazine.'.'.$numero_original.'.photo_'.$nom;
-		$nom_image_modifiee= ($destination === 'photos' ? Fonction_executable::getCheminPhotos($pays) : Fonction_executable::getCheminElements($pays))
-							.'/'.$magazine.'.'.$numero.'.photo_';
-		$i=1;
-		while (file_exists($nom_image_modifiee.$i.$extension)) {
-			$i++;
-		}
-		$nom_image_modifiee.=$i.$extension;
+        if ($source === 'photo_multiple') {
+		    $nom_image_origine = Fonction_executable::getCheminPhotosMultiples()
+							    .'/photo.multiple_'.$nom;
+        }
+        else {
+            $nom_image_origine = Fonction_executable::getCheminPhotos($pays)
+                                .'/'.$magazine.'.'.$numero_original.'.photo_'.$nom;
+        }
+
+        $ci = &get_instance();
+        $ci->load->helper('noms_images');
+
+        list($dossier_image_modifiee,$nom_image_modifiee) = get_nom_fichier(null, $pays, $magazine, $numero, $destination === 'photos');
 		$nom_image_origine .=	$extension;
-		
-		echo "$nom_image_origine : Rognage vers $nom_image_modifiee : ($x1,$y1) -> ($x2,$y2)";
+
+        echo $nom_image_modifiee;
+		if (isset($_GET['dbg'])) {
+            echo "\n$nom_image_origine : Rognage vers $nom_image_modifiee : ($x1,$y1) -> ($x2,$y2)";
+        }
 		
 		$img = imagecreatefromjpeg($nom_image_origine);
 		$width=imagesx($img);
@@ -2042,9 +2055,10 @@ class Rogner {
 							$x1 * $width / 100 , $y1 * $height / 100 ,
 							($x2-$x1) * $width / 100 , ($y2-$y1) * $height / 100 , 
 							($x2-$x1) * $width / 100 , ($y2-$y1) * $height / 100);
-		imagejpeg($cropped_img,$nom_image_modifiee);
-		
-	}
+		imagejpeg($cropped_img,$dossier_image_modifiee.$nom_image_modifiee);
+
+        $this->source = $source;
+    }
 }
 
 

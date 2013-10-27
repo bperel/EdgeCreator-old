@@ -140,7 +140,7 @@
                             <option>Chargement...</option>
                         </select><br />
                         Les tranches sous fond vert sont déjà disponibles.
-
+                        <br /><br />
                         Dimensions de la tranche :
                         <input type="text" name="Dimension_x" maxlength="3" size="2"> mm
                         x
