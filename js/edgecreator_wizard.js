@@ -279,7 +279,7 @@ function launch_wizard(id, p) {
 							nom_photo_principale=$(this).find('.gallery li img.selected').attr('src')
 								.match(REGEX_FICHIER_PHOTO)[1];
 							if ($('#wizard-conception').is(':visible')) {
-								maj_photo_principale();
+								maj_photo_principale(pays, magazine, numero);
 								$( this ).dialog().dialog( "close" );
 							}
 							else {
@@ -666,7 +666,12 @@ function wizard_init(wizard_id) {
 				rogner_image(
 					image_tranches_multiples, id_fichier_image_multiple, 'photo_multiple', 'photos',
 					data.wizard_pays, data.wizard_magazine, data.wizard_numero,
-					x1, x2, y1, y2);
+					x1, x2, y1, y2, null,
+					function(nom_fichier_rogne) {
+						nom_photo_principale = ('/'+nom_fichier_rogne).match(REGEX_FICHIER_PHOTO)[1];
+						maj_photo_principale(data.wizard_pays, data.wizard_magazine, data.wizard_numero, false);
+					}
+				);
 			});
 			$('#wizard-decouper-photo').removeClass('invisible');
 		break;
@@ -819,7 +824,7 @@ function wizard_init(wizard_id) {
 
 						dimensions = {x: parseInt(dimension_x), y: parseInt(dimension_y)};
 					}
-					maj_photo_principale();
+					maj_photo_principale(pays, magazine, numero);
 				}
 			}
 
@@ -2779,16 +2784,19 @@ function creer_modele_tranche(pays, magazine, numero, dimension_x, dimension_y, 
 	});
 }
 
-function rogner_image(image, nom, source, destination, pays_destination, magazine_destination, numero_destination, x1, x2, y1, y2, numero_image) {
+function rogner_image(image, nom, source, destination, pays_destination, magazine_destination, numero_destination, x1, x2, y1, y2, numero_image, callback) {
 	var x1 = parseFloat(100 * x1 / image.width()),
 		x2 = parseFloat(100 * x2 / image.width()),
 		y1 = parseFloat(100 * y1 / image.height()),
 		y2 = parseFloat(100 * y2 / image.height());
+
+	callback = callback || function() {};
+
 	$.ajax({
 		url: urls['rogner_image'] + ['index', pays_destination, magazine_destination, numero_image || 'null', numero_destination,
 											  nom, source, destination, x1, x2, y1, y2].join('/'),
 		type: 'post',
-		dataType: 'json'
+		success: callback
 	});
 }
 	
@@ -2887,12 +2895,15 @@ function afficher_photo_tranche() {
 	}
 }
 
-function maj_photo_principale() {
+function maj_photo_principale(pays_maj, magazine_maj, numero_maj, with_user) {
 	if (nom_photo_principale === null) {
 		return;
 	}
+	if (with_user !== false) {
+		with_user = true;
+	}
 	$.ajax({
-		url: urls['update_photo']+['index',pays,magazine,numero,nom_photo_principale].join('/'),
+		url: urls['update_photo']+['index',pays_maj, magazine_maj, numero_maj, nom_photo_principale, with_user].join('/'),
 		type: 'post',
 		success:function(data) {
 			if ($('#wizard-conception').is(':visible')) {
