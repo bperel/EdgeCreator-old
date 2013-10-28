@@ -2888,7 +2888,7 @@ function afficher_photo_tranche() {
 			success:function(nom_photo) {
 				if (nom_photo !== 'null') {
 					nom_photo_principale = nom_photo;
-					afficher_photo_tranche();				
+					afficher_photo_tranche();
 				}
 			}
 		});

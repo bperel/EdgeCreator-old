@@ -1,4 +1,4 @@
-	@CHARSET "ISO-8859-1";
+@CHARSET "ISO-8859-1";
 
 iframe {
 	border: 0;
@@ -11,6 +11,20 @@ iframe {
 .invisible {
     display: inherit !important;
     visibility: hidden !important;
+}
+
+.toutes_bordures {
+    border-radius: 8px;
+}
+
+.bordure_gauche {
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+}
+
+.bordure_droite {
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
 }
 
 #action_bar {
@@ -140,8 +154,8 @@ button#connexion, button#deconnexion {
 }
 
 #wizard-1 #tranches_en_cours {
-	margin-left: 120px;
-	top: 0px !important;
+    position: static !important;
+    margin-left: 20px;
 }
 
 #tranches_en_cours li label, #tranches_non_pretes li label {

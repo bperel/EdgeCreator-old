@@ -55,22 +55,22 @@
 		<form>
 			<div class="buttonset">
 				<input type="radio" name="choix" value="to-wizard-envoyer-photo" id="to-wizard-envoyer-photo" />
-				<label for="to-wizard-envoyer-photo">Envoyer des photos de tranche</label><br />
+				<label class="toutes_bordures" for="to-wizard-envoyer-photo">Envoyer des photos de tranche</label><br />
 				
 				<div></div>
 				
 				<input type="radio" name="choix" value="to-wizard-creer" id="to-wizard-creer" />
-				<label for="to-wizard-creer">Créer une tranche de magazine</label><br />
+				<label class="toutes_bordures" for="to-wizard-creer">Créer une tranche de magazine</label><br />
 				<input type="radio" name="choix" value="to-wizard-modifier" id="to-wizard-modifier"/>
-				<label for="to-wizard-modifier">Modifier une tranche de magazine</label><br />
+				<label class="toutes_bordures" for="to-wizard-modifier">Modifier une tranche de magazine</label><br />
 				<input type="radio" name="choix" value="to-wizard-conception" id="to-wizard-conception"/>
-				<label for="to-wizard-conception">Poursuivre une conception de tranche</label>
+				<label class="bordure_gauche" for="to-wizard-conception">Poursuivre une conception de tranche</label>
     			<button id="selectionner_tranche_en_cours">Sélectionnez une tranche</button>
 			</div>
-			<ul id="tranches_en_cours" class="liste_numeros cache">
+			<ul id="tranches_en_cours" class="liste_numeros">
 				<li class="init">
 					<input type="radio" id="numero_tranche_en_cours" name="choix_tranche_en_cours">
-					<label for="numero_tranche_en_cours">Label</label>
+					<label for="numero_tranche_en_cours" class="toutes_bordures">Label</label>
 				</li>
 			</ul>
 		</form>
