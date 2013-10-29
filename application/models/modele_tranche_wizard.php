@@ -8,15 +8,20 @@ class Modele_tranche_Wizard extends Modele_tranche {
 	static $numero;
 
 	function get_tranches_en_cours($id=null,$pays=null,$magazine=null,$numero=null) {
-		$requete='SELECT ID, Pays, Magazine, Numero '
+		$requete='SELECT ID, Pays, Magazine, Numero, username '
 				.'FROM tranches_en_cours_modeles '
-				.'WHERE username=\''.mysql_real_escape_string(self::$username).'\' AND Active=1';
+				.'WHERE Active=1';
 		if (!is_null($id)) {
 			$requete.=' AND ID='.$id;
 		}
 		elseif (!is_null($pays)) {
-			$requete.=' AND Pays=\''.$pays.'\' AND Magazine=\''.$magazine.'\' AND Numero=\''.$numero.'\'';
+			$requete.=' AND username=\''.mysql_real_escape_string(self::$username).'\' AND Pays=\''.$pays.'\' AND Magazine=\''.$magazine.'\' AND Numero=\''.$numero.'\'';
 		}
+        else {
+            $requete.=' AND (username IS NULL OR username=\''.mysql_real_escape_string(self::$username).'\')';
+        }
+
+        $requete.=' ORDER BY username, Pays, Magazine, Numero';
 		
 		$query = $this->db->query($requete);
 		$resultats=$query->result();

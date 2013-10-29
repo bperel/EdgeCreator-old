@@ -68,7 +68,7 @@
     			<button id="selectionner_tranche_en_cours">Sélectionnez une tranche</button>
 			</div>
 			<ul id="tranches_en_cours" class="liste_numeros">
-				<li class="init">
+				<li class="template">
 					<input type="radio" id="numero_tranche_en_cours" name="choix_tranche_en_cours">
 					<label for="numero_tranche_en_cours" class="toutes_bordures">Label</label>
 				</li>

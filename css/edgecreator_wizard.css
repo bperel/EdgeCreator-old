@@ -156,6 +156,7 @@ button#connexion, button#deconnexion {
 #wizard-1 #tranches_en_cours {
     position: static !important;
     margin-left: 20px;
+    display: block !important;
 }
 
 #tranches_en_cours li label, #tranches_non_pretes li label {
