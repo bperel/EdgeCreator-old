@@ -479,6 +479,22 @@ function wizard_check(wizard_id) {
 				}
 			}
 
+			if ($('#'+wizard_id+' form [name="Dimension_x"]').length > 0) {
+				$.each($(['Dimension_x','Dimension_y']),function(i,nom_champ) {
+					var valeur= $('#'+wizard_id+' [name="'+nom_champ+'"]').val();
+					var bornes_valeur=nom_champ == 'Dimension_x' ? [3, 60] : [100, 450];
+					if ( valeur == ''
+						|| valeur.search(/^[0-9]+$/) != 0) {
+						erreur="Le champ "+nom_champ+" est vide ou n'est pas un nombre";
+					}
+					valeur=parseInt(valeur);
+					if (valeur < bornes_valeur[0] || valeur > bornes_valeur[1]) {
+						erreur="Le champ "+nom_champ+" doit &ecirc;tre compris entre "+bornes_valeur[0]+" et "+bornes_valeur[1];
+					}
+
+				});
+			}
+
 			switch(wizard_id) {
 				case 'wizard-1':
 					if (valeur_choix == 'to-wizard-conception'
@@ -494,21 +510,12 @@ function wizard_check(wizard_id) {
 						erreur='Veuillez s&eacute;lectionner un num&eacute;ro.';
 					}
 				break;
-				case 'wizard-dimensions':
-				case 'wizard-selectionner-numero-photo-multiple':
-					$.each($(['Dimension_x','Dimension_y']),function(i,nom_champ) {
-						var valeur= $('#'+wizard_id+' [name="'+nom_champ+'"]').val();
-						var bornes_valeur=nom_champ == 'Dimension_x' ? [3, 60] : [100, 450];
-						if ( valeur == ''
-						  || valeur.search(/^[0-9]+$/) != 0) {
-							erreur="Le champ "+nom_champ+" est vide ou n'est pas un nombre";
-						}
-						valeur=parseInt(valeur);
-						if (valeur < bornes_valeur[0] || valeur > bornes_valeur[1]) {
-							erreur="Le champ "+nom_champ+" doit &ecirc;tre compris entre "+bornes_valeur[0]+" et "+bornes_valeur[1];
-						}
-						
-					});
+				case 'wizard-decouper-photo':
+					if ($('.rectangle_selection_tranche:not(.template)').filter(function() {
+						return $(this).find('.intitule_magazine').length === 0;
+					}).length > 0) {
+						erreur='Vous n\'avez pas spécifié les numéros de toutes les zones de la photo.';
+					}
 				break;
 				case 'wizard-modifier':
 					if (chargement_listes)
@@ -674,6 +681,8 @@ function wizard_init(wizard_id) {
 				);
 			});
 			$('#wizard-decouper-photo').removeClass('invisible');
+			$('#'+wizard_id).find('.fin_chargement').removeClass('cache');
+			$('#'+wizard_id).find('.chargement').addClass('cache');
 		break;
 		
 		case 'wizard-creer-collection':

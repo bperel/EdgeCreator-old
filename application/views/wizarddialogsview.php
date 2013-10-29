@@ -153,8 +153,11 @@
 
     <div id="wizard-confirmation-photo-multiple" class="wizard first deadend" title="Assistant DucksManager - Confirmation">
         <p>
-            Les modèles des tranches sélectionnées ont été initialisés.
-            <a href="javascript:location.reload()">Retour à l'accueil</a>
+            <span class="chargement">Veuillez patienter...</span>
+            <span class="cache fin_chargement">
+                Les modèles des tranches sélectionnées ont été initialisés.
+                <a href="javascript:location.reload()">Retour à l'accueil</a>
+            </span>
         </p>
     </div>
 
