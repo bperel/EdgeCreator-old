@@ -681,8 +681,14 @@ function wizard_init(wizard_id) {
 					data.wizard_pays, data.wizard_magazine, data.wizard_numero,
 					x1, x2, y1, y2, null,
 					function(nom_fichier_rogne) {
-						nom_photo_principale = ('/'+nom_fichier_rogne).match(REGEX_FICHIER_PHOTO)[1];
-						maj_photo_principale(data.wizard_pays, data.wizard_magazine, data.wizard_numero, false);
+						var match_photo_principale = ('/'+nom_fichier_rogne).match(REGEX_FICHIER_PHOTO);
+						if (match_photo_principale) {
+							nom_photo_principale = match_photo_principale[1];
+							maj_photo_principale(data.wizard_pays, data.wizard_magazine, data.wizard_numero, false);
+						}
+						else {
+							jqueryui_alert('Photo de tranche invalide : '+nom_fichier_rogne,'Création de modèle');
+						}
 					}
 				);
 			});
