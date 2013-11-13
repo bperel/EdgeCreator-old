@@ -44,21 +44,25 @@ class Modele_tranche extends CI_Model {
 		$_POST['mode_expert']=isset($_POST['mode_expert']) && $_POST['mode_expert'] === 'true' ? true : false;
 		if (isset($_POST['user'])) {
 			self::$just_connected=true;
-			if (!is_null($privilege = $this->user_connects($_POST['user'],$_POST['pass'])))
-				$this->creer_id_session($_POST['user'],sha1($_POST['pass']),$_POST['mode_expert']);
+            $privilege = $this->user_connects($_POST['user'],$_POST['pass']);
+			if (!is_null($privilege)) {
+				$this->creer_id_session($_POST['user'],sha1($_POST['pass']),$_POST['mode_expert'],$privilege);
+            }
 		}
 		else {
 			if ($this->session->userdata('user') !== false && $this->session->userdata('pass') !== false) {
-				$privilege = $this->user_connects($this->session->userdata('user'),$this->session->userdata('pass'));
-				if ($privilege == null) {
+				$privilege = $this->session->userdata('privilege');
+				if (is_null($privilege)) {
 					$this->creer_id_session($this->session->userdata('user'),
 											$this->session->userdata('pass'),
-											$this->session->userdata('mode_expert'));
+											$this->session->userdata('mode_expert'),
+                                            $this->session->userdata('privilege')
+                    );
 				}
 			}
 			else {
-				$this->creer_id_session('demo',md5('demodemo'),false);
-				return $this->get_privilege();
+                $privilege = null;
+				$this->creer_id_session('demo',md5('demodemo'),false,$privilege);
 			}
 		}
 		return $privilege;
@@ -110,9 +114,9 @@ class Modele_tranche extends CI_Model {
 	}
 	
 	
-	function creer_id_session($user,$pass,$mode_expert) {
+	function creer_id_session($user,$pass,$mode_expert,$privilege) {
 		
-		$this->session->set_userdata(array('user' => $user, 'pass' => $pass, 'mode_expert'=>$mode_expert));
+		$this->session->set_userdata(array('user' => $user, 'pass' => $pass, 'mode_expert'=>$mode_expert, 'privilege'=>$privilege));
 	}
 	
 	function user_possede_modele($pays=null,$magazine=null,$username=null) {
@@ -1440,18 +1444,17 @@ class Fonction_executable extends Fonction {
 		if ($str==array())
 			$str='';
 		foreach($tab as $nom=>$regex) {
-			if (is_array($str)) {
-			   $a=1;
-			}
 			if (0 !== preg_match($regex, $str, $matches)) {
-				if (!$actif) return true;
+				if (!$actif) {
+                    return true;
+                }
 				switch($nom) {
 					case 'numero':
 						$str=preg_replace($regex, Viewer_wizard::$numero, $str);
 					break;
 					case 'numero[]':
 						$spl=str_split(Viewer_wizard::$numero);
-						if (0!=preg_match_all($regex, $str, $matches)) {
+						if (0 !== preg_match_all($regex, $str, $matches)) {
 							foreach($matches[1] as $i=>$num_caractere) {
 								if (!array_key_exists($num_caractere, $spl))
 									$str=str_replace($matches[0][$i],'',$str);
@@ -1467,7 +1470,6 @@ class Fonction_executable extends Fonction {
 					break;
 					case 'hauteur':
 						$str=preg_replace($regex, Viewer_wizard::$hauteur, $str);
-						echo "\$str=".$str.";";
 						eval("\$str=".$str.";");
 						$str/=z(1);
 					break;

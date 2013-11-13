@@ -95,18 +95,26 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		return count($resultat) == 0 ? null : new Fonction($resultat);
 	}
 
-	function get_options($pays,$magazine,$ordre,$numero=null,$creation=false,$inclure_infos_options=false, $nouvelle_etape=false, $nom_option=null) {
+	function get_options($pays,$magazine,$ordre,$numero=null,$creation=false,$inclure_infos_options=false, $nouvelle_etape=false, $nom_option=null, $affectee = true) {
 		$creation=false;
 		$resultats_options=new stdClass();
 		$requete='SELECT '.implode(', ', self::$content_fields).' '
 				.'FROM tranches_en_cours_modeles_vue '
-				.'WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' AND Numero = \''.$numero.'\' AND Ordre='.$ordre.' AND Option_nom IS NOT NULL '
-				.'AND username = \''.($this->user_possede_modele() ? self::$username : 'brunoperel').'\' ';
+				.'WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' AND Numero = \''.$numero.'\' AND Ordre='.$ordre.' AND Option_nom IS NOT NULL ';
+
+        if ($affectee) {
+			$requete.='AND username = \''.($this->user_possede_modele() ? self::$username : 'brunoperel').'\' ';
+        }
+        else {
+            $requete.='AND username IS NULL ';
+        }
 		if (!is_null($nom_option))
 			$requete.='AND Option_nom = \''.$nom_option.'\' ';
 		$requete.='ORDER BY Option_nom ASC';
-
 		$resultats=$this->db->query($requete)->result();
+        if (count($resultats) === 0) {
+            return new stdClass();
+        }
 		$resultats_options=new stdClass();
 		foreach($resultats as $resultat) {
 			$nom_fonction=$resultat->Nom_fonction;
@@ -179,17 +187,20 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		$this->db->query($requete);
 	}
 	
-	function get_id_modele($pays,$magazine,$numero,$username=null) {
-		if (is_null($username)) {
+	function get_id_modele($pays,$magazine,$numero,$username=null, $non_affectee=false) {
+		if (is_null($username) && !$non_affectee) {
 			$username = self::$username;
 		}
 		$requete='SELECT ID FROM tranches_en_cours_modeles '
-				.'WHERE Pays=\''.$pays.'\' AND Magazine=\''.$magazine.'\' AND Numero=\''.$numero.'\'';
-		if (isset($username) && !is_null($username)) {
-			$requete.=' AND username=\''.$username.'\' AND Active=1';
+				.'WHERE Pays=\''.$pays.'\' AND Magazine=\''.$magazine.'\' AND Numero=\''.$numero.'\' '
+                .'  AND Active=1';
+		if (is_null($username)) {
+            $requete.=' AND username IS NULL';
+        }
+        else {
+			$requete.=' AND username=\''.$username.'\'';
 		}
 
-        echo $requete;
 		$resultat=$this->db->query($requete)->row(0);
 		return $resultat->ID;
 	}
@@ -205,13 +216,19 @@ class Modele_tranche_Wizard extends Modele_tranche {
         $username = isset(self::$username) ? '\''.self::$username.'\'' : 'NULL';
 		$requete='INSERT INTO tranches_en_cours_modeles (Pays, Magazine, Numero, username, Active) '
 				.'VALUES (\''.$pays.'\',\''.$magazine.'\',\''.$numero.'\','.$username.', 1)';
-		$this->db->query($requete);
-		echo $requete."\n";
+        $this->db->query($requete);
+        echo $requete."\n";
 	}
 	
-	function get_photo_principale($pays,$magazine,$numero) {
+	function get_photo_principale($pays,$magazine,$numero,$with_user) {
 		$requete='SELECT NomPhotoPrincipale FROM tranches_en_cours_modeles '
 				.'WHERE Pays=\''.$pays.'\' AND Magazine=\''.$magazine.'\' AND Numero=\''.$numero.'\'';
+        if ($with_user) {
+            $requete.=' AND username=\''.self::$username.'\'';
+        }
+        else {
+            $requete.=' AND username IS NULL';
+        }
 		$resultat=$this->db->query($requete)->row(0);
 		return $resultat->NomPhotoPrincipale;
 	}
@@ -323,10 +340,26 @@ class Modele_tranche_Wizard extends Modele_tranche {
 			echo 'Aucune option d\'étape pour '.$pays.'/'.$magazine.' '.$numero;
 			return;
 		}
-		
-		$requete_ajout_modele='INSERT INTO tranches_en_cours_modeles (Pays, Magazine, Numero, username, Active) '
+
+        $nom_photo_principale = 'NULL';
+
+        $requete_get_tranche_non_affectee = ' SELECT ID, NomPhotoPrincipale'
+                                           .' FROM tranches_en_cours_modeles'
+                                           .' WHERE Pays=\''.$pays.'\' AND Magazine=\''.$magazine.'\' AND Numero=\''.$nouveau_numero.'\' AND username IS NULL';
+        $tranches_non_affectees=$this->db->query($requete_get_tranche_non_affectee)->result();
+        echo $requete_get_tranche_non_affectee;
+        foreach($tranches_non_affectees as $tranche_non_affectee) {
+            $id_modele_tranche_non_affectee = $tranche_non_affectee->ID;
+            $nom_photo_principale = '\''.$tranche_non_affectee->NomPhotoPrincipale.'\'';
+        }
+
+        if (isset($id_modele_tranche_non_affectee)) {
+            $this->desactiver_modele_par_id($id_modele_tranche_non_affectee);
+        }
+
+        $requete_ajout_modele='INSERT INTO tranches_en_cours_modeles (Pays, Magazine, Numero, username, Active, NomPhotoPrincipale) '
 							 .'VALUES (\''.$pays.'\',\''.$magazine.'\',\''.$nouveau_numero.'\','
-							 .'\''.mysql_real_escape_string(self::$username).'\', 1)';
+							 .'\''.mysql_real_escape_string(self::$username).'\', 1, '.$nom_photo_principale.')';
 		$this->db->query($requete_ajout_modele);
 		$id_modele=$this->get_id_modele_tranche_en_cours_max();
 		
@@ -397,14 +430,16 @@ class Modele_tranche_Wizard extends Modele_tranche {
 	}
 	
 	function desactiver_modele($pays,$magazine,$numero) {
-		$id_modele=$this->get_id_modele($pays,$magazine,$numero,self::$username);
-		
-		$requete_maj=' UPDATE tranches_en_cours_modeles '
-					.' SET Active=0'
-					.' WHERE ID='.$id_modele;
-		$this->db->query($requete_maj);
-		echo $requete_maj."\n";
+		$this->desactiver_modele_par_id($this->get_id_modele($pays,$magazine,$numero,self::$username));
 	}
+
+    function desactiver_modele_par_id($id_modele) {
+        $requete_maj=' UPDATE tranches_en_cours_modeles '
+            .' SET Active=0'
+            .' WHERE ID='.$id_modele;
+        $this->db->query($requete_maj);
+        echo $requete_maj."\n";
+    }
 	
 	function get_couleurs_frequentes($id_modele) {
 		$couleurs=array();

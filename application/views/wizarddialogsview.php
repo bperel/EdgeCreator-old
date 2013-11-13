@@ -67,12 +67,15 @@
 				<label class="bordure_gauche" for="to-wizard-conception">Poursuivre une conception de tranche</label>
     			<button id="selectionner_tranche_en_cours">Sélectionnez une tranche</button>
 			</div>
-			<ul id="tranches_en_cours" class="liste_numeros">
+			<ul id="tranches_en_cours" class="liste_numeros cache">
+                <div name="tranches_non_affectees">Tranches non affectées :</div>
+                <div name="tranches_affectees">Tranches en cours de conception par vous :</div>
 				<li class="template">
 					<input type="radio" id="numero_tranche_en_cours" name="choix_tranche_en_cours">
 					<label for="numero_tranche_en_cours" class="toutes_bordures">Label</label>
 				</li>
 			</ul>
+            <input type="hidden" name="est_nouvelle_conception_tranche" />
 		</form>
 	</p>
 </div>
@@ -264,7 +267,8 @@
 					et choisissez "Créer une tranche de magazine".
 				</fieldset>
 				<div class="buttonset cache">
-					<input type="radio" checked="checked" name="choix" value="to-wizard-clonage-silencieux" id="to-wizard-clonage-silencieux" /><label for="to-wizard-clonage-silencieux">J'ai trouvé mon numéro</label>
+					<input type="radio" checked="checked" name="choix" value="to-wizard-clonage-silencieux" id="to-wizard-clonage-silencieux" />
+                    <label for="to-wizard-clonage-silencieux">J'ai trouvé mon numéro</label>
 				</div>
 			</form>
 		</p>
@@ -282,8 +286,10 @@
 					<div class="tranches_pretes_magazine"></div>
 					<br />
 					<div class="buttonset">
-						<input type="radio" checked="checked" name="choix" value="to-wizard-clonage" id="to-wizard-clonage" /><label for="to-wizard-clonage">J'ai trouvé une tranche similaire</label>
-						<input type="radio" name="choix" value="to-wizard-dimensions" id="to-wizard-dimensions1" /><label for="to-wizard-dimensions1">Créer une tranche originale</label>
+						<input type="radio" checked="checked" name="choix" value="to-wizard-clonage" id="to-wizard-clonage" />
+                        <label for="to-wizard-clonage">J'ai trouvé une tranche similaire</label>
+						<input type="radio" name="choix" value="to-wizard-dimensions" id="to-wizard-dimensions1" />
+                        <label for="to-wizard-dimensions1">Créer une tranche originale</label>
 					</div>
 				</form>
 			</p>
@@ -598,14 +604,6 @@
 			</div>
 		</form>
 	</p>
-</div>
-
-<div id="wizard-upload" class="wizard" title="Stockage d'une photo de tranche">
-	<p>
-		Sélectionnez une photo de tranche stockée sur votre ordinateur 
-		pour la placer à côté de votre modèle de tranche et ainsi pouvoir les comparer facilement.
-	</p>
-	<iframe src="<?=base_url().'index.php/helper/index/image_upload.php?photo_tranche=1'?>"></iframe>
 </div>
 
 <div id="wizard-images" class="wizard deadend photo_principale" title="Assistant DucksManager - Photos de la tranche">

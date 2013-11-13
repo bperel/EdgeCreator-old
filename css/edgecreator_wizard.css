@@ -60,7 +60,7 @@ iframe {
 
 #status, #status_user {
 	position: fixed;
-	top: 0px;
+	top: 0;
 	float: right;
 	height: inherit;
 	overflow-y: auto;
@@ -77,7 +77,7 @@ button#connexion, button#deconnexion {
 #conteneur_selecteur_couleur {
 	position: fixed;
 	z-index: 1010;
-	bottom: 1;
+	bottom: 1px;
 	left: 150px;
 	right: 150px;
 	text-align: center;
@@ -156,7 +156,7 @@ button#connexion, button#deconnexion {
 #wizard-1 #tranches_en_cours {
     position: static !important;
     margin-left: 20px;
-    display: block !important;
+    display: block;
 }
 
 #tranches_en_cours li label, #tranches_non_pretes li label {
@@ -341,7 +341,7 @@ button#connexion, button#deconnexion {
 }
 
 .dialog-preview-etape .ui-dialog-titlebar img ~ span{
-	margin-left: 13px;	
+	margin-left: 5px;
 }
 
 .dialog-preview-etape.finale {
@@ -382,7 +382,7 @@ button#connexion, button#deconnexion {
 }
 
 div.small.buttonset .ui-button-text, button.small .ui-button-text {
-	padding: 0px 10px 0px 10px !important;
+	padding: 0 10px 0 10px !important;
 	font-size: 0.9em !important;
 }
 
@@ -406,11 +406,11 @@ input.couleur.selected {
 }
 
 .tranches_pretes_magazine table {
-	border-spacing: 0px;
+	border-spacing: 0;
 }
 
 .tranches_pretes_magazine table tr td {
-	padding: 0px;
+	padding: 0;
 	vertical-align: bottom;
 }
 

@@ -143,6 +143,10 @@ $(function() {
 
 var dimensions = {};
 
+var pays;
+var magazine;
+var numero;
+
 var wizard_options={};
 var id_wizard_courant=null;
 var id_wizard_precedent=null;
@@ -397,8 +401,9 @@ function launch_wizard(id, p) {
 
 function wizard_goto(wizard_courant, id_wizard_suivant, p) {
 	if (can_launch_wizard(id_wizard_suivant)) {
-		wizard_options[wizard_courant.attr('id')]=wizard_courant.find('form').serializeObject();
-		id_wizard_precedent=wizard_courant.attr('id');
+		var id_wizard_courant = wizard_courant.attr('id');
+		wizard_options[id_wizard_courant]=wizard_courant.find('form').serializeObject();
+		id_wizard_precedent=id_wizard_courant;
 		wizard_courant.dialog().dialog( "close" );
 		launch_wizard(id_wizard_suivant, p);
 	}
@@ -634,6 +639,7 @@ function wizard_init(wizard_id) {
 					launch_wizard('wizard-selectionner-numero-photo-multiple')
 				})
 				nouvelle_zone
+					.css({'z-index': 100+$('#zone_selection_tranches_multiples .rectangle_selection_tranche').length})
 					.draggable({
 						containment: '#zone_selection_tranches_multiples'
 					})
@@ -662,7 +668,7 @@ function wizard_init(wizard_id) {
 			$.each($('.rectangle_selection_tranche:not(.template)'), function() {
 				var data=$(this).find('.intitule_magazine').data();
 
-				creer_modele_tranche(data.wizard_pays, data.wizard_magazine, data.wizard_numero, data.Dimension_x, data.Dimension_y, false);
+				creer_modele_tranche(data.wizard_pays, data.wizard_magazine, data.wizard_numero, false, data.Dimension_x, data.Dimension_y);
 
 				var element_pos = $(this).position();
 				var x1 = element_pos.left - pos_image.left,
@@ -714,20 +720,22 @@ function wizard_init(wizard_id) {
 		break;
 		
 		case 'wizard-proposition-clonage':
-			if (get_option_wizard('wizard-proposition-clonage', 'tranche_similaire') != undefined)
+			if (get_option_wizard('wizard-proposition-clonage', 'tranche_similaire') !== undefined)
 				break;
 			$('#'+wizard_id+' .chargement').removeClass('cache');
 			$('#'+wizard_id+' .tranches_pretes_magazine').addClass('cache');
-			if (get_option_wizard('wizard-creer-collection','choix_tranche')!= undefined) {
-				var tranche=get_option_wizard('wizard-creer-collection','choix_tranche').split(/_/g);
-				pays=	 tranche[1];
-				magazine=tranche[2];
-				numero=	 tranche[3];
-			}
-			else {
-				pays=	 get_option_wizard('wizard-creer-hors-collection', 'wizard_pays');
-				magazine=get_option_wizard('wizard-creer-hors-collection', 'wizard_magazine');
-				numero=	 get_option_wizard('wizard-creer-hors-collection', 'wizard_numero');
+			if (pays === undefined) {
+				if (get_option_wizard('wizard-creer-collection','choix_tranche')!= undefined) {
+					var tranche=get_option_wizard('wizard-creer-collection','choix_tranche').split(/_/g);
+					pays=	 tranche[1];
+					magazine=tranche[2];
+					numero=	 tranche[3];
+				}
+				else {
+					pays=	 get_option_wizard('wizard-creer-hors-collection', 'wizard_pays');
+					magazine=get_option_wizard('wizard-creer-hors-collection', 'wizard_magazine');
+					numero=	 get_option_wizard('wizard-creer-hors-collection', 'wizard_numero');
+				}
 			}
 			selecteur_cellules_preview='#'+wizard_id+' .tranches_pretes_magazine td';
 			
@@ -801,13 +809,33 @@ function wizard_init(wizard_id) {
 				}
 			});
 		break;
+
+		case 'wizard-dimensions':
+			var dimensions_connues= get_option_wizard('wizard-1','choix') === 'to-wizard-conception';
+
+			if (dimensions_connues) {
+				creer_modele_tranche(pays,magazine,numero,true); // Création du modèle sans les dimensions (qui seront copiées du modèle non affecté)
+				wizard_goto($('#'+id_wizard_courant), 'wizard-conception');
+			}
+			break;
 		
 		case 'wizard-conception':
-			if (get_option_wizard('wizard-1','choix_tranche_en_cours') != undefined) {
+			if (get_option_wizard('wizard-1','choix_tranche_en_cours') !== undefined) {
 				var tranche_en_cours=get_option_wizard('wizard-1','choix_tranche_en_cours').split(/_/g);
 				pays=tranche_en_cours[1];
 				magazine=tranche_en_cours[2];
 				numero=tranche_en_cours[3];
+
+				var est_nouvelle_tranche=get_option_wizard('wizard-1','est_nouvelle_conception_tranche') === 'true';
+
+				if (est_nouvelle_tranche) {
+					wizard_goto($('#'+id_wizard_courant), 'wizard-proposition-clonage');
+					set_option_wizard('wizard-1','est_nouvelle_conception_tranche','false');
+					return;
+				}
+				else {
+					afficher_photo_tranche();
+				}
 			}
 			else { // Nouvelle tranche => paramétrage des dimensions, etc.
 				if (get_option_wizard('wizard-creer-collection','choix_tranche') != undefined
@@ -829,7 +857,7 @@ function wizard_init(wizard_id) {
 						// Ajout du modèle de tranche et de la fonction Dimensions avec les paramètres par défaut
 						var dimension_x = get_option_wizard('wizard-dimensions','Dimension_x');
 						var dimension_y = get_option_wizard('wizard-dimensions','Dimension_y');
-						creer_modele_tranche(pays, magazine, numero, dimension_x, dimension_y, true);
+						creer_modele_tranche(pays, magazine, numero, true, dimension_x, dimension_y);
 
 						dimensions = {x: parseInt(dimension_x), y: parseInt(dimension_y)};
 					}
@@ -917,7 +945,6 @@ function wizard_init(wizard_id) {
 								switch(option_nom) {
 									case 'Dimension_x':
 										$('#Dimension_x').val(texte);
-										
 										dimensions.x = parseInt(texte);
 									break;
 									case 'Dimension_y':
@@ -1141,16 +1168,15 @@ function afficher_liste_magazines(wizard_id, id_element_liste, data) {
 		$('#'+wizard_id+' .explication').removeClass('cache');
 		$('#'+wizard_id+' #to-wizard-conception').button('option','disabled',false);
 
-		var section_tranches_en_cours_affichee = false;
-		$.each(tranches, function(i, tranche_en_cours) {
-			var est_tranche_non_affectee = tranche_en_cours.username === null
-			if (i === 0 && est_tranche_non_affectee) { // Section des tranches non affectées
-				elementListe.append($('<li>').text('Tranches non affectées :'));
-			}
+		var noms_sections = ['tranches_non_affectees', 'tranches_affectees'];
 
-			if (!est_tranche_non_affectee && !section_tranches_en_cours_affichee) {
-				elementListe.append($('<li>').text('Tranches en cours de conception :'));
-				section_tranches_en_cours_affichee = true;
+		$.each(tranches, function(i, tranche_en_cours) {
+			var element_type_tranche;
+			if (tranche_en_cours.username === null) {
+				element_type_tranche = elementListe.find('[name="'+noms_sections[0]+'"]');
+			}
+			else {
+				element_type_tranche = elementListe.find('[name="'+noms_sections[1]+'"]');
 			}
 
 			var bouton_tranche_en_cours=$('#'+id_element_liste+' .template').clone(true).removeClass('template');
@@ -1163,15 +1189,25 @@ function afficher_liste_magazines(wizard_id, id_element_liste, data) {
 				.css({'background-image': 'url("../images/flags/'+tranche_en_cours.Pays+'.png")'})
 				.html(tranche_en_cours.str_userfriendly)
 				.click(function() {
+					$('#'+wizard_id+' [name="est_nouvelle_conception_tranche"]').val($(this).closest('[name="tranches_non_affectees"]').length > 0);
 					$('#'+wizard_id+' #to-wizard-conception').click();
 				});
-			if (elementListe.find('#'+id_tranche).length === 0) {
-				elementListe.append(bouton_tranche_en_cours);
+			if (element_type_tranche.find('#'+id_tranche).length === 0) {
+				element_type_tranche.append(bouton_tranche_en_cours);
 			}
 		});
-		elementListe.buttonset().menu();
+		elementListe
+			.removeClass('cache')
+			.buttonset().menu();
 		$('#'+wizard_id+' #to-wizard-creer, #'+wizard_id+' #to-wizard-modifier').click(function() {
 			elementListe.find('.ui-state-active').removeClass('ui-state-active');
+		});
+
+		$.each(noms_sections, function() {
+			var section = elementListe.find('[name="'+this.toString()+'"]');
+			if (section.children('li').length === 0) {
+				section.remove();
+			}
 		});
 	}
 	else {
@@ -2788,20 +2824,22 @@ function wizard_charger_liste_numeros(magazine_sel) {
 	});
 }
 
-function creer_modele_tranche(pays, magazine, numero, dimension_x, dimension_y, with_user) {
+function creer_modele_tranche(pays, magazine, numero, with_user, dimension_x, dimension_y) {
 	$.ajax({
 		url: urls['creer_modele_wizard']+['index',pays,magazine,numero,with_user].join('/'),
 		type: 'post',
 		async: false
 	});
 
-	// Mise à jour de la fonction Dimensions avec les valeurs entrées
-	var parametrage_dimensions =  'Dimension_x='+dimension_x +'&Dimension_y='+dimension_y;
-	$.ajax({
-		url: urls['update_wizard']+['index',pays,magazine,numero,-1,parametrage_dimensions,with_user].join('/'),
-		type: 'post',
-		async: false
-	});
+	if (dimension_x) {
+		// Mise à jour de la fonction Dimensions avec les valeurs entrées
+		var parametrage_dimensions =  'Dimension_x='+dimension_x +'&Dimension_y='+dimension_y;
+		$.ajax({
+			url: urls['update_wizard']+['index',pays,magazine,numero,-1,parametrage_dimensions,with_user].join('/'),
+			type: 'post',
+			async: false
+		});
+	}
 }
 
 function rogner_image(image, nom, source, destination, pays_destination, magazine_destination, numero_destination, x1, x2, y1, y2, numero_image, callback) {
@@ -2834,6 +2872,10 @@ function get_option_wizard(id_wizard, nom_option) {
 	if (options_wizard == undefined || options_wizard == null)
 		return undefined;
 	return options_wizard[nom_option] || undefined;
+}
+
+function set_option_wizard(id_wizard, nom_option, valeur) {
+	wizard_options[id_wizard][nom_option] = valeur;
 }
 
 
@@ -3039,7 +3081,7 @@ function templatedToVal(templatedString) {
 						}
 					}
 					else
-						templatedString=templatedString.replace(regex, dimensions.x.val());
+						templatedString=templatedString.replace(regex, dimensions.x);
 				break;
 				case 'hauteur':
 					if (matches[2] || matches[3]) {
@@ -3047,12 +3089,12 @@ function templatedToVal(templatedString) {
 						var autre_nombre= matches[1] || matches[4];
 						switch(operation) {
 							case '*':
-								templatedString= dimensions.y.val()*autre_nombre;
+								templatedString= dimensions.y*autre_nombre;
 							break;
 						}
 					}
 					else
-						templatedString=templatedString.replace(regex, dimensions.y.val());
+						templatedString=templatedString.replace(regex, dimensions.y);
 				break;
 				case 'caracteres_speciaux':
 					templatedString=templatedString.replace(/Â°/,'°');
