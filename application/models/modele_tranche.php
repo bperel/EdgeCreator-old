@@ -2040,7 +2040,7 @@ class Rogner {
         $ci = &get_instance();
         $ci->load->helper('noms_images');
 
-        list($dossier_image_modifiee,$nom_image_modifiee) = get_nom_fichier(null, $pays, $magazine, $numero, $destination === 'photos');
+        list($dossier_image_modifiee,$nom_image_modifiee) = get_nom_fichier($nom, $pays, $magazine, $numero, $destination === 'photos');
 		$nom_image_origine .=	$extension;
 
         echo $nom_image_modifiee;
@@ -2057,6 +2057,7 @@ class Rogner {
 							$x1 * $width / 100 , $y1 * $height / 100 ,
 							($x2-$x1) * $width / 100 , ($y2-$y1) * $height / 100 , 
 							($x2-$x1) * $width / 100 , ($y2-$y1) * $height / 100);
+        @mkdir($dossier_image_modifiee, 0777, true);
 		imagejpeg($cropped_img,$dossier_image_modifiee.$nom_image_modifiee);
 
         $this->source = $source;

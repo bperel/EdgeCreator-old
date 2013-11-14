@@ -250,7 +250,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 	}
 
 	function update_etape($pays,$magazine,$numero,$etape,$parametrage) {
-		$id_modele=$this->get_id_modele($pays,$magazine,$numero,self::$username);
+		$id_modele=$this->get_id_modele($pays,$magazine,$numero,self::$username, !isset(self::$username));
 		$nom_fonction=$this->get_nom_fonction($id_modele,$etape);
 		
 		$requete_suppr='DELETE valeurs FROM tranches_en_cours_valeurs AS valeurs '

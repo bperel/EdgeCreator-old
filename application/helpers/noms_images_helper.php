@@ -12,12 +12,7 @@ function get_nom_fichier($nom, $pays, $magazine, $numero, $est_photo_tranche) {
         else {
             $fichier='photo.multiple';
         }
-        $i=1;
-        while (file_exists($dossier.$fichier.'_'.$i.$extension_cible)) {
-            $i++;
-        }
-        $fichier.='_'.$i;
-        $fichier.=$extension_cible;
+        $fichier=get_prochain_nom_fichier_dispo($dossier, $fichier, $extension_cible);
     }
     else {
         if (strpos($nom, $magazine) === 0) {
@@ -26,7 +21,18 @@ function get_nom_fichier($nom, $pays, $magazine, $numero, $est_photo_tranche) {
         else {
             $fichier = basename($magazine.'.'.$nom);
         }
+        $fichier=get_prochain_nom_fichier_dispo($dossier, $fichier, $extension_cible);
     }
     $fichier=str_replace(' ','_',$fichier);
     return array($dossier,$fichier);
+}
+
+function get_prochain_nom_fichier_dispo($dossier, $fichier, $extension_cible) {
+    $i=1;
+    while (file_exists($dossier.$fichier.'_'.$i.$extension_cible)) {
+        $i++;
+    }
+    $fichier.='_'.$i;
+    $fichier.=$extension_cible;
+    return $fichier;
 }
