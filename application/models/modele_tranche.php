@@ -1296,7 +1296,7 @@ class Modele_tranche extends CI_Model {
 		imagepng(Viewer_wizard::$image);
 	
 		@rmdir('../edges/'.Viewer_wizard::$pays.'/tmp/');
-		@mkdir('../edges/'.Viewer_wizard::$pays.'/tmp/');
+		@mkdir('../edges/'.Viewer_wizard::$pays.'/tmp/',0777,true);
 		$nom_image='../edges/'.Viewer_wizard::$pays.'/tmp/'.Viewer_wizard::$random_id.'.png';
 		imagepng(Viewer_wizard::$image,$nom_image);
 		

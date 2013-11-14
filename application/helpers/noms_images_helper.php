@@ -4,7 +4,7 @@ function get_nom_fichier($nom, $pays, $magazine, $numero, $est_photo_tranche) {
     $dossier = getcwd().'/../edges/'
               .(is_null($pays) ? 'tranches_multiples' : ($pays.'/'.( $est_photo_tranche ? 'photos' : 'elements' )))
               .'/';
-    @mkdir($dossier);
+    @mkdir($dossier,0777,true);
     if ($est_photo_tranche) {
         if (isset($pays)) {
             $fichier=$magazine.'.'.$numero.'.photo';
