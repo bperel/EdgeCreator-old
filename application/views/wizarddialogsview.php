@@ -696,6 +696,8 @@
 <div id="wizard-resize" class="wizard first closeable" title="Retouche d'image">
 	<p>
 		Rognez l'image.
+        <b>Pour de meilleurs résultats sur votre modèle, nous vous conseillons d'éditer l'image rognée sur votre ordinateur<br />
+        afin par exemple de rendre transparent son arrière plan.</b>
 	</p>
 	<img /><br />
 	<div class="error crop_inconsistent cache">Une partie de votre sélection est située en dehors de l'image.</div>
