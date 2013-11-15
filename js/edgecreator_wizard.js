@@ -730,7 +730,7 @@ function wizard_init(wizard_id) {
 				break;
 			$('#'+wizard_id+' .chargement').removeClass('cache');
 			$('#'+wizard_id+' .tranches_pretes_magazine').addClass('cache');
-			if (pays === undefined) {
+			if (numero === undefined) {
 				if (get_option_wizard('wizard-creer-collection','choix_tranche')!= undefined) {
 					var tranche=get_option_wizard('wizard-creer-collection','choix_tranche').split(/_/g);
 					pays=	 tranche[1];
@@ -2736,6 +2736,7 @@ function placer_extension_largeur_preview() {
 function wizard_charger_liste_pays() {
 	chargement_listes=true;
 	var wizard_pays=$('#'+id_wizard_courant+' [name="wizard_pays"]');
+	wizard_pays.html($('<option>').text('Chargement...'));
 
 	$.ajax({
 		url: urls['numerosdispos']+['index'].join('/'),
@@ -2763,6 +2764,7 @@ function wizard_charger_liste_pays() {
 function wizard_charger_liste_magazines(pays_sel) {
 	chargement_listes=true;
 	var wizard_magazine=$('#'+id_wizard_courant+' [name="wizard_magazine"]');
+	wizard_magazine.html($('<option>').text('Chargement...'));
 
 	pays=pays_sel;
 
@@ -2780,7 +2782,7 @@ function wizard_charger_liste_magazines(pays_sel) {
 			if (get_option_wizard(id_wizard_courant, 'wizard_magazine') != undefined)
 				wizard_magazine.val(get_option_wizard(id_wizard_courant, 'wizard_magazine'));
 
-			$('#'+id_wizard_courant+' [name="wizard_magazine"]').change(function() {
+			wizard_magazine.change(function() {
 				chargement_listes=true;
 				wizard_charger_liste_numeros($(this).val());
 			});
@@ -2793,6 +2795,7 @@ function wizard_charger_liste_magazines(pays_sel) {
 function wizard_charger_liste_numeros(magazine_sel) {
 	chargement_listes=true;
 	var wizard_numero=$('#'+id_wizard_courant+' [name="wizard_numero"]');
+	wizard_numero.html($('<option>').text('Chargement...'));
 
 	magazine=magazine_sel;
 
