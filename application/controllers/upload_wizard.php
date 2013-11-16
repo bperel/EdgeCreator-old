@@ -6,7 +6,10 @@ class Upload_Wizard extends CI_Controller {
 	
 	function index() {
 
-        $est_photo_tranche = $_POST['photo_tranche'] == 1 || $_GET['photo_tranche'] == 1 ? 1 : 0;
+        $est_photo_tranche = (isset($_POST['photo_tranche']) && $_POST['photo_tranche'] == 1)
+                          || (isset($_GET ['photo_tranche']) && $_GET ['photo_tranche'] == 1)
+            ? 1
+            : 0;
 
         if (!isset($_POST['MAX_FILE_SIZE'])) {
             header('Location: '.preg_replace('#/[^/]+\?#','/image_upload.php?',$_SERVER['REQUEST_URI']));

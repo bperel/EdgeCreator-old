@@ -1841,7 +1841,7 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 				positionner_image(apercu_image);
 			}
 
-			form_userfriendly.find('[name="parcourir"],[name="option-Source"]').click(function(event) {
+			form_userfriendly.find('[name="parcourir"]').click(function(event) {
 				event.preventDefault();
 				
 				$('#wizard-images')
