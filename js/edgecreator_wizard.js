@@ -1834,10 +1834,12 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 		
 			var apercu_image=form_userfriendly.find('.apercu_image');
 						
-			if (apercu_image.attr('src') == undefined)
-				definir_et_positionner_image(valeurs['Source']);
-			else
+			if (apercu_image.attr('src') === undefined) {
+				definir_et_positionner_image(templatedToVal(valeurs['Source']));
+			}
+			else {
 				positionner_image(apercu_image);
+			}
 
 			form_userfriendly.find('[name="parcourir"],[name="option-Source"]').click(function(event) {
 				event.preventDefault();
