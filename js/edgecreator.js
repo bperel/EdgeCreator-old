@@ -549,7 +549,7 @@ function charger_preview_etape(etapes_preview,est_visu, parametrage, callback) {
 	if (parametrage==undefined)
 		parametrage='_';
     var zoom_utilise= est_visu ? zoom : 1.5;
-    if (etapes_preview == '')
+    if (etapes_preview === '')
         etapes_preview=-1;
 	var fond_noir='false';
     if ((typeof(etapes_preview) == 'string' && etapes_preview.indexOf(',') == -1)
