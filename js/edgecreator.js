@@ -557,9 +557,7 @@ function charger_preview_etape(etapes_preview,est_visu, parametrage, callback) {
         $('#chargement').html('Chargement de la preview de l\'&eacute;tape '+etapes_preview);
         fond_noir=($('#fond_noir_'+etapes_preview) 
 					&& $('#fond_noir_'+etapes_preview).hasClass('fond_noir_active')) ? 'true':'false';
-        var etapes_preview2 = etapes_preview;
-        etapes_preview=new Array();
-        etapes_preview.push(etapes_preview2);
+        etapes_preview = [etapes_preview];
     }
     else {
         $('#chargement').html('Chargement de la preview de la tranche');
