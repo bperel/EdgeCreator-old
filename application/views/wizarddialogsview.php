@@ -186,7 +186,8 @@
 				<span class="chargement">Veuillez patienter...</span>
 				<form>
 					<ul id="tranches_non_pretes" class="liste_numeros cache">
-						<li class="init">
+                        <div name="tranches_non_affectees"></div>
+						<li class="template">
 							<input type="radio" id="numero_tranche_non_prete" name="choix_tranche">
 							<label for="numero_tranche_non_prete">Label</label>
 						</li>

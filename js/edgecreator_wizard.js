@@ -1178,7 +1178,7 @@ function afficher_liste_magazines(wizard_id, id_element_liste, data) {
 
 		$.each(tranches, function(i, tranche_en_cours) {
 			var element_type_tranche;
-			if (tranche_en_cours.username === null) {
+			if (!tranche_en_cours.username) {
 				element_type_tranche = elementListe.find('[name="'+noms_sections[0]+'"]');
 			}
 			else {
