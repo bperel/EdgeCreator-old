@@ -102,11 +102,11 @@ class Upload_Wizard extends CI_Controller {
 
         $this->load->view('helperview',array('contenu'=>$this->contenu));
     }
+}
 
-    function afficher_retour($est_photo_tranche) {
-        ob_start();
-        ?><br /><a href="<?=$_SERVER['REDIRECT_URL'].'?photo_tranche='.$est_photo_tranche?>">Autre envoi</a><?php
-        return ob_get_flush();
-    }
+function afficher_retour($est_photo_tranche) {
+    ob_start();
+    ?><br /><a href="<?=$_SERVER['SCRIPT_NAME'].'?photo_tranche='.$est_photo_tranche?>">Autre envoi</a><?php
+    return ob_get_flush();
 }
 ?>
