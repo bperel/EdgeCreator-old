@@ -2412,7 +2412,14 @@ function tester_options_preview(nom_fonction, noms_options, element) {
 							val = toFloat2Decimals(parseFloat((positionnement.offset().left - image.offset().left)/zoom));
 						break;
 						case 'Decalage_y':
-							var pos_y_image=positionnement.offset().top - image.offset().top;
+							var pos_y_image;
+							if (form_userfriendly.valeur('Position') === 'bas') {
+								pos_y_image=image.height() - (positionnement.offset().top - image.offset().top);
+							}
+							else {
+								pos_y_image=positionnement.offset().top - image.offset().top;
+							}
+
 							val = toFloat2Decimals(parseFloat((pos_y_image)/zoom));
 							form_options.valeur('Mesure_depuis_haut').val('Oui');
 						break;
