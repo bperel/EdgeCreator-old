@@ -475,7 +475,7 @@
 			</p>
 			<form id="options_etape">
 				Image utilisée : 
-				<input type="text" name="option-Source" readonly="readonly" />
+				<input type="text" name="option-Source" />
 				<button class="small" name="parcourir">Parcourir</button>
 				<br />
 				<img class="apercu_image hidden" />
