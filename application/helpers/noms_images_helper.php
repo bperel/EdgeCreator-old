@@ -20,11 +20,11 @@ function get_nom_fichier($nom, $pays, $magazine, $numero, $est_photo_tranche) {
             $fichier=get_prochain_nom_fichier_dispo($dossier, $fichier, $extension_cible);
         }
         else { // Photo d'élément
-            if (strpos($nom, $magazine) === 0) {
-                $fichier = basename($nom);
+            if (isset($magazine)) {
+                $fichier = basename($magazine.'.'.$nom);
             }
             else {
-                $fichier = basename($magazine.'.'.$nom);
+                $fichier = basename($nom);
             }
             $fichier=get_prochain_nom_fichier_dispo($dossier, $fichier, $extension_cible);
         }
