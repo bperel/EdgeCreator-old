@@ -90,7 +90,8 @@ class Upload_Wizard extends CI_Controller {
                         ob_start();
                         ?>
                         <script type="text/javascript">
-                            if (window.parent.document.getElementById('wizard-photos').parentNode.style.display === 'block') {
+                            if (window.parent.$('wizard-photos')
+                             && window.parent.$('wizard-photos').parent().is(':visible')) {
                                 window.parent.lister_images_gallerie('Photos');
                             }
                             else {
