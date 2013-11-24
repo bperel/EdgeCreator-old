@@ -5,7 +5,6 @@ class Upload_Wizard extends CI_Controller {
     var $contenu = '';
 	
 	function index() {
-
         $est_photo_tranche = (isset($_POST['photo_tranche']) && $_POST['photo_tranche'] == 1)
                           || (isset($_GET ['photo_tranche']) && $_GET ['photo_tranche'] == 1)
             ? 1
@@ -105,8 +104,6 @@ class Upload_Wizard extends CI_Controller {
 }
 
 function afficher_retour($est_photo_tranche) {
-    ob_start();
-    ?><br /><a href="<?=$_SERVER['SCRIPT_NAME'].'?photo_tranche='.$est_photo_tranche?>">Autre envoi</a><?php
-    return ob_get_flush();
+    return '<br /><a href="'.preg_replace('#\?.*$#', '', $_SERVER['HTTP_REFERER']).'?photo_tranche='.$est_photo_tranche.'">Autre envoi</a>';
 }
 ?>
