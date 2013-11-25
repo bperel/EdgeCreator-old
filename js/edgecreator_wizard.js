@@ -1100,7 +1100,8 @@ function wizard_init(wizard_id) {
 							.val($(this).data('etape'));
 						$('#'+wizard_id).dialog().dialog("open");
 						$('.dialog-preview-etape')
-							.removeClass('cloneable');
+							.removeClass('cloneable')
+							.off('click');
 					});
 			});
 		break;
