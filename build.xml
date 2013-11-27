@@ -48,6 +48,8 @@
    <arg path="${basedir}" />
    <arg value="text" />
    <arg value="${basedir}/build/phpmd.xml" />
+   <arg value="--exclude"/>
+   <arg value="${basedir}/system/"/>
   </exec>
  </target>
 
@@ -58,6 +60,8 @@
    <arg value="${basedir}/build/phpmd.xml" />
    <arg value="--reportfile" />
    <arg value="${basedir}/build/logs/pmd.xml" />
+   <arg value="--exclude"/>
+   <arg value="${basedir}/system/"/>
   </exec>
  </target>
 
@@ -66,6 +70,8 @@
   <exec executable="phpcs">
    <arg value="--standard=${basedir}/build/phpcs.xml" />
    <arg path="${basedir}" />
+   <arg value="--exclude"/>
+   <arg value="${basedir}/system/"/>
   </exec>
  </target>
 
@@ -75,6 +81,8 @@
    <arg value="--report-file=${basedir}/build/logs/checkstyle.xml" />
    <arg value="--standard=${basedir}/build/phpcs.xml" />
    <arg path="${basedir}" />
+   <arg value="--exclude"/>
+   <arg value="${basedir}/system/"/>
   </exec>
  </target>
 
@@ -83,6 +91,8 @@
    <arg value="--log-pmd" />
    <arg value="${basedir}/build/logs/pmd-cpd.xml" />
    <arg path="${basedir}" />
+   <arg value="--exclude"/>
+   <arg value="${basedir}/system/"/>
   </exec>
  </target>
 
