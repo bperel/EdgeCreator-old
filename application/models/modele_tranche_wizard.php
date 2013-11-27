@@ -122,7 +122,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 			$valeur=$resultat->Option_valeur;
 			$resultats_options->$option_nom=$valeur;
 		}
-		$f=new $nom_fonction($resultats_options,false,$creation,!$nouvelle_etape); // Ajout des champs avec valeurs par défaut
+		$f=new $nom_fonction($resultats_options,false,$creation,!$nouvelle_etape); // Ajout des champs avec valeurs par dï¿½faut
 		if ($inclure_infos_options) {
 			$prop_champs=new ReflectionProperty(get_class($f), 'champs');
 			$champs=$prop_champs->getValue();
@@ -141,14 +141,6 @@ class Modele_tranche_Wizard extends Modele_tranche {
 			}
 		}
 		return $f->options;
-	}
-
-	function has_no_option($pays,$magazine,$etape) {
-		$requete='SELECT Option_nom '
-				.'FROM tranches_en_cours_modeles_vue '
-				.'WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' AND Option_nom IS NOT NULL '
-				.'AND username = \''.self::$username.'\'';
-		return $this->db->query($requete)->num_rows() == 0;
 	}
 
 	function decaler_etapes_a_partir_de($id_modele,$etape_debut, $inclure_cette_etape) {
@@ -337,7 +329,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		$options = $this->get_valeurs_options($pays,$magazine, array($numero));
 		
 		if (count($options[$numero]) === 0) {
-			echo 'Aucune option d\'étape pour '.$pays.'/'.$magazine.' '.$numero;
+			echo 'Aucune option d\'ï¿½tape pour '.$pays.'/'.$magazine.' '.$numero;
 			return;
 		}
 
@@ -370,7 +362,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 			$this->db->query($requete_ajout_valeur);
 		}
 		
-		// Suppression des étapes incomplètes = étapes dont le nombre d'options est différent de celui défini
+		// Suppression des ï¿½tapes incomplï¿½tes = ï¿½tapes dont le nombre d'options est diffï¿½rent de celui dï¿½fini
 		
 		foreach(self::$noms_fonctions as $nom_fonction) {
 			$champs_obligatoires = array_diff(array_keys($nom_fonction::$champs), array_keys($nom_fonction::$valeurs_defaut));
@@ -392,7 +384,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 			foreach($etapes_et_options as $etape=>$options) {
 				$champs_obligatoires_manquants = array_diff($champs_obligatoires, $options);
 				if (count($champs_obligatoires_manquants) > 0) {
-					echo utf8_encode("\nEtape $etape : l'étape sera supprimée car les champs suivants ne sont pas renseignés : "
+					echo utf8_encode("\nEtape $etape : l'ï¿½tape sera supprimï¿½e car les champs suivants ne sont pas renseignï¿½s : "
 									 .implode(', ', $champs_obligatoires_manquants)."\n");
 					$requete_suppression_etape=' DELETE FROM tranches_en_cours_valeurs'
 											  .' WHERE ID_Modele='.$id_modele.' AND Ordre='.$etape;

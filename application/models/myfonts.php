@@ -54,7 +54,7 @@ class MyFonts extends CI_Model {
 		if ($image_existe && !isset($_GET['force_post'])) {
 			$id_image=$requete_image_existe_resultat[0]->ID;
 			$this->chemin_image=BASEPATH.'../../edges/images_myfonts/'.$id_image.'.gif';
-			if (false !== (@$im=imagecreatefromgif($this->chemin_image))) { // Image stockée, pas besoin de la regénérer
+			if (false !== (@$im=imagecreatefromgif($this->chemin_image))) { // Image stockï¿½e, pas besoin de la regï¿½nï¿½rer
 				$this->im=$im;
 				return;
 			}
@@ -65,7 +65,6 @@ class MyFonts extends CI_Model {
 		}
 		$this->p=new Post(
 			"http://new.myfonts.com/widgets/testdrive/testdrive-ajax.php",
-			"http://www.jonasjohn.de/",
 			$this->data,
 			'GET'
 		);
@@ -100,7 +99,7 @@ class Post extends CI_Model {
 	var $content;
 	var $url;
 	
-	function Post($url, $referer, $_data,$type='POST',$cookie='',$easyget=true) {
+	function Post($url, $_data,$type='POST',$cookie='') {
 		// convert variables array to string:
 		$data = array();
 		while(list($n,$v) = each($_data)){

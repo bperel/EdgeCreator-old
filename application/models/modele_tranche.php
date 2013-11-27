@@ -357,16 +357,6 @@ class Modele_tranche extends CI_Model {
 		return $f->options;
 	}
 
-	function has_no_option($pays,$magazine,$etape) {
-		$requete='SELECT Option_nom '
-				.'FROM edgecreator_modeles2 '
-				.'INNER JOIN edgecreator_valeurs ON edgecreator_modeles2.ID = edgecreator_valeurs.ID_Option '
-			    .'INNER JOIN edgecreator_intervalles ON edgecreator_valeurs.ID = edgecreator_intervalles.ID_Valeur '
-				.'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Option_nom IS NOT NULL '
-				.'AND username LIKE \''.($this->user_possede_modele() ? self::$username : 'brunoperel').'\'';
-		return $this->db->query($requete)->num_rows() == 0;
-	}
-
 	function decaler_etapes_a_partir_de($pays,$magazine,$etape_debut) {
 		$requete='SELECT Max(Ordre) AS max_ordre FROM edgecreator_modeles2 '
 				.'INNER JOIN edgecreator_valeurs ON edgecreator_modeles2.ID = edgecreator_valeurs.ID_Option '
