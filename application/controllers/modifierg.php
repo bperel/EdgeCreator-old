@@ -27,7 +27,7 @@ class ModifierG extends CI_Controller {
 			$this->load->helper('url');
 			$this->load->helper('form');
 			
-			$this->load->model('Modele_tranche' : 'Modele_tranche_Wizard','Modele_tranche');
+			$this->load->model($this->session->userdata('mode_expert') === true ? 'Modele_tranche' : 'Modele_tranche_Wizard','Modele_tranche');
 			$data=array();
 			
 			$privilege=$this->Modele_tranche->get_privilege();
@@ -150,7 +150,7 @@ class ModifierG extends CI_Controller {
 			$this->load->view('parametragegview',$data);
 		}
 		catch(Exception $e) {
-	    	echo 'Exception reçue : ',  $e->getMessage(), "\n";
+	    	echo 'Exception reï¿½ue : ',  $e->getMessage(), "\n";
 	    	echo '<pre>';print_r($e->getTrace());echo '</pre>';
 		}
 	}
