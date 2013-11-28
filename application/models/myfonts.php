@@ -13,7 +13,7 @@ class MyFonts extends CI_Model {
 	var $data;
 	var $im;
 
-	function MyFonts($font=null,$color=null,$color_bg=null, $width=null, $text=null,$precision=18) {
+	function __construct($font=null,$color=null,$color_bg=null, $width=null, $text=null,$precision=18) {
 		parent::__construct();
 		if (is_null($font))
 			return;
@@ -99,7 +99,7 @@ class Post extends CI_Model {
 	var $content;
 	var $url;
 	
-	function Post($url, $_data,$type='POST',$cookie='') {
+	function __construct($url, $_data,$type='POST',$cookie='') {
 		// convert variables array to string:
 		$data = array();
 		while(list($n,$v) = each($_data)){

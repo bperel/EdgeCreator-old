@@ -23,7 +23,7 @@ class Modele_tranche extends CI_Model {
 	static $noms_fonctions = array('Agrafer','Arc_cercle','Degrade','DegradeTrancheAgrafee',
 								   'Image','Polygone','Rectangle','Remplir','TexteMyFonts');
 
-	function Modele_tranche($tab=array())
+	function __construct($tab=array())
 	{
 		foreach($tab as $arg_name=>$arg_value)
 			$this->$arg_name=$arg_value;
@@ -1310,7 +1310,7 @@ class Fonction_executable extends Fonction {
 
 	static $descriptions=array();
 	
-	function Fonction_executable($options,$creation=false,$get_options_defaut=true) {
+	function __construct($options,$creation=false,$get_options_defaut=true) {
 		if (!is_object($options)) {
 			$options=new stdClass();
 		}
@@ -1473,7 +1473,7 @@ class Dimensions extends Fonction_executable {
 	static $descriptions=array('Dimension_x'=>'Largeur de la tranche', 
 							   'Dimension_y'=>'Hauteur de la tranche');
 	
-	function Dimensions($options,$executer=true,$creation=false,$get_options_defaut=true) {
+	function __construct($options,$executer=true,$creation=false,$get_options_defaut=true) {
 		parent::Fonction_executable($options,$creation,$get_options_defaut);
 		if (!$executer)
 			return;
@@ -1504,7 +1504,7 @@ class Remplir extends Fonction_executable {
 							   'Pos_y'=>'Ordonn&eacute;e du point de d&eacute;part du remplissage',
 							   'Couleur'=>'Couleur de remplissage');
 	
-	function Remplir($options,$executer=true,$creation=false,$get_options_defaut=true) {
+	function __construct($options,$executer=true,$creation=false,$get_options_defaut=true) {
 		parent::Fonction_executable($options,$creation,$get_options_defaut);
 		if (!$executer)
 			return;
@@ -1539,7 +1539,7 @@ class Image extends Fonction_executable {
 							   'Compression_y'=>'Compression de la hauteur de l\'image',
 							   'Position'=>'Position de l\'image par rapport &agrave; la tranche : Haut ou Bas');
 	
-	function Image($options,$executer=true,$creation=false,$get_options_defaut=true) {
+	function __construct($options,$executer=true,$creation=false,$get_options_defaut=true) {
 		parent::Fonction_executable($options,$creation,$get_options_defaut);
 		if (!$executer)
 			return;
@@ -1609,7 +1609,7 @@ class TexteMyFonts extends Fonction_executable {
 							   'Demi_hauteur'=>'S&eacute;lectionnez "Oui" si jamais vous ne voyez le texte que sur la moiti&eacute; de sa hauteur',
 							   'Mesure_depuis_haut'=>'"Oui" si Pos_y doit repr&eacute;senter la marge jusqu\'au haut du texte, "Non" s\'il s\'agit de la marge jusqu\'au bas du texte');
 	
-	function TexteMyFonts($options,$executer=true,$creation=false,$get_options_defaut=true,$options_avancees=true) {
+	function __construct($options,$executer=true,$creation=false,$get_options_defaut=true,$options_avancees=true) {
 		parent::Fonction_executable($options,$creation,$get_options_defaut);
 		if (!$executer)
 			return;
@@ -1712,7 +1712,7 @@ class TexteTTF extends Fonction_executable {
 							   'Compression_x'=>'Compression de la largeur de l\'image<br />(1 = Pas de compression)',
 							   'Compression_y'=>'Compression de la hauteur de l\'image<br />(1 = Pas de compression)');
 	
-	function TexteTTF($options,$executer=true,$creation=false,$get_options_defaut=true) {
+	function __construct($options,$executer=true,$creation=false,$get_options_defaut=true) {
 		parent::Fonction_executable($options,$creation,$get_options_defaut);
 		if (!$executer)
 			return;
@@ -1765,7 +1765,7 @@ class Polygone extends Fonction_executable {
 							   'Y'=>'Liste des ordonn&eacute;es des points, s&eacute;par&eacute;es par virgules', 
 							   'Couleur'=>'Couleur du polygone');
 	
-	function Polygone($options,$executer=true,$creation=false,$get_options_defaut=true) {
+	function __construct($options,$executer=true,$creation=false,$get_options_defaut=true) {
 		parent::Fonction_executable($options,$creation,$get_options_defaut);
 		if (!$executer)
 			return;
@@ -1798,7 +1798,7 @@ class Agrafer extends Fonction_executable {
 							   'Y1'=>'Marge de la 2&egrave;me agrafe par rapport au haut de la tranche', 
 							   'Taille_agrafe'=>'Hauteur de chaque agrafe');
 	
-	function Agrafer($options,$executer=true,$creation=false,$get_options_defaut=true) {
+	function __construct($options,$executer=true,$creation=false,$get_options_defaut=true) {
 		parent::Fonction_executable($options,$creation,$get_options_defaut);
 		if (!$executer)
 			return;
@@ -1825,7 +1825,7 @@ class Degrade extends Fonction_executable {
 							   'Pos_y_debut'=>'Marge du d&eacute;but du d&eacute;grad&eacute; par rapport au haut de la tranche',
 							   'Pos_y_fin'=>'Marge de la fin du d&eacute;grad&eacute; par rapport au haut de la tranche');
 	
-	function Degrade($options,$executer=true,$creation=false,$get_options_defaut=true) {
+	function __construct($options,$executer=true,$creation=false,$get_options_defaut=true) {
 		parent::Fonction_executable($options,$creation,$get_options_defaut);
 		if (!$executer)
 			return;
@@ -1897,7 +1897,7 @@ class DegradeTrancheAgrafee extends Fonction_executable {
 	
 	static $descriptions=array('Couleur'=>'Couleur de la tranche');
 	
-	function DegradeTrancheAgrafee($options,$executer=true,$creation=false,$get_options_defaut=true) {
+	function __construct($options,$executer=true,$creation=false,$get_options_defaut=true) {
 		parent::Fonction_executable($options,$creation,$get_options_defaut);
 		if (!$executer)
 			return;
@@ -1934,7 +1934,7 @@ class Rectangle extends Fonction_executable {
 							   'Pos_y_fin'=>'Marge de la fin du rectangle par rapport au haut de la tranche',
 							   'Rempli'=>'"Oui" pour dessiner un rectangle rempli, "Non" pour dessiner seulement le contour');
 	
-	function Rectangle($options,$executer=true,$creation=false,$get_options_defaut=true) {
+	function __construct($options,$executer=true,$creation=false,$get_options_defaut=true) {
 		parent::Fonction_executable($options,$creation,$get_options_defaut);
 		if (!$executer)
 			return;
@@ -1967,7 +1967,7 @@ class Arc_cercle extends Fonction_executable {
 							   'Angle_fin'=>'Angle de la fin de l\'arc de cercle<br />(360 pour un cercle complet)',
 							   'Rempli'=>'"Oui" pour dessiner un arc de cercle rempli, "Non" pour dessiner seulement le trait');
 	
-	function Arc_cercle($options,$executer=true,$creation=false,$get_options_defaut=true) {
+	function __construct($options,$executer=true,$creation=false,$get_options_defaut=true) {
 		parent::Fonction_executable($options,$creation,$get_options_defaut);
 		if (!$executer)
 			return;
@@ -2000,7 +2000,7 @@ class Dessiner_contour {
 class Rogner {
     private $source;
 
-    function Rogner($pays, $magazine, $numero_original, $numero, $nom, $source, $destination, $x1, $x2, $y1, $y2) {
+    function __construct($pays, $magazine, $numero_original, $numero, $nom, $source, $destination, $x1, $x2, $y1, $y2) {
 		$extension='.jpg';
         if ($source === 'photo_multiple') {
 		    $nom_image_origine = Fonction_executable::getCheminPhotosMultiples()
