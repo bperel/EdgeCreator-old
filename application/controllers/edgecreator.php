@@ -70,7 +70,6 @@ class EdgeCreator extends CI_Controller {
 		foreach(array_keys($etapes) as $num_etape) {
 			if ($num_etape != -1)
 				$num_etapes[$num_etape]=$num_etape;
-			$derniere_etape=$num_etape;
 		}
 		$data['etapes_clonables']=count($num_etapes) == 0 ? '' : form_dropdown('etapes_clonables', $num_etapes, $num_etape);
 		

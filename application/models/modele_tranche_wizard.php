@@ -69,14 +69,18 @@ class Modele_tranche_Wizard extends Modele_tranche {
 	}
 
 	function get_etapes_simple($pays,$magazine,$numero,$num_etape=null) {
-		$resultats_etapes=array();
-		$username=($this->user_possede_modele() ? self::$username : 'brunoperel');
 		$requete='SELECT '.implode(', ', self::$content_fields).' '
 				.'FROM tranches_en_cours_modeles_vue '
-			    .'WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' AND Numero = \''.$numero.'\' '
-				.'AND username = \''.self::$username.'\' ';
-		if (!is_null($num_etape))
+			    .'WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' AND Numero = \''.$numero.'\' ';
+		if (is_null(self::$username)) {
+            $requete.=' AND username IS NULL';
+        }
+        else {
+			$requete.=' AND username=\''.self::$username.'\'';
+		}
+		if (!is_null($num_etape)) {
 			$requete.='AND Ordre='.$num_etape.' ';
+		}
 		$requete.=' GROUP BY Ordre'
 				 .' ORDER BY Ordre ';
 		$resultats = $this->db->query($requete)->result();
@@ -84,7 +88,6 @@ class Modele_tranche_Wizard extends Modele_tranche {
 	}
 
 	function get_fonction($pays,$magazine,$ordre,$numero) {
-		$resultats_fonctions=array();
 		$requete='SELECT '.implode(', ', self::$content_fields).' '
 				.'FROM tranches_en_cours_modeles_vue '
 				.'WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' AND Ordre='.$ordre.' '
@@ -130,7 +133,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 			$valeurs_defaut=$prop_valeurs_defaut->getValue();
 			$prop_descriptions=new ReflectionProperty(get_class($f), 'descriptions');
 			$descriptions=$prop_descriptions->getValue();
-			foreach($f->options as $nom_option=>$option) {
+			foreach(array_keys($f->options) as $nom_option) {
 				$intervalles_option=array();
 				$intervalles_option['valeur']=$f->options->$nom_option;
 				$intervalles_option['type']=$champs[$nom_option];
@@ -439,7 +442,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 				 .' FROM tranches_en_cours_modeles_vue'
 				 .' WHERE ID_Modele='.$id_modele.' AND Option_nom LIKE \'Couleur%\'';
 		$resultats=$this->db->query($requete)->result();
-		foreach($resultats as $i=>$resultat) {
+		foreach($resultats as $resultat) {
 			$couleurs[]=$resultat->Option_valeur;
 		}
 		return $couleurs;
