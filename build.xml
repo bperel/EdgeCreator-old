@@ -90,9 +90,9 @@
   <exec executable="phpcpd">
    <arg value="--log-pmd" />
    <arg value="${basedir}/build/logs/pmd-cpd.xml" />
-   <arg path="${basedir}" />
    <arg value="--exclude"/>
-   <arg value="${basedir}/system/"/>
+   <arg value="${basedir}/system"/>
+   <arg path="${basedir}" />
   </exec>
  </target>
 
