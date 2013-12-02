@@ -23,14 +23,13 @@ class ParametrageG_wizard extends CI_Controller {
 		$this->load->helper('url');
 		$this->load->helper('form');
 		
-		$mode_expert=$this->session->userdata('mode_expert') === true;
 		$this->load->model('Modele_tranche_Wizard','Modele_tranche');
 		
 		$this->Modele_tranche->setUsername($this->session->userdata('user'));
 		
 		$this->Modele_tranche->setPays(self::$pays);
 		$this->Modele_tranche->setMagazine(self::$magazine);
-		if (is_null(self::$etape)) { // Liste des étapes
+		if (is_null(self::$etape)) { // Liste des ï¿½tapes
 			$etapes=$this->Modele_tranche->get_etapes_simple(self::$pays,self::$magazine,self::$numero);
 			if (count($etapes) == 0) {
 				$fonction_dimension=new stdClass();

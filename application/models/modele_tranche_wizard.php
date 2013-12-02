@@ -69,14 +69,18 @@ class Modele_tranche_Wizard extends Modele_tranche {
 	}
 
 	function get_etapes_simple($pays,$magazine,$numero,$num_etape=null) {
-		$resultats_etapes=array();
-		$username=($this->user_possede_modele() ? self::$username : 'brunoperel');
 		$requete='SELECT '.implode(', ', self::$content_fields).' '
 				.'FROM tranches_en_cours_modeles_vue '
-			    .'WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' AND Numero = \''.$numero.'\' '
-				.'AND username = \''.self::$username.'\' ';
-		if (!is_null($num_etape))
+			    .'WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' AND Numero = \''.$numero.'\' ';
+		if (is_null(self::$username)) {
+            $requete.=' AND username IS NULL';
+        }
+        else {
+			$requete.=' AND username=\''.self::$username.'\'';
+		}
+		if (!is_null($num_etape)) {
 			$requete.='AND Ordre='.$num_etape.' ';
+		}
 		$requete.=' GROUP BY Ordre'
 				 .' ORDER BY Ordre ';
 		$resultats = $this->db->query($requete)->result();
@@ -84,7 +88,6 @@ class Modele_tranche_Wizard extends Modele_tranche {
 	}
 
 	function get_fonction($pays,$magazine,$ordre,$numero) {
-		$resultats_fonctions=array();
 		$requete='SELECT '.implode(', ', self::$content_fields).' '
 				.'FROM tranches_en_cours_modeles_vue '
 				.'WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' AND Ordre='.$ordre.' '
@@ -122,7 +125,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 			$valeur=$resultat->Option_valeur;
 			$resultats_options->$option_nom=$valeur;
 		}
-		$f=new $nom_fonction($resultats_options,false,$creation,!$nouvelle_etape); // Ajout des champs avec valeurs par défaut
+		$f=new $nom_fonction($resultats_options,false,$creation,!$nouvelle_etape); // Ajout des champs avec valeurs par dï¿½faut
 		if ($inclure_infos_options) {
 			$prop_champs=new ReflectionProperty(get_class($f), 'champs');
 			$champs=$prop_champs->getValue();
@@ -130,7 +133,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 			$valeurs_defaut=$prop_valeurs_defaut->getValue();
 			$prop_descriptions=new ReflectionProperty(get_class($f), 'descriptions');
 			$descriptions=$prop_descriptions->getValue();
-			foreach($f->options as $nom_option=>$option) {
+			foreach(array_keys($f->options) as $nom_option) {
 				$intervalles_option=array();
 				$intervalles_option['valeur']=$f->options->$nom_option;
 				$intervalles_option['type']=$champs[$nom_option];
@@ -141,14 +144,6 @@ class Modele_tranche_Wizard extends Modele_tranche {
 			}
 		}
 		return $f->options;
-	}
-
-	function has_no_option($pays,$magazine,$etape) {
-		$requete='SELECT Option_nom '
-				.'FROM tranches_en_cours_modeles_vue '
-				.'WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' AND Option_nom IS NOT NULL '
-				.'AND username = \''.self::$username.'\'';
-		return $this->db->query($requete)->num_rows() == 0;
 	}
 
 	function decaler_etapes_a_partir_de($id_modele,$etape_debut, $inclure_cette_etape) {
@@ -337,7 +332,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		$options = $this->get_valeurs_options($pays,$magazine, array($numero));
 		
 		if (count($options[$numero]) === 0) {
-			echo 'Aucune option d\'étape pour '.$pays.'/'.$magazine.' '.$numero;
+			echo 'Aucune option d\'ï¿½tape pour '.$pays.'/'.$magazine.' '.$numero;
 			return;
 		}
 
@@ -370,7 +365,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 			$this->db->query($requete_ajout_valeur);
 		}
 		
-		// Suppression des étapes incomplètes = étapes dont le nombre d'options est différent de celui défini
+		// Suppression des ï¿½tapes incomplï¿½tes = ï¿½tapes dont le nombre d'options est diffï¿½rent de celui dï¿½fini
 		
 		foreach(self::$noms_fonctions as $nom_fonction) {
 			$champs_obligatoires = array_diff(array_keys($nom_fonction::$champs), array_keys($nom_fonction::$valeurs_defaut));
@@ -392,7 +387,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 			foreach($etapes_et_options as $etape=>$options) {
 				$champs_obligatoires_manquants = array_diff($champs_obligatoires, $options);
 				if (count($champs_obligatoires_manquants) > 0) {
-					echo utf8_encode("\nEtape $etape : l'étape sera supprimée car les champs suivants ne sont pas renseignés : "
+					echo utf8_encode("\nEtape $etape : l'ï¿½tape sera supprimï¿½e car les champs suivants ne sont pas renseignï¿½s : "
 									 .implode(', ', $champs_obligatoires_manquants)."\n");
 					$requete_suppression_etape=' DELETE FROM tranches_en_cours_valeurs'
 											  .' WHERE ID_Modele='.$id_modele.' AND Ordre='.$etape;
@@ -457,7 +452,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 				 .' FROM tranches_en_cours_modeles_vue'
 				 .' WHERE ID_Modele='.$id_modele.' AND Option_nom LIKE \'Couleur%\'';
 		$resultats=$this->db->query($requete)->result();
-		foreach($resultats as $i=>$resultat) {
+		foreach($resultats as $resultat) {
 			$couleurs[]=$resultat->Option_valeur;
 		}
 		return $couleurs;
