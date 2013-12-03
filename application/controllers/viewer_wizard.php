@@ -37,7 +37,6 @@ class Viewer_wizard extends CI_Controller {
 		self::$externe=$externe;
 		$this->load->library('email');
 		$this->load->helper('url');
-		$session_id = $this->session->userdata('session_id');
 		
 		$this->load->model('Modele_tranche_Wizard','Modele_tranche');
 		
@@ -104,64 +103,48 @@ class Viewer_wizard extends CI_Controller {
 			imagepng($image_externe);
 		}
 		else {
-			$num_ordre=-2;
 			$fond_noir_fait=false;
 			$options_preview=array();
 			try {
-			foreach($num_ordres as $num_ordre) {
-				if ($num_ordre>-1 && $fond_noir && !$fond_noir_fait) {
-					$options=new stdClass();
-					$options->Pos_x=$options->Pos_y=0;
-					$options->Couleur='000000';
-					new Remplir($options);
-					$fond_noir_fait=true;
-				}
-					
-				if ($num_ordre<0 || in_array($num_ordre,self::$etapes_actives) || self::$etapes_actives==array('all')) {
-					$ordres[$num_ordre]=$this->Modele_tranche->get_fonction($pays,$magazine,$num_ordre,$numero);
-					self::$etape_en_cours->num_etape=$num_ordre;
-					self::$etape_en_cours->nom_fonction=$ordres[$num_ordre]->Nom_fonction;
-					$fonction=$ordres[$num_ordre];
-					$options2=$this->Modele_tranche->get_options($pays,$magazine,$num_ordre,self::$numero,$fonction->Nom_fonction,false);
-					if ($num_ordre==-1)
-						$dimensions=$options2;
-					if ((self::$etapes_actives==array('all') && ($num_etape_parametrage == $num_ordre || is_null($num_etape_parametrage)))
-					 || self::$etapes_actives!=array('all')) {
-						foreach(self::$parametrage as $parametre=>$valeur) {
-							$options2->$parametre=$valeur;
-						}
-					}
-					
-					$nom_classe = $ordres[$num_ordre]->Nom_fonction;
-					if (!class_exists($nom_classe)) {
-						echo 'Etape '.$num_ordre.' : La classe '.$nom_classe.' n\'existe pas';
-						exit;
-					}
-					new $nom_classe(clone $options2);
-					$options_preview[$num_ordre]=$options2;
-				}
-			}
+                foreach($num_ordres as $num_ordre) {
+                    if ($num_ordre>-1 && $fond_noir && !$fond_noir_fait) {
+                        $options=new stdClass();
+                        $options->Pos_x=$options->Pos_y=0;
+                        $options->Couleur='000000';
+                        new Remplir($options);
+                        $fond_noir_fait=true;
+                    }
+
+                    if ($num_ordre<0 || in_array($num_ordre,self::$etapes_actives) || self::$etapes_actives==array('all')) {
+                        $ordres[$num_ordre]=$this->Modele_tranche->get_fonction($pays,$magazine,$num_ordre,$numero);
+                        self::$etape_en_cours->num_etape=$num_ordre;
+                        self::$etape_en_cours->nom_fonction=$ordres[$num_ordre]->Nom_fonction;
+                        $fonction=$ordres[$num_ordre];
+                        $options2=$this->Modele_tranche->get_options($pays,$magazine,$num_ordre,self::$numero,$fonction->Nom_fonction,false);
+                        if ($num_ordre==-1)
+                            $dimensions=$options2;
+                        if ((self::$etapes_actives==array('all') && ($num_etape_parametrage == $num_ordre || is_null($num_etape_parametrage)))
+                            || self::$etapes_actives!=array('all')) {
+                            foreach(self::$parametrage as $parametre=>$valeur) {
+                                $options2->$parametre=$valeur;
+                            }
+                        }
+
+                        $nom_classe = $ordres[$num_ordre]->Nom_fonction;
+                        if (!class_exists($nom_classe)) {
+                            echo 'Etape '.$num_ordre.' : La classe '.$nom_classe.' n\'existe pas';
+                            exit;
+                        }
+                        new $nom_classe(clone $options2);
+                        $options_preview[$num_ordre]=$options2;
+                    }
+                }
 			}
 			catch(Exception $e) {
 		    	echo 'Exception reçue : ',  $e->getMessage(), "\n";
 		    	echo '<pre>';print_r($e->getTrace());echo '</pre>';
 			}
-			// Nouvelles étapes
-			/*foreach(self::$parametrage as $parametres=>$options) {
-				list($num_ordre_param_ajout,$nom_fonction_param)=explode('~', $parametres);
-				self::$etape_en_cours->num_etape=$num_ordre_param_ajout;
-				self::$etape_en_cours->nom_fonction=$nom_fonction_param;
-				if ($num_ordre_param_ajout > $num_ordre && is_array($options)) { // Numéro d'étape supérieure à la maximale existante
-					foreach($options as $option_nom=>$option_valeur) {
-						$ordres[$num_ordre_param_ajout][0]->options->$option_nom=urldecode(str_replace('^','%',
-												   str_replace('!amp!','&',
-												   str_replace('!slash!','/',
-												   str_replace('!sharp!','#',$option_valeur)))));
-					}
-					if (isset($ordres[$num_ordre_param_ajout][0]->options))
-						new $nom_fonction_param($ordres[$num_ordre_param_ajout][0]->options);
-				}
-			}*/
+
 			new Dessiner_contour($dimensions);
 			
 			
@@ -174,27 +157,6 @@ class Viewer_wizard extends CI_Controller {
 					'username'=>$username_modele
 				);
 				$this->load->view('integrateview',$data);
-			}
-			
-			if ($save=='save' && $zoom==1.5) {
-				if($privilege == 'Edition') {
-					ob_start();
-					print_r($options_preview);
-					$affichage_options=ob_get_contents();
-					ob_end_clean();
-					
-					$this->email->from(get_admin_email(), 'DucksManager - '.$username_modele);
-					$this->email->to(get_admin_email());
-					
-					$this->email->subject('Proposition de modele de tranche de '.$username_modele);
-					$this->email->message($affichage_options);
-					$this->email->attach($nom_image);
-					$this->email->send();
-					$this->email->print_debugger();
-				}
-				else {
-					echo 'Vous n\'avez pas les privil&egrave;ges n&eacute;cessaires pour cette op&eacute;ration';
-				}
 			}
 			
 			$this->Modele_tranche->rendu_image();

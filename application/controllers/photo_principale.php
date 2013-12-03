@@ -9,8 +9,9 @@ class Photo_Principale extends CI_Controller {
 		
 		$this->db->query('SET NAMES UTF8');
 		$this->load->model('Modele_tranche_Wizard','Modele_tranche');
+        $this->Modele_tranche->setUsername($this->session->userdata('user'));
 		
-		$nom_photo_principale=$this->Modele_tranche->get_photo_principale($pays,$magazine,$numero);
+		$nom_photo_principale=$this->Modele_tranche->get_photo_principale($pays,$magazine,$numero,true);
 
 		$data = array(
 			'nom_photo_principale'=>$nom_photo_principale

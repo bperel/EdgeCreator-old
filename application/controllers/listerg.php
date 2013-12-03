@@ -10,7 +10,7 @@ class ListerG extends CI_Controller {
 		$this->db->query('SET NAMES UTF8');
 		$this->load->model($this->session->userdata('mode_expert') === true ? 'Modele_tranche' : 'Modele_tranche_Wizard','Modele_tranche');
 
-		$liste=$this->Modele_tranche->get_liste(null, $nom_option,$pays,$magazine);
+		$liste=$this->Modele_tranche->get_liste($nom_option,$pays,$magazine);
 
 			$data = array(
 					'liste'=>$liste,

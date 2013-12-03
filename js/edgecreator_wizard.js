@@ -1,4 +1,4 @@
-(function($,undefined){
+(function($){
 	$.fn.d = function(){
 		return this.closest('.ui-dialog');
 	};
@@ -12,14 +12,34 @@
 })(jQuery);
 
 $.widget("ui.tooltip", $.ui.tooltip, {
-    options: {
-        content: function () {
-            return $(this).prop('title');
-        }
-    }
+	options: {
+		content: function () {
+			return $(this).prop('title');
+		}
+	}
 });
 
-$(window).scroll(function(a,b) {
+$.fn.remplirIntituleNumero = function(data) {
+	var conteneur_intitule = $('.intitule_magazine.template').clone(true).removeClass('template');
+
+	$.each(data, function(nom, valeur) {
+		conteneur_intitule.data()[nom] = valeur;
+
+		var element = conteneur_intitule.find('[name="'+nom+'"]');
+		if (nom === 'wizard_pays') {
+			element.attr({src: '../images/flags/'+valeur+'.png'});
+		}
+		else {
+			element.text(valeur);
+		}
+	});
+
+	this.html(conteneur_intitule);
+
+	return this;
+};
+
+$(window).scroll(function() {
 	if (modification_etape != null 
 	 && modification_etape.find('#options-etape--Polygone').length != 0) {
 		var options=modification_etape.find('[name="form_options"]');
@@ -56,7 +76,7 @@ $(function() {
 						.addClass('cross')
 						.click(function(e) {
 							var frac = [ e.offsetX / $(this).width(),
-							             e.offsetY / $(this).height() ];
+										 e.offsetY / $(this).height() ];
 							$.ajax({
 								url: urls['couleur_point_photo']+['index',pays,magazine,numero,frac[0],frac[1]].join('/'),
 								type: 'post',
@@ -74,31 +94,31 @@ $(function() {
 	
 	// Déplacement des objets
 	$('body').on('keyup', function(e) {
-	    // Don't scroll page
-	    e.preventDefault();
-	    
-	    var position, 
-	        draggable = $('.ui-draggable:visible');
-	        distance = 1; // Distance in pixels the draggable should be moved
-	    
-	    if (draggable.length  == 0) {
-	    	return false;
-	    }
-	    position = draggable.position();
+		// Don't scroll page
+		e.preventDefault();
+		
+		var position, 
+			draggable = $('.ui-draggable:visible');
+			distance = 1; // Distance in pixels the draggable should be moved
+		
+		if (draggable.length  == 0) {
+			return false;
+		}
+		position = draggable.position();
 	
-	    // Reposition if one of the directional keys is pressed
-	    switch (e.keyCode) {
-	        case 37: position.left -= distance; break; // Left
-	        case 38: position.top  -= distance; break; // Up
-	        case 39: position.left += distance; break; // Right
-	        case 40: position.top  += distance; break; // Down
-	        default: return true; // Exit and bubble
-	    }
-	    draggable
-	    	.css(position);
-	    	
-	    tester_options_preview('TexteMyFonts',['Pos_x','Pos_y']);
-	    tester();
+		// Reposition if one of the directional keys is pressed
+		switch (e.keyCode) {
+			case 37: position.left -= distance; break; // Left
+			case 38: position.top  -= distance; break; // Up
+			case 39: position.left += distance; break; // Right
+			case 40: position.top  += distance; break; // Down
+			default: return true; // Exit and bubble
+		}
+		draggable
+			.css(position);
+			
+		tester_options_preview('TexteMyFonts',['Pos_x','Pos_y']);
+		tester();
 	});
 	
 	farb=$.farbtastic($('#picker'))
@@ -123,6 +143,10 @@ $(function() {
 
 var dimensions = {};
 
+var pays;
+var magazine;
+var numero;
+
 var wizard_options={};
 var id_wizard_courant=null;
 var id_wizard_precedent=null;
@@ -136,7 +160,8 @@ var pos_x_courante=null,
 	pos_y_courante=null;
 
 zoom=1.5;
-var url_viewer='viewer_wizard';
+var nom_photo_tranches_multiples;
+
 var NB_MAX_TRANCHES_SIMILAIRES_PROPOSEES=10/2;
 var LARGEUR_DIALOG_TRANCHE_FINALE=65;
 var LARGEUR_INTER_ETAPES=40;
@@ -148,12 +173,14 @@ var COTE_CARRE_DEPLACEMENT=10;
 var PADDING_PARAMETRAGE_ETAPE=10;
 
 var TEMPLATES ={'numero':/\[Numero\]/,
-	            'numero[]':/\[Numero\[([0-9]+)\]\]/ig,
-	            'largeur':/(?:([0-9.]+)(\*))?\[Largeur\](?:(\*)([0-9.]+))?/i,
-	            'hauteur':/(?:([0-9.]+)(\*))?\[Hauteur\](?:(\*)([0-9.]+))?/i,
-	            'caracteres_speciaux':/\Â°/i};
+				'numero[]':/\[Numero\[([0-9]+)\]\]/ig,
+				'largeur':/(?:([0-9.]+)(\*))?\[Largeur\](?:(\*)([0-9.]+))?/i,
+				'hauteur':/(?:([0-9.]+)(\*))?\[Hauteur\](?:(\*)([0-9.]+))?/i,
+				'caracteres_speciaux':/Â°/i};
 
 var REGEX_FICHIER_PHOTO=/\/([^\/]+\.([^.]+)\.photo_([^.]+?)\.[a-z]+)$/;
+var REGEX_FICHIER_PHOTO_MULTIPLE=/.*_([^\.]+)\.jpg$/;
+
 var REGEX_NUMERO=/tranche_([^_]+)_([^_]+)_([^_]+)/;
 var REGEX_TO_WIZARD=/to\-(wizard\-[0-9]*)/g;
 var REGEX_DO_IN_WIZARD=/do\-in\-wizard\-(.*)/g;
@@ -179,10 +206,11 @@ function launch_wizard(id, p) {
 	p = p || {}; // Paramètres de surcharge
 	var buttons={},
 		dialogue = $('#'+id),
-		first 	 = dialogue.hasClass('first') 	 || (p.first 	 !== undefined	&& p.first),
-		deadend = dialogue.hasClass('deadend') 	 || (p.deadend 	 !== undefined	&& p.deadend),
-		modal	 = dialogue.hasClass('modal')	 || (p.modal 	 !== undefined	&& p.modal);
-		closeable= dialogue.hasClass('closeable')|| (p.closeable !== undefined	&& p.closeable);
+		first 	 = dialogue.hasClass('first') 	  || (p.first 	  !== undefined	&& p.first),
+		deadend = dialogue.hasClass('deadend') 	  || (p.deadend   !== undefined	&& p.deadend),
+		modal	 = dialogue.hasClass('modal')	  || (p.modal 	  !== undefined	&& p.modal),
+		closeable= dialogue.hasClass('closeable') || (p.closeable !== undefined	&& p.closeable),
+		extensible=dialogue.hasClass('extensible')|| (p.extensible!== undefined	&& p.extensible);
 	
 	$('#'+id+' .buttonset').buttonset();
 	$('#'+id+' .button').button();
@@ -255,7 +283,7 @@ function launch_wizard(id, p) {
 							nom_photo_principale=$(this).find('.gallery li img.selected').attr('src')
 								.match(REGEX_FICHIER_PHOTO)[1];
 							if ($('#wizard-conception').is(':visible')) {
-								maj_photo_principale();
+								maj_photo_principale(pays, magazine, numero);
 								$( this ).dialog().dialog( "close" );
 							}
 							else {
@@ -263,7 +291,7 @@ function launch_wizard(id, p) {
 							}
 						break;
 						case 'autres_photos':
-			   		    	tester_options_preview('Image',['Source']); 
+			   				tester_options_preview('Image',['Source']); 
 							$(this).dialog().dialog( "close" );
 						break;
 						case 'photos_texte':
@@ -286,21 +314,21 @@ function launch_wizard(id, p) {
 				if (wizard_check(id)) {
 				   	var form=$('#'+id+' form').serializeObject();
 				   	var photographes=typeof(form.photographes) === "string" ? form.photographes : form.photographes.join(',') .replace(/ /g, "+");
-				   	var designers=	 typeof(form.designers)    === "string" ? form.designers 	: form.designers.join(',') .replace(/ /g, "+");
+				   	var designers=	 typeof(form.designers)	=== "string" ? form.designers 	: form.designers.join(',') .replace(/ /g, "+");
 					var nom_image=$('.image_etape.finale .image_preview').attr('src').match(/[.0-9]+$/g)[0];
 					$.ajax({
-		                url: urls['valider_modele']+['index',pays,magazine,numero,nom_image,designers,photographes].join('/'),
-		                type: 'post',
-		                success:function(data) {
-		        			jqueryui_alert_from_d($('#wizard-confirmation-validation-modele-ok'), function() {
-		        				location.reload();
-		        			});
-		                },
-		                error:function(data) {
-		                	jqueryui_alert("Une erreur est survenue pendant la validation de la tranche.<br />"
-		                				  +"Contactez le webmaster", 
-		                				  "Erreur");
-		                }
+						url: urls['valider_modele']+['index',pays,magazine,numero,nom_image,designers,photographes].join('/'),
+						type: 'post',
+						success:function() {
+							jqueryui_alert_from_d($('#wizard-confirmation-validation-modele-ok'), function() {
+								location.reload();
+							});
+						},
+						error:function() {
+							jqueryui_alert("Une erreur est survenue pendant la validation de la tranche.<br />"
+										  +"Contactez le webmaster", 
+										  "Erreur");
+						}
 					});
 				}
 			};
@@ -333,15 +361,15 @@ function launch_wizard(id, p) {
 		break;
 	}
 	dialogue.dialog({
-		width:  p.width || 475,
+		width:  extensible ? 'auto' : (p.width || 475),
 		height: p.height|| 'auto',
 		position: 'top',
 		modal: modal,
 		autoResize: true,
 		resizable: dialogue.hasClass('resizable'),
 		buttons: buttons,
-		draggable: false,
-		open:function(event,ui) {
+		draggable: dialogue.hasClass('draggable'),
+		open:function() {
 			var dialog=$(this).d();
 			if ($(this).hasClass('main'))
 				dialog.addClass('main');
@@ -359,11 +387,12 @@ function launch_wizard(id, p) {
 			
 			wizard_init($(this).attr('id'));
 		},
-		close: function(event,ui) {
+		close: function() {
 			if (closeable) {
-				var hasOnClose = $('#'+id+' form').serializeObject().onClose;
+				var form = $('#'+id+' form');
+				var hasOnClose = form.serializeObject().onClose;
 				if (hasOnClose) {
-					wizard_goto($('#id'), $('#'+id+' form').serializeObject().onClose.replace(REGEX_TO_WIZARD,'$1'));
+					wizard_goto($('#id'), form.serializeObject().onClose.replace(REGEX_TO_WIZARD,'$1'));
 				}
 			}
 		}
@@ -372,8 +401,9 @@ function launch_wizard(id, p) {
 
 function wizard_goto(wizard_courant, id_wizard_suivant, p) {
 	if (can_launch_wizard(id_wizard_suivant)) {
-		wizard_options[wizard_courant.attr('id')]=wizard_courant.find('form').serializeObject();
-		id_wizard_precedent=wizard_courant.attr('id');
+		var id_wizard_courant = wizard_courant.attr('id');
+		wizard_options[id_wizard_courant]=wizard_courant.find('form').serializeObject();
+		id_wizard_precedent=id_wizard_courant;
 		wizard_courant.dialog().dialog( "close" );
 		launch_wizard(id_wizard_suivant, p);
 	}
@@ -390,6 +420,7 @@ function wizard_do(wizard_courant, action) {
 					case 'enregistrer':
 						if (wizard_check('wizard-resize') !== undefined) {
 							var image = wizard_courant.find('.jrac_viewport img');
+							var source = 'photos';
 							var destination = wizard_courant.find('[name="destination"]').val();
 							var decoupage_nom = image.attr('src').match(REGEX_FICHIER_PHOTO);
 							if (!decoupage_nom) {
@@ -399,22 +430,34 @@ function wizard_do(wizard_courant, action) {
 
 							var numero_image = decoupage_nom[2];
 							var nom = decoupage_nom[3];
-							var x1 = parseInt(100 * ($('.jrac_crop').position().left / image.width())),
-								x2 = parseInt(100 * ($('.jrac_crop').position().left + $('.jrac_crop').width()) / image.width()),
-								y1 = parseInt(100 * ($('.jrac_crop').position().top  / image.height())),
-								y2 = parseInt(100 * ($('.jrac_crop').position().top  + $('.jrac_crop').height()) / image.height());
-							$.ajax({
-								url: urls['rogner_image']+['index',pays,magazine,numero_image,numero,nom,destination,x1,x2,y1,y2].join('/'),
-								type: 'post',
-								dataType:'json'
-							});
+							var jrac_crop = $('.jrac_crop');
+							var jrac_crop_position = $('.jrac_crop').position();
+							var x1 = jrac_crop_position.left,
+								x2 = jrac_crop_position.left + jrac_crop.width(),
+								y1 = jrac_crop_position.top,
+								y2 = jrac_crop_position.top  + jrac_crop.height();
+							rogner_image(image, nom, source, destination, pays, magazine, numero, x1, x2, y1, y2, numero_image);
 						}
+					wizard_goto(wizard_courant,'wizard-images');
+					break;
+				}
+			break;
+			case 'wizard-selectionner-numero-photo-multiple':
+				switch(action) {
+					case 'affectation-numero-tranche':
+						var zone = wizard_courant.data('zone');
+						zone.find('.renseigne').removeClass('cache');
+						zone.find('.non_renseigne').addClass('cache');
+
+						var magazine_complet = wizard_courant.find('form [name="wizard_magazine"] option:selected').text();
+						var data = $.extend({}, wizard_courant.find('form').serializeObject(), {wizard_magazine_complet: magazine_complet});
+
+						zone.find('.intitule_numero .renseigne').remplirIntituleNumero(data);
 					break;
 				}
 			break;
 		}
 		wizard_courant.dialog().dialog("close");
-		wizard_goto(wizard_courant,'wizard-images');
 	}
 }
 
@@ -429,6 +472,34 @@ function wizard_check(wizard_id) {
 		var is_to_wizard = valeur_choix !== undefined && valeur_choix.match(REGEX_TO_WIZARD);
 		var is_do_in_wizard = valeur_choix !== undefined && valeur_choix.match(REGEX_DO_IN_WIZARD);
 		if (is_to_wizard || is_do_in_wizard) {
+			if ($('#'+wizard_id+' form [name="wizard_numero"]').length > 0) {
+				if (chargement_listes) {
+					erreur='Veuillez attendre que la liste des num&eacute;ros soit charg&eacute;e';
+				}
+				else if (valeur_choix != 'to-wizard-numero-inconnu'
+					  && $('#'+wizard_id+' [name="wizard_numero"]').find('option:selected').is('.tranche_prete,.cree_par_moi,.en_cours')) {
+					erreur='La tranche de ce num&eacute;ro est d&eacute;j&agrave; disponible ou en cours de conception.<br />'
+						  +'S&eacute;lectionnez "Modifier une tranche de magazine" dans l\'&eacute;cran pr&eacute;c&eacute;dent pour la modifier '
+						  +'ou s&eacute;lectionnez un autre num&eacute;ro.';
+				}
+			}
+
+			if ($('#'+wizard_id+' form [name="Dimension_x"]').length > 0) {
+				$.each($(['Dimension_x','Dimension_y']),function(i,nom_champ) {
+					var valeur= $('#'+wizard_id+' [name="'+nom_champ+'"]').val();
+					var bornes_valeur=nom_champ == 'Dimension_x' ? [3, 60] : [100, 450];
+					if ( valeur == ''
+						|| valeur.search(/^[0-9]+$/) != 0) {
+						erreur="Le champ "+nom_champ+" est vide ou n'est pas un nombre";
+					}
+					valeur=parseInt(valeur);
+					if (valeur < bornes_valeur[0] || valeur > bornes_valeur[1]) {
+						erreur="Le champ "+nom_champ+" doit &ecirc;tre compris entre "+bornes_valeur[0]+" et "+bornes_valeur[1];
+					}
+
+				});
+			}
+
 			switch(wizard_id) {
 				case 'wizard-1':
 					if (valeur_choix == 'to-wizard-conception'
@@ -444,30 +515,12 @@ function wizard_check(wizard_id) {
 						erreur='Veuillez s&eacute;lectionner un num&eacute;ro.';
 					}
 				break;
-				case 'wizard-creer-hors-collection':
-					if (chargement_listes)
-						erreur='Veuillez attendre que la liste des num&eacute;ros soit charg&eacute;e';
-					else if (valeur_choix != 'to-wizard-numero-inconnu'
-						  && $('#'+wizard_id+' [name="wizard_numero"]').find('option:selected').is('.tranche_prete,.cree_par_moi,.en_cours')) {
-						erreur='La tranche de ce num&eacute;ro est d&eacute;j&agrave; disponible ou en cours de conception.<br />'
-							  +'S&eacute;lectionnez "Modifier une tranche de magazine" dans l\'&eacute;cran pr&eacute;c&eacute;dent pour la modifier '
-							  +'ou s&eacute;lectionnez un autre num&eacute;ro.';
+				case 'wizard-decouper-photo':
+					if ($('.rectangle_selection_tranche:not(.template)').filter(function() {
+						return $(this).find('.intitule_magazine').length === 0;
+					}).length > 0) {
+						erreur='Vous n\'avez pas spécifié les numéros de toutes les zones de la photo.';
 					}
-				break;
-				case 'wizard-dimensions':
-					$.each($(['Dimension_x','Dimension_y']),function(i,nom_champ) {
-						var valeur= $('#'+wizard_id+' [name="'+nom_champ+'"]').val();
-						var bornes_valeur=nom_champ == 'Dimension_x' ? [3, 60] : [100, 450];
-						if ( valeur == ''
-						  || valeur.search(/^[0-9]+$/) != 0) {
-							erreur="Le champ "+nom_champ+" est vide ou n'est pas un nombre";
-						}
-						valeur=parseInt(valeur);
-						if (valeur < bornes_valeur[0] || valeur > bornes_valeur[1]) {
-							erreur="Le champ "+nom_champ+" doit &ecirc;tre compris entre "+bornes_valeur[0]+" et "+bornes_valeur[1];
-						}
-						
-					});
 				break;
 				case 'wizard-modifier':
 					if (chargement_listes)
@@ -527,38 +580,39 @@ function wizard_init(wizard_id) {
 	// Transfert vers un autre assistant
 	$('#'+wizard_id+' button[value^="to-wizard-"]').click(function() {
 		wizard_do($('#'+id_wizard_courant),'goto_'+$(this).val().replace(REGEX_TO_WIZARD,'$1'));
-    	event.preventDefault();
+		event.preventDefault();
 	});
 	
 	// Action en restant dans l'assistant
 	$('#'+wizard_id+' button[value^="do-in-wizard-"]').click(function() {
 		var action = $(this).val().replace(REGEX_DO_IN_WIZARD,'$1');
 		wizard_do($('#'+id_wizard_courant),action);
-    	event.preventDefault();
+		event.preventDefault();
 	});
 	
 	// Actions à l'initialisation de l'assistant
 	switch(wizard_id) {
 		case 'wizard-1':
 			$('#selectionner_tranche_en_cours')
-		        .button({
-		            text: false,
-		            icons: {
-		              primary: "ui-icon-triangle-1-s"
-		            }
-		          })
-		          .click(function() {
-		            $( this ).parent().next().show().position({
-		              my: "right",
-		              at: "right bottom",
-		              of: this
-		            });
-		            return false;
-		          })
-		          .parent()
-		            .buttonset()
-		            .next()
-		              .hide();
+				.button({
+					text: false,
+					icons: {
+					  primary: "ui-icon-triangle-1-s"
+					}
+				  })
+				  .click(function() {
+					$( this ).parent().next().show().position({
+					  my: "right",
+					  at: "right bottom",
+					  of: this
+					});
+					return false;
+				  })
+				  .parent()
+					.buttonset()
+					.next()
+					  .hide();
+
 			$.ajax({
 				url: urls['tranchesencours']+['load'].join('/'),
 				dataType:'json',
@@ -567,7 +621,80 @@ function wizard_init(wizard_id) {
 					afficher_liste_magazines(wizard_id,'tranches_en_cours',data);
 				}
 			});
-			
+			break;
+
+		case 'wizard-envoyer-photo':
+			$('#'+wizard_id).parent().find('button').filter(function() { return $(this).text() === 'Suivant'; }).button('option','disabled', true);
+		break;
+
+		case 'wizard-decouper-photo':
+			$('#image_tranche_multiples').attr({src: base_url+'../edges/tranches_multiples/'+nom_photo_tranches_multiples});
+			$('#ajouter_zone_photo_multiple').click(function() {
+				var nouvelle_zone = $('#'+wizard_id).find('.rectangle_selection_tranche.template').clone(true).removeClass('template');
+				nouvelle_zone.find('.suppression').click(function() {
+					$(this).closest('.rectangle_selection_tranche').remove();
+				})
+				nouvelle_zone.find('.zone_intitule_numero').click(function() {
+					$('#wizard-selectionner-numero-photo-multiple').data({zone: $(this).closest('.rectangle_selection_tranche')})
+					launch_wizard('wizard-selectionner-numero-photo-multiple')
+				})
+				nouvelle_zone
+					.css({'z-index': 100+$('#zone_selection_tranches_multiples .rectangle_selection_tranche').length})
+					.draggable({
+						containment: '#zone_selection_tranches_multiples'
+					})
+					.resizable({
+						containment: '#zone_selection_tranches_multiples'
+					})
+					.mouseover(function() {
+						$(this).find('.edition_numero_tranche').removeClass('cache');
+					})
+					.mouseout(function() {
+						$(this).find('.edition_numero_tranche').addClass('cache');
+					});
+				$('#zone_selection_tranches_multiples').prepend(nouvelle_zone);
+			});
+		break;
+
+		case 'wizard-selectionner-numero-photo-multiple':
+			wizard_charger_liste_pays();
+		break;
+
+		case 'wizard-confirmation-photo-multiple':
+			var image_tranches_multiples = $('#image_tranche_multiples');
+			$('#wizard-decouper-photo').parent().addClass('invisible');
+			var id_fichier_image_multiple = image_tranches_multiples.attr('src').replace(REGEX_FICHIER_PHOTO_MULTIPLE,'$1');
+			var pos_image = image_tranches_multiples.position();
+			$.each($('.rectangle_selection_tranche:not(.template)'), function() {
+				var data=$(this).find('.intitule_magazine').data();
+
+				creer_modele_tranche(data.wizard_pays, data.wizard_magazine, data.wizard_numero, false, data.Dimension_x, data.Dimension_y);
+
+				var element_pos = $(this).position();
+				var x1 = element_pos.left - pos_image.left,
+					y1 = element_pos.top  - pos_image.top;
+				var x2 = x1 + $(this).width(),
+					y2 = y1 + $(this).height();
+
+				rogner_image(
+					image_tranches_multiples, id_fichier_image_multiple, 'photo_multiple', 'photos',
+					data.wizard_pays, data.wizard_magazine, data.wizard_numero,
+					x1, x2, y1, y2, null,
+					function(nom_fichier_rogne) {
+						var match_photo_principale = ('/'+nom_fichier_rogne).match(REGEX_FICHIER_PHOTO);
+						if (match_photo_principale) {
+							nom_photo_principale = match_photo_principale[1];
+							maj_photo_principale(data.wizard_pays, data.wizard_magazine, data.wizard_numero, false);
+						}
+						else {
+							jqueryui_alert('Photo de tranche invalide : '+nom_fichier_rogne,'Création de modèle');
+						}
+					}
+				);
+			});
+			$('#wizard-decouper-photo').removeClass('invisible');
+			$('#'+wizard_id).find('.fin_chargement').removeClass('cache');
+			$('#'+wizard_id).find('.chargement').addClass('cache');
 		break;
 		
 		case 'wizard-creer-collection':
@@ -594,37 +721,27 @@ function wizard_init(wizard_id) {
 			if (get_option_wizard('wizard-creer-hors-collection', 'wizard_pays') 
 			 || get_option_wizard('wizard-creer-collection', 'wizard_pays') != undefined)
 				break;
-			
-			$('#'+wizard_id+' [name="wizard_pays"]').change(function() {
-				chargement_listes=true;
-				var element=$(this);
-				var nouveau_pays=element.val();
-				wizard_charger_liste_magazines(nouveau_pays);
-			});
 
-			$('#'+wizard_id+' [name="wizard_magazine"]').change(function() {
-				chargement_listes=true;
-				wizard_charger_liste_numeros($(this).val());
-			});
-			chargement_listes=true;
 			wizard_charger_liste_pays();
 		break;
 		
 		case 'wizard-proposition-clonage':
-			if (get_option_wizard('wizard-proposition-clonage', 'tranche_similaire') != undefined)
+			if (get_option_wizard('wizard-proposition-clonage', 'tranche_similaire') !== undefined)
 				break;
 			$('#'+wizard_id+' .chargement').removeClass('cache');
 			$('#'+wizard_id+' .tranches_pretes_magazine').addClass('cache');
-			if (get_option_wizard('wizard-creer-collection','choix_tranche')!= undefined) {
-				var tranche=get_option_wizard('wizard-creer-collection','choix_tranche').split(/_/g);
-				pays=	 tranche[1];
-				magazine=tranche[2];
-				numero=	 tranche[3];
-			}
-			else {
-				pays=	 get_option_wizard('wizard-creer-hors-collection', 'wizard_pays');
-				magazine=get_option_wizard('wizard-creer-hors-collection', 'wizard_magazine');
-				numero=	 get_option_wizard('wizard-creer-hors-collection', 'wizard_numero');
+			if (numero === undefined) {
+				if (get_option_wizard('wizard-creer-collection','choix_tranche')!= undefined) {
+					var tranche=get_option_wizard('wizard-creer-collection','choix_tranche').split(/_/g);
+					pays=	 tranche[1];
+					magazine=tranche[2];
+					numero=	 tranche[3];
+				}
+				else {
+					pays=	 get_option_wizard('wizard-creer-hors-collection', 'wizard_pays');
+					magazine=get_option_wizard('wizard-creer-hors-collection', 'wizard_magazine');
+					numero=	 get_option_wizard('wizard-creer-hors-collection', 'wizard_numero');
+				}
 			}
 			selecteur_cellules_preview='#'+wizard_id+' .tranches_pretes_magazine td';
 			
@@ -683,28 +800,48 @@ function wizard_init(wizard_id) {
 		case 'wizard-images':
 			$('#'+wizard_id).find('.accordion').accordion({
 				activate: function( event, ui ) {
-        			$('#to-wizard-resize').addClass('cache');
+					$('#to-wizard-resize').addClass('cache');
 					switch ($(ui.newHeader).attr('id')) {
 						case 'gallery':
 							var type_gallerie = $('#'+wizard_id).hasClass('photo_principale') ? 'Photos' : 'Source';
 							lister_images_gallerie(type_gallerie);
 						break;
 						case 'section_photo':
-		        			$('#to-wizard-resize').removeClass('cache');
-		        			var nom_fichier_photo = $('#photo_tranche img').attr('src').match(/\/([^\/]+$)/)[1];
-		        			afficher_gallerie('Photos', [nom_fichier_photo], $('#wizard-images .selectionner_photo_tranche'));
+							$('#to-wizard-resize').removeClass('cache');
+							var nom_fichier_photo = $('#photo_tranche img').attr('src').match(/\/([^\/]+$)/)[1];
+							afficher_gallerie('Photos', [nom_fichier_photo], $('#wizard-images .selectionner_photo_tranche'));
 						break;
 					}
 				}
 			});
 		break;
+
+		case 'wizard-dimensions':
+			var dimensions_connues= get_option_wizard('wizard-1','choix') === 'to-wizard-conception';
+
+			if (dimensions_connues) {
+				creer_modele_tranche(pays,magazine,numero,true); // Création du modèle sans les dimensions (qui seront copiées du modèle non affecté)
+				wizard_goto($('#'+id_wizard_courant), 'wizard-conception');
+			}
+			break;
 		
 		case 'wizard-conception':
-			if (get_option_wizard('wizard-1','choix_tranche_en_cours') != undefined) {
+			if (get_option_wizard('wizard-1','choix_tranche_en_cours') !== undefined) {
 				var tranche_en_cours=get_option_wizard('wizard-1','choix_tranche_en_cours').split(/_/g);
 				pays=tranche_en_cours[1];
 				magazine=tranche_en_cours[2];
 				numero=tranche_en_cours[3];
+
+				var est_nouvelle_tranche=get_option_wizard('wizard-1','est_nouvelle_conception_tranche') === 'true';
+
+				if (est_nouvelle_tranche) {
+					wizard_goto($('#'+id_wizard_courant), 'wizard-proposition-clonage');
+					set_option_wizard('wizard-1','est_nouvelle_conception_tranche','false');
+					return;
+				}
+				else {
+					afficher_photo_tranche();
+				}
 			}
 			else { // Nouvelle tranche => paramétrage des dimensions, etc.
 				if (get_option_wizard('wizard-creer-collection','choix_tranche') != undefined
@@ -722,35 +859,25 @@ function wizard_init(wizard_id) {
 					}
 					
 					if (get_option_wizard('wizard-clonage','choix')=== undefined) { // S'il n'y a pas eu clonage, on ne connait pas les dimensions de la tranche
+
 						// Ajout du modèle de tranche et de la fonction Dimensions avec les paramètres par défaut
-						$.ajax({
-							url: urls['insert_wizard']+['index',pays,magazine,numero,'_',-1,'Dimensions'].join('/'),
-						    type: 'post',
-						    async: false
-						});
-						// Mise à jour de la fonction Dimensions avec les valeurs entrées
 						var dimension_x = get_option_wizard('wizard-dimensions','Dimension_x');
 						var dimension_y = get_option_wizard('wizard-dimensions','Dimension_y');
-						var parametrage_dimensions =  'Dimension_x='+dimension_x
-													+'&Dimension_y='+dimension_y;
-						$.ajax({
-							url: urls['update_wizard']+['index',pays,magazine,numero,-1,parametrage_dimensions].join('/'),
-						    type: 'post',
-						    async: false
-						});
+						creer_modele_tranche(pays, magazine, numero, true, dimension_x, dimension_y);
+
 						dimensions = {x: parseInt(dimension_x), y: parseInt(dimension_y)};
 					}
-					maj_photo_principale();
+					maj_photo_principale(pays, magazine, numero);
 				}
 			}
 
 			$.ajax({
 				url: urls['tranchesencours']+['load','null',pays,magazine,numero].join('/'),
-			    type: 'post',
+				type: 'post',
 				dataType:'json',
-			    async: false,
-			    success: function(data) {
-			    	var tranche=traiter_tranches_en_cours(data)[0];
+				async: false,
+				success: function(data) {
+					var tranche=traiter_tranches_en_cours(data)[0];
 					pays=tranche.Pays;
 					magazine=tranche.Magazine;
 					numero=tranche.Numero;
@@ -758,7 +885,7 @@ function wizard_init(wizard_id) {
 					$('#nom_complet_tranche_en_cours')
 						.html($('<img>').attr({src:'../images/flags/'+pays+'.png'}))
 						.append(' '+tranche.str_userfriendly);
-			    }
+				}
 			});
 
 			afficher_photo_tranche();
@@ -796,8 +923,8 @@ function wizard_init(wizard_id) {
 						success:function(data) {
 							$('#zoom').removeClass('cache');
 							$('#zoom_slider').slider({change:function(event,ui) {
-					            zoom=valeurs_possibles_zoom[ui.value];
-					            $('#zoom_value').html(zoom);
+								zoom=valeurs_possibles_zoom[ui.value];
+								$('#zoom_value').html(zoom);
 								reload_all_previews();
 								if (modification_etape != null) {
 									modification_etape.find('.preview_etape')
@@ -806,7 +933,7 @@ function wizard_init(wizard_id) {
 									var valeurs=modification_etape.find('[name="form_options"]').serializeObject();
 									var section_preview_etape = modification_etape.find('.preview_etape');
 									var nom_fonction=modification_etape.data('nom_fonction');
-							    	alimenter_options_preview(valeurs, section_preview_etape, nom_fonction);
+									alimenter_options_preview(valeurs, section_preview_etape, nom_fonction);
 								}
 								$('#zoom_slider .ui-slider-handle').blur();
 							}});
@@ -824,7 +951,6 @@ function wizard_init(wizard_id) {
 								switch(option_nom) {
 									case 'Dimension_x':
 										$('#Dimension_x').val(texte);
-										
 										dimensions.x = parseInt(texte);
 									break;
 									case 'Dimension_y':
@@ -837,17 +963,17 @@ function wizard_init(wizard_id) {
 								.removeClass('cache')
 								.button()
 								.click(function(event) {
-							    	event.preventDefault();
+									event.preventDefault();
 									verifier_changements_etapes_sauves($('.modif').d(),'wizard-confirmation-rechargement',function() {
 										var form_options=$(event.currentTarget).d().find('[name="form_options"]');
 										var parametrage=form_options.serialize();
 										
 										$.ajax({
-										    url: urls['update_wizard']+['index',pays,magazine,numero,-1,parametrage].join('/'),
-										    type: 'post',
-										    success:function(data) {
-										    	reload_all_previews();
-										    }
+											url: urls['update_wizard']+['index',pays,magazine,numero,-1,parametrage].join('/'),
+											type: 'post',
+											success:function(data) {
+												reload_all_previews();
+											}
 										});
 									});
 								});
@@ -899,20 +1025,20 @@ function wizard_init(wizard_id) {
 							});
 
 							charger_previews();
-				            
-				            $('.ajout_etape').click(function() {
-				            	if (modification_etape == null) {
-				            		etape_ajout=$(this).data().etape;
-				            		etape_ajout_pos=$(this).data().pos;
-				            		launch_wizard('wizard-ajout-etape');
-				            	}
-				            	else {
-				            		verifier_changements_etapes_sauves(modification_etape,'wizard-confirmation-annulation', function() { 
-				            			launch_wizard('wizard-ajout-etape');
-				            		});
-				            	}
-				            });
-				            
+							
+							$('.ajout_etape').click(function() {
+								if (modification_etape == null) {
+									etape_ajout=$(this).data().etape;
+									etape_ajout_pos=$(this).data().pos;
+									launch_wizard('wizard-ajout-etape');
+								}
+								else {
+									verifier_changements_etapes_sauves(modification_etape,'wizard-confirmation-annulation', function() { 
+										launch_wizard('wizard-ajout-etape');
+									});
+								}
+							});
+							
 							$('.wizard.preview_etape:not(.final)').click(function() {
 								var dialogue=$(this).d();
 								if (dialogue.hasClass('cloneable')) {
@@ -943,51 +1069,46 @@ function wizard_init(wizard_id) {
 			});
 		break;
 		case 'wizard-ajout-etape':
-    		var etape_existe = $('.wizard.preview_etape:not(".initial"):not(".final")').length > 0;
-    		var accordeon = $('#'+wizard_id).find('.accordion');
-    		accordeon.accordion({
+			var etape_existe = $('.wizard.preview_etape:not(.initial):not(.final)').length > 0;
+			var accordeon = $('#'+wizard_id).find('.accordion');
+			accordeon.accordion({
 				active: etape_existe ? 1 : 0
 			});
-    		$('#'+wizard_id+' .aucune_etape').toggle(!etape_existe);
-    		$('#'+wizard_id+' .etape_existante').toggle(etape_existe);
-    		
-        	$.ajax({
-                url: urls['listerg']+['index','Fonctions'].join('/'),
-                dataType:'json',
-                type: 'post',
-                success:function(data) {
-                	var select=$('<select>',{'name':'nom_fonction'});
-                	for (var i in data) {
-                		select.append($('<option>',{'value':i}).html(data[i]));
-                	}
-                	$('#liste_fonctions').html(select);
-                }
-        	});
-        	$('#selectionner_etape_base').click(function() {
+			$('#'+wizard_id+' .aucune_etape').toggle(!etape_existe);
+			$('#'+wizard_id+' .etape_existante').toggle(etape_existe);
+			
+			$.ajax({
+				url: urls['listerg']+['index','Fonctions'].join('/'),
+				dataType:'json',
+				type: 'post',
+				success:function(data) {
+					var select=$('<select>',{'name':'nom_fonction'});
+					for (var i in data) {
+						select.append($('<option>',{'value':i}).html(data[i]));
+					}
+					$('#liste_fonctions').html(select);
+				}
+			});
+			$('#selectionner_etape_base').click(function() {
 				$('#'+wizard_id).dialog().dialog("close");
-        		$('.dialog-preview-etape')
-        			.addClass('cloneable')
-        			.click(function() {
-        				$('#section_etape_a_cloner')
-    						.removeClass('cache');
-        				$('#etape_a_cloner')
-        					.val($(this).data('etape'));
-        				$('#'+wizard_id).dialog().dialog("open");
-        				$('.dialog-preview-etape')
-            				.removeClass('cloneable');
-        			});
-        	});
-        break;
+				$('.dialog-preview-etape')
+					.addClass('cloneable')
+					.click(function() {
+						$('#section_etape_a_cloner')
+							.removeClass('cache');
+						$('#etape_a_cloner')
+							.val($(this).data('etape'));
+						$('#'+wizard_id).dialog().dialog("open");
+						$('.dialog-preview-etape')
+							.removeClass('cloneable')
+							.off('click');
+					});
+			});
+		break;
 		case 'wizard-resize':
 			$('#'+wizard_id+' img')
 			  .jrac({image_height:480})
-				.bind('jrac_events', function(event, $viewport) {
-					var crop_inconsistent_element=$(this).d().find('.error.crop_inconsistent');
-					if ($viewport.observator.crop_consistent())
-						crop_inconsistent_element.addClass('cache');
-					else
-						crop_inconsistent_element.removeClass('cache');
-				});
+				.bind('jrac_events', surveiller_selection_jrac);
 		break;
 		
 		case 'wizard-confirmation-validation-modele':
@@ -997,35 +1118,35 @@ function wizard_init(wizard_id) {
 		
 		case 'wizard-confirmation-validation-modele-contributeurs':
 			$.ajax({
-		        url: urls['listerg']+['index','Utilisateurs',[pays,magazine,numero_chargement].join('_')].join('/'),
-		        type: 'post',
-			    dataType:'json',
-		        success:function(data) {
-		           var utilisateur_courant=$('#utilisateur').html();
-		     	   
-		     	   $.each($('#'+wizard_id+' span'),function(i,span) {
-		     		   var div=$('<div>');
-		     		   var type_contribution=$(span).attr('id');
-		     		   for (var username in data) {
-		     			   var id = $(span).attr('id')+'_'+username;
-		     			   var option = $('<input>',{
-		     				   id:   id,
-		     				   name: $(span).attr('id'),
-		     				   type: 'checkbox'
-		     			   }).val(username);
-		     			   var coche=(type_contribution == 'photographes' &&  data[username].indexOf('p') != -1)
-							      || (type_contribution == 'designers' 	  && (data[username].indexOf('d') != -1
-							    		  								   || utilisateur_courant===username));
-		     			   option.prop({'checked': coche, 'readOnly': coche});
-		     			   $(div).append(
-		     					$('<div>')
-		     					   	.css({'font-weight':coche?'bold':'normal'})
-		     					   	.append(option)
-		     					   	.append($('<label>',{'for': id}).text(username)));
-		     		   }
-		     		   $(span).append(div);
-		     	   });
-		        }
+				url: urls['listerg']+['index','Utilisateurs',[pays,magazine,numero_chargement].join('_')].join('/'),
+				type: 'post',
+				dataType:'json',
+				success:function(data) {
+				   var utilisateur_courant=$('#utilisateur').html();
+
+			 	   $.each($('#'+wizard_id+' span'),function(i,span) {
+			 		   var div=$('<div>');
+			 		   var type_contribution=$(span).attr('id');
+			 		   for (var username in data) {
+			 			   var id = $(span).attr('id')+'_'+username;
+			 			   var option = $('<input>',{
+			 				   id:   id,
+			 				   name: $(span).attr('id'),
+			 				   type: 'checkbox'
+			 			   }).val(username);
+			 			   var coche=(type_contribution == 'photographes' &&  data[username].indexOf('p') != -1)
+								  || (type_contribution == 'designers' 	  && (data[username].indexOf('d') != -1
+										  								   || utilisateur_courant===username));
+			 			   option.prop({'checked': coche, 'readOnly': coche});
+			 			   $(div).append(
+			 					$('<div>')
+			 					   	.css({'font-weight':coche?'bold':'normal'})
+			 					   	.append(option)
+			 					   	.append($('<label>',{'for': id}).text(username)));
+			 		   }
+			 		   $(span).append(div);
+			 	   });
+				}
 			});
 		break;
 		case 'wizard-myfonts':
@@ -1048,14 +1169,25 @@ function afficher_liste_magazines(wizard_id, id_element_liste, data) {
 	$('#'+wizard_id+' .chargement').removeClass('cache');
 	var tranches = traiter_tranches_en_cours(data);
 	$('#'+wizard_id+' .chargement').addClass('cache');
+	var elementListe = $('#' + wizard_id + ' #' + id_element_liste);
 	if (tranches.length > 0) {
-		$('#'+wizard_id+' #'+id_element_liste).removeClass('cache');
+		elementListe.removeClass('cache');
 		$('#'+wizard_id+' .explication').removeClass('cache');
 		$('#'+wizard_id+' #to-wizard-conception').button('option','disabled',false);
-		for (var i_tranche_en_cours in tranches) {
-			var tranche_en_cours=tranches[i_tranche_en_cours];
-			var bouton_tranche_en_cours=$('#'+id_element_liste+' .init').clone(true).removeClass('init');
-			var id_tranche='tranche_'+tranche_en_cours.Pays+'_'+tranche_en_cours.Magazine+'_'+tranche_en_cours.Numero;
+
+		var noms_sections = ['tranches_non_affectees', 'tranches_affectees'];
+
+		$.each(tranches, function(i, tranche_en_cours) {
+			var element_type_tranche;
+			if (!tranche_en_cours.username) {
+				element_type_tranche = elementListe.find('[name="'+noms_sections[0]+'"]');
+			}
+			else {
+				element_type_tranche = elementListe.find('[name="'+noms_sections[1]+'"]');
+			}
+
+			var bouton_tranche_en_cours=$('#'+id_element_liste+' .template').clone(true).removeClass('template');
+			var id_tranche=['tranche', tranche_en_cours.Pays, tranche_en_cours.Magazine, tranche_en_cours.Numero].join('_');
 			bouton_tranche_en_cours.find('input')
 				.attr({'id':id_tranche})
 				.val(id_tranche);
@@ -1064,16 +1196,25 @@ function afficher_liste_magazines(wizard_id, id_element_liste, data) {
 				.css({'background-image': 'url("../images/flags/'+tranche_en_cours.Pays+'.png")'})
 				.html(tranche_en_cours.str_userfriendly)
 				.click(function() {
+					$('#'+wizard_id+' [name="est_nouvelle_conception_tranche"]').val($(this).closest('[name="tranches_non_affectees"]').length > 0);
 					$('#'+wizard_id+' #to-wizard-conception').click();
 				});
-			if ($('#'+wizard_id+' #'+id_element_liste+' #'+id_tranche).length == 0) {
-				$('#'+wizard_id+' #'+id_element_liste).append(bouton_tranche_en_cours);
+			if (element_type_tranche.find('#'+id_tranche).length === 0) {
+				element_type_tranche.append(bouton_tranche_en_cours);
 			}
-		}
-		$('#'+id_element_liste+' .init').remove();
-		$('#'+wizard_id+' #'+id_element_liste).buttonset().menu();
+		});
+		elementListe
+			.removeClass('cache')
+			.buttonset().menu();
 		$('#'+wizard_id+' #to-wizard-creer, #'+wizard_id+' #to-wizard-modifier').click(function() {
-			$('#'+wizard_id+' #'+id_element_liste+' .ui-state-active').removeClass('ui-state-active');
+			elementListe.find('.ui-state-active').removeClass('ui-state-active');
+		});
+
+		$.each(noms_sections, function() {
+			var section = elementListe.find('[name="'+this.toString()+'"]');
+			if (section.children('li').length === 0) {
+				section.remove();
+			}
 		});
 	}
 	else {
@@ -1130,8 +1271,8 @@ function afficher_tranches_proches(pays, magazine, numero, est_contexte_clonage)
 		if (est_contexte_clonage) { // Filtrage des tranches qui sont prêtes mais sans modèle
 			var tranches_clonables = $.ajax({
 				url: urls['cloner']+['est_clonable',pays,magazine,tranches_pretes.join(',')].join('/'),
-			    type: 'post',
-			    async: false
+				type: 'post',
+				async: false
 			}).responseText.replace(/[\[\]"]/g,'').split(/,/);
 			
 			var tranches_pretes_clonables = [];
@@ -1226,7 +1367,7 @@ function ajouter_preview_etape(num_etape, nom_fonction) {
 		minWidth: 0,
 		minHeight: div_preview_vide.height()+'px',
 		position: [posX,0],
-	    closeOnEscape: false,
+		closeOnEscape: false,
 		modal: false,
 		open:function(event,ui) {
 			$(this).removeClass('initial');
@@ -1237,7 +1378,7 @@ function ajouter_preview_etape(num_etape, nom_fonction) {
 			$(this).d().find('.ui-dialog-titlebar').addClass('logo_option')
 												   .css({'padding':'.3em .6em;'})
 										 		   .prepend($('<img>',{'height':18,'src':base_url+'images/fonctions/'+nom_fonction+'.png',
- 	   											    		     	   'alt':nom_fonction}));
+ 	   															 	   'alt':nom_fonction}));
 			$(this).d().find('.ui-dialog-title').addClass('cache').html(nom_fonction);
 		},
 		beforeClose:function(event,ui) {
@@ -1288,11 +1429,11 @@ function charger_previews(forcer_placement_dialogues) {
 	
 	numero_chargement=numero;
 	chargement_courant=0;
-    charger_preview_etape(chargements[0],true,'_',function() {
+	charger_preview_etape(chargements[0],true,'_',function() {
 		if (etapes_valides.length == 1 || forcer_placement_dialogues) {
 			placer_dialogues_preview();
 		}
-    });
+	});
 }
 
 function largeur_max_preview_etape_ouverte() {
@@ -1420,18 +1561,18 @@ function recuperer_et_alimenter_options_preview(num_etape) {
 	var section_preview_etape=$('.wizard.preview_etape').getElementsWithData('etape',num_etape);
 	var nom_fonction=section_preview_etape.d().data('nom_fonction');
 	$.ajax({
-	    url: urls['parametrageg_wizard']+['index',pays,magazine,numero,num_etape,'null','null'].join('/'),
-	    type: 'post',
-	    dataType:'json',
-	    success:function(data) {
-	    	var valeurs={};
-	    	for (var option_nom in data) {
-	            if (typeof(data[option_nom]['valeur']) =='undefined')
-	                data[option_nom]['valeur']=data[option_nom]['valeur_defaut'];
-	            valeurs[option_nom]=data[option_nom]['valeur'];
-	    	}
-	    	alimenter_options_preview(valeurs, section_preview_etape, nom_fonction);
-	    }
+		url: urls['parametrageg_wizard']+['index',pays,magazine,numero,num_etape,'null','null'].join('/'),
+		type: 'post',
+		dataType:'json',
+		success:function(data) {
+			var valeurs={};
+			for (var option_nom in data) {
+				if (typeof(data[option_nom]['valeur']) =='undefined')
+					data[option_nom]['valeur']=data[option_nom]['valeur_defaut'];
+				valeurs[option_nom]=data[option_nom]['valeur'];
+			}
+			alimenter_options_preview(valeurs, section_preview_etape, nom_fonction);
+		}
 	});
 }
 
@@ -1470,26 +1611,26 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 			var pos_y_agrafe2=image.position().top +parseFloat(templatedToVal(valeurs['Y2']))*zoom;
 			var hauteur= parseFloat(templatedToVal(valeurs['Taille_agrafe']))*zoom;
 	
-			agrafe1.css({'top':    pos_y_agrafe1+'px'});
-			agrafe2.css({'top':    pos_y_agrafe2+'px'});
+			agrafe1.css({'top':	pos_y_agrafe1+'px'});
+			agrafe2.css({'top':	pos_y_agrafe2+'px'});
 			$('.agrafe')
 				.css({'left':   pos_x_debut	+'px', 
 					  'width':  largeur	  	+'px',
 					  'height': hauteur	  	+'px'})
-			    .removeClass('cache')
-			    .draggable({
-			    	axis: 'y',
-			    	stop:function(event, ui) {
-			    		var element=$(event.target);
-			    		tester_options_preview(nom_fonction,[element.hasClass('premiere') ? 'Y1' : 'Y2'],element);
-			    	}
-			    })
-			    .resizable({
-			    	handles:'s',
-			    	resize:function(event, ui) {
-			    		tester_options_preview(nom_fonction,['Taille_agrafe'],ui.element);
-			    	}
-			    });
+				.removeClass('cache')
+				.draggable({
+					axis: 'y',
+					stop:function(event, ui) {
+						var element=$(event.target);
+						tester_options_preview(nom_fonction,[element.hasClass('premiere') ? 'Y1' : 'Y2'],element);
+					}
+				})
+				.resizable({
+					handles:'s',
+					resize:function(event, ui) {
+						tester_options_preview(nom_fonction,['Taille_agrafe'],ui.element);
+					}
+				});
 		break;
 		
 		case 'Degrade':
@@ -1501,14 +1642,14 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 
 			var rectangle = form_userfriendly.find('.rectangle_degrade');
 
-			rectangle.css({'top':    pos_y_debut 		   +'px', 
+			rectangle.css({'top':	pos_y_debut 		   +'px', 
 						   'left':   pos_x_debut 		   +'px', 
 						   'width':  (pos_x_fin-pos_x_debut)+'px',
 						   'height': (pos_y_fin-pos_y_debut)+'px'})
 					 .removeClass('cache')
 					 .draggable({//containment:limites_drag, 
 						 stop:function(event, ui) {
-			   		    	tester_options_preview(nom_fonction, ['Pos_x_debut','Pos_y_debut','Pos_x_fin','Pos_y_fin']);
+			   				tester_options_preview(nom_fonction, ['Pos_x_debut','Pos_y_debut','Pos_x_fin','Pos_y_fin']);
 						 }
 					 })
 					 .resizable({
@@ -1520,8 +1661,8 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 			
 			var choix = form_userfriendly.find('[name="option-Sens"]');
 			choix.click(function() {
-   		    	tester_options_preview(nom_fonction,['Sens']);
-   		    	coloriser_rectangle_degrade(rectangle,null,null,$(this).val());
+   				tester_options_preview(nom_fonction,['Sens']);
+   				coloriser_rectangle_degrade(rectangle,null,null,$(this).val());
 			});
 		break;
 		
@@ -1535,13 +1676,13 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 			var pos_y_agrafe2=image.position().top +0.8*image.height();
 			var hauteur= image.height()*0.05;
 				
-			agrafe1.css({'top':    pos_y_agrafe1+'px'});
-			agrafe2.css({'top':    pos_y_agrafe2+'px'});
+			agrafe1.css({'top':	pos_y_agrafe1+'px'});
+			agrafe2.css({'top':	pos_y_agrafe2+'px'});
 			form_userfriendly.find('.agrafe')
 				.css({'left':   pos_x_debut	+'px', 
 					  'width':  largeur	  	+'px',
 					  'height': hauteur	  	+'px'})
-			    .removeClass('cache');
+				.removeClass('cache');
 
 			var rectangle1 = form_userfriendly.find('.premier.rectangle_degrade');
 			var rectangle2 = form_userfriendly.find('.deuxieme.rectangle_degrade');
@@ -1551,10 +1692,10 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 			rectangle1.css({'left':image.position().left+'px'});
 			rectangle2.css({'left':parseInt(image.position().left+image.width()/2)+'px'});
 			form_userfriendly.find('.rectangle_degrade')
-				.css({'top':    image.position().top +'px', 
+				.css({'top':	image.position().top +'px', 
 					  'width':  image.width()/2	  	 +'px',
 					  'height': image.height()		 +'px'})
-			    .removeClass('cache');
+				.removeClass('cache');
 			coloriser_rectangles_degrades(c1);
 	
 		break;
@@ -1563,16 +1704,16 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 			
 			var largeur_croix=form_userfriendly.find('.point_remplissage').width()/2;
 			var limites_drag=[(image.offset().left			 	 -largeur_croix+1),
-			                  (image.offset().top 			 	 -largeur_croix+1),
-			                  (image.offset().left+image.width() -largeur_croix-1),
-			                  (image.offset().top +image.height()-largeur_croix-1)];
+							  (image.offset().top 			 	 -largeur_croix+1),
+							  (image.offset().left+image.width() -largeur_croix-1),
+							  (image.offset().top +image.height()-largeur_croix-1)];
 			form_userfriendly.find('.point_remplissage').css({'left':(image.position().left-largeur_croix+1+parseFloat(valeurs['Pos_x'])*zoom)+'px', 
 										 					  'top': (image.position().top -largeur_croix+1+parseFloat(valeurs['Pos_y'])*zoom)+'px'})
 										 				.removeClass('cache')
-													    .draggable({containment:limites_drag,
-														   		    stop:function(event, ui) {
-														   		    	tester_options_preview(nom_fonction,['Pos_x', 'Pos_y']);
-														   		    }});
+														.draggable({containment:limites_drag,
+														   			stop:function(event, ui) {
+														   				tester_options_preview(nom_fonction,['Pos_x', 'Pos_y']);
+														   			}});
 		break;
 		case 'Arc_cercle':
 			
@@ -1665,13 +1806,13 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 						  .removeClass('cache')
 						  .draggable({//containment:limites_drag, 
 					  		  stop:function(event, ui) {
-				   		    	tester_options_preview(nom_fonction,['Pos_x_debut','Pos_y_debut','Pos_x_fin','Pos_y_fin']);
-				   		      }
+				   				tester_options_preview(nom_fonction,['Pos_x_debut','Pos_y_debut','Pos_x_fin','Pos_y_fin']);
+				   			  }
 						  })
 						  .resizable({
 								stop:function(event, ui) {
-					   		    	tester_options_preview(nom_fonction,['Pos_x_fin','Pos_y_fin']);
-					   		    }
+					   				tester_options_preview(nom_fonction,['Pos_x_fin','Pos_y_fin']);
+					   			}
 						  });
 			
 			checkboxes.push('Rempli');
@@ -1694,12 +1835,14 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 		
 			var apercu_image=form_userfriendly.find('.apercu_image');
 						
-			if (apercu_image.attr('src') == undefined)
-				definir_et_positionner_image(valeurs['Source']);
-			else
+			if (apercu_image.attr('src') === undefined) {
+				definir_et_positionner_image(templatedToVal(valeurs['Source']));
+			}
+			else {
 				positionner_image(apercu_image);
+			}
 
-			form_userfriendly.find('[name="parcourir"],[name="option-Source"]').click(function(event) {
+			form_userfriendly.find('[name="parcourir"]').click(function(event) {
 				event.preventDefault();
 				
 				$('#wizard-images')
@@ -1850,8 +1993,8 @@ function positionner_points_polygone(form_options) {
 		var x=zoom*parseFloat(liste_x[i]);
 		var y=zoom*parseFloat(liste_y[i]);
 		points_a_placer.push([i,
-		                      x-COTE_CARRE_DEPLACEMENT/2,
-		                      y-COTE_CARRE_DEPLACEMENT/2]);
+							  x-COTE_CARRE_DEPLACEMENT/2,
+							  y-COTE_CARRE_DEPLACEMENT/2]);
 		
 	}
 	
@@ -1861,8 +2004,8 @@ function positionner_points_polygone(form_options) {
 		var nouveau_point= options_etape.find('.point_polygone.modele')
 			.clone(true)
 				.removeClass('modele cache')
-			    .attr({'name':'point'+point[0]})
-			    .css({'margin-left':point[1]+'px', 
+				.attr({'name':'point'+point[0]})
+				.css({'margin-left':point[1]+'px', 
 			 		  'margin-top': point[2]+'px'})
 			 	.mouseleave(function() {
 			 		$(this).removeClass('focus');
@@ -1894,9 +2037,9 @@ function positionner_points_polygone(form_options) {
 								$('.point_polygone[name="point'+i+'"]').attr({'name':'point'+(i+1)});
 							}
 							var nouveau_point={'margin-left':(parseFloat(point1.css('margin-left').replace(/px$/,''))
-							                   				 +parseFloat(point2.css('margin-left').replace(/px$/,'')))/2,
-							                   'margin-top': (parseFloat(point1.css('margin-top' ).replace(/px$/,''))
-							                		   		 +parseFloat(point2.css('margin-top' ).replace(/px$/,'')))/2};
+											   				 +parseFloat(point2.css('margin-left').replace(/px$/,'')))/2,
+											   'margin-top': (parseFloat(point1.css('margin-top' ).replace(/px$/,''))
+													   		 +parseFloat(point2.css('margin-top' ).replace(/px$/,'')))/2};
 							
 							point1.after($('<div>').addClass('point_polygone')
 												   .attr({'name':'point'+(num_point1+1)})
@@ -1976,9 +2119,9 @@ function positionner_image(preview) {
 	}
 	
 	var limites_drag=[(image.offset().left-parseFloat(largeur)),
-	                  (image.offset().top -parseFloat(hauteur)),
-	                  (image.offset().left+image.width()),
-	                  (image.offset().top +image.height())];
+					  (image.offset().top -parseFloat(hauteur)),
+					  (image.offset().left+image.width()),
+					  (image.offset().top +image.height())];
 	
 	if (position_image.hasClass('ui-resizable')) {
 		position_image.resizable('destroy');
@@ -1986,9 +2129,9 @@ function positionner_image(preview) {
 	
 	position_image.addClass('outlined')
 				  .css({'outline-color':'#000000',
-					    'background-image':'',
-					    'background-color':'white',
-					    'left':pos_x+'px', 
+						'background-image':'',
+						'background-color':'white',
+						'left':pos_x+'px', 
 						'top': pos_y+'px',
 						'width':largeur+'px',
 						'height':hauteur+'px'})
@@ -2002,13 +2145,13 @@ function positionner_image(preview) {
 					})) 
 			  	  .draggable({//containment:limites_drag, 
 			  		  stop:function(event, ui) {
-		   		    	tester_options_preview('Image',['Decalage_x','Decalage_y']);
-		   		      }
+		   				tester_options_preview('Image',['Decalage_x','Decalage_y']);
+		   			  }
 				  })
 				  .resizable({
 						stop:function(event, ui) {
-			   		    	tester_options_preview('Image',['Compression_x','Compression_y']);
-			   		    }
+			   				tester_options_preview('Image',['Compression_x','Compression_y']);
+			   			}
 				  });
 }
 
@@ -2125,12 +2268,12 @@ function valider(callback) {
 	else {
 		callback = callback || function(){};
 		$.ajax({
-		    url: urls['update_wizard']+['index',pays,magazine,numero,num_etape_courante,parametrage].join('/'),
-		    type: 'post',
-		    success:function(data) {
-		    	charger_couleurs_frequentes();
+			url: urls['update_wizard']+['index',pays,magazine,numero,num_etape_courante,parametrage].join('/'),
+			type: 'post',
+			success:function(data) {
+				charger_couleurs_frequentes();
 				reload_current_and_final_previews(callback);
-		    }
+			}
 		});
 	}
 }
@@ -2207,8 +2350,8 @@ function tester_options_preview(nom_fonction, noms_options, element) {
 						case 'Pos_y_centre':
 							val = toFloat2Decimals(parseFloat(form_options.valeur('Hauteur').val())/2 
 									 			 + parseFloat(arc.position().top 
-									 					    + ($('.ui-wrapper').length > 0 ? $('.ui-wrapper').position().top : 0)
-									 					    - image.position().top)/zoom);
+									 						+ ($('.ui-wrapper').length > 0 ? $('.ui-wrapper').position().top : 0)
+									 						- image.position().top)/zoom);
 						break;
 						case 'Largeur':
 							val=arc.width()/zoom;
@@ -2270,7 +2413,14 @@ function tester_options_preview(nom_fonction, noms_options, element) {
 							val = toFloat2Decimals(parseFloat((positionnement.offset().left - image.offset().left)/zoom));
 						break;
 						case 'Decalage_y':
-							var pos_y_image=positionnement.offset().top - image.offset().top;
+							var pos_y_image;
+							if (form_userfriendly.valeur('Position') === 'bas') {
+								pos_y_image=image.height() - (positionnement.offset().top - image.offset().top);
+							}
+							else {
+								pos_y_image=positionnement.offset().top - image.offset().top;
+							}
+
 							val = toFloat2Decimals(parseFloat((pos_y_image)/zoom));
 							form_options.valeur('Mesure_depuis_haut').val('Oui');
 						break;
@@ -2372,24 +2522,24 @@ function generer_et_positionner_preview_myfonts(gen_preview_proprietes, gen_prev
 		}
 		
 		var limites_drag=[(image.offset().left-parseFloat(largeur)),
-		                  (image.offset().top -parseFloat(hauteur)),
-		                  (image.offset().left+image.width()),
-		                  (image.offset().top +image.height())];
+						  (image.offset().top -parseFloat(hauteur)),
+						  (image.offset().left+image.width()),
+						  (image.offset().top +image.height())];
 		position_texte.css({'left':pos_x+'px', 
-						    'top': pos_y+'px',
-						    'width':largeur+'px',
-						    'height':hauteur+'px'})
+							'top': pos_y+'px',
+							'width':largeur+'px',
+							'height':hauteur+'px'})
 					  .removeClass('cache')
 					  .draggable({//containment:limites_drag, 
 				  		  stop:function(event, ui) {
-			   		    	tester_options_preview('TexteMyFonts',['Pos_x','Pos_y']);
-			   		    	tester();
-			   		      }
+			   				tester_options_preview('TexteMyFonts',['Pos_x','Pos_y']);
+			   				tester();
+			   			  }
 					  })
 					  .resizable({
 							stop:function(event, ui) {
-				   		    	tester_options_preview('TexteMyFonts',['Compression_x','Compression_y']);
-				   		    }
+				   				tester_options_preview('TexteMyFonts',['Compression_x','Compression_y']);
+				   			}
 					  });
 		var image_a_positionner = image_preview_ajustee.clone(false);
 		if (position_texte.find('img').length == 0) {
@@ -2413,10 +2563,10 @@ function generer_et_positionner_preview_myfonts(gen_preview_proprietes, gen_prev
 function reload_current_and_final_previews(callback) {
 	chargements=[modification_etape.data('etape')];
 	fermer_dialogue_preview(modification_etape);
-    charger_preview_etape(chargements[0],true, undefined, function() {
-    	chargements=['final'];
-        charger_preview_etape(chargements[0],true, undefined, callback);
-    });
+	charger_preview_etape(chargements[0],true, undefined, function() {
+		chargements=['final'];
+		charger_preview_etape(chargements[0],true, undefined, callback);
+	});
 }
 
 function reload_all_previews() {
@@ -2439,7 +2589,7 @@ function reload_all_previews() {
 			if (dialogue.data('etape') == modification_etape.data('etape'))
 				recuperer_et_alimenter_options_preview(num_etape);
 		}
-    });
+	});
 }
 
 function charger_couleurs_frequentes() {
@@ -2521,7 +2671,7 @@ var isMyFontsError = false;
 function load_myfonts_preview(preview1, preview2, preview3, callback) {
 	var dialogue=$('.wizard.preview_etape.modif').d();
 	var form_options=dialogue.find('[name="form_options"]');
-	var selectors=[];
+	var selectors=['.image_position'];
 	if (preview1)
 		selectors.push('.proprietes_texte .apercu_myfonts');
 	if (preview2)
@@ -2541,7 +2691,7 @@ function load_myfonts_preview(preview1, preview2, preview3, callback) {
 		$.each($(['URL','Couleur_texte','Couleur_fond','Largeur','Chaine','Demi_hauteur']),function(i,nom_option) {
 			url_appel+="/"+form_options.valeur(nom_option).val();
 		});
-		if ($(this).parent().parent().is('body')) // Preview globale donc avec rotation
+		if ($(this).parent().parent().is('body') || $(this).closest('.image_position').length !== 0) // Preview globale donc avec rotation
 			url_appel+="/"+form_options.valeur('Rotation').val();
 		else
 			url_appel+='/0.01';
@@ -2594,7 +2744,10 @@ function placer_extension_largeur_preview() {
 }
 
 function wizard_charger_liste_pays() {
+	chargement_listes=true;
 	var wizard_pays=$('#'+id_wizard_courant+' [name="wizard_pays"]');
+	wizard_pays.html($('<option>').text('Chargement...'));
+
 	$.ajax({
 		url: urls['numerosdispos']+['index'].join('/'),
 		dataType:'json',
@@ -2606,7 +2759,11 @@ function wizard_charger_liste_pays() {
 						   .val(i)
 						   .html(data.pays[i]));
 			}
-			wizard_pays.val(get_option_wizard('wizard_pays') || 'fr');
+			wizard_pays.val(get_option_wizard(id_wizard_courant, 'wizard_pays') || 'fr');
+
+			$('#'+id_wizard_courant+' [name="wizard_pays"]').change(function() {
+				wizard_charger_liste_magazines($(this).val());
+			});
 
 			wizard_charger_liste_magazines(pays_sel);
 		}
@@ -2615,8 +2772,12 @@ function wizard_charger_liste_pays() {
 
 
 function wizard_charger_liste_magazines(pays_sel) {
-	pays=pays_sel;
+	chargement_listes=true;
 	var wizard_magazine=$('#'+id_wizard_courant+' [name="wizard_magazine"]');
+	wizard_magazine.html($('<option>').text('Chargement...'));
+
+	pays=pays_sel;
+
 	$.ajax({
 		url: urls['numerosdispos']+['index',pays].join('/'),
 		type:'post',
@@ -2628,16 +2789,26 @@ function wizard_charger_liste_magazines(pays_sel) {
 							   .val(i)
 							   .html(data.magazines[i]));
 			}
-			if (get_option_wizard('wizard_magazine') != undefined)
-				wizard_magazine.val(get_option_wizard('wizard_magazine'));
+			if (get_option_wizard(id_wizard_courant, 'wizard_magazine') != undefined)
+				wizard_magazine.val(get_option_wizard(id_wizard_courant, 'wizard_magazine'));
+
+			wizard_magazine.change(function() {
+				chargement_listes=true;
+				wizard_charger_liste_numeros($(this).val());
+			});
+
 			wizard_charger_liste_numeros(wizard_magazine.val());
 		}
 	});
 }
 
 function wizard_charger_liste_numeros(magazine_sel) {
-	magazine=magazine_sel;
+	chargement_listes=true;
 	var wizard_numero=$('#'+id_wizard_courant+' [name="wizard_numero"]');
+	wizard_numero.html($('<option>').text('Chargement...'));
+
+	magazine=magazine_sel;
+
 	charger_liste_numeros(pays,magazine,function(data) {
 		numeros_dispos=data.numeros_dispos;
 		var tranches_pretes=data.tranches_pretes;
@@ -2646,7 +2817,7 @@ function wizard_charger_liste_numeros(magazine_sel) {
 		for (var numero_dispo in numeros_dispos) {
 			if (numero_dispo != 'Aucun') {
 				var option=$('<option>').val(numero_dispo).html(numero_dispo);
-				var est_dispo=typeof(tranches_pretes[numero_dispo]) != 'undefined';
+				var est_dispo=tranches_pretes[numero_dispo] !== undefined;
 				if (est_dispo) {
 					var classe='';
 					switch(tranches_pretes[numero_dispo]) {
@@ -2666,9 +2837,43 @@ function wizard_charger_liste_numeros(magazine_sel) {
 				wizard_numero.append(option);
 			}
 		}
-		if (get_option_wizard('wizard_numero') != undefined)
-			wizard_numero.val(get_option_wizard('wizard_numero'));
+		if (get_option_wizard(id_wizard_courant, 'wizard_numero') != undefined)
+			wizard_numero.val(get_option_wizard(id_wizard_courant, 'wizard_numero'));
 		chargement_listes=false;
+	});
+}
+
+function creer_modele_tranche(pays, magazine, numero, with_user, dimension_x, dimension_y) {
+	$.ajax({
+		url: urls['creer_modele_wizard']+['index',pays,magazine,numero,with_user].join('/'),
+		type: 'post',
+		async: false
+	});
+
+	if (dimension_x) {
+		// Mise à jour de la fonction Dimensions avec les valeurs entrées
+		var parametrage_dimensions =  'Dimension_x='+dimension_x +'&Dimension_y='+dimension_y;
+		$.ajax({
+			url: urls['update_wizard']+['index',pays,magazine,numero,-1,parametrage_dimensions,with_user].join('/'),
+			type: 'post',
+			async: false
+		});
+	}
+}
+
+function rogner_image(image, nom, source, destination, pays_destination, magazine_destination, numero_destination, x1, x2, y1, y2, numero_image, callback) {
+	var x1 = parseFloat(100 * x1 / image.width()),
+		x2 = parseFloat(100 * x2 / image.width()),
+		y1 = parseFloat(100 * y1 / image.height()),
+		y2 = parseFloat(100 * y2 / image.height());
+
+	callback = callback || function() {};
+
+	$.ajax({
+		url: urls['rogner_image'] + ['index', pays_destination, magazine_destination, numero_image || 'null', numero_destination,
+											  nom, source, destination, x1, x2, y1, y2].join('/'),
+		type: 'post',
+		success: callback
 	});
 }
 	
@@ -2681,16 +2886,15 @@ function charger_liste_numeros(pays_sel,magazine_sel, callback) {
 	});
 }
 
-
-function get_option_wizard(nom_option) {
-	return get_option_wizard(id_wizard_courant, nom_option);
-}
-
 function get_option_wizard(id_wizard, nom_option) {
 	var options_wizard = wizard_options[id_wizard];
 	if (options_wizard == undefined || options_wizard == null)
 		return undefined;
 	return options_wizard[nom_option] || undefined;
+}
+
+function set_option_wizard(id_wizard, nom_option, valeur) {
+	wizard_options[id_wizard][nom_option] = valeur;
 }
 
 
@@ -2718,11 +2922,11 @@ function init_action_bar() {
 				case 'corbeille':
 					jqueryui_alert_from_d($('#wizard-confirmation-desactivation-modele'), function() {
 						$.ajax({
-			                url: urls['desactiver_modele']+['index',pays,magazine,numero].join('/'),
-			                type: 'post',
-			                success:function(data) {
-			                	location.reload();
-			                }
+							url: urls['desactiver_modele']+['index',pays,magazine,numero].join('/'),
+							type: 'post',
+							success:function(data) {
+								location.reload();
+							}
 						});
 					});
 				break;
@@ -2765,36 +2969,39 @@ function afficher_photo_tranche() {
 			success:function(nom_photo) {
 				if (nom_photo !== 'null') {
 					nom_photo_principale = nom_photo;
-					afficher_photo_tranche();				
+					afficher_photo_tranche();
 				}
 			}
 		});
 	}
 }
 
-function maj_photo_principale() {
+function maj_photo_principale(pays_maj, magazine_maj, numero_maj, with_user) {
 	if (nom_photo_principale === null) {
 		return;
 	}
+	if (with_user !== false) {
+		with_user = true;
+	}
 	$.ajax({
-		url: urls['update_photo']+['index',pays,magazine,numero,nom_photo_principale].join('/'),
-	    type: 'post',
-	    success:function(data) {
+		url: urls['update_photo']+['index',pays_maj, magazine_maj, numero_maj, nom_photo_principale, with_user].join('/'),
+		type: 'post',
+		success:function(data) {
 			if ($('#wizard-conception').is(':visible')) {
 				afficher_photo_tranche();
 			}
-	    }
+		}
 	});
 }
 
 function lister_images_gallerie(type_images) {	
 	$.ajax({
-        url: urls['listerg']+['index',type_images,pays,magazine].join('/'),
-        dataType:'json',
-        type: 'post',
-        success: function(data) {
-        	afficher_gallerie(type_images, data);
-        }
+		url: urls['listerg']+['index',type_images,pays,magazine].join('/'),
+		dataType:'json',
+		type: 'post',
+		success: function(data) {
+			afficher_gallerie(type_images, data);
+		}
 	});
 }
 
@@ -2822,38 +3029,46 @@ function afficher_gallerie(type_images, data, container) {
 			}
 			container.find('.pas_d_image').addClass('cache');
 			container.find('ul.gallery li:not(.template) img').remove();
-	    	for (var i in data) {
-	    		var li=ul.find('li.template').clone(true).removeClass('template');
-	    		li.find('em').html(data[i].replace(/[^\.]+\./g,''));
-	    		li.find('img').prop({'src':base_url+'../edges/'+pays+'/'+sous_repertoire+'/'+data[i],
-	    							 'title':data[i]});
-	    		li.find('input').val(data[i]);
-	    		ul.append(li);
-	    	}
+			for (var i in data) {
+				var li=ul.find('li.template').clone(true).removeClass('template');
+				li.find('em').html(data[i].replace(/[^\.]+\./g,''));
+				li.find('img').prop({'src':base_url+'../edges/'+pays+'/'+sous_repertoire+'/'+data[i],
+									 'title':data[i]});
+				li.find('input').val(data[i]);
+				ul.append(li);
+			}
 			container.find('ul.gallery li img').removeClass('selected')
 										  .unbind('click')
-	    								  .click(function() {
-	    		var selected = !$(this).hasClass('selected');
-	    		
+										  .click(function() {
+				var selected = !$(this).hasClass('selected');
+				
 				container.find('ul.gallery li img').removeClass('selected');
 				container.find('#to-wizard-resize').toggleClass('cache', !selected);
 				
-	    		if (selected) {
-	        		$(this).addClass('selected');
-	        		$('#wizard-images [name="selected"]').val($(this).attr('src'));
+				if (selected) {
+					$(this).addClass('selected');
+					$('#wizard-images [name="selected"]').val($(this).attr('src'));
 
-	    			var destination_rognage = container.attr('name') === 'section_photo' ? 'elements' : 'photos';
-	    			$('#wizard-resize [name="destination"]').val(destination_rognage);
-	        		$('#wizard-resize img').attr({'src':$(this).attr('src')});
-	        	}
-	    	});
-	    	if (type_images === 'Photos' && nom_photo_principale !== null) {
-	    		container.find('ul.gallery li img[src$="'+nom_photo_principale+'"]').click();
-	    	}
+					var destination_rognage = container.attr('name') === 'section_photo' ? 'elements' : 'photos';
+					$('#wizard-resize [name="destination"]').val(destination_rognage);
+					$('#wizard-resize img').attr({'src':$(this).attr('src')});
+				}
+			});
+			if (type_images === 'Photos' && nom_photo_principale !== null) {
+				container.find('ul.gallery li img[src$="'+nom_photo_principale+'"]').click();
+			}
 		}
 		ul.removeClass('cache');
 		container.find('.chargement_images').addClass('cache');
 	}
+}
+
+function surveiller_selection_jrac(event, $viewport) {
+	var crop_inconsistent_element=$(this).d().find('.error.crop_inconsistent');
+	if ($viewport.observator.crop_consistent())
+		crop_inconsistent_element.addClass('cache');
+	else
+		crop_inconsistent_element.removeClass('cache');
 }
 
 function templatedToVal(templatedString) {
@@ -2885,7 +3100,7 @@ function templatedToVal(templatedString) {
 						}
 					}
 					else
-						templatedString=templatedString.replace(regex, dimensions.x.val());
+						templatedString=templatedString.replace(regex, dimensions.x);
 				break;
 				case 'hauteur':
 					if (matches[2] || matches[3]) {
@@ -2893,12 +3108,12 @@ function templatedToVal(templatedString) {
 						var autre_nombre= matches[1] || matches[4];
 						switch(operation) {
 							case '*':
-								templatedString= dimensions.y.val()*autre_nombre;
+								templatedString= dimensions.y*autre_nombre;
 							break;
 						}
 					}
 					else
-						templatedString=templatedString.replace(regex, dimensions.y.val());
+						templatedString=templatedString.replace(regex, dimensions.y);
 				break;
 				case 'caracteres_speciaux':
 					templatedString=templatedString.replace(/Â°/,'°');

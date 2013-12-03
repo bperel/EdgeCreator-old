@@ -2,7 +2,7 @@
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Headers: X-Requested-With, Content-Type');
 
-$no_database=true; // Ne pas utiliser les paramètres de connexion classiques
+$no_database=true; // Ne pas utiliser les paramÃ¨tres de connexion classiques
 include_once(BASEPATH.'/../../Inducks.class.php');
 Inducks::$use_local_db=true;//strpos($_SERVER['SERVER_ADDR'],'localhost') === false && strpos($_SERVER['SERVER_ADDR'],'127.0.0.1') === false;
 		
@@ -311,7 +311,7 @@ class Modele_tranche extends CI_Model {
 			if (isset($resultats_options->$option_nom))
 				uksort($resultats_options->$option_nom,'trier_intervalles');
 			
-		$f=new $nom_fonction($resultats_options,false,$creation,!$nouvelle_etape); // Ajout des champs avec valeurs par défaut
+		$f=new $nom_fonction($resultats_options,false,$creation,!$nouvelle_etape); // Ajout des champs avec valeurs par dÃ©faut
 		if ($inclure_infos_options) {
 			$prop_champs=new ReflectionProperty(get_class($f), 'champs');
 			$champs=$prop_champs->getValue();
@@ -826,7 +826,7 @@ class Modele_tranche extends CI_Model {
 
 	function getValeur($option_nom,$option_valeur) {
 		$texte='';
-		if (!is_array($option_valeur)) // Valeur par défaut
+		if (!is_array($option_valeur)) // Valeur par dÃ©faut
 			$option_valeur=array('Tous'=>$option_valeur);
 		asort($option_valeur);
 		$option_valeur_groupe=array();
@@ -871,7 +871,7 @@ class Modele_tranche extends CI_Model {
 	}
 
 	function getValeurModifiable($option_nom,$option_valeur,$modif=true) {
-		if (!is_array($option_valeur)) // Valeur par défaut
+		if (!is_array($option_valeur)) // Valeur par dÃ©faut
 			$option_valeur=array('Tous'=>$option_valeur);
 		asort($option_valeur);
 		$option_valeur_groupe=array();
@@ -1197,7 +1197,7 @@ class Modele_tranche extends CI_Model {
 					$rep=Fonction_executable::getCheminPhotos($pays).'/';
 					$extensions=array('jpg','jpeg','png');
 				}
-				if (($dir = @opendir($rep)) === false) { // Sans doute un nouveau pays, on crée le sous-dossier
+				if (($dir = @opendir($rep)) === false) { // Sans doute un nouveau pays, on crÃ©e le sous-dossier
 					if (@opendir(preg_replace('#[^/]+/[^/]+/$#','',$rep))) {
 						if (!@mkdir($rep,0777,true)) {
 							$liste["erreur"]=$rep;
@@ -1367,7 +1367,7 @@ class Fonction_executable extends Fonction {
 			$champs=$propriete_champs->getValue();
 			foreach(array_keys($champs) as $nom) {
 				if (!isset($this->options->$nom) || (strpos('Couleur', $nom)!==false && $this->options->$nom==array())) {
-					self::erreur('Le champ "'.$nom.'" est indéfini !');
+					self::erreur('Le champ "'.$nom.'" est indÃ©fini !');
 				}
 			}
 		}
@@ -1426,7 +1426,7 @@ class Fonction_executable extends Fonction {
 				   'numero[]'=>'#\[Numero\[([0-9]+)\]\]#is',
 				   'largeur'=>'#\[Largeur\]#is',
 				   'hauteur'=>'#\[Hauteur\]#is',
-				   'caracteres_speciaux'=>'#\Â°#is');
+				   'caracteres_speciaux'=>'#\Ã‚Â°#is');
 		if ($str==array())
 			$str='';
 		foreach($tab as $nom=>$regex) {
@@ -1462,7 +1462,7 @@ class Fonction_executable extends Fonction {
 						$str/=z(1);
 					break;
 					case 'caracteres_speciaux':
-						$str=str_replace('Â°','°',$str);
+						$str=str_replace('Ã‚Â°','Â°',$str);
 					break;
 
 				}
@@ -1495,7 +1495,7 @@ class Dimensions extends Fonction_executable {
 	
 	function verifier_erreurs() {
 		if ($this->options->Dimension_x < 0 || $this->options->Dimension_y < 0 ) {
-			self::erreur('Dimensions nÃ©gatives');
+			self::erreur('Dimensions nÃƒÂ©gatives');
 		}
 		if ($this->options->Dimension_x == array() || $this->options->Dimension_y == array() ) {
 			self::erreur('Dimensions nulles');
@@ -1589,7 +1589,7 @@ class Image extends Fonction_executable {
 	
 	function verifier_erreurs() {
 		if (empty($this->options->Source)) {
-			self::erreur('Le fichier n\'a pas été défini');
+			self::erreur('Le fichier n\'a pas Ã©tÃ© dÃ©fini');
 		}
 		$chemin_reel=Image::get_chemin_reel($this->options->Source);
 		if (!is_file($chemin_reel)) {
@@ -1640,7 +1640,7 @@ class TexteMyFonts extends Fonction_executable {
 						  $this->options->Couleur_fond,
 						  $this->options->Largeur,
 						  $this->options->Chaine.'                                    .',
-						  intval((Viewer_wizard::$largeur/1.5)/0.35) // Précision
+						  intval((Viewer_wizard::$largeur/1.5)/0.35) // PrÃ©cision
 						 );
 		$texte=$post->im;
 		if ($this->options->Demi_hauteur == 'Oui') {
@@ -1655,14 +1655,14 @@ class TexteMyFonts extends Fonction_executable {
 		$width=imagesx($texte);
 		$height=imagesy($texte);
 		
-		if ($options_avancees) { // Découpage des espaces blancs => Pas pour le preview
+		if ($options_avancees) { // DÃ©coupage des espaces blancs => Pas pour le preview
 			$espace=imagecreatetruecolor(2*$height, $height);
 			imagefill($espace, 0, 0, imagecolorallocate($espace,$r, $g, $b));
 			for ($i=0;$i<$width;$i+=2*$height) {
 				$image_decoupee=imagecreatetruecolor(2*$height, $height);
 				imagecopyresampled($image_decoupee, $texte, 0, 0, $i, 0, 2*$height, $height, 2*$height, $height);
 				imagetruecolortopalette($image_decoupee, false, 255);
-				if (imagecolorstotal($image_decoupee) == 1) { // Image remplie uniformément => découpage
+				if (imagecolorstotal($image_decoupee) == 1) { // Image remplie uniformÃ©ment => dÃ©coupage
 					$texte2=imagecreatetruecolor($i, $height);
 					imagecopy($texte2, $texte, 0, 0, 0, 0, $i, $height);
 					$texte=$texte2;
@@ -1697,9 +1697,9 @@ class TexteMyFonts extends Fonction_executable {
 	
 	function verifier_erreurs() {
 		if (is_array($this->options->Couleur_fond) && count($this->options->Couleur_fond) ==0)
-			self::erreur('Couleur de fond indéfinie');
+			self::erreur('Couleur de fond indÃ©finie');
 		if (is_array($this->options->Couleur_texte) && count($this->options->Couleur_texte) ==0)
-			self::erreur('Couleur de texte indéfinie');
+			self::erreur('Couleur de texte indÃ©finie');
 	}
 }
 

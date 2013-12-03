@@ -2,11 +2,12 @@
 header("Expires: " . gmdate( "D, j M Y H:i:s", time() ) . " GMT"); // always modified 
 header("Cache-Control: no-store, no-cache, must-revalidate"); // HTTP/1.1 
 header("Cache-Control: post-check=0, pre-check=0", FALSE); 
-header("Pragma: no-cache"); ?>
+header("Pragma: no-cache");
+header("Content-Type: text/html; charset=ISO-8859-1"); ?>
 
 <html>
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
 
 	<link rel="stylesheet" type="text/css" href="<?=base_url()?>css/sunny/jquery-ui-1.10.2.custom.css" />
 	<link rel="stylesheet" type="text/css" href="<?=base_url()?>css/edgecreator.css" />
@@ -49,7 +50,7 @@ header("Pragma: no-cache"); ?>
 		var urls=new Array();
 		<?php
 		$controleurs=array('update_wizard','edgecreatorg','tranchesencours','numerosdispos','parametrageg','parametrageg_wizard',
-		   				   'modifierg','supprimerg','listerg','etendre','insert_wizard','cloner','upload_wizard','supprimer_wizard','viewer_wizard','viewer_myfonts',
+		   				   'modifierg','supprimerg','listerg','etendre','creer_modele_wizard','insert_wizard','cloner','upload_wizard','supprimer_wizard','viewer_wizard','viewer_myfonts',
 						   'dessiner','photo_principale','update_photo','rogner_image','desactiver_modele','valider_modele','check_logged_in','couleurs_frequentes','couleur_point_photo');
 		foreach($controleurs as $controleur) {
 			?>urls['<?=$controleur?>']='<?=site_url($controleur)?>/';<?php
