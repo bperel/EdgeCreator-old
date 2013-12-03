@@ -117,7 +117,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 			$valeurs_defaut=$prop_valeurs_defaut->getValue();
 			$prop_descriptions=new ReflectionProperty(get_class($f), 'descriptions');
 			$descriptions=$prop_descriptions->getValue();
-			foreach($f->options as $nom_option=>$option) {
+			foreach(array_keys((array)$f->options) as $nom_option) {
 				$intervalles_option=array();
 				$intervalles_option['valeur']=$f->options->$nom_option;
 				$intervalles_option['type']=$champs[$nom_option];

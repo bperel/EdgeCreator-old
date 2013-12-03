@@ -1481,8 +1481,8 @@ class Dimensions extends Fonction_executable {
 	static $descriptions=array('Dimension_x'=>'Largeur de la tranche', 
 							   'Dimension_y'=>'Hauteur de la tranche');
 	
-	function Dimensions($options,$executer=true,$creation=false,$get_options_defaut=true) {
-		parent::Fonction_executable($options,$creation,$get_options_defaut);
+	function __construct($options,$executer=true,$creation=false,$get_options_defaut=true) {
+		parent::__construct($options,$creation,$get_options_defaut);
 		if (!$executer)
 			return;
 		$this->verifier_erreurs();
@@ -1495,7 +1495,7 @@ class Dimensions extends Fonction_executable {
 	
 	function verifier_erreurs() {
 		if ($this->options->Dimension_x < 0 || $this->options->Dimension_y < 0 ) {
-			self::erreur('Dimensions négatives');
+			self::erreur('Dimensions nÃ©gatives');
 		}
 		if ($this->options->Dimension_x == array() || $this->options->Dimension_y == array() ) {
 			self::erreur('Dimensions nulles');
@@ -1512,8 +1512,8 @@ class Remplir extends Fonction_executable {
 							   'Pos_y'=>'Ordonn&eacute;e du point de d&eacute;part du remplissage',
 							   'Couleur'=>'Couleur de remplissage');
 	
-	function Remplir($options,$executer=true,$creation=false,$get_options_defaut=true) {
-		parent::Fonction_executable($options,$creation,$get_options_defaut);
+	function __construct($options,$executer=true,$creation=false,$get_options_defaut=true) {
+		parent::__construct($options,$creation,$get_options_defaut);
 		if (!$executer)
 			return;
 		$this->options->Pos_x=z(self::toTemplatedString($this->options->Pos_x));
@@ -1547,8 +1547,8 @@ class Image extends Fonction_executable {
 							   'Compression_y'=>'Compression de la hauteur de l\'image',
 							   'Position'=>'Position de l\'image par rapport &agrave; la tranche : Haut ou Bas');
 	
-	function Image($options,$executer=true,$creation=false,$get_options_defaut=true) {
-		parent::Fonction_executable($options,$creation,$get_options_defaut);
+	function __construct($options,$executer=true,$creation=false,$get_options_defaut=true) {
+		parent::__construct($options,$creation,$get_options_defaut);
 		if (!$executer)
 			return;
 		$this->options->Decalage_x=self::toTemplatedString($this->options->Decalage_x);
@@ -1616,9 +1616,9 @@ class TexteMyFonts extends Fonction_executable {
 							   'Rotation'=>'Rotation du texte<br />(0 = Pas de rotation)',
 							   'Demi_hauteur'=>'S&eacute;lectionnez "Oui" si jamais vous ne voyez le texte que sur la moiti&eacute; de sa hauteur',
 							   'Mesure_depuis_haut'=>'"Oui" si Pos_y doit repr&eacute;senter la marge jusqu\'au haut du texte, "Non" s\'il s\'agit de la marge jusqu\'au bas du texte');
-	
-	function TexteMyFonts($options,$executer=true,$creation=false,$get_options_defaut=true,$options_avancees=true) {
-		parent::Fonction_executable($options,$creation,$get_options_defaut);
+
+	function __construct($options,$executer=true,$creation=false,$get_options_defaut=true,$options_avancees=true) {
+		parent::__construct($options,$creation,$get_options_defaut);
 		if (!$executer)
 			return;
 
@@ -1719,9 +1719,9 @@ class TexteTTF extends Fonction_executable {
 							   'Police'=>'Nom de la police de caract&egrave;res',
 							   'Compression_x'=>'Compression de la largeur de l\'image<br />(1 = Pas de compression)',
 							   'Compression_y'=>'Compression de la hauteur de l\'image<br />(1 = Pas de compression)');
-	
-	function TexteTTF($options,$executer=true,$creation=false,$get_options_defaut=true) {
-		parent::Fonction_executable($options,$creation,$get_options_defaut);
+
+	function __construct($options,$executer=true,$creation=false,$get_options_defaut=true) {
+		parent::__construct($options,$creation,$get_options_defaut);
 		if (!$executer)
 			return;
 		$this->options->Chaine=self::toTemplatedString($this->options->Chaine);
@@ -1773,8 +1773,9 @@ class Polygone extends Fonction_executable {
 							   'Y'=>'Liste des ordonn&eacute;es des points, s&eacute;par&eacute;es par virgules', 
 							   'Couleur'=>'Couleur du polygone');
 	
-	function Polygone($options,$executer=true,$creation=false,$get_options_defaut=true) {
-		parent::Fonction_executable($options,$creation,$get_options_defaut);
+
+	function __construct($options,$executer=true,$creation=false,$get_options_defaut=true) {
+		parent::__construct($options,$creation,$get_options_defaut);
 		if (!$executer)
 			return;
 		if (is_array($this->options->X)) {
@@ -1809,8 +1810,8 @@ class Agrafer extends Fonction_executable {
 							   'Y1'=>'Marge de la 2&egrave;me agrafe par rapport au haut de la tranche', 
 							   'Taille_agrafe'=>'Hauteur de chaque agrafe');
 	
-	function Agrafer($options,$executer=true,$creation=false,$get_options_defaut=true) {
-		parent::Fonction_executable($options,$creation,$get_options_defaut);
+	function __construct($options,$executer=true,$creation=false,$get_options_defaut=true) {
+		parent::__construct($options,$creation,$get_options_defaut);
 		if (!$executer)
 			return;
 		$this->options->Y1=self::toTemplatedString($this->options->Y1);
@@ -1836,8 +1837,8 @@ class Degrade extends Fonction_executable {
 							   'Pos_y_debut'=>'Marge du d&eacute;but du d&eacute;grad&eacute; par rapport au haut de la tranche',
 							   'Pos_y_fin'=>'Marge de la fin du d&eacute;grad&eacute; par rapport au haut de la tranche');
 	
-	function Degrade($options,$executer=true,$creation=false,$get_options_defaut=true) {
-		parent::Fonction_executable($options,$creation,$get_options_defaut);
+	function __construct($options,$executer=true,$creation=false,$get_options_defaut=true) {
+		parent::__construct($options,$creation,$get_options_defaut);
 		if (!$executer)
 			return;
 
@@ -1911,8 +1912,8 @@ class DegradeTrancheAgrafee extends Fonction_executable {
 	
 	static $descriptions=array('Couleur'=>'Couleur de la tranche');
 	
-	function DegradeTrancheAgrafee($options,$executer=true,$creation=false,$get_options_defaut=true) {
-		parent::Fonction_executable($options,$creation,$get_options_defaut);
+	function __construct($options,$executer=true,$creation=false,$get_options_defaut=true) {
+		parent::__construct($options,$creation,$get_options_defaut);
 		if (!$executer)
 			return;
 		$coef_degrade=1.75;
@@ -1948,8 +1949,8 @@ class Rectangle extends Fonction_executable {
 							   'Pos_y_fin'=>'Marge de la fin du rectangle par rapport au haut de la tranche',
 							   'Rempli'=>'"Oui" pour dessiner un rectangle rempli, "Non" pour dessiner seulement le contour');
 	
-	function Rectangle($options,$executer=true,$creation=false,$get_options_defaut=true) {
-		parent::Fonction_executable($options,$creation,$get_options_defaut);
+	function __construct($options,$executer=true,$creation=false,$get_options_defaut=true) {
+		parent::__construct($options,$creation,$get_options_defaut);
 		if (!$executer)
 			return;
 		$this->options->Pos_x_debut=z(self::toTemplatedString($this->options->Pos_x_debut));
@@ -1981,8 +1982,8 @@ class Arc_cercle extends Fonction_executable {
 							   'Angle_fin'=>'Angle de la fin de l\'arc de cercle<br />(360 pour un cercle complet)',
 							   'Rempli'=>'"Oui" pour dessiner un arc de cercle rempli, "Non" pour dessiner seulement le trait');
 	
-	function Arc_cercle($options,$executer=true,$creation=false,$get_options_defaut=true) {
-		parent::Fonction_executable($options,$creation,$get_options_defaut);
+	function __construct($options,$executer=true,$creation=false,$get_options_defaut=true) {
+		parent::__construct($options,$creation,$get_options_defaut);
 		if (!$executer)
 			return;
 		$this->options->Pos_x_centre=z(self::toTemplatedString($this->options->Pos_x_centre));
@@ -2057,7 +2058,6 @@ function est_dans_intervalle($numero,$intervalle) {
 		$m=new Modele_tranche();
 		Modele_tranche::$numeros_dispos=$m->get_numeros_disponibles(Modele_tranche::$pays,Modele_tranche::$magazine);
 	}
-	$numeros_dispos=Modele_tranche::$numeros_dispos;
 	if (strpos($intervalle,'~')!==false) {
 		$intervalles=explode(';',$intervalle);
 		foreach($intervalles as $intervalle) {
@@ -2081,7 +2081,7 @@ function est_dans_intervalle($numero,$intervalle) {
 				continue;
 		}
 		$numero_debut_trouve=false;
-		foreach($numeros_dispos as $numero_dispo) {
+		foreach(Modele_tranche::$numeros_dispos as $numero_dispo) {
 			if ($numero_dispo==$numero_debut)
 				$numero_debut_trouve=true;
 			if ($numero_dispo==$numero && $numero_debut_trouve) {
