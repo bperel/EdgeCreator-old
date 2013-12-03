@@ -8,7 +8,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 	static $numero;
 
 	function get_tranches_en_cours($id=null,$pays=null,$magazine=null,$numero=null) {
-		$requete='SELECT ID, Pays, Magazine, Numero '
+		$requete='SELECT ID, Pays, Magazine, Numero, username '
 				.'FROM tranches_en_cours_modeles '
 				.'WHERE username=\''.mysql_real_escape_string(self::$username).'\' AND Active=1';
 		if (!is_null($id)) {
