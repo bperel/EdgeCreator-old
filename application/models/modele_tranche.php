@@ -397,6 +397,12 @@ class Modele_tranche extends CI_Model {
 		return 1;
 	}
 	
+	function get_preview_existe($options_json) {
+		$requete='SELECT ID_Preview FROM tranches_previews WHERE Options LIKE \''.$options_json.'\' AND ID_Session LIKE \''.self::$id_session.'\'';
+		$resultat=$this->db->query($requete)->result();
+		return count($resultat) > 0;
+	}
+	
 	function sv_doublons($pays,$magazine) {
 		$requete_suppression_existants='DELETE FROM tranches_doublons WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND username LIKE \''.self::$username.'\'';
 		//$this->db->query($requete_suppression_existants);
@@ -1169,7 +1175,7 @@ class Modele_tranche extends CI_Model {
 	}
 	
 	
-	function get_liste($fonction,$type,$arg=null,$arg2=null) {
+	function get_liste($type,$arg=null,$arg2=null) {
 		$liste=array();
 		switch($type) {
 			case 'Police':
@@ -1430,9 +1436,6 @@ class Fonction_executable extends Fonction {
 		if ($str==array())
 			$str='';
 		foreach($tab as $nom=>$regex) {
-			if (is_array($str)) {
-			   $a=1;
-			}
 			if (0 !== preg_match($regex, $str, $matches)) {
 				if (!$actif) return true;
 				switch($nom) {
@@ -1457,7 +1460,6 @@ class Fonction_executable extends Fonction {
 					break;
 					case 'hauteur':
 						$str=preg_replace($regex, Viewer_wizard::$hauteur, $str);
-						echo "\$str=".$str.";";
 						eval("\$str=".$str.";");
 						$str/=z(1);
 					break;
