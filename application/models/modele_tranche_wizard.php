@@ -64,8 +64,6 @@ class Modele_tranche_Wizard extends Modele_tranche {
 	}
 
 	function get_etapes_simple($pays,$magazine,$numero,$num_etape=null) {
-		$resultats_etapes=array();
-		$username=($this->user_possede_modele() ? self::$username : 'brunoperel');
 		$requete='SELECT '.implode(', ', self::$content_fields).' '
 				.'FROM tranches_en_cours_modeles_vue '
 			    .'WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' AND Numero = \''.$numero.'\' '
@@ -79,7 +77,6 @@ class Modele_tranche_Wizard extends Modele_tranche {
 	}
 
 	function get_fonction($pays,$magazine,$ordre,$numero) {
-		$resultats_fonctions=array();
 		$requete='SELECT '.implode(', ', self::$content_fields).' '
 				.'FROM tranches_en_cours_modeles_vue '
 				.'WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' AND Ordre='.$ordre.' '
@@ -414,7 +411,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 				 .' FROM tranches_en_cours_modeles_vue'
 				 .' WHERE ID_Modele='.$id_modele.' AND Option_nom LIKE \'Couleur%\'';
 		$resultats=$this->db->query($requete)->result();
-		foreach($resultats as $i=>$resultat) {
+		foreach($resultats as $resultat) {
 			$couleurs[]=$resultat->Option_valeur;
 		}
 		return $couleurs;

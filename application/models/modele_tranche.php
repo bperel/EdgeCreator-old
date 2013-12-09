@@ -132,9 +132,6 @@ class Modele_tranche extends CI_Model {
 	function dupliquer_modele_magazine_si_besoin($pays,$magazine) {
 		if (!$this->user_possede_modele($pays,$magazine,self::$username)) {
 			$options=$this->get_modeles_magazine($pays,$magazine);
-			$ordre_courant=null;
-			$nom_option_courant=null;
-			$valeur_option_courante=null;
 			foreach($options as $option) {
 				$this->insert($option->Pays,$option->Magazine,$option->Ordre,$option->Nom_fonction,$option->Option_nom,$option->Option_valeur,$option->Numero_debut,$option->Numero_fin,self::$username,null);
 				
@@ -191,7 +188,6 @@ class Modele_tranche extends CI_Model {
 	}
 
 	function get_nb_etapes($pays,$magazine) {
-		$resultats_etapes=array();
 		$requete='SELECT Count(Nom_fonction) AS cpt '
 				.'FROM edgecreator_modeles2 '
 				.'INNER JOIN edgecreator_valeurs ON edgecreator_modeles2.ID = edgecreator_valeurs.ID_Option '
@@ -240,7 +236,6 @@ class Modele_tranche extends CI_Model {
 	}
 
 	function get_fonction($pays,$magazine,$ordre,$numero=null) {
-		$resultats_fonctions=array();
 		$requete='SELECT '.implode(', ', self::$fields).' '
 				.'FROM edgecreator_modeles_vue '
 				.'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Ordre='.$ordre.' AND Option_nom IS NULL '
@@ -404,8 +399,6 @@ class Modele_tranche extends CI_Model {
 	}
 	
 	function sv_doublons($pays,$magazine) {
-		$requete_suppression_existants='DELETE FROM tranches_doublons WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND username LIKE \''.self::$username.'\'';
-		//$this->db->query($requete_suppression_existants);
 		self::$numeros_dispos=$this->get_numeros_disponibles($pays, $magazine);
 		$numeros_disponibles=self::$numeros_dispos;
 		unset ($numeros_disponibles['Aucun']);
@@ -438,7 +431,6 @@ class Modele_tranche extends CI_Model {
 					if (est_dans_intervalle($numero,$intervalle)) {
 						if (is_string($numeros_disponibles[$numero]))
 							$numeros_disponibles[$numero]=array();
-						$a=$numeros_disponibles[$numero];
 						if (!array_key_exists($etape,$numeros_disponibles[$numero]))
 							$numeros_disponibles[$numero][$etape]=array();
 						$valeur=is_null($option->Option_valeur)?'null':$option->Option_valeur;
@@ -613,7 +605,7 @@ class Modele_tranche extends CI_Model {
 					$tranches_pretes[$numero_affiche]='en_cours';
 				}
 				else {
-					$id_createur = array_search($resultat['contributeurs'], self::$utilisateurs);
+					$id_createur = array_search($numero['contributeurs'], self::$utilisateurs);
 					$tranches_pretes[$numero_affiche]=$id_createur == $id_user ? 'par_moi' : 'global';
 				}
 			}
@@ -771,8 +763,6 @@ class Modele_tranche extends CI_Model {
 		echo $requete_get_options."\n";
 		$resultats=$this->db->query($requete_get_options)->result();
 		foreach($resultats as $resultat) {
-			$modifs=array();
-			$modifs_requete=array();
 			$option_nom=is_null($resultat->Option_nom) ? 'NULL' : ('\''.mysql_real_escape_string($resultat->Option_nom).'\'');
 			$option_valeur=is_null($resultat->Option_valeur) ? 'NULL' : ('\''.mysql_real_escape_string($resultat->Option_valeur).'\'');
 			$intervalle=$this->getIntervalleShort($this->getIntervalle($resultat->Numero_debut, $resultat->Numero_fin));
@@ -910,7 +900,7 @@ class Modele_tranche extends CI_Model {
 						<select class="parametre liste image alt" id="<?=$id?>-"><?php
 						$options=get_liste($this->Nom_fonction,$option_nom);
 						foreach($options as $option) {
-							?><option value="<?=$option?>" <?=(($option==$valeur) ? 'selected="selected"' :'')?>><?=$option?></option><?
+							?><option value="<?=$option?>" <?=(($option==$valeur) ? 'selected="selected"' :'')?>><?=$option?></option><?php
 						}
 						?></select>
 						</td></tr></table>
@@ -1673,8 +1663,8 @@ class TexteMyFonts extends Fonction_executable {
 			}
 		}
 		
-		//fond=imagecolorallocatealpha($texte, $r, $g, $b, 127);
-		//imagefill($texte,0,0,$fond);
+		$fond=imagecolorallocatealpha($texte, $r, $g, $b, 127);
+		imagefill($texte,0,0,$fond);
 		
 		if (!is_null($this->options->Rotation)) {
 			$texte=imagerotate($texte, $this->options->Rotation, $fond);
@@ -1780,9 +1770,6 @@ class Polygone extends Fonction_executable {
 		parent::__construct($options,$creation,$get_options_defaut);
 		if (!$executer)
 			return;
-		if (is_array($this->options->X)) {
-			$a=1;
-		}
 		$this->options->X=explode(',',str_replace(' ','',$this->options->X));
 		$this->options->Y=explode(',',str_replace(' ','',$this->options->Y));
 		$args=array(Viewer_wizard::$image);
@@ -1866,7 +1853,7 @@ class Degrade extends Fonction_executable {
 				foreach($couleurs_inter as $i=>$couleur) {
 					list($rouge_inter,$vert_inter,$bleu_inter)=$couleur;
 					$couleur_allouee=imagecolorallocate(Viewer_wizard::$image, $rouge_inter,$vert_inter,$bleu_inter);
-					imageline(Viewer_wizard::$image, ($this->options->Pos_x_debut)-$i, $this->options->Pos_y_debut, ($this->options->$fin)-$i, $this->options->Pos_y_debut, $couleur_allouee);
+					imageline(Viewer_wizard::$image, ($this->options->Pos_x_debut)-$i, $this->options->Pos_y_debut, ($this->options->Pos_y_fin)-$i, $this->options->Pos_y_debut, $couleur_allouee);
 				}
 			}
 		}
@@ -1883,9 +1870,7 @@ class Degrade extends Fonction_executable {
 				foreach($couleurs_inter as $i=>$couleur) {
 					list($rouge_inter,$vert_inter,$bleu_inter)=$couleur;
 					$couleur_allouee=imagecolorallocate(Viewer_wizard::$image, $rouge_inter,$vert_inter,$bleu_inter);
-					if (false == imageline(Viewer_wizard::$image, $this->options->Pos_x_debut, ($this->options->Pos_y_fin)-$i, $this->options->Pos_x_fin, ($this->options->Pos_y_fin)-$i, $couleur_allouee)) {
-						$a=1;
-					}
+					imageline(Viewer_wizard::$image, $this->options->Pos_x_debut, ($this->options->Pos_y_fin)-$i, $this->options->Pos_x_fin, ($this->options->Pos_y_fin)-$i, $couleur_allouee);
 				}
 			}
 		}

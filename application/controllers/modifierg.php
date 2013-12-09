@@ -21,7 +21,6 @@ class ModifierG extends CI_Controller {
 			self::$numeros=$numeros=explode('~',$numeros);
 			self::$nom_option=$nom_option;
 			self::$nouvelle_valeur=$nouvelle_valeur;
-			$a=self::$nouvelle_valeur;
 			
 			$this->db->query('SET NAMES UTF8');
 			$this->load->helper('url');
