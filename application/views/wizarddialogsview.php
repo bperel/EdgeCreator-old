@@ -611,7 +611,7 @@
 	<p>
 		<form name="form_options">
 			<span class="photo_principale">
-				Afin d'assurer la meilleure conception de tranche possible, une photo de la tranche est requise.<br />
+				Afin d'assurer la meilleure conception de tranche possible, une photo de la tranche est fortement conseillée.<br />
 				La photo doit contenir uniquement la tranche souhaitée, en position verticale.
 				Cette photo sera mise à côté de votre tranche en cours de conception.
 			</span> 
@@ -686,6 +686,10 @@
 			<span class="autres_photos photos_texte">Sélectionnez une image pour poursuivre.</span>
 			
 			<input type="hidden" name="selected" />
+            <div class="photo_principale">
+                <input type="checkbox" id="pasDePhoto" name="pasDePhoto"/>
+                <label for="pasDePhoto">Pas de photo</label>
+            </div>
 			<input type="hidden" id="numeroPhotoPrincipale" name="numeroPhotoPrincipale" value=""/>
 			<div class="buttonset cache">
 				<input type="radio" checked="checked" name="choix" value="to-wizard-conception" id="to-wizard-conception" />
