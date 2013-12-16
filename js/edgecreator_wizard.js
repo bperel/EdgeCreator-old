@@ -1148,13 +1148,12 @@ function wizard_init(wizard_id) {
 								  || (type_contribution == 'designers' 	  && (data[username].indexOf('d') != -1
 										  								   || utilisateur_courant===username));
 			 			   option.prop({'checked': coche, 'readOnly': coche});
-			 			   $(div).append(
+			 			   $(span).append(
 			 					$('<div>')
 			 					   	.css({'font-weight':coche?'bold':'normal'})
 			 					   	.append(option)
 			 					   	.append($('<label>',{'for': id}).text(username)));
 			 		   }
-			 		   $(span).append(div);
 			 	   });
 				}
 			});
