@@ -36,7 +36,7 @@ function stopRotate( e ) {
   $(document).unbind( 'mousemove' );
 
   setTimeout( function() { 
-	  tester_options_preview("TexteMyFonts",["Rotation"]);
+	  tester_options_preview(['Rotation']);
 	  imageBeingRotated = false; 
   }, 10 );
   return false;
