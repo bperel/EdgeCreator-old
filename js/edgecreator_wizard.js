@@ -1177,15 +1177,20 @@ function wizard_init(wizard_id) {
 }
 
 function afficher_liste_magazines(wizard_id, id_element_liste, data) {
-	$('#'+wizard_id+' .explication').addClass('cache');
-	$('#'+wizard_id+' .chargement').removeClass('cache');
+	var wizard = $('#'+wizard_id);
+	var explication = wizard.find('.explication');
+	var chargement = wizard.find('.chargement');
+
+	explication.addClass('cache');
+	chargement.removeClass('cache');
 	var tranches = traiter_tranches_en_cours(data);
-	$('#'+wizard_id+' .chargement').addClass('cache');
-	var elementListe = $('#' + wizard_id + ' #' + id_element_liste);
+	chargement.addClass('cache');
+
+	var elementListe = wizard.find('#' + id_element_liste);
 	if (tranches.length > 0) {
 		elementListe.removeClass('cache');
-		$('#'+wizard_id+' .explication').removeClass('cache');
-		$('#'+wizard_id+' #to-wizard-conception').button('option','disabled',false);
+		explication.removeClass('cache');
+		wizard.find('#to-wizard-conception').button('option','disabled',false);
 
 		var noms_sections = ['tranches_non_affectees', 'tranches_affectees'];
 
@@ -1198,7 +1203,7 @@ function afficher_liste_magazines(wizard_id, id_element_liste, data) {
 				element_type_tranche = elementListe.find('[name="'+noms_sections[1]+'"]');
 			}
 
-			var bouton_tranche_en_cours=$('#'+id_element_liste+' .template').clone(true).removeClass('template');
+			var bouton_tranche_en_cours=elementListe.find('.template').clone(true).removeClass('template');
 			var id_tranche=['tranche', tranche_en_cours.Pays, tranche_en_cours.Magazine, tranche_en_cours.Numero].join('_');
 			bouton_tranche_en_cours.find('input')
 				.attr({'id':id_tranche})
@@ -1208,8 +1213,8 @@ function afficher_liste_magazines(wizard_id, id_element_liste, data) {
 				.css({'background-image': 'url("../images/flags/'+tranche_en_cours.Pays+'.png")'})
 				.html(tranche_en_cours.str_userfriendly)
 				.click(function() {
-					$('#'+wizard_id+' [name="est_nouvelle_conception_tranche"]').val($(this).closest('[name="tranches_non_affectees"]').length > 0);
-					$('#'+wizard_id+' #to-wizard-conception').click();
+					wizard.find('[name="est_nouvelle_conception_tranche"]').val($(this).closest('[name="tranches_non_affectees"]').length > 0);
+					wizard.find('#to-wizard-conception').click();
 				});
 			if (element_type_tranche.find('#'+id_tranche).length === 0) {
 				element_type_tranche.append(bouton_tranche_en_cours);
@@ -1218,7 +1223,7 @@ function afficher_liste_magazines(wizard_id, id_element_liste, data) {
 		elementListe
 			.removeClass('cache')
 			.buttonset().menu();
-		$('#'+wizard_id+' #to-wizard-creer, #'+wizard_id+' #to-wizard-modifier').click(function() {
+		wizard.find('#to-wizard-creer, #to-wizard-modifier').click(function() {
 			elementListe.find('.ui-state-active').removeClass('ui-state-active');
 		});
 
@@ -1230,7 +1235,7 @@ function afficher_liste_magazines(wizard_id, id_element_liste, data) {
 		});
 	}
 	else {
-		$('#'+wizard_id+' .pas_de_numero').removeClass('cache');
+		wizard.find('.pas_de_numero').removeClass('cache');
 	}
 }
 
@@ -2955,6 +2960,7 @@ function afficher_photo_tranche() {
 	if (nom_photo_principale !== null) {
 		var image = $('<img>').height(parseInt($('#Dimension_y').val()) * zoom);
 		$('#photo_tranche').html(image);
+		var selecteur_depuis_photo = $('#selecteur_couleur #depuis_photo');
 		image.attr({'src':base_url+'../edges/'+pays+'/photos/'+nom_photo_principale});
 		image.load(function() {
 			$(this).css({'display':'inline'});
@@ -2964,14 +2970,14 @@ function afficher_photo_tranche() {
 			$('.dialog-preview-etape.finale').width(Math.max(LARGEUR_DIALOG_TRANCHE_FINALE,
 													dimensions.x * zoom+$(this).width() + 14));
 			jqueryui_clear_message('aucune-image-de-tranche');
-			$('#selecteur_couleur #depuis_photo [name="description_selection_couleur"]').toggle(true);
-			$('#selecteur_couleur #depuis_photo [name="pas_de_photo_tranche"]').toggle(false);
+			selecteur_depuis_photo.find('[name="description_selection_couleur"]').toggle(true);
+			selecteur_depuis_photo.find('[name="pas_de_photo_tranche"]').toggle(false);
 		});
 		image.error(function() {
 			$(this).css({'display':'none'});
 			jqueryui_message('warning','aucune-image-de-tranche');
-			$('#selecteur_couleur #depuis_photo [name="description_selection_couleur"]').toggle(false);
-			$('#selecteur_couleur #depuis_photo [name="pas_de_photo_tranche"]').toggle(true);
+			selecteur_depuis_photo.find('[name="description_selection_couleur"]').toggle(false);
+			selecteur_depuis_photo.find('[name="pas_de_photo_tranche"]').toggle(true);
 		});
 	}
 	else {
