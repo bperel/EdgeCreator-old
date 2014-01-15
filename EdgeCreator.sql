@@ -116,7 +116,7 @@ CREATE TABLE `images_myfonts` (
   `Texte` varchar(150) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
   `Precision_` varchar(5) CHARACTER SET latin1 COLLATE latin1_german2_ci DEFAULT NULL,
   KEY `ID` (`ID`)
-) ENGINE=MyISAM AUTO_INCREMENT=1758 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=1761 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --

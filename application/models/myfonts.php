@@ -107,13 +107,13 @@ class Post extends CI_Model {
 		}
 		$data = implode('&', $data);
 
-		$this->url=$url.'?'.$data;
+        $this->url=$url.'?'.$data;
 		$this->content = Util::get_page($this->url);
 		
 		return;
 		
 		// For POST only
-		
+		/*
 		// parse the given URL
 		$url = parse_url($url);
 		if ($url['scheme'] != 'http') {
@@ -154,6 +154,7 @@ class Post extends CI_Model {
 		// return as array:
 		$this->header=$header;
 		$this->content=$content;
+		*/
 	}
 }
 ?>
