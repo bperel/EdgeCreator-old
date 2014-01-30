@@ -5,8 +5,13 @@ function get_nom_fichier($nom, $pays, $magazine, $numero, $est_photo_tranche) {
               .'/';
     @mkdir($dossier,0777,true);
 
-    if (isset($nom) && !$est_photo_tranche && preg_match('#.*\.(jpg)|(png)$#', $nom)) {
-        $fichier=$nom; // On utilise le nom du fichier d'upload
+    if (isset($nom) && !$est_photo_tranche && preg_match('#.*\.(jpg)|(png)$#', $nom)) {  // On utilise le nom du fichier d'upload
+        if (isset($magazine)) {
+            $fichier=$magazine.'.'.$nom;
+        }
+        else {
+            $fichier=$nom;
+        }
     }
     else {
         $extension_cible='.jpg';
@@ -28,8 +33,8 @@ function get_nom_fichier($nom, $pays, $magazine, $numero, $est_photo_tranche) {
             }
             $fichier=get_prochain_nom_fichier_dispo($dossier, $fichier, $extension_cible);
         }
-        $fichier=str_replace(' ','_',$fichier);
     }
+    $fichier=str_replace(' ','_',$fichier);
     return array($dossier,$fichier);
 }
 
