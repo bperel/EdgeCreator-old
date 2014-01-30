@@ -239,9 +239,9 @@ function launch_wizard(id, p) {
 								dataType:'json',
 								success:function(data) {
 									$('#wizard-ajout-etape').dialog().dialog( "close" );
-									for (var i in data.infos_insertion.decalages) {
-										$('*').getElementsWithData('etape',data.decalages[i]['old']).data('etape',data.decalages[i]['new']);
-									}
+									$.each(data.infos_insertion.decalages, function() {
+										$('*').getElementsWithData('etape',this.old).data('etape',this.new);
+									});
 									ajouter_preview_etape(data.infos_insertion.numero_etape, formData.nom_fonction);
 									charger_previews(true);
 								}
