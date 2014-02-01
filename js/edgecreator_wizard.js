@@ -2957,7 +2957,7 @@ function init_action_bar() {
 }
 
 function afficher_photo_tranche() {
-	if (nom_photo_principale !== null) {
+	if (nom_photo_principale) {
 		var image = $('<img>').height(parseInt($('#Dimension_y').val()) * zoom);
 		$('#photo_tranche').html(image);
 		var selecteur_depuis_photo = $('#selecteur_couleur #depuis_photo');
