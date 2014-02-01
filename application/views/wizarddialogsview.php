@@ -784,6 +784,10 @@
 	Votre tranche apparaîtra aux côtés des tranches suivantes dans la bibliothèque DucksManager : <br />
 	
 	<div class="tranches_pretes_magazine"></div>
+    <br />
+    <input type="checkbox" id="cacher_libelles_magazines" name="cacher_libelles_magazines">&nbsp;
+    <label for="cacher_libelles_magazines">Cacher les libellés des numéros</label>
+    <br /><br />
 	
 	Le modèle EdgeCreator en cours de conception va être verrouillé en attendant sa validation. <br />
 	<br /><br />

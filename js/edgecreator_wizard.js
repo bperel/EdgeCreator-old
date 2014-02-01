@@ -1319,7 +1319,7 @@ function afficher_tranches_proches(pays, magazine, numero, est_contexte_clonage)
 		for (i in tranches_pretes) {
 			var numero_tranche_prete = tranches_pretes[i];
 			var td_tranche=$('<td>').data('numero',numero_tranche_prete);
-			var td_numero= $('<td>').data('numero',numero_tranche_prete);
+			var td_numero= $('<td>').addClass('libelle_numero').data('numero',numero_tranche_prete);
 			var td_radio = $('<td>');
 			ligne_tranches_pretes.append(td_tranche); // On insère ce <td> avant les autres pour qu'il soit trouvé par le chargeur d'image
 			if (numero_tranche_prete == numero) {
@@ -1331,7 +1331,8 @@ function afficher_tranches_proches(pays, magazine, numero, est_contexte_clonage)
 			else {
 				td_numero.html('n&deg;'+numero_tranche_prete);
 				td_radio.html($('<input>',{'type':'radio', 'name':'tranche_similaire','readonly':'readonly'}).val(numero_tranche_prete));
-				reload_numero(numero_tranche_prete, true);
+				var est_tranche_publiee = data.tranches_pretes[numero_tranche_prete] !== 'en_cours';
+				reload_numero(numero_tranche_prete, est_tranche_publiee);
 			}
 			if (est_contexte_clonage) {
 				ligne_tranche_selectionnee.append(td_radio);
@@ -1345,6 +1346,13 @@ function afficher_tranches_proches(pays, magazine, numero, est_contexte_clonage)
 				wizard_courant.find('.image_preview').removeClass('selected');
 				$(this).addClass('selected');
 				wizard_courant.find('input[type="radio"][value="'+$(this).data('numero')+'"]').prop('checked',true);
+			});
+		}
+		else { // Contexte validation de tranche
+			wizard_courant.find('[name="cacher_libelles_magazines"]').click(function(e) {
+				wizard_courant.find('.libelle_numero').toggle();
+				e.preventDefault();
+				return false;
 			});
 		}
 		wizard_courant.find('.chargement').addClass('cache');
