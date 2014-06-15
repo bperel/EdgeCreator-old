@@ -1357,6 +1357,8 @@ function afficher_tranches_proches(pays, magazine, numero, est_contexte_clonage)
 		}
 		wizard_courant.find('.chargement').addClass('cache');
 		wizard_courant.find('.tranches_pretes_magazine, .buttonset').removeClass('cache');
+
+		selecteur_cellules_preview='.wizard.preview_etape div.image_etape';
 	});
 }
 
