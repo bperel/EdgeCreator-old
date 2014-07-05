@@ -483,14 +483,25 @@ function wizard_check(wizard_id) {
 				if (chargement_listes) {
 					erreur='Veuillez attendre que la liste des num&eacute;ros soit charg&eacute;e';
 				}
-				else if (valeur_choix != 'to-wizard-numero-inconnu'
-					  && wizard.find('[name="wizard_numero"]').find('option:selected').is('.tranche_prete,.cree_par_moi,.en_cours')) {
-					erreur='La tranche de ce num&eacute;ro est d&eacute;j&agrave; disponible ou en cours de conception.<br />'
-						  +'S&eacute;lectionnez "Modifier une tranche de magazine" dans l\'&eacute;cran pr&eacute;c&eacute;dent pour la modifier '
-						  +'ou s&eacute;lectionnez un autre num&eacute;ro.';
+				else {
+					if (valeur_choix !== 'to-wizard-numero-inconnu') {
+						if (wizard_id === 'wizard-creer'
+							&& wizard.find('[name="wizard_numero"]').find('option:selected').is('.tranche_prete,.cree_par_moi,.en_cours')) {
+							erreur='La tranche de ce num&eacute;ro est d&eacute;j&agrave; disponible ou en cours de conception.';
+						}
+						else if (wizard_id === 'wizard-modifier'
+							  && wizard.find('[name="wizard_numero"]').find('option:selected').is('.en_cours')) {
+							erreur='La tranche de ce num&eacute;ro est d&eacute;j&agrave; en cours de conception.';
+						}
+
+						if (erreur) {
+							erreur+='<br />'
+								   +'S&eacute;lectionnez "Modifier une tranche de magazine" dans l\'&eacute;cran pr&eacute;c&eacute;dent pour la modifier '
+								   +'ou s&eacute;lectionnez un autre num&eacute;ro.';
+						}
+					}
 				}
 			}
-
 			if (form.find('[name="Dimension_x"]').length > 0) {
 				$.each($(['Dimension_x','Dimension_y']),function(i,nom_champ) {
 					var valeur= wizard.find('[name="'+nom_champ+'"]').val();
