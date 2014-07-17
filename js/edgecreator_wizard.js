@@ -2288,14 +2288,15 @@ function verifier_changements_etapes_sauves(dialogue, id_dialogue_proposition_sa
 	}
 }
 
-function tester(callback, modif_dimensions) {
+function tester() {
 	var dialogue=modification_etape.d();
 
 	var form_options=dialogue.find('[name="form_options"]');
 
 	chargements=['final']; // Etape finale
 	chargement_courant=0;
-	charger_preview_etape(chargements[0],true,num_etape_courante+"."+form_options.serialize(),callback);
+	numero_chargement = numero;
+	charger_preview_etape(chargements[0],true,num_etape_courante+"."+form_options.serialize(),function() {});
 }
 
 function valider(callback) {
