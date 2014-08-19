@@ -1360,11 +1360,12 @@ function afficher_tranches_proches(pays, magazine, numero, est_contexte_clonage)
 			});
 		}
 		else { // Contexte validation de tranche
-			wizard_courant.find('[name="cacher_libelles_magazines"]').click(function(e) {
-				wizard_courant.find('.libelle_numero').toggle();
-				e.preventDefault();
-				return false;
-			});
+	       var toggle_cacher_libelles = wizard_courant.find('[name="cacher_libelles_magazines"]');
+	       if (!$._data(toggle_cacher_libelles[0], "events")) {
+		       toggle_cacher_libelles.click(function (e) {
+			       wizard_courant.find('.libelle_numero').toggle();
+		       });
+	       }
 		}
 		wizard_courant.find('.chargement').addClass('cache');
 		wizard_courant.find('.tranches_pretes_magazine, .buttonset').removeClass('cache');
