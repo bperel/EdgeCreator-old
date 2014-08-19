@@ -156,9 +156,6 @@ var nom_photo_principale=null;
 var etape_ajout;
 var etape_ajout_pos;
 
-var pos_x_courante=null,
-	pos_y_courante=null;
-
 zoom=1.5;
 var nom_photo_tranches_multiples;
 
@@ -995,7 +992,7 @@ function wizard_init(wizard_id) {
 										$.ajax({
 											url: urls['update_wizard']+['index',pays,magazine,numero,-1,parametrage].join('/'),
 											type: 'post',
-											success:function(data) {
+											success:function() {
 												reload_all_previews();
 											}
 										});
@@ -1362,7 +1359,7 @@ function afficher_tranches_proches(pays, magazine, numero, est_contexte_clonage)
 		else { // Contexte validation de tranche
 	       var toggle_cacher_libelles = wizard_courant.find('[name="cacher_libelles_magazines"]');
 	       if (!$._data(toggle_cacher_libelles[0], "events")) {
-		       toggle_cacher_libelles.click(function (e) {
+		       toggle_cacher_libelles.click(function () {
 			       wizard_courant.find('.libelle_numero').toggle();
 		       });
 	       }
@@ -1420,7 +1417,7 @@ function ajouter_preview_etape(num_etape, nom_fonction) {
  	   															 	   'alt':nom_fonction}));
 			$(this).d().find('.ui-dialog-title').addClass('cache').html(nom_fonction);
 		},
-		beforeClose:function(event,ui) {
+		beforeClose:function() {
 			$('#num_etape_a_supprimer').html($(this).data('etape'));
 			$('#wizard-confirmation-suppression').dialog({
 				resizable: false,
@@ -1432,7 +1429,7 @@ function ajouter_preview_etape(num_etape, nom_fonction) {
 						$.ajax({
 							url: urls['supprimer_wizard']+['index',pays,magazine,numero,etape].join('/'),
 							type: 'post',
-							success:function(data) {
+							success:function() {
 								$('#wizard-confirmation-suppression').dialog().dialog( "close" );
 								$('.dialog-preview-etape,.wizard.preview_etape:not(.initial)').getElementsWithData('etape',etape).remove();
 								chargements[0]='final';
@@ -1660,7 +1657,7 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 				.removeClass('cache')
 				.draggable({
 					axis: 'y',
-					stop:function(event, ui) {
+					stop:function(event) {
 						var element=$(event.target);
 						tester_options_preview([element.hasClass('premiere') ? 'Y1' : 'Y2'],element);
 					}
@@ -1688,12 +1685,12 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 						   'height': (pos_y_fin-pos_y_debut)+'px'})
 					 .removeClass('cache')
 					 .draggable({//containment:limites_drag,
-						 stop:function(event, ui) {
+						 stop:function() {
 			   				tester_options_preview(['Pos_x_debut','Pos_y_debut','Pos_x_fin','Pos_y_fin']);
 						 }
 					 })
 					 .resizable({
-						 stop:function(event, ui) {
+						 stop:function() {
 							 tester_options_preview(['Pos_x_fin', 'Pos_y_fin']);
 				   		 }
 					 });
@@ -1747,13 +1744,16 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 							  (image.offset().top 			 	 -largeur_croix+1),
 							  (image.offset().left+image.width() -largeur_croix-1),
 							  (image.offset().top +image.height()-largeur_croix-1)];
-			form_userfriendly.find('.point_remplissage').css({'left':(image.position().left-largeur_croix+1+parseFloat(valeurs['Pos_x'])*zoom)+'px',
-										 					  'top': (image.position().top -largeur_croix+1+parseFloat(valeurs['Pos_y'])*zoom)+'px'})
-										 				.removeClass('cache')
-														.draggable({containment:limites_drag,
-														   			stop:function(event, ui) {
-														   				tester_options_preview(['Pos_x', 'Pos_y']);
-														   			}});
+			form_userfriendly.find('.point_remplissage')
+				.css({
+					left:(image.position().left-largeur_croix+1+parseFloat(valeurs['Pos_x'])*zoom)+'px',
+					top :(image.position().top -largeur_croix+1+parseFloat(valeurs['Pos_y'])*zoom)+'px'})
+                .removeClass('cache')
+				.draggable({
+					containment:limites_drag,
+		            stop:function() {
+		                tester_options_preview(['Pos_x', 'Pos_y']);
+		            }});
 		break;
 		case 'Arc_cercle':
 
@@ -1783,7 +1783,7 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 						arc.resizable("destroy");
 					}
 					arc.draggable({
-						stop: function(event,ui) {
+						stop: function() {
 						   tester_options_preview(['Pos_x_centre', 'Pos_y_centre']);
 						}
 					});
@@ -1793,7 +1793,7 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 						arc.draggable("destroy");
 					}
 					arc.resizable({
-						 stop: function(event,ui) {
+						 stop: function() {
 						   tester_options_preview(['Largeur','Hauteur','Pos_x_centre','Pos_y_centre']);
 						   dessiner(arc, 'Arc_cercle', $('[name="form_options"]'));
 						 }
@@ -1845,12 +1845,12 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 									height:(pos_y_fin-pos_y_debut)+'px'})
 						  .removeClass('cache')
 						  .draggable({//containment:limites_drag,
-					  		  stop:function(event, ui) {
+					  		  stop:function() {
 				   				tester_options_preview(['Pos_x_debut','Pos_y_debut','Pos_x_fin','Pos_y_fin']);
 				   			  }
 						  })
 						  .resizable({
-								stop:function(event, ui) {
+								stop:function() {
 					   				tester_options_preview(['Pos_x_fin','Pos_y_fin']);
 					   			}
 						  });
@@ -1979,24 +1979,17 @@ function dessiner(element, type, form_options, callback) {
 	switch(type) {
 		case 'Arc_cercle':
 			options = ['Couleur','Pos_x_centre','Pos_y_centre','Largeur','Hauteur','Angle_debut','Angle_fin','Rempli'];
-
-			pos_x_courante = element.parent().position().left;
-			pos_y_courante = element.parent().position().top;
-
-			element.css({'left':(pos_x_courante + parseFloat(form_options.valeur('Pos_x_centre').val())*zoom
-												- parseFloat(form_options.valeur('Largeur').val())	   *zoom/2)+'px',
-						 'top' :(pos_y_courante + parseFloat(form_options.valeur('Pos_y_centre').val())*zoom
-							 					- parseFloat(form_options.valeur('Hauteur').val())	   *zoom/2)+'px'});
 		break;
 		case 'Polygone':
 			options = ['X','Y','Couleur'];
-
-			element.css({'left':(parseFloat(form_options.valeur('Pos_x_centre').val())*zoom
-							   - parseFloat(form_options.valeur('Largeur').val())	  *zoom/2)+'px',
-						 'top' :(parseFloat(form_options.valeur('Pos_y_centre').val())*zoom
-							   - parseFloat(form_options.valeur('Hauteur').val())	  *zoom/2)+'px'});
 		break;
 	}
+
+	element.css({left:(parseFloat(form_options.valeur('Pos_x_centre').val())*zoom
+					 - parseFloat(form_options.valeur('Largeur').val())	    *zoom/2)+'px',
+				 top :(parseFloat(form_options.valeur('Pos_y_centre').val())*zoom
+					 - parseFloat(form_options.valeur('Hauteur').val())	    *zoom/2)+'px'});
+
 	$.each($(options),function(i,nom_option) {
 		if (nom_option == 'Pos_x_centre')
 			url_appel+="/"+toFloat2Decimals(parseFloat(form_options.valeur('Largeur').val())/2);
@@ -2093,7 +2086,7 @@ function positionner_points_polygone(form_options) {
 					break;
 					case 'deplacement':
 						$(this).draggable({
-					 		stop: function(event,ui) {
+					 		stop: function() {
 					 			tester_options_preview(['X','Y']);
 
 					 			var form_options = $('[name="form_options"]');
@@ -2184,12 +2177,12 @@ function positionner_image(preview) {
 						jqueryui_alert('L\'image '+nom_image+' n\'existe pas');
 					}))
 			  	  .draggable({//containment:limites_drag,
-			  		  stop:function(event, ui) {
+			  		  stop:function() {
 		   				tester_options_preview(['Decalage_x','Decalage_y']);
 		   			  }
 				  })
 				  .resizable({
-						stop:function(event, ui) {
+						stop:function() {
 			   				tester_options_preview(['Compression_x','Compression_y']);
 			   			}
 				  });
@@ -2311,7 +2304,7 @@ function valider(callback) {
 		$.ajax({
 			url: urls['update_wizard']+['index',pays,magazine,numero,num_etape_courante,parametrage].join('/'),
 			type: 'post',
-			success:function(data) {
+			success:function() {
 				charger_couleurs_frequentes();
 				reload_current_and_final_previews(callback);
 			}
@@ -2383,15 +2376,11 @@ function tester_options_preview(noms_options, element) {
 					switch(nom_option) {
 						case 'Pos_x_centre':
 							val = toFloat2Decimals(parseFloat(form_options.valeur('Largeur').val())/2
-												 + parseFloat(arc.position().left
-														 	+ ($('.ui-wrapper').length > 0 ? $('.ui-wrapper').position().left : 0)
-														 	- image.position().left)/zoom);
+												 + parseFloat(arc.position().left)/zoom);
 						break;
 						case 'Pos_y_centre':
 							val = toFloat2Decimals(parseFloat(form_options.valeur('Hauteur').val())/2
-									 			 + parseFloat(arc.position().top
-									 						+ ($('.ui-wrapper').length > 0 ? $('.ui-wrapper').position().top : 0)
-									 						- image.position().top)/zoom);
+									 			 + parseFloat(arc.position().top)/zoom);
 						break;
 						case 'Largeur':
 							val=arc.width()/zoom;
@@ -2571,13 +2560,13 @@ function generer_et_positionner_preview_myfonts(gen_preview_proprietes, gen_prev
 							'height':hauteur+'px'})
 					  .removeClass('cache')
 					  .draggable({//containment:limites_drag,
-				  		  stop:function(event, ui) {
+				  		  stop:function() {
 			   				tester_options_preview(['Pos_x','Pos_y']);
 			   				tester();
 			   			  }
 					  })
 					  .resizable({
-							stop:function(event, ui) {
+							stop:function() {
 				   				tester_options_preview(['Compression_x','Compression_y']);
 				   			}
 					  });
@@ -2776,7 +2765,7 @@ function placer_extension_largeur_preview() {
 				  'left':''})
 			.draggable({
 				axis: 'x',
-				stop:function(event,ui) {
+				stop:function() {
 					tester_options_preview(['Largeur']);
 					load_myfonts_preview(false,true,false);
 				}
@@ -2964,7 +2953,7 @@ function init_action_bar() {
 						$.ajax({
 							url: urls['desactiver_modele']+['index',pays,magazine,numero].join('/'),
 							type: 'post',
-							success:function(data) {
+							success:function() {
 								location.reload();
 							}
 						});
@@ -3027,7 +3016,7 @@ function maj_photo_principale(pays_maj, magazine_maj, numero_maj, with_user) {
 	$.ajax({
 		url: urls['update_photo']+['index',pays_maj, magazine_maj, numero_maj, nom_photo_principale, with_user].join('/'),
 		type: 'post',
-		success:function(data) {
+		success:function() {
 			if ($('#wizard-conception').is(':visible')) {
 				afficher_photo_tranche();
 			}
