@@ -7,7 +7,7 @@ new Ajax.Request(urls['numerosdispos']+['index',pays,magazine].join('/'), {
 			return;
 		}
 		numeros_dispos=transport.headerJSON.numeros_dispos;
-		new Ajax.Request(urls['parametrageg']+'index/'+pays+'/'+magazine+'/null/null', {
+		new Ajax.Request(urls['parametrageg']+'index/'+pays+'/'+magazine+'/null', {
 			method: 'post',
 			onSuccess:function(transport) {
 				etapes=transport.headerJSON;
@@ -21,7 +21,7 @@ new Ajax.Request(urls['numerosdispos']+['index',pays,magazine].join('/'), {
 
 function integrer_etape(num_etape) {
 	$('log').insert('Int&eacute;gration de l\'&eacute;tape '+num_etape+'...');
-	new Ajax.Request(urls['parametrageg']+['index',pays,magazine,num_etape,'null'].join('/'), {
+	new Ajax.Request(urls['parametrageg']+['index',pays,magazine,'null'].join('/'), {
 		method: 'post',
 		parameters: 'etape='+num_etape,
 		onSuccess:function(transport) {

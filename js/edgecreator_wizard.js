@@ -917,7 +917,7 @@ function wizard_init(wizard_id) {
 			wizard.parent().css({'left':(wizard.parent().offset().left-LARGEUR_DIALOG_TRANCHE_FINALE-20)+'px'});
 
 			$.ajax({ // Numéros d'étapes
-				url: urls['parametrageg_wizard']+['index',pays,magazine,numero,'null','null'].join('/'),
+				url: urls['parametrageg_wizard']+['index',pays,magazine,numero,'null'].join('/'),
 				type: 'post',
 				dataType: 'json',
 				success:function(data) {
@@ -938,7 +938,7 @@ function wizard_init(wizard_id) {
 					charger_couleurs_frequentes();
 
 					$.ajax({ // Détails des étapes
-						url: urls['parametrageg_wizard']+['index',pays,magazine,numero,-1,'null','null'].join('/'),
+						url: urls['parametrageg_wizard']+['index',pays,magazine,numero,-1,'null'].join('/'),
 						type: 'post',
 						dataType:'json',
 						success:function(data) {
@@ -1598,7 +1598,7 @@ function recuperer_et_alimenter_options_preview(num_etape) {
 	var section_preview_etape=$('.wizard.preview_etape').getElementsWithData('etape',num_etape);
 	var nom_fonction=section_preview_etape.d().data('nom_fonction');
 	$.ajax({
-		url: urls['parametrageg_wizard']+['index',pays,magazine,numero,num_etape,'null','null'].join('/'),
+		url: urls['parametrageg_wizard']+['index',pays,magazine,numero,num_etape,'null'].join('/'),
 		type: 'post',
 		dataType:'json',
 		success:function(data) {

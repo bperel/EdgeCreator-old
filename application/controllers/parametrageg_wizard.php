@@ -5,7 +5,7 @@ class ParametrageG_wizard extends CI_Controller {
 	static $numero;
 	static $etape;
 	
-	function index($pays=null,$magazine=null,$numero,$etape=null,$nom_fonction='null', $nom_option_sel='null') {
+	function index($pays=null,$magazine=null,$numero,$etape=null, $nom_option_sel='null') {
 		
 		if (in_array(null,array($pays,$magazine))) {
 			$this->load->view('errorview',array('Erreur'=> 'Nombre d\'arguments insuffisant'));
@@ -15,7 +15,6 @@ class ParametrageG_wizard extends CI_Controller {
 		self::$magazine=$magazine;
 		self::$numero=$numero;
 		self::$etape=$etape=='null'?null:$etape;
-		$nom_fonction=$nom_fonction=='null' ? null : $nom_fonction;
 		$nom_option=$nom_option_sel=='null' ? null : $nom_option_sel;
 		
 		
@@ -29,7 +28,7 @@ class ParametrageG_wizard extends CI_Controller {
 		
 		$this->Modele_tranche->setPays(self::$pays);
 		$this->Modele_tranche->setMagazine(self::$magazine);
-		if (is_null(self::$etape)) { // Liste des �tapes
+		if (is_null(self::$etape)) { // Liste des étapes
 			$etapes=$this->Modele_tranche->get_etapes_simple(self::$pays,self::$magazine,self::$numero);
 			if (count($etapes) == 0) {
 				$fonction_dimension=new stdClass();

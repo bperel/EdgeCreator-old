@@ -1373,7 +1373,7 @@ function charger_liste_numeros(magazine_sel) {
 			table.append($('.ligne_noms_options:first').clone(true))
 				 .append($('.ligne_etapes:first').clone(true));
 			$.ajax({
-				url: urls['parametrageg']+['index',pays,magazine,'null','null'].join('/'),
+				url: urls['parametrageg']+['index',pays,magazine,'null'].join('/'),
 				type: 'post',
 				dataType: 'json',
 				success:function(data) {
@@ -1562,7 +1562,6 @@ function charger_etape(num_etape, numeros_sel, nom_option_sel, recharger) {
     
     $.ajax({
         url: urls['parametrageg']+['index',pays,magazine,num_etape,
-                                   nom_nouvelle_fonction==null?'null':nom_nouvelle_fonction,
                                    typeof(nom_option_sel) == 'undefined' ? 'null':nom_option_sel
                                   ].join('/'),
         type: 'post',
