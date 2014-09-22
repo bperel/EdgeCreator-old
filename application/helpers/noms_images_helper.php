@@ -6,7 +6,7 @@ function get_nom_fichier($nom, $pays, $magazine, $numero, $est_photo_tranche) {
     @mkdir($dossier,0777,true);
 
     if (isset($nom) && !$est_photo_tranche && preg_match('#.*\.(jpg)|(png)$#', $nom)) {  // On utilise le nom du fichier d'upload
-        if (isset($magazine)) {
+        if (isset($magazine) && strpos($nom, $magazine.'.') !== 0) {
             $fichier=$magazine.'.'.$nom;
         }
         else {
