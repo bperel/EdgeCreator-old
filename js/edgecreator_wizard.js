@@ -2997,7 +2997,7 @@ function afficher_photo_tranche() {
 			url: urls['photo_principale']+['index',pays,magazine,numero].join('/'),
 			type: 'post',
 			success:function(nom_photo) {
-				if (nom_photo !== 'null') {
+				if (nom_photo && nom_photo !== 'null') {
 					nom_photo_principale = nom_photo;
 					afficher_photo_tranche();
 				}
