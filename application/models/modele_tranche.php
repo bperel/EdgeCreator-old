@@ -1267,11 +1267,20 @@ class Modele_tranche extends CI_Model {
 				}
 			 break;
 		}
-		if ($type === 'Fonctions') {
-			asort($liste);
-		}
-		else {
-			uksort($liste,"strnatcasecmp");
+
+        switch($type) {
+            case 'Police':
+            case 'Source':
+            case 'Source_photo':
+            case 'Photos':
+                sort($liste);
+            break;
+            case 'Fonctions':
+                asort($liste);
+            break;
+            default:
+			    uksort($liste,"strnatcasecmp");
+            break;
 		}
 		return $liste;
 	}

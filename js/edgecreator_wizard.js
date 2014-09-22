@@ -830,7 +830,7 @@ function wizard_init(wizard_id) {
 						case 'section_photo':
 							$('#to-wizard-resize').removeClass('cache');
 							var nom_fichier_photo = $('#photo_tranche img').attr('src').match(/\/([^\/]+$)/)[1];
-							afficher_gallerie('Photos', [nom_fichier_photo], wizard.find('.selectionner_photo_tranche'));
+							afficher_galerie('Photos', [nom_fichier_photo], wizard.find('.selectionner_photo_tranche'));
 						break;
 					}
 				}
@@ -1888,7 +1888,7 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 				$('#wizard-images')
 					.addClass('autres_photos')
 					.removeClass('photo_principale photos_texte');
-				launch_wizard('wizard-images', {modal:true, first: true});
+				launch_wizard('wizard-images', {modal:true, first: true, width: 600});
 			});
 
 		break;
@@ -1908,7 +1908,7 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 				$('#wizard-images')
 					.addClass('photos_texte')
 					.removeClass('photo_principale autres_photos');
-				launch_wizard('wizard-images', {modal:true, first: true});
+				launch_wizard('wizard-images', {modal:true, first: true, width: 600});
 			});
 
 			checkboxes.push('Demi_hauteur');
@@ -2946,7 +2946,7 @@ function init_action_bar() {
 					$('#wizard-images')
 						.addClass('photo_principale')
 						.removeClass('autres_photos photos_texte');
-					launch_wizard('wizard-images', {modal:true, first: true});
+					launch_wizard('wizard-images', {modal:true, first: true, width: 600});
 				break;
 				case 'corbeille':
 					jqueryui_alert_from_d($('#wizard-confirmation-desactivation-modele'), function() {
@@ -3030,12 +3030,12 @@ function lister_images_gallerie(type_images) {
 		dataType:'json',
 		type: 'post',
 		success: function(data) {
-			afficher_gallerie(type_images, data);
+			afficher_galerie(type_images, data);
 		}
 	});
 }
 
-function afficher_gallerie(type_images, data, container) {
+function afficher_galerie(type_images, data, container) {
 	if (data['erreur']) {
 		jqueryui_alert('Le r&eacute;pertoire d\'images '+data['erreur']+' n\'existe pas',
 					   'Erreur interne');
@@ -3065,6 +3065,7 @@ function afficher_gallerie(type_images, data, container) {
 				li.find('img').prop({'src':base_url+'../edges/'+pays+'/'+sous_repertoire+'/'+data[i],
 									 'title':data[i]});
 				li.find('input').val(data[i]);
+				li.find('.filename').text(data[i]).attr({title: data[i]});
 				ul.append(li);
 			}
 			container.find('ul.gallery li img').removeClass('selected')

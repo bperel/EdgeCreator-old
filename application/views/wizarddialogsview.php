@@ -671,7 +671,10 @@
 					<p class="pas_d_image photo_principale cache" >Aucune image répertoriée pour ce magazine</p>
 					<ul class="gallery cache">
 						<li class="template">
-							<img />
+                            <div class="thumbnailAndFilenameContainer">
+							    <img />
+                                <div class="filename"></div>
+                            </div>
 							<input type="radio" name="numeroPhotoPrincipale" class="cache" />
 						</li>
 					</ul>

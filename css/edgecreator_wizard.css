@@ -13,6 +13,10 @@ iframe {
     visibility: hidden !important;
 }
 
+.ui-accordion .ui-accordion-content {
+    padding: 1em;
+}
+
 .toutes_bordures {
     border-radius: 8px;
 }
