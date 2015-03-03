@@ -75,8 +75,8 @@ $(function() {
 					$('#photo_tranche img')
 						.addClass('cross')
 						.click(function(e) {
-							var frac = [ e.offsetX / $(this).width(),
-										 e.offsetY / $(this).height() ];
+							var frac = [ (e.offsetX || e.clientX - $(e.target).offset().left) / $(this).width(),
+										 (e.offsetY || e.clientY - $(e.target).offset().top)  / $(this).height() ];
 							$.ajax({
 								url: urls['couleur_point_photo']+['index',pays,magazine,numero,frac[0],frac[1]].join('/'),
 								type: 'post',
@@ -98,7 +98,7 @@ $(function() {
 		e.preventDefault();
 
 		var position,
-			draggable = $('.ui-draggable:visible');
+			draggable = $('.ui-draggable:visible'),
 			distance = 1; // Distance in pixels the draggable should be moved
 
 		if (draggable.length  == 0) {
