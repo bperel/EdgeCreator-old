@@ -13,6 +13,10 @@ iframe {
     visibility: hidden !important;
 }
 
+.clear {
+	clear: both;
+}
+
 .ui-accordion .ui-accordion-content {
     padding: 1em;
 }
@@ -161,6 +165,26 @@ button#connexion, button#deconnexion {
     position: static !important;
     margin-left: 20px;
     display: block;
+}
+
+#wizard-creer-hors-collection form fieldset label,
+#wizard-creer-hors-collection form fieldset select {
+	display: inline-block;
+	float: left;
+}
+
+#wizard-creer-hors-collection form fieldset label {
+	width: 70px;
+	clear: both;
+}
+
+#wizard-creer-hors-collection form fieldset select {
+	min-width: 150px;
+	max-width: 350px;
+}
+
+#wizard-creer-hors-collection form fieldset select[multiple] {
+	height: 100px;
 }
 
 #tranches_en_cours li label, #tranches_non_pretes li label {

@@ -202,28 +202,36 @@
 			
 		<div id="wizard-creer-hors-collection" class="wizard" title="Assistant DucksManager - Choix de numéro">
 			<p>
-				Choisissez le numéro que vous souhaitez modéliser.<br />
+				Choisissez le ou les numéro(s) que vous souhaitez modéliser.<br />
 				<form>
 					<fieldset>
-						<label for="wizard_pays">Pays: </label>
-						<select name="wizard_pays" id="wizard_pays">
-							<option>Chargement...</option>
-						</select><br />
-						<label for="wizard_magazine">Magazine: </label>
-						<select name="wizard_magazine" id="wizard_magazine">
-							<option>Chargement...</option>
-						</select><br />
-						<label for="wizard_numero">Numéro: </label>
-						<select name="wizard_numero" id="wizard_numero">
-							<option>Chargement...</option>
-						</select><br />
-						Les tranches sous fond vert sont déjà disponibles. 
-						Si vous souhaitez les modifier, repassez à l'écran précédent
-						et choisissez "Modifier une tranche de magazine".
+						<div class="nowrap">
+							<label for="wizard_pays">Pays: </label>
+							<select name="wizard_pays" id="wizard_pays">
+								<option>Chargement...</option>
+							</select>
+						</div>
+						<div class="nowrap">
+							<label for="wizard_magazine">Magazine: </label>
+							<select name="wizard_magazine" id="wizard_magazine">
+								<option>Chargement...</option>
+							</select>
+						</div>
+						<div class="nowrap">
+							<label for="wizard_numero">Numéro(s): </label>
+							<select name="wizard_numero" id="wizard_numero" multiple="multiple">
+								<option>Chargement...</option>
+							</select>
+						</div>
+						<div class="clear">
+							Les tranches sous fond vert sont déjà disponibles.
+							Si vous souhaitez les modifier, repassez à l'écran précédent
+							et choisissez "Modifier une tranche de magazine".
+						</div>
 					</fieldset>
 					<div class="buttonset">
-						<input type="radio" checked="checked" name="choix" value="to-wizard-proposition-clonage" id="to-wizard-proposition-clonage" /><label for="to-wizard-proposition-clonage">J'ai trouvé mon numéro</label>
-						<input type="radio" name="choix" value="to-wizard-numero-inconnu" id="to-wizard-numero-inconnu" /><label for="to-wizard-numero-inconnu">Mon numéro n'est pas dans la liste</label>
+						<input type="radio" checked="checked" name="choix" value="to-wizard-proposition-clonage" id="to-wizard-proposition-clonage" /><label for="to-wizard-proposition-clonage">J'ai trouvé mes numéros</label>
+						<input type="radio" name="choix" value="to-wizard-numero-inconnu" id="to-wizard-numero-inconnu" /><label for="to-wizard-numero-inconnu">Un numéro n'est pas dans la liste</label>
 					</div>
 				</form>
 			</p>
@@ -493,8 +501,8 @@
 						<tr>
 							<td>Police de caractères : </td>
 							<td style="white-space:nowrap"><input name="option-URL" type="text" maxlength="90" size="19" />
-								<button class="small">
-									<span class="modifier_police">Modifier</span>
+								<button class="modifier_police small">
+									<span>Modifier</span>
 								</button>
 							</td>
 						</tr>
