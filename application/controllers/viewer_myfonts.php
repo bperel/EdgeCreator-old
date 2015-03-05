@@ -20,7 +20,7 @@ class Viewer_myfonts extends Viewer_wizard {
 		
 		Viewer_wizard::$largeur = intval($largeur_tranche*1.5);
 		
-		new TexteMyFonts($options,true,false,true,false);
+		new TexteMyFonts($options,true,false,true,true,false);
 		
 		if (self::$is_debug===false) {
 			header('Content-type: image/png');

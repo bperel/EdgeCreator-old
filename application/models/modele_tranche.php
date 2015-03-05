@@ -1618,7 +1618,7 @@ class TexteMyFonts extends Fonction_executable {
 							   'Demi_hauteur'=>'S&eacute;lectionnez "Oui" si jamais vous ne voyez le texte que sur la moiti&eacute; de sa hauteur',
 							   'Mesure_depuis_haut'=>'"Oui" si Pos_y doit repr&eacute;senter la marge jusqu\'au haut du texte, "Non" s\'il s\'agit de la marge jusqu\'au bas du texte');
 
-	function __construct($options,$executer=true,$creation=false,$get_options_defaut=true,$options_avancees=true) {
+	function __construct($options,$executer=true,$creation=false,$get_options_defaut=true,$supprimer_espaces_blancs=true, $options_avancees=true) {
 		parent::__construct($options,$creation,$get_options_defaut);
 		if (!$executer)
 			return;
@@ -1656,7 +1656,7 @@ class TexteMyFonts extends Fonction_executable {
 		$width=imagesx($texte);
 		$height=imagesy($texte);
 		
-		if ($options_avancees) { // Découpage des espaces blancs => Pas pour le preview
+		if ($supprimer_espaces_blancs) {
 			$espace=imagecreatetruecolor(2*$height, $height);
 			imagefill($espace, 0, 0, imagecolorallocate($espace,$r, $g, $b));
 			for ($i=0;$i<$width;$i+=2*$height) {
@@ -1678,7 +1678,7 @@ class TexteMyFonts extends Fonction_executable {
 		if (!is_null($this->options->Rotation)) {
 			$texte=imagerotate($texte, $this->options->Rotation, $fond);
 		}
-		
+
 		if ($options_avancees) {
 			$this->options->Pos_x=self::toTemplatedString($this->options->Pos_x);
 			$this->options->Pos_y=self::toTemplatedString($this->options->Pos_y);
