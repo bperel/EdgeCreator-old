@@ -8,6 +8,8 @@ class Valider_Modele extends CI_Controller {
 		$this->load->helper('email');
 		$username=$this->session->userdata('user');
 		$this->Modele_tranche->setUsername($username);
+
+        $this->Modele_tranche->copier_image_temp_vers_gen($pays, $magazine, $numero, $nom_image);
 		
 		$message=" <a href=\"http://www.ducksmanager.net/edges/new_edges_query_to_forum_changelog.php\">Publication des tranches</a>";
 
@@ -17,9 +19,6 @@ class Valider_Modele extends CI_Controller {
 			
 		$this->email->subject('Proposition de modele de tranche de '.$username);
 		$this->email->message($message);
-		$src_image='../edges/'.$pays.'/tmp/'.$nom_image.'.png';
-        $dest_image='../edges/'.$pays.'/gen/'.$magazine.'.'.$numero.'.png';
-        copy($src_image, $dest_image);
 		$this->email->send();
 
         $this->Modele_tranche->marquer_modele_comme_pret_publication($pays,$magazine,$numero,$createurs,$photographes);

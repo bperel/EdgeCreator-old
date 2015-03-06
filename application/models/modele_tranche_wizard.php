@@ -394,6 +394,19 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		$this->db->query($requete_maj);
 		echo $requete_maj."\n";
 	}
+
+    function prepublier_modele($id_modele, $prepublier_ou_depublier) {
+        $requete_prepublication=' UPDATE tranches_en_cours_modeles '
+            .' SET PretePourPublication='.($prepublier_ou_depublier ? '1' : '0')
+            .' WHERE ID='.$id_modele;
+        $this->db->query($requete_prepublication);
+    }
+
+    function copier_image_temp_vers_gen($pays, $magazine, $numero, $nom_image) {
+        $src_image = '../edges/' . $pays . '/tmp/' . $nom_image . '.png';
+        $dest_image = '../edges/' . $pays . '/gen/' . $magazine . '.' . $numero . '.png';
+        copy($src_image, $dest_image);
+    }
 	
 	function marquer_modele_comme_pret_publication($pays,$magazine,$numero,$createurs,$photographes) {
         $id_modele = $this->get_id_modele($pays,$magazine,$numero,self::$username);

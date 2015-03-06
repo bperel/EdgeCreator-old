@@ -596,7 +596,7 @@ function charger_image(type_chargement,src,num,callback) {
             break;
         }
     }
-    if (type_chargement == 'etape') {
+    if (type_chargement == 'etape' && num !== null) {
         var etapes_corresp=$(selecteur_cellules_preview).getElementsWithData('etape',num);
         if (etapes_corresp.length == 0) {// Numéro d'étape non trouvé
         	jqueryui_alert("Num&eacute;ro d'&eacute;tape non trouv&eacute; lors du chargement de la preview : " + num, "Erreur");

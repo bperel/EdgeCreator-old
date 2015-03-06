@@ -72,7 +72,8 @@
                 <div name="tranches_affectees">Tranches en cours de conception par vous :</div>
 				<li class="template">
 					<input type="radio" id="numero_tranche_en_cours" name="choix_tranche_en_cours">
-					<label for="numero_tranche_en_cours" class="toutes_bordures">Label</label>
+					<label for="numero_tranche_en_cours" class="toutes_bordures libelle_tranche_en_cours">Label</label>
+                    <label class="prepublier">Pré-publier</label><label class="depublier cache">Dé-publier</label>
 				</li>
 			</ul>
             <input type="hidden" name="est_nouvelle_conception_tranche" />
@@ -189,7 +190,7 @@
                         <div name="tranches_non_affectees"></div>
 						<li class="template">
 							<input type="radio" id="numero_tranche_non_prete" name="choix_tranche">
-							<label for="numero_tranche_non_prete">Label</label>
+							<label for="numero_tranche_non_prete libelle_tranche_en_cours">Label</label>
 						</li>
 					</ul>
 					<div class="buttonset cache">

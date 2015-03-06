@@ -1210,6 +1210,21 @@ function afficher_liste_magazines(wizard_id, id_element_liste, data) {
 
 		var noms_sections = ['tranches_non_affectees', 'tranches_affectees'];
 
+        wizard.find('.prepublier, .depublier').button().click(function() {
+            var btn = $(this);
+            var data = btn.siblings('.libelle_tranche_en_cours').data();
+            var prepublier_ou_depublier = btn.hasClass('prepublier');
+            if (prepublier_ou_depublier) {
+                charger_image('etape', urls['viewer_wizard'] + ['index', data.Pays, data.Magazine, data.Numero, '1.5', 'all', '_', 'false', 'false', 'false'].join('/'), null, function (image) {
+                    var nom_image_temp=image.attr('src').match(/[.0-9]+$/g)[0];
+                    prepublier_depublier(true, btn, data, nom_image_temp);
+                });
+            }
+            else {
+                prepublier_depublier(false, btn, data);
+            }
+        });
+
 		$.each(tranches, function(i, tranche_en_cours) {
 			var element_type_tranche;
 			if (!tranche_en_cours.username) {
@@ -1224,9 +1239,10 @@ function afficher_liste_magazines(wizard_id, id_element_liste, data) {
 			bouton_tranche_en_cours.find('input')
 				.attr({'id':id_tranche})
 				.val(id_tranche);
-			bouton_tranche_en_cours.find('label')
+			bouton_tranche_en_cours.find('label.libelle_tranche_en_cours')
 				.attr({'for':id_tranche})
 				.css({'background-image': 'url("../images/flags/'+tranche_en_cours.Pays+'.png")'})
+                .data(tranche_en_cours)
 				.html(tranche_en_cours.str_userfriendly)
 				.click(function() {
 					wizard.find('[name="est_nouvelle_conception_tranche"]').val($(this).closest('[name="tranches_non_affectees"]').length > 0);
@@ -3099,6 +3115,18 @@ function afficher_galerie(type_images, data, container) {
 		ul.removeClass('cache');
 		container.find('.chargement_images').addClass('cache');
 	}
+}
+
+function prepublier_depublier(prepublier, btn, data, nom_image_temp) {
+    $.ajax({
+        url: urls['prepublier'] + ['index', prepublier, data.ID, data.Pays, data.Magazine, data.Numero, nom_image_temp].join('/'),
+        type: 'post',
+        success: function () {
+            if (prepublier) {
+                btn.siblings('.depublier').removeClass('cache');
+            }
+        }
+    });
 }
 
 function surveiller_selection_jrac(event, $viewport) {
