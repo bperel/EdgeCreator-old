@@ -307,7 +307,7 @@
 		
 			<div id="wizard-clonage" class="wizard" title="Assistant DucksManager - Clonage">
 				<p>
-					Le numéro <span class="nouveau_numero"></span> va étre créé à partir du numéro <span class="numero_similaire"></span>.<br />
+					La tranche du numéro <span class="nouveau_numero"></span> est créée à partir du numéro <span class="numero_similaire"></span>...<br />
 					Ce processus peut durer plus d'une minute dans certains cas. Veuillez patienter tant que le clonage est en cours, ne fermez pas cette fenêtre.
 					<div class="loading">Clonage en cours...</div>
 					<div class="done cache">Clonage terminé. Vous pouvez passer à l'étape suivante.</div>

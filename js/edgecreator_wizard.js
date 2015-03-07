@@ -779,26 +779,9 @@ function wizard_init(wizard_id) {
 		case 'wizard-clonage':
 			wizard.parent().find('.ui-dialog-buttonpane button').button("option", "disabled", true);
 			var numero_a_cloner = get_option_wizard('wizard-proposition-clonage', 'tranche_similaire');
-			var nouveau_numero=numero;
-			wizard.find('.nouveau_numero').html(nouveau_numero);
-			wizard.find('.numero_similaire').html(numero_a_cloner);
-			$.ajax({
-				url: urls['etendre']+['index',pays,magazine,numero_a_cloner,nouveau_numero].join('/'),
-				type: 'post',
-				success:function(data) {
-					if (typeof(data.erreur) !='undefined')
-						jqueryui_alert(data);
-					else {
-						wizard.parent().find('.ui-dialog-buttonpane button').button("option", "disabled", false);
-						wizard.find('.loading').addClass('cache');
-						wizard.find('.done').removeClass('cache');
-					}
-				},
-				error:function(data) {
-					jqueryui_alert('Erreur : '+data);
-				}
-			});
-		break;
+            wizard.find('.numero_similaire').html(numero_a_cloner);
+            cloner_numero(numero_a_cloner, numeros_multiples.slice(0));
+        break;
 
 		case 'wizard-clonage-silencieux':
 			wizard.parent().find('.ui-dialog-buttonpane button').button("option", "disabled", true);
@@ -899,6 +882,10 @@ function wizard_init(wizard_id) {
 					maj_photo_principale(pays, magazine, numero);
 				}
 			}
+
+            if (typeof numero === 'object') {
+                numero = numero[0];
+            }
 
 			$.ajax({
 				url: urls['tranchesencours']+['load','null',pays,magazine,numero].join('/'),
@@ -1392,6 +1379,33 @@ function afficher_tranches_proches(pays, magazine, numeros, est_contexte_clonage
 
 		selecteur_cellules_preview='.wizard.preview_etape div.image_etape';
 	});
+}
+
+function cloner_numero(numero_a_cloner, nouveaux_numeros) {
+    var wizard = $('#wizard-clonage');
+    var nouveau_numero = nouveaux_numeros.shift();
+    wizard.find('.nouveau_numero').html(nouveau_numero);
+    $.ajax({
+        url: urls['etendre'] + ['index', pays, magazine, numero_a_cloner, nouveau_numero].join('/'),
+        type: 'post',
+        success: function (data) {
+            if (typeof(data.erreur) != 'undefined')
+                jqueryui_alert(data);
+            else {
+                if (nouveaux_numeros.length) {
+                    cloner_numero(numero_a_cloner, nouveaux_numeros);
+                }
+                else {
+                    wizard.parent().find('.ui-dialog-buttonpane button').button("option", "disabled", false);
+                    wizard.find('.loading').addClass('cache');
+                    wizard.find('.done').removeClass('cache');
+                }
+            }
+        },
+        error: function (data) {
+            jqueryui_alert('Erreur : ' + data);
+        }
+    });
 }
 
 function traiter_tranches_en_cours(data) {
