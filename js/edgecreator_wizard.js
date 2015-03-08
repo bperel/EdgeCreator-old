@@ -768,7 +768,10 @@ function wizard_init(wizard_id) {
 					pays=	 get_option_wizard('wizard-creer-hors-collection', 'wizard_pays');
 					magazine=get_option_wizard('wizard-creer-hors-collection', 'wizard_magazine');
 					numeros_multiples=get_option_wizard('wizard-creer-hors-collection', 'wizard_numero');
-					numero=numeros_multiples[0];
+					if (typeof numeros_multiples !== 'object') {
+                        numeros_multiples = [numeros_multiples];
+                    }
+                    numero=numeros_multiples[0];
 				}
 			}
 			selecteur_cellules_preview='#'+wizard_id+' .tranches_pretes_magazine td';

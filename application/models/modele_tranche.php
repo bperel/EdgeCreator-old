@@ -523,8 +523,18 @@ class Modele_tranche extends CI_Model {
 		}
 		
 		if (count($numeros) === 0) {
-			$resultats = array();
-		}
+            $requete_get_options=
+                ' SELECT 0 AS EC_v2, '.implode(', ', self::$fields).',username '
+                .' FROM edgecreator_modeles2 AS modeles '
+                .' INNER JOIN edgecreator_valeurs AS valeurs ON modeles.ID = valeurs.ID_Option '
+                .' INNER JOIN edgecreator_intervalles AS intervalles ON valeurs.ID = intervalles.ID_Valeur '
+                .' WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' '
+                .' ORDER BY Ordre';
+            echo $requete_get_options."\n";
+
+            $resultats=array_merge($resultats, $this->db->query($requete_get_options)->result());
+
+        }
 		else {
 			$requete_get_options=
 				 ' SELECT 1 AS EC_v2, '.implode(', ', Modele_tranche_Wizard::$content_fields).' '
@@ -533,20 +543,10 @@ class Modele_tranche extends CI_Model {
 				.' AND Numero IN ('.implode(',', $numeros_esc).') '
 				.' AND username=\''.mysql_real_escape_string(self::$username).'\' AND Active=0'
 				.' ORDER BY Ordre';
-// 			echo $requete_get_options."\n";
+ 			echo $requete_get_options."\n";
 			$resultats=$this->db->query($requete_get_options)->result();
 		}
-		
-		$requete_get_options=
-			 ' SELECT 0 AS EC_v2, '.implode(', ', self::$fields).',username '
-			.' FROM edgecreator_modeles2 AS modeles '
-			.' INNER JOIN edgecreator_valeurs AS valeurs ON modeles.ID = valeurs.ID_Option '
-			.' INNER JOIN edgecreator_intervalles AS intervalles ON valeurs.ID = intervalles.ID_Valeur '
-			.' WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' '
-			.' ORDER BY Ordre';
-// 		echo $requete_get_options."\n";
-		
-		$resultats=array_merge($resultats, $this->db->query($requete_get_options)->result());
+
 		$options=array();
 		
 		foreach($resultats as $resultat) {
