@@ -1,5 +1,5 @@
 <?php
-class ParametrageG_wizard extends CI_Controller {
+class ParametrageG_wizard extends EC_Controller {
 	static $pays;
 	static $magazine;
 	static $numero;
@@ -22,7 +22,7 @@ class ParametrageG_wizard extends CI_Controller {
 		$this->load->helper('url');
 		$this->load->helper('form');
 		
-		$this->load->model('Modele_tranche_Wizard','Modele_tranche');
+		$this->init_model();
 		
 		$this->Modele_tranche->setUsername($this->session->userdata('user'));
 		
@@ -65,5 +65,3 @@ class ParametrageG_wizard extends CI_Controller {
 		$this->load->view('parametragegview',$data);
 	}
 }
-
-?>

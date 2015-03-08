@@ -1,5 +1,5 @@
 <?php
-class TranchesEnCours extends CI_Controller {
+class TranchesEnCours extends EC_Controller {
 	
 	function load($id=null,$pays=null,$magazine=null,$numero=null) {
 		$id=$id==='null' ? null : $id;
@@ -22,5 +22,3 @@ class TranchesEnCours extends CI_Controller {
 		return $data;
 	}
 }
-
-?>

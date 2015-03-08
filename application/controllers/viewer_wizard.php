@@ -1,6 +1,6 @@
 <?php
 
-class Viewer_wizard extends CI_Controller {
+class Viewer_wizard extends EC_Controller {
 	static $image;
 	static $largeur;
 	static $hauteur;
@@ -38,7 +38,7 @@ class Viewer_wizard extends CI_Controller {
 		$this->load->library('email');
 		$this->load->helper('url');
 		
-		$this->load->model('Modele_tranche_Wizard','Modele_tranche');
+		$this->init_model();
 		
 		$privilege=$this->Modele_tranche->get_privilege();
 		
@@ -163,5 +163,3 @@ class Viewer_wizard extends CI_Controller {
 		}
 	}
 }
-
-?>

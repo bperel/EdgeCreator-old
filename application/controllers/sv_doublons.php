@@ -1,6 +1,6 @@
 <?php
 include_once('viewer_wizard.php');
-class Sv_doublons extends CI_Controller {
+class Sv_doublons extends EC_Controller {
 	static $pays;
 	static $magazine;
 	static $etape_courante;
@@ -28,5 +28,3 @@ class Sv_doublons extends CI_Controller {
 		
 	}
 }
-
-?>

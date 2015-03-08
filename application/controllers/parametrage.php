@@ -1,5 +1,5 @@
 <?php
-class Parametrage extends CI_Controller {
+class Parametrage extends EC_Controller {
 	static $pays;
 	static $magazine;
 	static $ordre;
@@ -26,7 +26,7 @@ class Parametrage extends CI_Controller {
 		$this->load->helper('url');
 		$this->load->helper('form');
 		
-		$this->load->model('Modele_tranche_Wizard','Modele_tranche');
+		$this->init_model();
 		$numeros_dispos=$this->Modele_tranche->get_numeros_disponibles(self::$pays,self::$magazine);
 		$this->Modele_tranche->setNumerosDisponibles($numeros_dispos);
 		if ($appliquer) {
@@ -73,5 +73,3 @@ class Parametrage extends CI_Controller {
 		}
 	}
 }
-
-?>

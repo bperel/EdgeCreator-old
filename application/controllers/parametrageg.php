@@ -1,5 +1,5 @@
 <?php
-class ParametrageG extends CI_Controller {
+class ParametrageG extends EC_Controller {
 	static $pays;
 	static $magazine;
 	static $etape;
@@ -67,5 +67,3 @@ class ParametrageG extends CI_Controller {
 		$this->load->view('parametragegview',$data);
 	}
 }
-
-?>

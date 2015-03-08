@@ -6,7 +6,7 @@ class Viewer_myfonts extends Viewer_wizard {
 	function index($url,$couleur_texte,$couleur_fond,$largeur,$chaine,$demi_hauteur,$rotation,$largeur_tranche,$debug=false) {
 		self::$is_debug = $debug === 'true';
 		
-		$this->load->model('Modele_tranche_Wizard','Modele_tranche');
+		$this->init_model();
 		$this->Modele_tranche->setUsername($this->session->userdata('user'));
 				
 		$options=new stdClass();
@@ -28,5 +28,3 @@ class Viewer_myfonts extends Viewer_wizard {
 		}
 	}
 }
-
-?>

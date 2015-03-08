@@ -1,12 +1,12 @@
 <?php
-class Numerosdispos extends CI_Controller {
+class Numerosdispos extends EC_Controller {
 	
 	function index($pays=null,$magazine=null,$get_tranches_non_pretes=false) {
 		if ($pays == 'null') $pays = null;
 		if ($magazine == 'null') $magazine = null;
 		$get_tranches_non_pretes = $get_tranches_non_pretes === 'true';
 		
-		$this->load->model('Modele_tranche_Wizard','Modele_tranche');
+		$this->init_model();
 		
 		$this->Modele_tranche->setUsername($this->session->userdata('user'));
 		
@@ -44,5 +44,3 @@ class Numerosdispos extends CI_Controller {
 		$this->load->view('numerosdisposview',$data);
 	}
 }
-
-?>

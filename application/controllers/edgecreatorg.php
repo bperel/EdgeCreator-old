@@ -1,5 +1,5 @@
 <?php
-class EdgeCreatorg extends CI_Controller {
+class EdgeCreatorg extends Ec_Controller {
 	static $pays;
 	static $magazine;
 	
@@ -57,4 +57,3 @@ class EdgeCreatorg extends CI_Controller {
 		$this->load->view('footerview',$data);
 	}	
 }
-?>

@@ -1,5 +1,5 @@
 <?php
-class Photo_Principale extends CI_Controller {
+class Photo_Principale extends EC_Controller {
 	
 	function index($pays=null,$magazine=null,$numero=null) {
 		if (in_array(null,array($pays,$magazine,$numero))) {
@@ -8,7 +8,7 @@ class Photo_Principale extends CI_Controller {
 		}
 		
 		$this->db->query('SET NAMES UTF8');
-		$this->load->model('Modele_tranche_Wizard','Modele_tranche');
+		$this->init_model();
         $this->Modele_tranche->setUsername($this->session->userdata('user'));
 		
 		$nom_photo_principale=$this->Modele_tranche->get_photo_principale($pays,$magazine,$numero,true);
@@ -20,4 +20,3 @@ class Photo_Principale extends CI_Controller {
 		$this->load->view('photo_principaleview',$data);
 	}
 }
-?>

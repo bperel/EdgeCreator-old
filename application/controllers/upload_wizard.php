@@ -1,6 +1,6 @@
 <?php
 
-class Upload_Wizard extends CI_Controller {
+class Upload_Wizard extends EC_Controller {
 
     var $contenu = '';
 	
@@ -139,4 +139,3 @@ function get_message_fichier_trop_gros() {
 function get_message_retour($est_photo_tranche) {
     return '<br /><a href="'.preg_replace('#\?.*$#', '', $_SERVER['HTTP_REFERER']).'?photo_tranche='.$est_photo_tranche.'">Autre envoi</a>';
 }
-?>

@@ -1,9 +1,9 @@
 <?php
 
-class Insert_Wizard extends CI_Controller {
+class Insert_Wizard extends EC_Controller {
 	
 	function index($pays,$magazine,$numero,$pos,$etape,$nom_fonction) {
-		$this->load->model('Modele_tranche_Wizard','Modele_tranche');
+		$this->init_model();
 		$this->Modele_tranche->setUsername($this->session->userdata('user'));
 		$infos_insertion=$this->Modele_tranche->insert_etape($pays,$magazine,$numero,$pos,$etape,$nom_fonction);
 
@@ -14,5 +14,3 @@ class Insert_Wizard extends CI_Controller {
 		$this->load->view('insertview',$data);
 	}
 }
-
-?>

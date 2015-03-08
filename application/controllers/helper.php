@@ -1,5 +1,5 @@
 <?php
-class Helper extends CI_Controller {
+class Helper extends EC_Controller {
 	
 	function index($nom=null) {
 		
@@ -28,5 +28,3 @@ class Helper extends CI_Controller {
 		
 	}
 }
-
-?>

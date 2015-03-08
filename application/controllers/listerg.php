@@ -1,5 +1,5 @@
 <?php
-class ListerG extends CI_Controller {
+class ListerG extends EC_Controller {
 	
 	function index($nom_option,$pays=null,$magazine=null,$format='json') {
 		if (in_array(null,array($nom_option))) {
@@ -20,4 +20,3 @@ class ListerG extends CI_Controller {
 			$this->load->view('listergview',$data);
 	}
 }
-?>

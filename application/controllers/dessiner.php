@@ -1,7 +1,7 @@
 <?php
 include_once(BASEPATH.'/../application/controllers/viewer_wizard.php');
 
-class Dessiner extends CI_Controller {
+class Dessiner extends EC_Controller {
 	
 	function index() {
 		$arguments = func_get_args();
@@ -52,4 +52,3 @@ class Dessiner extends CI_Controller {
 		}
 	}
 }
-?>

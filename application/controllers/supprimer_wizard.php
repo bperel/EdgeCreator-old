@@ -1,5 +1,5 @@
 <?php
-class Supprimer_Wizard extends CI_Controller {
+class Supprimer_Wizard extends EC_Controller {
 	static $pays;
 	static $magazine;
 	static $etape;
@@ -9,9 +9,8 @@ class Supprimer_Wizard extends CI_Controller {
 			$this->load->view('errorview',array('Erreur'=>'Nombre d\'arguments insuffisant'));
 			exit();
 		}
-		$this->load->model('Modele_tranche_Wizard','Modele_tranche');
+		$this->init_model();
 		$this->Modele_tranche->setUsername($this->session->userdata('user'));
 		$this->Modele_tranche->supprimer_etape($pays,$magazine,$numero,$etape);
 	}
 }
-?>

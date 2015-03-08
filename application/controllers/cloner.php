@@ -1,5 +1,5 @@
 <?php
-class Cloner extends CI_Controller {
+class Cloner extends EC_Controller {
 	
 	function index($pays=null,$magazine=null,$numero=null,$pos_relative=null,$etape_courante=null) {
 		
@@ -31,7 +31,7 @@ class Cloner extends CI_Controller {
 			exit();
 		}
 		
-		$this->load->model('Modele_tranche_Wizard','Modele_tranche');
+		$this->init_model();
 		$this->Modele_tranche->setUsername($this->session->userdata('user'));
 		
 		$numeros_clonables = $this->Modele_tranche->get_numeros_clonables($pays,$magazine,explode(',',$numeros));
@@ -42,5 +42,3 @@ class Cloner extends CI_Controller {
 		));
 	}
 }
-
-?>

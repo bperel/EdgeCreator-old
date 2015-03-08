@@ -1,5 +1,5 @@
 <?php
-class ModifierG extends CI_Controller {
+class ModifierG extends EC_Controller {
 	static $pays;
 	static $magazine;
 	static $etape;
@@ -165,4 +165,3 @@ function array_value_list ($match, $array)
 
 	return $occurences;
 }
-?>

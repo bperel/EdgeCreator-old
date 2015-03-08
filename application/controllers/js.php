@@ -1,5 +1,5 @@
 <?php
-class JS extends CI_Controller {
+class JS extends EC_Controller {
 	
 	function index($nom1='',$nom2='') {
 		
@@ -10,5 +10,3 @@ class JS extends CI_Controller {
 		
 	}
 }
-
-?>

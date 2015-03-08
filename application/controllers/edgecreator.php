@@ -1,5 +1,5 @@
 <?php
-class EdgeCreator extends CI_Controller {
+class EdgeCreator extends EC_Controller {
 	static $pays;
 	static $magazine;
 	
@@ -22,7 +22,7 @@ class EdgeCreator extends CI_Controller {
 			self::$magazine=$this->session->userdata('magazine');
 		}
 
-		$this->load->model('Modele_tranche_Wizard','Modele_tranche');
+		$this->init_model();
 		$this->Modele_tranche->setPays(self::$pays);
 		$this->Modele_tranche->setMagazine(self::$magazine);
 		$num_ordres=$this->Modele_tranche->get_ordres(self::$pays,self::$magazine);
@@ -116,4 +116,3 @@ class EdgeCreator extends CI_Controller {
 
 	}
 }
-?>

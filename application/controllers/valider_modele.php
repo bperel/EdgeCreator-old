@@ -1,9 +1,9 @@
 <?php
 
-class Valider_Modele extends CI_Controller {
+class Valider_Modele extends EC_Controller {
 	
 	function index($pays,$magazine,$numero,$nom_image,$createurs,$photographes) {
-		$this->load->model('Modele_tranche_Wizard','Modele_tranche');
+		$this->init_model();
 		$this->load->library('email');
 		$this->load->helper('email');
 		$username=$this->session->userdata('user');
@@ -25,5 +25,3 @@ class Valider_Modele extends CI_Controller {
 		$this->Modele_tranche->desactiver_modele($pays,$magazine,$numero);
 	}
 }
-
-?>

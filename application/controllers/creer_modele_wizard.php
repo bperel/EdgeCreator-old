@@ -1,9 +1,9 @@
 <?php
 
-class Creer_Modele_Wizard extends CI_Controller {
+class Creer_Modele_Wizard extends EC_Controller {
 	
 	function index($pays,$magazine,$numero,$with_user) {
-		$this->load->model('Modele_tranche_Wizard','Modele_tranche');
+		$this->init_model();
         if ($with_user === 'true') {
 		    $this->Modele_tranche->setUsername($this->session->userdata('user'));
         }
@@ -35,5 +35,3 @@ class Creer_Modele_Wizard extends CI_Controller {
 		$this->load->view('insertview',$data);
 	}
 }
-
-?>

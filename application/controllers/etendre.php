@@ -1,5 +1,5 @@
 <?php
-class Etendre extends CI_Controller {
+class Etendre extends EC_Controller {
 	static $pays;
 	static $magazine;
 	static $numero;
@@ -21,8 +21,8 @@ class Etendre extends CI_Controller {
 			$this->db->query('SET NAMES UTF8');
 			$this->load->helper('url');
 			
-			$this->load->model('Modele_tranche_Wizard','Modele_tranche');
-			
+			$this->init_model();
+
 			$privilege=$this->Modele_tranche->get_privilege();
 			if ($privilege == 'Affichage') {
 				$this->load->view('errorview',array('Erreur'=>'droits insuffisants'));
@@ -42,5 +42,3 @@ class Etendre extends CI_Controller {
 		}
 	}
 }
-
-?>
