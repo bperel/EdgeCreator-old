@@ -15,6 +15,8 @@ class Viewer_wizard extends EC_Controller {
 	static $externe=false;
 	static $is_debug=false;
 	static $etape_en_cours;
+
+    static $zoom_save = 1.5;
 	
 	function index($pays=null,$magazine=null,$numero=null,$zoom=1,$etapes_actives='1',$parametrage='',$save='false',$fond_noir=false,$externe=false,$random_ou_username=null,$debug=false) {
 		if ($etapes_actives=='final')
@@ -31,7 +33,7 @@ class Viewer_wizard extends EC_Controller {
 		parse_str($parametrage,$parametrage);
 		$fond_noir = $fond_noir == 'true';
 		if ($save==='save')
-			$zoom=1.5;
+			$zoom=self::$zoom_save;
 		self::$is_debug=$debug;
 		self::$zoom=$zoom;
 		self::$externe=$externe;
@@ -100,7 +102,13 @@ class Viewer_wizard extends EC_Controller {
 				header('Content-type: image/png');
 			}
 			$image_externe=imagecreatefrompng('http://www.ducksmanager.net/edges/'.self::$pays.'/gen/'.self::$magazine.'.'.self::$numero.'.png');
-			imagepng($image_externe);
+            $largeur_externe = imagesx($image_externe);
+            $hauteur_externe = imagesy($image_externe);
+            $largeur_preview = $largeur_externe * (self::$zoom/self::$zoom_save);
+            $hauteur_preview = $hauteur_externe * (self::$zoom/self::$zoom_save);
+            $image_externe_zoom_adapte = imagecreatetruecolor($largeur_preview, $hauteur_preview);
+            imagecopyresized($image_externe_zoom_adapte, $image_externe, 0, 0, 0, 0, $largeur_preview, $hauteur_preview, $largeur_externe, $hauteur_externe);
+			imagepng($image_externe_zoom_adapte);
 		}
 		else {
 			$fond_noir_fait=false;
