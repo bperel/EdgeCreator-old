@@ -1301,7 +1301,7 @@ function afficher_tranches_proches(pays, magazine, numeros, est_contexte_clonage
 				}
 				else if (est_tranche_prete) {
 					// On arrête après 5x2 tranches similaires + le nouveau numéro
-					if (!numero_selectionne_trouve || tranches_pretes.length < NB_MAX_TRANCHES_SIMILAIRES_PROPOSEES*2 + 1) {
+					if (!numero_selectionne_trouve || tranches_affichees.length < NB_MAX_TRANCHES_SIMILAIRES_PROPOSEES*2 + 1) {
 						tranches_pretes.push(numero_existant);
 						tranches_affichees.push(numero_existant);
 					}
