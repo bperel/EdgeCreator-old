@@ -293,7 +293,7 @@
 					<div class="chargement">
 						Veuillez patienter...
 					</div>
-					<div class="tranches_pretes_magazine"></div>
+					<div class="tranches_affichees_magazine"></div>
 					<br />
 					<div class="buttonset">
 						<input type="radio" checked="checked" name="choix" value="to-wizard-clonage" id="to-wizard-clonage" />
@@ -795,7 +795,7 @@
 	<p>
 	Votre tranche apparaîtra aux côtés des tranches suivantes dans la bibliothèque DucksManager : <br />
 	
-	<div class="tranches_pretes_magazine"></div>
+	<div class="tranches_affichees_magazine"></div>
     <br />
     <input type="checkbox" id="cacher_libelles_magazines" name="cacher_libelles_magazines">&nbsp;
     <label for="cacher_libelles_magazines">Cacher les libellés des numéros</label>

@@ -440,11 +440,11 @@ input.couleur.selected {
 	overflow: auto;
 }
 
-.tranches_pretes_magazine table {
+.tranches_affichees_magazine table {
 	border-spacing: 0;
 }
 
-.tranches_pretes_magazine table tr td {
+.tranches_affichees_magazine table tr td {
 	padding: 0;
 	vertical-align: bottom;
 }
