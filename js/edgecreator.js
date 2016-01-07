@@ -439,7 +439,7 @@ function fixer_regles(creer) {
 		return;
 	}
 	
-    // La règle fait 300mm de hauteur
+    // La rï¿½gle fait 300mm de hauteur
 	var etendue= 300*zoom;
 	
 	$('.regles').remove();
@@ -598,7 +598,7 @@ function charger_image(type_chargement,src,num,callback) {
     }
     if (type_chargement == 'etape' && num !== null) {
         var etapes_corresp=$(selecteur_cellules_preview).getElementsWithData('etape',num);
-        if (etapes_corresp.length == 0) {// Numéro d'étape non trouvé
+        if (etapes_corresp.length == 0) {// Numï¿½ro d'ï¿½tape non trouvï¿½
         	jqueryui_alert("Num&eacute;ro d'&eacute;tape non trouv&eacute; lors du chargement de la preview : " + num, "Erreur");
         	charger_image_suivante(null,callback,type_chargement,est_visu);
     	}
@@ -637,7 +637,7 @@ function charger_image(type_chargement,src,num,callback) {
     
     image.error(function() {
     	var num_etape=chargements[chargement_courant];
-    	if (num_etape != 'all') { // Si erreur sur l'étape finale c'est qu'il y a eu erreur sur une étape intermédiaire ; on ne l'affiche pas de nouveau
+    	if (num_etape != 'all') { // Si erreur sur l'ï¿½tape finale c'est qu'il y a eu erreur sur une ï¿½tape intermï¿½diaire ; on ne l'affiche pas de nouveau
 			$('#wizard-erreur-generation-image').find('[name="etape"]').text(num_etape);
 			$('#wizard-erreur-generation-image').find('iframe').attr({src: $(this).attr('src')+'/debug'});
     		jqueryui_alert_from_d($('#wizard-erreur-generation-image'));
@@ -1132,7 +1132,7 @@ $(window).load(function() {
         charger_liste_numeros(magazine);
 
     $('#zoom_slider').slider({
-        value:1 /* Valeur n°1 du tableau, donc = 1.5*/,
+        value:1 /* Valeur nï¿½1 du tableau, donc = 1.5*/,
         min:0,
         max:valeurs_possibles_zoom.length-1,
         step:1,
@@ -1385,7 +1385,6 @@ function charger_liste_numeros(magazine_sel) {
 							if (etapes[etape].Ordre == -1 || est_dans_intervalle($(tr).data('numero'), etapes[etape].Numero_debut+'~'+etapes[etape].Numero_fin)) {
 								if (etapes_valides.indexOf(etapes[etape]) == -1) {
 									etapes_valides.push(etapes[etape]);
-									continue;
 								}
 							}
 						}
