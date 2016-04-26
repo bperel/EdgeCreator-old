@@ -21,7 +21,7 @@ header("Content-Type: text/html; charset=ISO-8859-1"); ?>
 	<script type="text/javascript" src="<?=base_url()?>js/jquery.serializeObject.js" ></script>
 	<script type="text/javascript" src="<?=base_url()?>js/jquery.ba-resize.js" ></script>
 	<script type="text/javascript" src="<?=base_url()?>js/jquery.jrac.js" ></script>
-	<script type="text/javascript" src="<?=base_url()?>js/jquery-ui-1.10.2.custom.js" ></script>
+	<script type="text/javascript" src="<?=base_url()?>js/jquery-ui-1.10.4.custom.js" ></script>
 	
 	<script type="text/javascript" src="<?=base_url()?>js/jquery.dataSelector.js" ></script>
 	<script type="text/javascript" src="<?=base_url()?>js/json2.js" ></script>
