@@ -9,7 +9,7 @@ header("Content-Type: text/html; charset=ISO-8859-1"); ?>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
 
-	<link rel="stylesheet" type="text/css" href="<?=base_url()?>css/sunny/jquery-ui-1.10.2.custom.css" />
+	<link rel="stylesheet" type="text/css" href="<?=base_url()?>css/sunny/jquery-ui-1.10.4.custom.css" />
 	<link rel="stylesheet" type="text/css" href="<?=base_url()?>css/edgecreator.css" />
 	<link rel="stylesheet" type="text/css" href="<?=base_url()?>css/edgecreator_wizard.css" />
 	<link rel="stylesheet" type="text/css" href="<?=base_url()?>css/edgecreator_gallery.css" />
@@ -17,7 +17,7 @@ header("Content-Type: text/html; charset=ISO-8859-1"); ?>
 	<link rel="stylesheet" type="text/css" href="<?=base_url()?>css/jquery.jrac.css" />
 	<link rel="shortcut icon" href="<?=base_url()?>images/favicon.ico" />
 	
-	<script type="text/javascript" src="<?=base_url()?>js/jquery-1.9.1.js" ></script>
+	<script type="text/javascript" src="<?=base_url()?>js/jquery-1.10.2.js" ></script>
 	<script type="text/javascript" src="<?=base_url()?>js/jquery.serializeObject.js" ></script>
 	<script type="text/javascript" src="<?=base_url()?>js/jquery.ba-resize.js" ></script>
 	<script type="text/javascript" src="<?=base_url()?>js/jquery.jrac.js" ></script>
