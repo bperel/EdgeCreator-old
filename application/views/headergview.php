@@ -7,7 +7,7 @@ header("Content-Type: text/html; charset=ISO-8859-1"); ?>
 
 <html>
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 
 	<link rel="stylesheet" type="text/css" href="<?=base_url()?>css/sunny/jquery-ui-1.10.4.custom.css" />
 	<link rel="stylesheet" type="text/css" href="<?=base_url()?>css/edgecreator.css" />
