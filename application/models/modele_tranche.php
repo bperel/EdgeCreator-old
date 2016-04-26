@@ -36,7 +36,7 @@ class Modele_tranche extends CI_Model {
 	}
 	
 	function requete_select_dm($requete) {
-		return Inducks::requete_select($requete, DatabasePriv::$nom_db_DM,'ducksmanager.net');
+		return Inducks::requete_select($requete, ServeurDb::$nom_db_DM,'ducksmanager.net');
 	}
 	
 	function get_privilege() {
