@@ -10,4 +10,4 @@
 	}
 ?>
 </table><br />
-Modifiez les paramètres de la nouvelle fonction puis, lorsque la prévisualisation vous satisfait,<br />cliquez sur "Appliquer" pour l'intégrer dans le modèle de tranche.
+Modifiez les paramètres de la nouvelle fonction puis, lorsque la prévisualisation vous satisfait,<br />Cliquez sur "Appliquer" pour l'intégrer dans le modèle de tranche.

@@ -219,7 +219,7 @@
 							</select>
 						</div>
 						<div class="nowrap">
-							<label for="wizard_numero">numéro(s): </label>
+							<label for="wizard_numero">Numéro(s): </label>
 							<select name="wizard_numero" id="wizard_numero" multiple="multiple">
 								<option>Chargement...</option>
 							</select>
@@ -268,7 +268,7 @@
 					<select name="wizard_magazine" id="wizard_magazine_modifier">
 						<option>Chargement...</option>
 					</select><br />
-					<label for="wizard_numero_modifier">numéro: </label>
+					<label for="wizard_numero_modifier">Numéro: </label>
 					<select name="wizard_numero" id="wizard_numero_modifier">
 						<option>Chargement...</option>
 					</select><br />
@@ -299,7 +299,7 @@
 						<input type="radio" checked="checked" name="choix" value="to-wizard-clonage" id="to-wizard-clonage" />
                         <label for="to-wizard-clonage">J'aitrouvé une tranche similaire</label>
 						<input type="radio" name="choix" value="to-wizard-dimensions" id="to-wizard-dimensions1" />
-                        <label for="to-wizard-dimensions1">créer une tranche originale</label>
+                        <label for="to-wizard-dimensions1">Créer une tranche originale</label>
 					</div>
 				</form>
 			</p>
@@ -592,14 +592,14 @@
 	<p>
 		<form>
 			<div class="accordion">
-				<h3><a href="#">créer une étape à partir de zéro</a></h3>
+				<h3><a href="#">Créer une étape à partir de zéro</a></h3>
 				<div>
 					Que souhaitez-vous faire ? 
 					<div id="liste_fonctions"></div>
 					<input type="hidden" name="etape" />
 					<input type="hidden" name="pos" />
 				</div>
-				<h3><a href="#">créer une étape à partir d'une étape similaire</a></h3>
+				<h3><a href="#">Créer une étape à partir d'une étape similaire</a></h3>
 				<div>
 					<div class="aucune_etape">Aucune étape n'aété créée pour le moment.</div>
 					<div class="etape_existante">
