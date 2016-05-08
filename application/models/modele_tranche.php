@@ -531,7 +531,6 @@ class Modele_tranche extends CI_Model {
 				.' AND Numero IN ('.implode(',', $numeros_esc).') '
 				.' AND username=\''.mysql_real_escape_string(self::$username).'\''
 				.' ORDER BY Ordre';
- 			echo $requete_get_options."\n";
 			$resultats=$this->db->query($requete_get_options)->result();
 		}
 
@@ -543,7 +542,6 @@ class Modele_tranche extends CI_Model {
                 . ' INNER JOIN edgecreator_intervalles AS intervalles ON valeurs.ID = intervalles.ID_Valeur '
                 . ' WHERE Pays = \'' . $pays . '\' AND Magazine = \'' . $magazine . '\' '
                 . ' ORDER BY Ordre';
-            echo $requete_get_options . "\n";
             $resultats=$this->db->query($requete_get_options)->result();
         }
 
