@@ -1,5 +1,5 @@
 <div style="float:left;height:100%;overflow-y:auto;margin:10px;width:40%">
-	<h1>Mod&egrave;le de tranche</h1>
+	<h1>Modèle de tranche</h1>
 	<?=$pays?> &gt; <?=$magazine?>
 	<br />
 	<?=$texte?>
@@ -12,7 +12,7 @@
 			<?php } ?>
 		<?php 
 		if ($etape<0) {
-			?><b>Param&egrave;tres</b><br /><?php
+			?><b>Paramètres</b><br /><?php
 		}
 		foreach($fonctions as $fonction) {
 			if ($etape>0) { 
@@ -41,7 +41,7 @@
 		<input type="radio" checked="checked" name="action" id="ajouter_etape"/>
 		Ajouter&nbsp;<?=$liste_fonctions?>
 		<ul style="margin-left:30px" id="intervalles_ajout">
-			<li class="intervalle_ajout">Pour les num&eacute;ros entre 
+			<li class="intervalle_ajout">Pour les numéros entre 
 				<span class="numero_ajout debut"><?=$numeros_visualisables1_select?>&nbsp;et&nbsp;<?=$numeros_visualisables2_select?></span>
 				&nbsp;
 				<a href="javascript:void(0)" onclick="ajouter_intervalle(this)">Cl</a>|<a href="javascript:void(0)" onclick="supprimer_intervalle(this)">X</a>&nbsp;
@@ -50,10 +50,10 @@
 		</ul>
 		<?php 
 		if (count($etapes) > 1) { ?>
-			<input type="radio" id="cloner_etape" name="action"/>Cloner l'&eacute;tape <?=$etapes_clonables?>
+			<input type="radio" id="cloner_etape" name="action"/>Cloner l'étape <?=$etapes_clonables?>
 			<br />
 		<?php } ?>
-			<input type="radio" id="etendre_numero" name="action"/>Etendre les propri&eacute;t&eacute;s du num&eacute;ro <?=$numeros_extension1_select?> au num&eacute;ro <?=$numeros_extension2_select?>
+			<input type="radio" id="etendre_numero" name="action"/>Etendre les propriétés du numéro <?=$numeros_extension1_select?> au numéro <?=$numeros_extension2_select?>
 			<br />
 	</span>
 	<?php $etape=(isset($etape))?($etape==-1?1:($etape+1)):-1;?>

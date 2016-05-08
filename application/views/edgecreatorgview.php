@@ -14,8 +14,8 @@
 					&nbsp;&nbsp;
 					<select style="font-size:11px" id="liste_magazines"></select><br />
 					<div id="filtre_numeros">
-						Num&eacute;ros&nbsp;
-						<select id="filtre_debut"></select>&nbsp;&agrave;&nbsp;
+						Numéros&nbsp;
+						<select id="filtre_debut"></select>&nbsp;à&nbsp;
 						<select id="filtre_fin"></select>
 						<button>OK</button>
 					</div>
@@ -23,11 +23,11 @@
 			</div>
 		<?php }
 	} ?>
-	<div id="action_bar" class="cache">Mod&eacute;lisation de la tranche du num&eacute;ro <span id="nom_complet_tranche_en_cours"></span><br />
+	<div id="action_bar" class="cache">Modélisation de la tranche du numéro <span id="nom_complet_tranche_en_cours"></span><br />
 		<img class="action tip" name="home" 
-			 title="Revenir &agrave; l'&eacute;cran d'accueil de EdgeCreator" />
+			 title="Revenir à l'écran d'accueil de EdgeCreator" />
 		<img class="action tip" name="photo"
-			 title="Ins&eacute;rer/S&eacute;lectionner une photo de tranche" />
+			 title="Insérer/Sélectionner une photo de tranche" />
 		<img class="action tip" name="corbeille"
 			 title="Supprimer cette conception de tranche" />
 		<img class="action tip" name="valider"
@@ -40,14 +40,14 @@
 	<div id="status_user">
 		<?php
 		if ($privilege=='Affichage') {
-			?>Non connect&eacute;(e)<?php
+			?>Non connecté(e)<?php
 		}
 		else {
-			?>Connect&eacute;(e) en tant que <span id="utilisateur"><?=$user?></span><?php
+			?>Connecté(e) en tant que <span id="utilisateur"><?=$user?></span><?php
 		}
 		?><br /><?php
 		if ($user!=='demo') {
-			?><button class="small" id="deconnexion" onclick="logout()">D&eacute;connexion</button><?php					
+			?><button class="small" id="deconnexion" onclick="logout()">Déconnexion</button><?php					
 		}
 		?>
 	</div>
@@ -69,7 +69,7 @@ if ($mode_expert==true) {?>
 				</ul>
 			
 				<div id="contenu_builder">
-					<div id="numero_preview">Cliquez sur le lien <img src="<?=base_url()?>images/view.png" /> d'un num&eacute;ro pour le pr&eacute;visaliser.</div>
+					<div id="numero_preview">Cliquez sur le lien <img src="<?=base_url()?>images/view.png" /> d'un numéro pour le prévisualiser.</div>
 					<?php switch($privilege) {
 						case 'Admin' :
 						?>
@@ -78,7 +78,7 @@ if ($mode_expert==true) {?>
 						break;
 						case 'Edition' :
 						?>
-						<a style="display:none" class="save" href="javascript:void(0)">Proposer le mod&egrave;le de tranche</a>
+						<a style="display:none" class="save" href="javascript:void(0)">Proposer le modèle de tranche</a>
 					<?php
 						break;
 					} ?>
@@ -86,8 +86,8 @@ if ($mode_expert==true) {?>
 				</div>
 				<div id="contenu_previews">
 					<span class="options" style="display:none">
-						<input type="checkbox" checked="checked" id="option_details" />D&eacute;tails<br />
-						<input type="checkbox" checked="checked" id="option_pretes_seulement" />Pr&ecirc;tes seulement<br />
+						<input type="checkbox" checked="checked" id="option_details" />Détails<br />
+						<input type="checkbox" checked="checked" id="option_pretes_seulement" />Prêtes seulement<br />
 					</span>
 	
 					<?php switch($privilege) {
@@ -98,13 +98,13 @@ if ($mode_expert==true) {?>
 						break;
 						case 'Edition' :
 						?>
-						<a style="display:none" class="save" href="javascript:void(0)">Proposer les mod&egrave;les de tranches</a>
+						<a style="display:none" class="save" href="javascript:void(0)">Proposer les modèles de tranches</a>
 					<?php
 						break;
 					} ?>
 					<div id="numero_preview_debut" style="display:inline">
-						Cliquez sur le lien <img src="<?=base_url()?>images/view.png" /> d'un num&eacute;ro 
-						pour le s&eacute;lectionner comme premier num&eacute;ro &agrave; pr&eacute;visualiser.
+						Cliquez sur le lien <img src="<?=base_url()?>images/view.png" /> d'un numéro 
+						pour le sélectionner comme premier numéro à prévisualiser.
 					</div>
 					- 
 					<div id="numero_preview_fin" style="display:inline"></div>

@@ -60,7 +60,7 @@
 				<div></div>
 				
 				<input type="radio" name="choix" value="to-wizard-creer" id="to-wizard-creer" />
-				<label class="toutes_bordures" for="to-wizard-creer">créer une tranche de magazine</label><br />
+				<label class="toutes_bordures" for="to-wizard-creer">Créer une tranche de magazine</label><br />
 				<input type="radio" name="choix" value="to-wizard-modifier" id="to-wizard-modifier"/>
 				<label class="toutes_bordures" for="to-wizard-modifier">Modifier une tranche de magazine</label><br />
 				<input type="radio" name="choix" value="to-wizard-conception" id="to-wizard-conception"/>

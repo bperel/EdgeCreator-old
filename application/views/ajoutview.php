@@ -1,7 +1,7 @@
 <?=$fonction->Nom_fonction?> : <br />
 <?php foreach($numeros_debut_globaux as $i=>$numero_debut_global) {
 	$numero_fin_global=$numeros_fin_globaux[$i];
-	?>Num&eacute;ros <?=$numero_debut_global?> &agrave; <?=$numero_fin_global?><br /><?php
+	?>Numéros <?=$numero_debut_global?> à <?=$numero_fin_global?><br /><?php
 }?>
 <table rules="all" style="margin-left:5px;border:1px solid black"><?php
 	foreach($options as $option_nom=>$option_valeur) {
@@ -10,4 +10,4 @@
 	}
 ?>
 </table><br />
-Modifiez les param&egrave;tres de la nouvelle fonction puis, lorsque la pr&eacute;visualisation vous satisfait,<br />cliquez sur "Appliquer" pour l'int&eacute;grer dans le mod&egrave;le de tranche.
+Modifiez les paramètres de la nouvelle fonction puis, lorsque la prévisualisation vous satisfait,<br />cliquez sur "Appliquer" pour l'intégrer dans le modèle de tranche.

@@ -3,7 +3,7 @@ header("Expires: " . gmdate( "D, j M Y H:i:s", time() ) . " GMT"); // always mod
 header("Cache-Control: no-store, no-cache, must-revalidate"); // HTTP/1.1 
 header("Cache-Control: post-check=0, pre-check=0", FALSE); 
 header("Pragma: no-cache");
-header("Content-Type: text/html; charset=ISO-8859-1"); ?>
+header("Content-Type: text/html; charset=UTF-8"); ?>
 
 <html>
 <head>
@@ -64,7 +64,7 @@ header("Content-Type: text/html; charset=ISO-8859-1"); ?>
 </head>
 <body id="body" style="margin:0;padding:0">
 	<img class="ajout_etape tip2 template hidden"
-		 src="<?=base_url()?>../images/icones/add.png" title="Ajouter une &eacute;tape ici"/>
+		 src="<?=base_url()?>../images/icones/add.png" title="Ajouter une étape ici"/>
 	<?php
 	if (!empty($erreur)) {
 		echo $erreur;

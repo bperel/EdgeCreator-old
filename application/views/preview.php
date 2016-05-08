@@ -3,7 +3,7 @@
 	<img alt="Prefix" id="preview_prefix" src="<?=site_url('viewer/index/'.$pays.'/'.$magazine.'/')?>" />
 	Zoom : <?=$zoom?>
 	<a name="visu" class="toggleable visu_gen_doublons actif" href="javascript:void(0)">Visualiser</a> | 
-	<a name="gen" class="toggleable visu_gen_doublons" href="javascript:void(0)">G&eacute;n&eacute;rer</a> | 
+	<a name="gen" class="toggleable visu_gen_doublons" href="javascript:void(0)">Générer</a> | 
 	<a name="doublons" class="toggleable visu_gen_doublons" href="javascript:void(0)">Sv les doublons</a><br /><br />
 	<div name="visu" class="toggleable actif visu_gen_doublons">
 		<?=$preview_form?>
@@ -15,7 +15,7 @@
 	<div name="gen" class="toggleable visu_gen_doublons">
 		<?=$gen_form?>
 		<br />
-		Les images seront enregistr&eacute;es uniquement si le niveau de zoom est r&eacute;gl&eacute; &agrave; 1.5
+		Les images seront enregistrées uniquement si le niveau de zoom est réglé à 1.5
 		<div id="generated_issues"></div>
 	</div>
 	<div name="doublons" class="toggleable visu_gen_doublons">
