@@ -194,7 +194,7 @@
 						</li>
 					</ul>
 					<div class="buttonset cache">
-						<input type="radio" checked="checked" name="choix" value="to-wizard-proposition-clonage" id="to-wizard-proposition-clonage" /><label for="to-wizard-proposition-clonage">J'aitrouvé mon numéro</label>
+						<input type="radio" checked="checked" name="choix" value="to-wizard-proposition-clonage" id="to-wizard-proposition-clonage" /><label for="to-wizard-proposition-clonage">J'ai trouvé mon numéro</label>
 					</div>
 				</form>
 				<p class="pas_de_numero cache">Pas de numéro.</p>
@@ -231,7 +231,7 @@
 						</div>
 					</fieldset>
 					<div class="buttonset">
-						<input type="radio" checked="checked" name="choix" value="to-wizard-proposition-clonage" id="to-wizard-proposition-clonage" /><label for="to-wizard-proposition-clonage">J'aitrouvé mes numéros</label>
+						<input type="radio" checked="checked" name="choix" value="to-wizard-proposition-clonage" id="to-wizard-proposition-clonage" /><label for="to-wizard-proposition-clonage">J'ai trouvé mes numéros</label>
 						<input type="radio" name="choix" value="to-wizard-numero-inconnu" id="to-wizard-numero-inconnu" /><label for="to-wizard-numero-inconnu">Un numéro n'est pas dans la liste</label>
 					</div>
 				</form>
@@ -278,7 +278,7 @@
 				</fieldset>
 				<div class="buttonset cache">
 					<input type="radio" checked="checked" name="choix" value="to-wizard-clonage-silencieux" id="to-wizard-clonage-silencieux" />
-                    <label for="to-wizard-clonage-silencieux">J'aitrouvé mon numéro</label>
+                    <label for="to-wizard-clonage-silencieux">J'ai trouvé mon numéro</label>
 				</div>
 			</form>
 		</p>
@@ -297,7 +297,7 @@
 					<br />
 					<div class="buttonset">
 						<input type="radio" checked="checked" name="choix" value="to-wizard-clonage" id="to-wizard-clonage" />
-                        <label for="to-wizard-clonage">J'aitrouvé une tranche similaire</label>
+                        <label for="to-wizard-clonage">J'ai trouvé une tranche similaire</label>
 						<input type="radio" name="choix" value="to-wizard-dimensions" id="to-wizard-dimensions1" />
                         <label for="to-wizard-dimensions1">Créer une tranche originale</label>
 					</div>
