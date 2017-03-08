@@ -46,15 +46,17 @@ class ParametrageG_wizard extends EC_Controller {
 					$fonction->Nom_fonction='Dimensions';
 				}
 				else
-					$options=$this->Modele_tranche->get_options(self::$pays,self::$magazine,self::$etape, self::$numero, false, true, true, $nom_option);
+					$options=$this->Modele_tranche->get_options(self::$pays, self::$magazine, self::$etape,
+                        self::$numero, false, true, $nom_option);
 			}
 			else {
 				
-				if ($this->Modele_tranche->has_no_option(self::$pays,self::$magazine,self::$etape)) {
+				if ($this->Modele_tranche->has_no_option(self::$pays, self::$magazine)) {
 					$options=$this->Modele_tranche->get_noms_champs($fonction->Nom_fonction);
 				}
 				else {
-					$options=$this->Modele_tranche->get_options(self::$pays,self::$magazine,self::$etape, self::$numero, false, true, false, $nom_option);
+					$options=$this->Modele_tranche->get_options(self::$pays, self::$magazine, self::$etape,
+                        self::$numero, false, false, $nom_option);
 				}
 			}
 			

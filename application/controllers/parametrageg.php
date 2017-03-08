@@ -29,7 +29,7 @@ class ParametrageG extends EC_Controller {
 		$this->Modele_tranche->setNumerosDisponibles($numeros_dispos);
 		$this->Modele_tranche->setPays(self::$pays);
 		$this->Modele_tranche->setMagazine(self::$magazine);
-		if (is_null(self::$etape)) { // Liste des étapes
+		if (is_null(self::$etape)) { // Liste des ï¿½tapes
 			$etapes=$this->Modele_tranche->get_etapes_simple(self::$pays,self::$magazine);
 			if (count($etapes) == 0) {
 				$fonction_dimension=new stdClass();
@@ -48,15 +48,17 @@ class ParametrageG extends EC_Controller {
 					$fonction->Nom_fonction='Dimensions';
 				}
 				else
-					$options=$this->Modele_tranche->get_options(self::$pays,self::$magazine,self::$etape,$nom_fonction, null, false, true, true, $nom_option);
+					$options=$this->Modele_tranche->get_options(self::$pays, self::$magazine, self::$etape,
+                        $nom_fonction, null, true, true, $nom_option);
 			}
 			else {
 				
-				if ($this->Modele_tranche->has_no_option(self::$pays,self::$magazine,self::$etape)) {
+				if ($this->Modele_tranche->has_no_option(self::$pays, self::$magazine)) {
 					$options=$this->Modele_tranche->get_noms_champs($fonction->Nom_fonction);
 				}
 				else {
-					$options=$this->Modele_tranche->get_options(self::$pays,self::$magazine,self::$etape,$fonction->Nom_fonction, null, false, true, false, $nom_option);
+					$options=$this->Modele_tranche->get_options(self::$pays, self::$magazine, self::$etape,
+                        $fonction->Nom_fonction, null, true, false, $nom_option);
 				}
 			}
 			

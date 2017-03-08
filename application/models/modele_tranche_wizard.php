@@ -87,15 +87,23 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		return count($resultat) == 0 ? null : new Fonction($resultat);
 	}
 
-	function get_options($pays,$magazine,$ordre,$numero=null,$creation=false,$inclure_infos_options=false, $nouvelle_etape=false, $nom_option=null) {
-		$creation=false;
-		$resultats_options=new stdClass();
+	function get_options(
+        $pays,
+        $magazine,
+        $ordre,
+        $nom_fonction,
+        $numero = null,
+        $inclure_infos_options = false,
+        $nouvelle_etape = false,
+        $nom_option = null
+    ) {
+		$numero=false;
 		$requete='SELECT '.implode(', ', self::$content_fields).' '
 				.'FROM tranches_en_cours_modeles_vue '
-				.'WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' AND Numero = \''.$numero.'\' AND Ordre='.$ordre.' AND Option_nom IS NOT NULL '
+				.'WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' AND Numero = \''.$nom_fonction.'\' AND Ordre='.$ordre.' AND Option_nom IS NOT NULL '
 				.'AND username = \''.($this->user_possede_modele() ? self::$username : 'brunoperel').'\' ';
-		if (!is_null($nom_option))
-			$requete.='AND Option_nom = \''.$nom_option.'\' ';
+		if (!is_null($nouvelle_etape))
+			$requete.='AND Option_nom = \''.$nouvelle_etape.'\' ';
 		$requete.='ORDER BY Option_nom ASC';
 
 		$resultats=$this->db->query($requete)->result();
@@ -106,7 +114,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 			$valeur=$resultat->Option_valeur;
 			$resultats_options->$option_nom=$valeur;
 		}
-		$f=new $nom_fonction($resultats_options,false,$creation,!$nouvelle_etape); // Ajout des champs avec valeurs par défaut
+		$f=new $nom_fonction($resultats_options,false,$numero,!$inclure_infos_options); // Ajout des champs avec valeurs par défaut
 		if ($inclure_infos_options) {
 			$prop_champs=new ReflectionProperty(get_class($f), 'champs');
 			$champs=$prop_champs->getValue();
@@ -114,20 +122,20 @@ class Modele_tranche_Wizard extends Modele_tranche {
 			$valeurs_defaut=$prop_valeurs_defaut->getValue();
 			$prop_descriptions=new ReflectionProperty(get_class($f), 'descriptions');
 			$descriptions=$prop_descriptions->getValue();
-			foreach(array_keys((array)$f->options) as $nom_option) {
+			foreach(array_keys((array)$f->options) as $nouvelle_etape) {
 				$intervalles_option=array();
-				$intervalles_option['valeur']=$f->options->$nom_option;
-				$intervalles_option['type']=$champs[$nom_option];
-				$intervalles_option['description']=isset($descriptions[$nom_option]) ? $descriptions[$nom_option] : '';
-				if (array_key_exists($nom_option, $valeurs_defaut))
-					$intervalles_option['valeur_defaut']=$valeurs_defaut[$nom_option];
-				$f->options->$nom_option=$intervalles_option;
+				$intervalles_option['valeur']=$f->options->$nouvelle_etape;
+				$intervalles_option['type']=$champs[$nouvelle_etape];
+				$intervalles_option['description']=isset($descriptions[$nouvelle_etape]) ? $descriptions[$nouvelle_etape] : '';
+				if (array_key_exists($nouvelle_etape, $valeurs_defaut))
+					$intervalles_option['valeur_defaut']=$valeurs_defaut[$nouvelle_etape];
+				$f->options->$nouvelle_etape=$intervalles_option;
 			}
 		}
 		return $f->options;
 	}
 
-	function has_no_option($pays,$magazine,$etape) {
+	function has_no_option($pays, $magazine) {
 		$requete='SELECT Option_nom '
 				.'FROM tranches_en_cours_modeles_vue '
 				.'WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' AND Option_nom IS NOT NULL '
@@ -164,10 +172,9 @@ class Modele_tranche_Wizard extends Modele_tranche {
 	function insert($id_modele,$ordre,$nom_fonction,$option_nom,$option_valeur) {
 		$option_nom=is_null($option_nom) ? 'NULL' : '\''.preg_replace("#([^\\\\])'#","$1\\'",$option_nom).'\'';
 		$option_valeur=is_null($option_valeur) ? 'NULL' : '\''.preg_replace("#([^\\\\])'#","$1\\'",$option_valeur).'\'';
-		
+
 		$requete='INSERT INTO tranches_en_cours_valeurs (ID_Modele,Ordre,Nom_fonction,Option_nom,Option_valeur) VALUES '
 				.'('.$id_modele.','.$ordre.',\''.$nom_fonction.'\','.$option_nom.','.$option_valeur.') ';
-		//echo $requete."\n";
 		$this->db->query($requete);
 	}
 	
@@ -215,7 +222,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		$nouvelle_fonction=new $nom_fonction(false, null, true);
 		$numero_etape=$inclure_avant ? $etape : $etape+1;
 		foreach($nouvelle_fonction->options as $nom=>$valeur) {
-			$this->insert($id_modele,$numero_etape,$nom_fonction,$nom,$valeur);			
+			$this->insert($id_modele, $numero_etape, $nom_fonction, $nom, $valeur);
 		}
 		$infos->numero_etape=$numero_etape;
 		return $infos;
@@ -231,7 +238,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		echo $requete_suppr."\n";
 		
 		foreach($parametrage as $parametre=>$valeur) {
-			$this->insert($id_modele,$etape,$nom_fonction,$parametre,$valeur);			
+			$this->insert($id_modele, $etape, $nom_fonction, $parametre, $valeur);
 		}
 	}
 	

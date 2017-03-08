@@ -7,7 +7,7 @@
 
 		var base_url='<?=base_url()?>';
 
-		var urls=new Array();
+		var urls=[];
 		urls['edgecreatorg']='<?=site_url('edgecreatorg')?>/';
 		urls['numerosdispos']='<?=site_url('numerosdispos')?>/';
 		urls['parametrageg']='<?=site_url('parametrageg')?>/';
@@ -23,12 +23,12 @@
 		var numero='<?=$numero?>';
 		var username='<?=$username?>';
 
-		var etapes=new Array();
-		var options=new Array();
+		var etapes=[];
+		var options=[];
 
-		var valeurs_options=new Array();
+		var valeurs_options=[];
 		<?php foreach($options as $num_etape => $valeurs_options) {
-			?>valeurs_options[<?=$num_etape?>]=new Array();<?php 
+			?>valeurs_options[<?=$num_etape?>]=[];<?php
 			foreach($valeurs_options as $nom_option=>$valeur_option) {
 				?>valeurs_options[<?=$num_etape?>]['<?=$nom_option?>']='<?=$valeur_option?>';<?php	
 			}

@@ -49,7 +49,7 @@ class Parametrage extends EC_Controller {
 			//print_r($ordres);
 			$fonctions=$this->Modele_tranche->get_fonctions($pays,$magazine,$ordre);
 			$fonction=$fonctions[0];
-			$fonction->options=$this->Modele_tranche->get_options($pays,$magazine,$ordre,$nom_fonction);
+			$fonction->options=$this->Modele_tranche->get_options($pays, $magazine, $ordre, $nom_fonction);
 			
 			$numeros_dispos=$this->Modele_tranche->get_numeros_disponibles(self::$pays,self::$magazine,$fonction->Numero_debut,$fonction->Numero_fin);
 			$this->Modele_tranche->setDropdownNumeros(form_dropdown('', $numeros_dispos));

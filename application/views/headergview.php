@@ -38,16 +38,16 @@ header("Content-Type: text/html; charset=UTF-8"); ?>
 		
 		var plage=<?php
 		if (is_null($numero_debut_filtre)) {
-			?>new Array('null','null');<?php
+			?>['null','null'];<?php
 		}
 		else {
-			?>new Array('<?=$numero_debut_filtre?>','<?=$numero_fin_filtre?>');<?php
+			?>['<?=$numero_debut_filtre?>','<?=$numero_fin_filtre?>'];<?php
 		}?>
 		
 		var numero_fin_filtre='<?=$numero_fin_filtre?>';
 		var base_url='<?=base_url()?>';
 
-		var urls=new Array();
+		var urls=[];
 		<?php
 		$controleurs=array('update_wizard','edgecreatorg','tranchesencours','numerosdispos','parametrageg','parametrageg_wizard',
 		   				   'modifierg','supprimerg','listerg','etendre','creer_modele_wizard','insert_wizard','cloner','upload_wizard','supprimer_wizard','viewer_wizard','viewer_myfonts',

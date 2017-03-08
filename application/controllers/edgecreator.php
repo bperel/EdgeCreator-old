@@ -31,7 +31,8 @@ class EdgeCreator extends EC_Controller {
 		foreach($num_ordres as $num_ordre) {
 			$etapes[$num_ordre]=$this->Modele_tranche->get_fonctions(self::$pays,self::$magazine,$num_ordre);
 			foreach($etapes[$num_ordre] as &$fonction) {
-				$fonction->options=$this->Modele_tranche->get_options(self::$pays,self::$magazine,$num_ordre,$fonction->Nom_fonction);
+				$fonction->options=$this->Modele_tranche->get_options(self::$pays, self::$magazine, $num_ordre,
+                    $fonction->Nom_fonction);
 			}
 		}
 

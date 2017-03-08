@@ -128,7 +128,8 @@ class Viewer_wizard extends EC_Controller {
                         self::$etape_en_cours->num_etape=$num_ordre;
                         self::$etape_en_cours->nom_fonction=$ordres[$num_ordre]->Nom_fonction;
                         $fonction=$ordres[$num_ordre];
-                        $options2=$this->Modele_tranche->get_options($pays,$magazine,$num_ordre,self::$numero,$fonction->Nom_fonction,false);
+                        $options2=$this->Modele_tranche->get_options($pays, $magazine, $num_ordre, self::$numero,
+                            $fonction->Nom_fonction);
                         if ($num_ordre==-1)
                             $dimensions=$options2;
                         if ((self::$etapes_actives==array('all') && ($num_etape_parametrage == $num_ordre || is_null($num_etape_parametrage)))
@@ -149,7 +150,7 @@ class Viewer_wizard extends EC_Controller {
                 }
 			}
 			catch(Exception $e) {
-		    	echo 'Exception reçue : ',  $e->getMessage(), "\n";
+		    	echo 'Exception reï¿½ue : ',  $e->getMessage(), "\n";
 		    	echo '<pre>';print_r($e->getTrace());echo '</pre>';
 			}
 

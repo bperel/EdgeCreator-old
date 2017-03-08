@@ -12,7 +12,7 @@ class Creer_Modele_Wizard extends EC_Controller {
 		$this->Modele_tranche->creer_modele($pays,$magazine,$numero);
 		$infos_insertion=$this->Modele_tranche->insert_etape($pays,$magazine,$numero,'_',-1,'Dimensions');
 
-        $options = $this->Modele_tranche->get_options($pays,$magazine,-1,$numero,false,false,false,null,false);
+        $options = $this->Modele_tranche->get_options($pays, $magazine, -1, $numero, false, false, null, false);
         print_r($options);
         if (count($options) > 0) {
             // Copie des dimensions si elles ont été renseignées lors d'un envoi de photos
@@ -22,10 +22,6 @@ class Creer_Modele_Wizard extends EC_Controller {
             $nom_photo_principale = $this->Modele_tranche->get_photo_principale($pays,$magazine,$numero,false);
             $this->Modele_tranche->update_photo_principale($pays,$magazine,$numero,$nom_photo_principale);
             $this->Modele_tranche->setUsername($this->session->userdata('user'));
-
-            if (isset($id_modele_non_affecte)) {
-                $this->Modele_tranche->desactiver_modele_par_id($id_modele_non_affecte);
-            }
         }
 
 		$data = array(

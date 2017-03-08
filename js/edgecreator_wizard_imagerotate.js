@@ -27,7 +27,7 @@ function startRotate( e ) {
 
 // Stop rotating an image
 
-function stopRotate( e ) {
+function stopRotate() {
 
   // Exit if we're not rotating an image
   if ( !imageBeingRotated ) return;

@@ -1,4 +1,4 @@
-var numeros_dispos=new Array();
+var numeros_dispos=[];
 new Ajax.Request(urls['numerosdispos']+['index',pays,magazine].join('/'), {
 	method: 'post',
 	onSuccess:function(transport) {
@@ -12,7 +12,7 @@ new Ajax.Request(urls['numerosdispos']+['index',pays,magazine].join('/'), {
 			onSuccess:function(transport) {
 				etapes=transport.headerJSON;
 
-				// Toujours intégrer l'étape -1
+				// Toujours intï¿½grer l'ï¿½tape -1
 				integrer_etape(Object.values(etapes)[0].Ordre);
 			}
 		});
@@ -37,9 +37,9 @@ function integrer_etape(num_etape) {
 
 function integrer_option(num_etape_courante, nom_option_courante) {
 	$('log').insert('&nbsp;Int&eacute;gration de l\'option '+nom_option_courante+'...');
-	new Ajax.Request(urls['modifierg']+['index',pays,magazine,num_etape_courante,numero,nom_option_courante,valeurs_options[num_etape_courante][nom_option_courante],[numero,numero].join('/'),'Dimensions',false].join('/'), {
+	new Ajax.Request(urls['modifierg']+['index',pays,magazine,num_etape_courante,numero,nom_option_courante,valeurs_options[num_etape_courante][nom_option_courante],'Dimensions',false].join('/'), {
 		method: 'post',
-		onSuccess:function(transport) {
+		onSuccess:function() {
 			$('log').insert('OK<br />');
 			var option_trouvee=false;
 			for (var nom_option in options) {
@@ -61,7 +61,7 @@ function integrer_option(num_etape_courante, nom_option_courante) {
 					etape_trouvee=true;
 			}
 			
-			var parametrage=new Object();
+			var parametrage={};
 			var src=urls['viewer']+'/'+[numero,'1.5','all',JSON.stringify(parametrage),'save','false'].join('/')+'/'+username;
 			var image=new Element('img',{'id':'image'});
 			$('section_image').update(image);

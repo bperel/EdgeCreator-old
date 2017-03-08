@@ -19,12 +19,11 @@ function est_dans_intervalle(numero,intervalle) {
 		if (numero_debut === numero_fin) {
 			if (numero_debut == numero) {
 				trouve=true;
-				return;
 			}
 		}
 		else {
-			numero_debut_trouve=false;
-			for(numero_dispo in numeros_dispos) {
+			var numero_debut_trouve=false;
+			for (var numero_dispo in numeros_dispos) {
 				if (numero_dispo==numero_debut)
 					numero_debut_trouve=true;
 				if (numero_dispo==numero && numero_debut_trouve) {

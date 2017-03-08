@@ -133,7 +133,8 @@ class Modele_tranche extends CI_Model {
 		if (!$this->user_possede_modele($pays,$magazine,self::$username)) {
 			$options=$this->get_modeles_magazine($pays,$magazine);
 			foreach($options as $option) {
-				$this->insert($option->Pays,$option->Magazine,$option->Ordre,$option->Nom_fonction,$option->Option_nom,$option->Option_valeur,$option->Numero_debut,$option->Numero_fin,self::$username,null);
+				$this->insert($option->Pays, $option->Magazine, $option->Ordre, $option->Nom_fonction,
+                    $option->Option_nom, $option->Option_valeur, $option->Numero_debut, $option->Numero_fin, null);
 				
 			}
 		}
@@ -197,9 +198,7 @@ class Modele_tranche extends CI_Model {
 		$query = $this->db->query($requete);
 		$resultats=$query->result();
 			
-		foreach($resultats as $resultat) {
-			return $resultat->cpt;
-		}
+		return $resultats[0]->cpt;
 	}
 
 	function get_etapes_simple($pays,$magazine,$num_etape=null) {
@@ -262,7 +261,16 @@ class Modele_tranche extends CI_Model {
 		return new Fonction($resultat_tous_intervalles);
 	}
 
-	function get_options($pays,$magazine,$ordre,$nom_fonction,$numero=null,$creation=false,$inclure_infos_options=false, $nouvelle_etape=false, $nom_option=null) {
+	function get_options(
+        $pays,
+        $magazine,
+        $ordre,
+        $nom_fonction,
+        $numero = null,
+        $inclure_infos_options = false,
+        $nouvelle_etape = false,
+        $nom_option = null
+    ) {
 		$creation=false;
 		$resultats_options=new stdClass();
 		$requete='SELECT '.implode(', ', self::$fields).' '
@@ -348,7 +356,7 @@ class Modele_tranche extends CI_Model {
 		return $f->options;
 	}
 
-	function has_no_option($pays,$magazine,$etape) {
+	function has_no_option($pays, $magazine) {
 		$requete='SELECT Option_nom '
 				.'FROM edgecreator_modeles2 '
 				.'INNER JOIN edgecreator_valeurs ON edgecreator_modeles2.ID = edgecreator_valeurs.ID_Option '
@@ -402,7 +410,6 @@ class Modele_tranche extends CI_Model {
 		self::$numeros_dispos=$this->get_numeros_disponibles($pays, $magazine);
 		$numeros_disponibles=self::$numeros_dispos;
 		unset ($numeros_disponibles['Aucun']);
-		$etape=-1;
 		$requete_get_etapes='SELECT DISTINCT Ordre '
 							  .'FROM edgecreator_modeles2 '
 							  .'INNER JOIN edgecreator_valeurs ON edgecreator_modeles2.ID = edgecreator_valeurs.ID_Option '
@@ -632,7 +639,17 @@ class Modele_tranche extends CI_Model {
 		return $this->db->query($requete)->num_rows() > 0;
 	}
 	
-	function insert($pays,$magazine,$etape,$nom_fonction,$option_nom,$option_valeur,$numero_debut,$numero_fin,$username,$id_valeur=null) {
+	function insert(
+        $pays,
+        $magazine,
+        $etape,
+        $nom_fonction,
+        $option_nom,
+        $option_valeur,
+        $numero_debut,
+        $numero_fin,
+        $id_valeur = null
+    ) {
 		$option_nom=is_null($option_nom) ? 'NULL' : '\''.preg_replace("#([^\\\\])'#","$1\\'",$option_nom).'\'';
 		$option_valeur=is_null($option_valeur) ? 'NULL' : '\''.preg_replace("#([^\\\\])'#","$1\\'",$option_valeur).'\'';
 		
@@ -666,14 +683,15 @@ class Modele_tranche extends CI_Model {
 					  .'WHERE (Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Ordre LIKE \''.$ordre.'\' AND Nom_Fonction LIKE \''.$nom_fonction.'\' AND username LIKE \''.self::$username.'\')';
 		$this->db->query($requete_suppr);
 		echo $requete_suppr."\n";
-		$this->insert($pays,$magazine,$ordre,$nom_fonction,null,null,$numero_debut,$numero_fin,self::$username);
+		$this->insert($pays, $magazine, $ordre, $nom_fonction, null, null, $numero_debut, $numero_fin);
 		
 		foreach($parametrage as $option_nom_intervalle=>$option_valeur) {
 			$option_valeur=str_replace("'","\'",$option_valeur);
 			list($option_nom,$intervalle)=explode('.',$option_nom_intervalle);
 			list($numero_debut,$numero_fin)=explode('~',$intervalle);
 			
-			$this->insert($pays,$magazine,$ordre,$nom_fonction,$option_nom,$option_valeur,$numero_debut,$numero_fin,self::$username);
+			$this->insert($pays, $magazine, $ordre, $nom_fonction, $option_nom, $option_valeur, $numero_debut,
+                $numero_fin);
 		}
 	}
 
@@ -695,13 +713,14 @@ class Modele_tranche extends CI_Model {
 		if ($ordre_existe) {
 			return;
 		}
-		$this->insert($pays,$magazine,$ordre,$nom_fonction,null,null,$numero_debut,$numero_fin,self::$username);
+		$this->insert($pays, $magazine, $ordre, $nom_fonction, null, null, $numero_debut, $numero_fin);
 		foreach($parametrage as $option_nom_intervalle=>$option_valeur) {
 			$option_valeur=str_replace("'","\'",$option_valeur);
 			list($option_nom,$intervalle)=explode('.',$option_nom_intervalle);
 			list($numero_debut,$numero_fin)=explode('~',$intervalle);
 				
-			$this->insert($pays,$magazine,$ordre,$nom_fonction,$option_nom,$option_valeur,$numero_debut,$numero_fin,self::$username);
+			$this->insert($pays, $magazine, $ordre, $nom_fonction, $option_nom, $option_valeur, $numero_debut,
+                $numero_fin);
 			
 		}
 	}
@@ -738,11 +757,12 @@ class Modele_tranche extends CI_Model {
 	function insert_valeur_option($pays,$magazine,$etape,$nom_fonction,$option_nom,$valeur,$numero_debut,$numero_fin,$id_valeur=null) {
 		$valeur=mysql_real_escape_string($valeur);
 		if ($option_nom=='Actif') {
-			$this->insert($pays,$magazine,$etape,$nom_fonction,null,null,$numero_debut,$numero_fin,self::$username,$id_valeur);
+			$this->insert($pays, $magazine, $etape, $nom_fonction, null, null, $numero_debut, $numero_fin, $id_valeur);
 			
 		}
 		else
-			$this->insert($pays,$magazine,$etape,$nom_fonction,$option_nom,$valeur,$numero_debut,$numero_fin,self::$username,$id_valeur);
+			$this->insert($pays, $magazine, $etape, $nom_fonction, $option_nom, $valeur, $numero_debut, $numero_fin,
+                $id_valeur);
 	}
 	
 	function get_id_valeur_max() {
@@ -807,7 +827,7 @@ class Modele_tranche extends CI_Model {
 		return $fields;
 	}
 
-	function getRGB($pays,$magazine,$numero,$couleurs,$couleur_defaut=array(255,255,255)) {
+	function getRGB($couleurs) {
 		if (is_array($couleurs))
 			return $couleurs;
 		else {
@@ -887,7 +907,7 @@ class Modele_tranche extends CI_Model {
 			?><div id="ligne_<?=$id?>-" name="<?=$option_nom?>" class="ligne_option_intervalle"><table border="0"><tr><td style="width:30px"></td><td class="cellule_valeur largeur_standard"><?php
 			switch($type_donnee) {
 				case 'couleur':
-					list($r,$g,$b)=$this->getRGB(null,null,null, $valeur);
+					list($r,$g,$b)=$this->getRGB($valeur);
 					?><input id="<?=$id?>-" class="parametre color" value="<?=rgb2hex($r,$g,$b)?>" /><?php
 				break;
 				case 'fichier_ou_texte':
@@ -1519,7 +1539,7 @@ class Remplir extends Fonction_executable {
 		$this->options->Pos_y=z(self::toTemplatedString($this->options->Pos_y));
 		$this->verifier_erreurs();
 		$this->afficher_si_existant();
-		list($r,$g,$b)=$this->getRGB(Viewer_wizard::$pays,Viewer_wizard::$magazine,Viewer_wizard::$numero,$this->options->Couleur);
+		list($r,$g,$b)=$this->getRGB($this->options->Couleur);
 		$couleur=imagecolorallocate(Viewer_wizard::$image, $r,$g,$b);
 		imagefill(Viewer_wizard::$image, $this->options->Pos_x, $this->options->Pos_y, $couleur);
 		//imageline(Viewer_wizard::$image, $this->options->Pos_x, ($this->options->Pos_y-5), ($this->options->Pos_x+5), ($this->options->Pos_y+5), $couleur);
@@ -1626,8 +1646,8 @@ class TexteMyFonts extends Fonction_executable {
 			return;
 		$this->options->URL=str_replace('.','/',$this->options->URL);
 		$this->verifier_erreurs();
-		list($r,$g,$b)=$this->getRGB(null, null, null, $this->options->Couleur_fond);
-		list($r_texte,$g_texte,$b_texte)=$this->getRGB(null, null, null, $this->options->Couleur_texte);
+		list($r,$g,$b)=$this->getRGB($this->options->Couleur_fond);
+		list($r_texte,$g_texte,$b_texte)=$this->getRGB($this->options->Couleur_texte);
 
 		$this->options->Couleur_fond=rgb2hex($r, $g, $b);
 		$this->options->Couleur_texte=rgb2hex($r_texte,$g_texte,$b_texte);
@@ -1724,7 +1744,7 @@ class TexteTTF extends Fonction_executable {
 		if (!$executer)
 			return;
 		$this->options->Chaine=self::toTemplatedString($this->options->Chaine);
-		list($r,$g,$b)=$this->getRGB(Viewer_wizard::$pays,Viewer_wizard::$magazine,Viewer_wizard::$numero,$this->options->Couleur);
+		list($r,$g,$b)=$this->getRGB($this->options->Couleur);
 		$couleur_texte=imagecolorallocate(Viewer_wizard::$image, $r,$g,$b);
 		
 		$centrage_auto_x=$this->options->Pos_x == -1;
@@ -1789,7 +1809,7 @@ class Polygone extends Fonction_executable {
 		}
 		$args[]=$coord;
 		$args[]=count($this->options->X);
-		list($r,$g,$b)=$this->getRGB(null, null, null, $this->options->Couleur);
+		list($r,$g,$b)=$this->getRGB($this->options->Couleur);
 		$args[]=imagecolorallocate(Viewer_wizard::$image, $r,$g,$b);
 		call_user_func_array('imagefilledpolygon', $args);
 
@@ -1803,7 +1823,7 @@ class Agrafer extends Fonction_executable {
 	static $valeurs_defaut=array('Y1'=>'[Hauteur]*0.2','Y2'=>'[Hauteur]*0.8','Taille_agrafe'=>'[Hauteur]*0.05');
 	
 	static $descriptions=array('Y1'=>'Marge de la 1&egrave;re agrafe par rapport au haut de la tranche', 
-							   'Y1'=>'Marge de la 2&egrave;me agrafe par rapport au haut de la tranche', 
+							   'Y2'=>'Marge de la 2&egrave;me agrafe par rapport au haut de la tranche',
 							   'Taille_agrafe'=>'Hauteur de chaque agrafe');
 	
 	function __construct($options,$executer=true,$creation=false,$get_options_defaut=true) {
@@ -1842,8 +1862,8 @@ class Degrade extends Fonction_executable {
 		$this->options->Pos_x_fin=z(self::toTemplatedString($this->options->Pos_x_fin));
 		$this->options->Pos_y_debut=z(self::toTemplatedString($this->options->Pos_y_debut));
 		$this->options->Pos_y_fin=z(self::toTemplatedString($this->options->Pos_y_fin));
-		list($r1,$g1,$b1)=$this->getRGB(null, null, null, $this->options->Couleur_debut);
-		list($r2,$g2,$b2)=$this->getRGB(null, null, null, $this->options->Couleur_fin);
+		list($r1,$g1,$b1)=$this->getRGB($this->options->Couleur_debut);
+		list($r2,$g2,$b2)=$this->getRGB($this->options->Couleur_fin);
 		$couleur1=array($r1,$g1,$b1);
 		$couleur2=array($r2,$g2,$b2);
 		if ($this->options->Sens == 'Horizontal') {
@@ -1911,7 +1931,7 @@ class DegradeTrancheAgrafee extends Fonction_executable {
 		if (!$executer)
 			return;
 		$coef_degrade=1.75;
-		list($r1,$g1,$b1)=$this->getRGB(null, null, null, $this->options->Couleur);
+		list($r1,$g1,$b1)=$this->getRGB($this->options->Couleur);
 		list($r2,$g2,$b2)=array(round($r1/$coef_degrade),round($g1/$coef_degrade),round($b1/$coef_degrade));
 		$couleur1=array($r1,$g1,$b1);
 		$couleur2=array($r2,$g2,$b2);
@@ -1952,7 +1972,7 @@ class Rectangle extends Fonction_executable {
 		$this->options->Pos_y_debut=z(self::toTemplatedString($this->options->Pos_y_debut));
 		$this->options->Pos_y_fin=z(self::toTemplatedString($this->options->Pos_y_fin));
 
-		list($r,$g,$b)=$this->getRGB(null, null, null, $this->options->Couleur);
+		list($r,$g,$b)=$this->getRGB($this->options->Couleur);
 		$couleur=imagecolorallocate(Viewer_wizard::$image, $r, $g, $b);
 		if ($this->options->Rempli=='Oui')
 			imagefilledrectangle(Viewer_wizard::$image, $this->options->Pos_x_debut, $this->options->Pos_y_debut, $this->options->Pos_x_fin, $this->options->Pos_y_fin, $couleur);
@@ -1985,7 +2005,7 @@ class Arc_cercle extends Fonction_executable {
 		$this->options->Largeur=z(self::toTemplatedString($this->options->Largeur));
 		$this->options->Hauteur=z(self::toTemplatedString($this->options->Hauteur));
 
-		list($r,$g,$b)=$this->getRGB(null, null, null, $this->options->Couleur);
+		list($r,$g,$b)=$this->getRGB($this->options->Couleur);
 		$couleur=imagecolorallocate(Viewer_wizard::$image, $r, $g, $b);
 		if ($this->options->Rempli=='Oui')
 			imagefilledarc(Viewer_wizard::$image, $this->options->Pos_x_centre, $this->options->Pos_y_centre, $this->options->Largeur, $this->options->Hauteur, $this->options->Angle_debut, $this->options->Angle_fin, $couleur,IMG_ARC_PIE);
@@ -2131,9 +2151,6 @@ function decomposer_numero ($numero) {
 	if ($numero=='Tous') return array('Tous','Tous');
 	$regex_partie_numerique='#([A-Z]*)([0-9]*)#is';
 	preg_match($regex_partie_numerique, $numero,$resultat_numero_debut);
-	if (!array_key_exists(1, $resultat_numero_debut)) {
-		$a=1;
-	}
 	return array($resultat_numero_debut[1],$resultat_numero_debut[2]);
 }
 

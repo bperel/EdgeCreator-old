@@ -7,7 +7,7 @@ jQuery.fn.pluck = function(key) {
 };
 
 jQuery.fn.getElementsWithData = function(key,val) {
-  var data = new Array();
+  var data = [];
   this.each(function(i,element) {
     if (typeof(val) == 'undefined' || $(element).data(key) == val)
     	data.push($(element)[0]);
@@ -16,7 +16,7 @@ jQuery.fn.getElementsWithData = function(key,val) {
 };
 
 jQuery.fn.getData = function(key) {
-  var data = new Array();
+  var data = [];
   this.each(function(i,element) {
     data.push($(element).data(key));
   });
@@ -31,7 +31,7 @@ var colonne_ouverte=false;
 var valeurs_possibles_zoom = [1, 1.5, 2, 4, 6, 8];
 
 function element_to_numero(elements) {
-    var numeros=new Array();
+    var numeros=[];
     $.each(elements,function(index,element) {
         var id=$(element).attr('id');
         numeros.push(id.substring(id.lastIndexOf('_')+1,id.length));
@@ -56,8 +56,7 @@ function reload_observers_cells() {
           
           .mousemove(function() {
             if (first_cell != null) {
-                var element=$(this);
-                var this_cell=element;
+                var this_cell=$(this);
                 if (this_cell.prop('nodeType')=='DIV')
                     this_cell=this_cell.parent();
                 if (first_cell.prevAll().length == this_cell.prevAll().length) { // Meme colonne
@@ -66,22 +65,18 @@ function reload_observers_cells() {
             }
         });
     
-    $('.option_etape span').mouseover(function() {
-    	$(this).parent().children('.desc').removeClass('cache');
-    });
-    
-    $('.option_etape span').mouseout(function() {
-    	$(this).parent().children('.desc').addClass('cache');
-    });
+    $('.option_etape span')
+      .mouseover(function() {
+        $(this).parent().children('.desc').removeClass('cache');
+      })
+      .mouseout(function() {
+        $(this).parent().children('.desc').addClass('cache');
+      });
 
     $(window).mouseup(function() {
         $('.tmp').removeClass('tmp');
         first_cell=null;
     });
-}
-
-function reload_observers_options() {
-    $('.lien_option').unbind('click');
 }
 
 function reload_observers_etapes() {
@@ -256,7 +251,7 @@ function inserer_elements_coord() {
       .append($('<span>',{id:'Y'}));
 }
 
-var chargements=new Array();
+var chargements=[];
 var chargement_courant;
 var numero_chargement;
 
@@ -307,7 +302,7 @@ function preview_numero(element) {
                             td.addClass('fond_noir_inactive')
                               .attr({id:'fond_noir_'+num_etape,
                                      title:'Voir sous fond noir'})
-                              .click(function(event) {
+                              .click(function() {
                                 var element=$(this);
                                 var num_etape=element.data('etape');
                                 element.toggleClass('fond_noir_active').toggleClass('fond_noir_inactive');
@@ -327,11 +322,11 @@ function preview_numero(element) {
             }
             $('#contenu_'+onglet_sel.toLowerCase()).children('.previews:first').html(table);
             
-            chargements=new Array();
+            chargements=[];
             numero_chargement=numero;
             $.each($('.num_etape_preview'),function(index,td_num_etape) {
                 if ($(td_num_etape).hasClass('final')) {
-                	num_etape=new Array();
+                	num_etape=[];
                     $.each($('.num_etape_preview:not(.final)'),function(i,td) {
                     	num_etape.push($(td).data('etape'));
                     });
@@ -380,7 +375,7 @@ function preview_numero(element) {
                     switch(ligne) {
                         case 0:
                             td.addClass('reload')
-                              .click(function(event) {
+                              .click(function() {
                                 var numero=$(this).data('numero');
                                 reload_numero(numero);
                             });
@@ -407,7 +402,7 @@ function preview_numero(element) {
             $('#contenu_'+onglet_sel.toLowerCase()).children('.previews:first').html(table);
             
             numero_chargement=null;
-            chargements=new Array();
+            chargements=[];
             $.each($('.numero_preview'),function(index,td_numero) {
                 var numero=$(td_numero).data('numero');
                 chargements.push(numero.toString());
@@ -444,7 +439,7 @@ function fixer_regles(creer) {
 	
 	$('.regles').remove();
     decalage_regle=0;
-    positionsDepartRegles=new Array();
+    positionsDepartRegles=[];
     var div_regles=$('<div>').addClass('regles '+onglet_sel).css({'position':'absolute'});
     $('#body').append(div_regles);
     
@@ -475,7 +470,7 @@ function fixer_regles(creer) {
 
         div_regles.draggable({
             axis:'x',
-    		start:function(event,ui) { 
+    		start:function() {
     			drag_regle=true;
 			},
 			drag:function(event,ui) {
@@ -520,7 +515,7 @@ function reload_etape(num_etape,recharger_finale) {
     if ($(selecteur_cellules_preview).length == 2)
         recharger_finale=false;
     var num_etapes_final=$('.num_etape_preview:not(.final)').getData('etape');
-    chargements=new Array();
+    chargements=[];
     chargements[0]=num_etape;
     if (typeof(recharger_finale) == 'undefined' || recharger_finale)
         chargements.push(num_etapes_final);
@@ -530,7 +525,7 @@ function reload_etape(num_etape,recharger_finale) {
 
 function reload_numero(numero, est_externe) {
 	est_externe = est_externe || false;
-    chargements=new Array();
+    chargements=[];
     chargements.push(numero);
     chargement_courant=0;
     charger_previews_numeros(chargements[chargement_courant],true, est_externe);
@@ -538,7 +533,7 @@ function reload_numero(numero, est_externe) {
 
 function charger_previews_numeros(numero,est_visu,est_externe) {
     numero_chargement=numero;
-    var parametrage=new Object();
+    var parametrage={};
     var zoom_utilise= est_visu ? zoom : 1.5;
         
     $('#chargement').html('Chargement de la preview de la tranche');
@@ -725,7 +720,7 @@ function assistant_cellules_sel() {
         var liste_valeurs=$('<ul>');
 
         var texte_erreurs=new Array('Erreur : ');
-        var liste_valeurs_tab=new Array();
+        var liste_valeurs_tab=[];
         $.each($('td.selected'),function(index,td_sel) {
         	var valeur=$(td_sel).data('valeur_reelle') == null ? '[Non d&eacute;fini]' : $(td_sel).data('valeur_reelle');
         	if (liste_valeurs_tab.indexOf(valeur) == -1) {
@@ -786,7 +781,7 @@ function valider_modifier_valeur() {
     var nouvelle_valeur=get_nouvelle_valeur(nom_option).replace(/\\.','g/,'[pt]').replace(/\#/g,'');
     var est_nouvelle_fonction=etape_temporaire_to_definitive() ? 'true':'false';
     $.ajax({
-        url: urls['modifierg']+['index',pays,magazine,etape_en_cours,numeros.join('~'),nom_option,nouvelle_valeur,plage.join('/'),nom_nouvelle_fonction==null?'Dimensions':nom_nouvelle_fonction,est_nouvelle_fonction].join('/'),
+        url: urls['modifierg']+['index',pays,magazine,etape_en_cours,numeros.join('~'),nom_option,nouvelle_valeur,nom_nouvelle_fonction==null?'Dimensions':nom_nouvelle_fonction,est_nouvelle_fonction].join('/'),
         type: 'post',
         success:function(data) {
             if (typeof(data.erreur) !='undefined') {
@@ -814,7 +809,7 @@ function valider_modifier_valeur() {
             else {
                 if (numeros.indexOf($('#numero_preview').data('numero')) != -1 && recharger_etape) {
                     if (etape_en_cours == -1) {
-                    	chargements=new Array();
+                    	chargements=[];
                         $.each($('.num_etape_preview'),function(index,td_etape) {
                         	chargements.push(td_etape.data('etape'));
                         });
@@ -830,7 +825,7 @@ function valider_modifier_valeur() {
             etape_temporaire_to_definitive();
             
             if (recharger_etape) {
-                charger_etape(etape_en_cours, numeros, nom_option, true);
+                charger_etape(etape_en_cours, nom_option, true);
             }
             $('#modifier_valeur_ok').attr({'disabled':''});
         }
@@ -877,17 +872,7 @@ function etape_temporaire_to_definitive() {
     return false;
 }
 
-function sans_doublons(tab){
-    NvTab= new Array();
-    var q=0;
-    $.each(tab,function(i,x){
-        if (NvTab[q] && NvTab[q].data('valeur_reelle').indexOf(x.data('valeur_reelle')) == -1)
-            NvTab[q++]=x;
-    });
-    return NvTab;
-}
-
-var types_options=new Array();
+var types_options=[];
 types_options['Actif']='actif';
 
 function formater_valeur(td,nom_option,valeur) {
@@ -929,7 +914,7 @@ function formater_modifier_valeur(nom_option) {
                              .append('&nbsp;Etape active');
         return true;
     }
-    if ($('td.selected:not(.non_concerne').length > 0) { // Au moins un des numeros n'est pas defini pour cette etape
+    if ($('td.selected:not(.non_concerne)').length > 0) { // Au moins un des numeros n'est pas defini pour cette etape
         return false;
     }
     var premiere_valeur_sel=$('td.selected:first').data('valeur_reelle');
@@ -1005,7 +990,7 @@ function formater_modifier_valeur(nom_option) {
     return true;
 }
 
-function toggleSwitchables(ev) {
+function toggleSwitchables() {
     if (!$('valeur_modifiee').children('select:first').hasClass('cache') && !$('section_texte_variable').children('input:first').hasClass('cache'))
         $('#valeur_modifiee').children('select:first').addClass('cache');
     else
@@ -1025,8 +1010,7 @@ function get_nouvelle_valeur(nom_option) {
 }
 
 var valeurs_defaut_options;
-var etapes_utilisees=new Array();
-var etapes_valides=new Array();
+var etapes_valides=[];
 var etape_en_cours=null;
 
 var nb_lignes=null;
@@ -1039,8 +1023,6 @@ var image_supprimer=$('<img>',{title:'Supprimer l\'etape',
                     .addClass('supprimer_etape');
 
 var num_etape_avant_nouvelle=null;
-
-var parametres_helper=new Object();
 
 var onglet_sel='builder';
 
@@ -1072,7 +1054,7 @@ $(window).load(function() {
     $('#viewer').resizable({
         handles: 'e',
         minWidth: 200,
-        stop: function(event, ui) {
+        stop: function() {
         	$('#corps').css({'marginLeft':($(this).width()-200)+'px'});
         }
     });
@@ -1102,7 +1084,7 @@ $(window).load(function() {
                     .css({'float':'right'})
                     .html('Envoyer une image &agrave; EdgeCreator&nbsp;')
                     .append(toggle_iframe_upload);
-                lien_upload.click(function(event) {
+                lien_upload.click(function() {
                     if ($('#iframe_upload').length > 0) {
                         $('#iframe_upload').remove();
                         $('#toggle_iframe_upload').html('^');
@@ -1148,7 +1130,7 @@ $(window).load(function() {
             	var dernier_numero=get_onglet_courant().find('.numero_preview').last().html();
                
             	var numero=premier_numero;
-            	var chargements=new Array();
+            	var chargements=[];
             	do {
             		chargements.push(numero);
             		var ligne=$('#ligne_'+numero).next();
@@ -1188,7 +1170,7 @@ $(window).load(function() {
         });
         $('#save_pngs').click(function() {
             numero_chargement=null;
-            chargements=new Array();
+            chargements=[];
             $.each($('.numero_preview'),function(i,td_numero) {
                 var numero=$(td_numero).data('numero');
                 chargements.push(numero.toString());
@@ -1213,8 +1195,7 @@ $(window).load(function() {
 });
 
 function afficher_dialogue_contributeurs(callback) {
-	callback = callback || function() {};
-	
+  callback && callback();
 }
 
 function charger_liste_magazines(pays_sel) {
@@ -1379,7 +1360,7 @@ function charger_liste_numeros(magazine_sel) {
 				success:function(data) {
 					var etapes=data;
 					nb_lignes = $('#table_numeros').find('tr').length;
-					etapes_valides=new Array();
+					etapes_valides=[];
 					$.each($('#table_numeros tr:not(.ligne_entete)'),function(i,tr) {
 						for (var etape=0;etape<etapes.length;etape++) {
 							if (etapes[etape].Ordre == -1 || est_dans_intervalle($(tr).data('numero'), etapes[etape].Numero_debut+'~'+etapes[etape].Numero_fin)) {
@@ -1496,7 +1477,7 @@ function charger_etape_ligne (etape, tr, est_nouvelle) {
 
 var numero_a_cloner=null;
 
-function cloner_numero (ev) {
+function cloner_numero () {
     var numero = $(this).data('numero');
     if (numero_a_cloner == null) {
         numero_a_cloner=numero;
@@ -1505,17 +1486,16 @@ function cloner_numero (ev) {
     }
     else {
         $('#chargement').html('Clonage en cours...');
-        var nouveau_numero=numero;
         $.ajax({
-            url: urls['etendre']+['index',pays,magazine,numero_a_cloner,nouveau_numero].join('/'),
+            url: urls['etendre']+['index',pays,magazine,numero_a_cloner,numero].join('/'),
             type: 'post',
             success:function(data) {
                 if (typeof(data.erreur) !='undefined')
                     jqueryui_alert(data);
                 else
                     charger_liste_numeros(magazine);
-			},
-            failure:function(data) {
+			      },
+            failure:function() {
                 numero_a_cloner=null;
                 jqueryui_alert('Erreur');
             }
@@ -1538,9 +1518,9 @@ function fermer_etapes() {
     colonne_ouverte=false;
 }
 
-var descriptions_options=new Array();
+var descriptions_options=[];
 
-function charger_etape(num_etape, numeros_sel, nom_option_sel, recharger) {
+function charger_etape(num_etape, nom_option_sel, recharger) {
     recharger = typeof(recharger) != 'undefined';
     if ($('.ligne_noms_options').first().select('.option_etape').length > 0) {
         var est_etape_ouverte= num_etape == $('.etape_ouverte').first().data('etape');
@@ -1591,8 +1571,8 @@ function charger_etape(num_etape, numeros_sel, nom_option_sel, recharger) {
 
                 var i=0;
                 var contenu;
-                types_options=new Array();
-                valeurs_defaut_options=new Array();
+                types_options=[];
+                valeurs_defaut_options=[];
                 for (var option_nom in data) {
                     types_options[option_nom]=data[option_nom]['type'];
                     
@@ -1701,7 +1681,7 @@ function charger_helper(nom_helper, nom_div, nom_fonction) {
         url: base_url+'index.php/helper/index/'+nom_helper+'.html',
         type: 'post',
         data: 'nom_helper='+nom_helper,
-        failure:function(data) {
+        failure:function() {
             jqueryui_alert('Page de helper introuvable : '+nom_helper+'.html');
         },
         success:function(data) {
@@ -1736,7 +1716,7 @@ function charger_helper(nom_helper, nom_div, nom_fonction) {
                 });
             }
             if (est_dernier) {
-                var nouvelle_etape=new Object();
+                var nouvelle_etape={};
                 nouvelle_etape['Nom_fonction']=nom_fonction_fin[0].replace(/!/g,'');
                 nouvelle_etape['Numero_debut']='';
                 nouvelle_etape['Numero_fin']='';
@@ -1765,7 +1745,7 @@ function remplacer_caracteres_whatthefont() {
 }
 
 function jqueryui_alert_from_d(element, close_callback) {
-	close_callback = close_callback || function() {}
+	close_callback = close_callback || function() {};
 	jqueryui_alert(element.children(), element.attr("title"), close_callback);
 }
 
@@ -1851,7 +1831,7 @@ function logout() {
 	$.ajax({
         url: base_url+'index.php/edgecreatorg/logout',
         type: 'post',
-        success:function(data) {
+        success:function() {
         	location.reload();
         }
 	});

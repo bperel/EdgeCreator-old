@@ -92,7 +92,7 @@ $(function() {
 	});
 	$('#pas_de_photo_tranche').html($('#message-aucune-image-de-tranche .libelle').clone(true));
 
-	// Déplacement des objets
+	// Dï¿½placement des objets
 	$('body').on('keyup', function(e) {
 		// Don't scroll page
 		e.preventDefault();
@@ -201,7 +201,7 @@ function can_launch_wizard(id) {
 function launch_wizard(id, p) {
 	id_wizard_courant=id;
 
-	p = p || {}; // Paramètres de surcharge
+	p = p || {}; // Paramï¿½tres de surcharge
 	var buttons={},
 		dialogue = $('#'+id),
 		first 	 = dialogue.hasClass('first') 	  || (p.first 	  !== undefined	&& p.first),
@@ -230,7 +230,7 @@ function launch_wizard(id, p) {
 					var formData=$(this).find('form').serializeObject();
 					var panelOuvert = $('#wizard-ajout-etape .accordion').accordion('option','active');
 					switch(panelOuvert) {
-						case 0: // A partir de zéro
+						case 0: // A partir de zï¿½ro
 							$.ajax({
 								url: urls['insert_wizard']+['index',pays,magazine,numero,formData.pos,formData.etape,formData.nom_fonction].join('/'),
 								type: 'post',
@@ -489,7 +489,7 @@ function wizard_check(wizard_id) {
 								function(element) { return $(element).val(); }
 							);
 							if (numeros_invalides.length > 0) {
-								erreur='La tranche des numéros suivants est d&eacute;j&agrave; disponible ou en cours de conception : <br />' + numeros_invalides.join('<br />');
+								erreur='La tranche des numï¿½ros suivants est d&eacute;j&agrave; disponible ou en cours de conception : <br />' + numeros_invalides.join('<br />');
 							}
 						}
 						if (!erreur && wizard_id === 'wizard-modifier'
@@ -540,7 +540,7 @@ function wizard_check(wizard_id) {
 					if ($('.rectangle_selection_tranche:not(.template)').filter(function() {
 						return $(this).find('.intitule_magazine').length === 0;
 					}).length > 0) {
-						erreur='Vous n\'avez pas spécifié les numéros de toutes les zones de la photo.';
+						erreur='Vous n\'avez pas spï¿½cifiï¿½ les numï¿½ros de toutes les zones de la photo.';
 					}
 				break;
 				case 'wizard-modifier':
@@ -616,7 +616,7 @@ function wizard_init(wizard_id) {
 		event.preventDefault();
 	});
 
-	// Actions à l'initialisation de l'assistant
+	// Actions ï¿½ l'initialisation de l'assistant
 	switch(wizard_id) {
 		case 'wizard-1':
 			$('#selectionner_tranche_en_cours')
@@ -713,7 +713,7 @@ function wizard_init(wizard_id) {
 							maj_photo_principale(data.wizard_pays, data.wizard_magazine, data.wizard_numero, false);
 						}
 						else {
-							jqueryui_alert('Photo de tranche invalide : '+nom_fichier_rogne,'Création de modèle');
+							jqueryui_alert('Photo de tranche invalide : '+nom_fichier_rogne,'Crï¿½ation de modï¿½le');
 						}
 					}
 				);
@@ -835,7 +835,7 @@ function wizard_init(wizard_id) {
 			var dimensions_connues= get_option_wizard('wizard-1','choix') === 'to-wizard-conception';
 
 			if (dimensions_connues) {
-				creer_modele_tranche(pays,magazine,numero,true); // Création du modèle sans les dimensions (qui seront copiées du modèle non affecté)
+				creer_modele_tranche(pays,magazine,numero,true); // Crï¿½ation du modï¿½le sans les dimensions (qui seront copiï¿½es du modï¿½le non affectï¿½)
 				wizard_goto($('#'+id_wizard_courant), 'wizard-conception');
 			}
 			break;
@@ -858,7 +858,7 @@ function wizard_init(wizard_id) {
 					afficher_photo_tranche();
 				}
 			}
-			else { // Nouvelle tranche => paramétrage des dimensions, etc.
+			else { // Nouvelle tranche => paramï¿½trage des dimensions, etc.
 				if (get_option_wizard('wizard-creer-collection','choix_tranche') != undefined
 				 || get_option_wizard('wizard-creer-hors-collection','wizard_pays') != undefined) {
 					if (get_option_wizard('wizard-creer-collection','choix_tranche')!= undefined) {
@@ -875,7 +875,7 @@ function wizard_init(wizard_id) {
 
 					if (get_option_wizard('wizard-clonage','choix')=== undefined) { // S'il n'y a pas eu clonage, on ne connait pas les dimensions de la tranche
 
-						// Ajout du modèle de tranche et de la fonction Dimensions avec les paramètres par défaut
+						// Ajout du modï¿½le de tranche et de la fonction Dimensions avec les paramï¿½tres par dï¿½faut
 						var dimension_x = get_option_wizard('wizard-dimensions','Dimension_x');
 						var dimension_y = get_option_wizard('wizard-dimensions','Dimension_y');
 						creer_modele_tranche(pays, magazine, numero, true, dimension_x, dimension_y);
@@ -914,7 +914,7 @@ function wizard_init(wizard_id) {
 			wizard.dialog().dialog('option','position',['right','top']);
 			wizard.parent().css({'left':(wizard.parent().offset().left-LARGEUR_DIALOG_TRANCHE_FINALE-20)+'px'});
 
-			$.ajax({ // Numéros d'étapes
+			$.ajax({ // Numï¿½ros d'ï¿½tapes
 				url: urls['parametrageg_wizard']+['index',pays,magazine,numero,'null'].join('/'),
 				type: 'post',
 				dataType: 'json',
@@ -935,7 +935,7 @@ function wizard_init(wizard_id) {
 
 					charger_couleurs_frequentes();
 
-					$.ajax({ // Détails des étapes
+					$.ajax({ // Dï¿½tails des ï¿½tapes
 						url: urls['parametrageg_wizard']+['index',pays,magazine,numero,-1,'null'].join('/'),
 						type: 'post',
 						dataType:'json',
@@ -1023,7 +1023,7 @@ function wizard_init(wizard_id) {
 								position: ['right','top'],
 								closeOnEscape: false,
 								modal: false,
-								open:function(event,ui) {
+								open:function(ui) {
 									$(this).removeClass('initial').addClass('final');
 									$(this).data('etape','finale');
 									$(this).d().addClass('dialog-preview-etape finale')
@@ -1300,7 +1300,7 @@ function afficher_tranches_proches(pays, magazine, numeros, est_contexte_clonage
 					numero_selectionne_trouve=true;
 				}
 				else if (est_tranche_prete) {
-					// On arrête après 5x2 tranches similaires + le nouveau numéro
+					// On arrï¿½te aprï¿½s 5x2 tranches similaires + le nouveau numï¿½ro
 					if (!numero_selectionne_trouve || tranches_affichees.length < NB_MAX_TRANCHES_SIMILAIRES_PROPOSEES*2 + 1) {
 						tranches_pretes.push(numero_existant);
 						tranches_affichees.push(numero_existant);
@@ -1310,7 +1310,7 @@ function afficher_tranches_proches(pays, magazine, numeros, est_contexte_clonage
 		}
 
 		if (!numero_selectionne_trouve) {
-			// Entrer ici signifie qu'il n'y a pas de tranches prêtes après le numéro sélectionné
+			// Entrer ici signifie qu'il n'y a pas de tranches prï¿½tes aprï¿½s le numï¿½ro sï¿½lectionnï¿½
 			tranches_affichees = limiter_tranches_pretes_parmi_tranches_affichees(tranches_affichees, tranches_pretes, false);
 		}
 
@@ -1325,7 +1325,7 @@ function afficher_tranches_proches(pays, magazine, numeros, est_contexte_clonage
 			return;
 		}
 
-		if (est_contexte_clonage) { // Filtrage des tranches qui sont prêtes mais sans modèle
+		if (est_contexte_clonage) { // Filtrage des tranches qui sont prï¿½tes mais sans modï¿½le
 			var tranches_clonables = $.ajax({
 				url: urls['cloner']+['est_clonable',pays,magazine,tranches_affichees.join(',')].join('/'),
 				type: 'post',
@@ -1361,7 +1361,7 @@ function afficher_tranches_proches(pays, magazine, numeros, est_contexte_clonage
 			var td_tranche=$('<td>').data('numero',numero_tranche_affichee);
 			var td_numero= $('<td>').addClass('libelle_numero').data('numero',numero_tranche_affichee);
 			var td_radio = $('<td>');
-			ligne_tranches_affichees.append(td_tranche); // On insère ce <td> avant les autres pour qu'il soit trouvé par le chargeur d'image
+			ligne_tranches_affichees.append(td_tranche); // On insï¿½re ce <td> avant les autres pour qu'il soit trouvï¿½ par le chargeur d'image
 			if (numeros.indexOf(numero_tranche_affichee) !== -1) {
 				td_numero.append($('<b>').html('n&deg;'+numero_tranche_affichee+'<br />(nouvelle tranche)'));
 				if (!est_contexte_clonage) { // Contexte validation de tranche
@@ -1464,7 +1464,7 @@ function ajouter_preview_etape(num_etape, nom_fonction) {
 		position: [posX,0],
 		closeOnEscape: false,
 		modal: false,
-		open:function(event,ui) {
+		open:function(ui) {
 			$(this).removeClass('initial');
 			$(this).data('etape',num_etape);
 			$(this).d().addClass('dialog-preview-etape')
@@ -1520,7 +1520,7 @@ function ajouter_preview_etape(num_etape, nom_fonction) {
 
 function charger_previews(forcer_placement_dialogues) {
 	forcer_placement_dialogues = forcer_placement_dialogues || false;
-	chargements.push('final'); // On ajoute l'étape finale
+	chargements.push('final'); // On ajoute l'ï¿½tape finale
 
 	numero_chargement=numero;
 	chargement_courant=0;
@@ -1591,7 +1591,7 @@ function fermer_dialogue_preview(dialogue) {
 
 function placer_dialogues_preview() {
 	var dialogues=$('.dialog-preview-etape').add($('#wizard-conception').d());
-	dialogues.sort(function(dialogue1,dialogue2) { // Triés par numéro d'étape, de droite à gauche
+	dialogues.sort(function(dialogue1,dialogue2) { // Triï¿½s par numï¿½ro d'ï¿½tape, de droite ï¿½ gauche
 		return $(dialogue2).data('etape') == 'finale' ? 1 : $(dialogue2).data('etape') - $(dialogue1).data('etape');
 	});
 	var min_marge_gauche=0;
@@ -1618,10 +1618,10 @@ function placer_dialogues_preview() {
 	$('.ajout_etape:not(.template)').remove();
 
 	dialogues=$('.dialog-preview-etape:not(.finale)').d();
-	if (dialogues.length == 0) { // Aucune étape n'existe. On créé avec le dialogue de conception pour référence
+	if (dialogues.length == 0) { // Aucune ï¿½tape n'existe. On crï¿½ï¿½ avec le dialogue de conception pour rï¿½fï¿½rence
 		dialogues=$('#wizard-conception').d();
 	}
-	dialogues.sort(function(dialogue1,dialogue2) { // Triés par offset gauche, de droite à gauche
+	dialogues.sort(function(dialogue1,dialogue2) { // Triï¿½s par offset gauche, de droite ï¿½ gauche
 		return $(dialogue2).offset().left - $(dialogue1).offset().left;
 	});
 	$.each(dialogues,function(i,dialogue) {
@@ -1629,7 +1629,7 @@ function placer_dialogues_preview() {
 		var estDialogueConception = elDialogue.data('etape') === undefined;
 		if (estDialogueConception) { // Dialogue de conception
 			var etape = -1;
-			var positions = ['apres']; // L'étape sera positionnée après l'étape -1 (=dimensions de tranche)
+			var positions = ['apres']; // L'ï¿½tape sera positionnï¿½e aprï¿½s l'ï¿½tape -1 (=dimensions de tranche)
 		}
 		else {
 			var etape = parseInt(elDialogue.data('etape'));
@@ -1991,7 +1991,7 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 
 			form_userfriendly.find('.accordion').accordion({
 				active: 0,
-				activate:function(event,ui) {
+				activate:function(ui) {
 					var section_active_integration=$(this).find('.ui-accordion-content-active').hasClass('finition_texte_genere');
 					if (section_active_integration) {
 						generer_et_positionner_preview_myfonts(false,true,false);
@@ -2205,15 +2205,12 @@ function positionner_image(preview) {
 	}
 	else {
 		pos_y=image.position().top +parseFloat(valeurs['Decalage_y'])*zoom;
-		if (valeurs['Mesure_depuis_haut'] == 'Non') { // Le pos_y est mesuré entre le haut de la tranche et le bas du texte
+		if (valeurs['Mesure_depuis_haut'] == 'Non') { // Le pos_y est mesurï¿½ entre le haut de la tranche et le bas du texte
 			pos_y-=parseFloat(hauteur);
 		}
 	}
 
-	var limites_drag=[(image.offset().left-parseFloat(largeur)),
-					  (image.offset().top -parseFloat(hauteur)),
-					  (image.offset().left+image.width()),
-					  (image.offset().top +image.height())];
+
 
 	if (position_image.hasClass('ui-resizable')) {
 		position_image.resizable('destroy');
@@ -2290,11 +2287,11 @@ function coloriser_rectangles_degrades(c1) {
 
 function coloriser_rectangle_degrade(element,couleur1,couleur2, sens) {
 	sens = sens || 'Horizontal';
-	if (couleur1 == null) {// On garde la même couleur
+	if (couleur1 == null) {// On garde la mï¿½me couleur
 		var regex=/, from\(((?:(?!\),).)+)/g;
 		couleur1 = element.css('background').match(regex)[0].replace(regex,'$1');
 	}
-	if (couleur2 == null) {// On garde la même couleur
+	if (couleur2 == null) {// On garde la mï¿½me couleur
 		var regex = /, to\(((?:(?!\)\) ).)+)/g;
 		couleur2 = element.css('background').match(regex)[0].replace(regex,'$1');
 	}
@@ -2605,14 +2602,11 @@ function generer_et_positionner_preview_myfonts(gen_preview_proprietes, gen_prev
 
 		var pos_x=image.position().left+parseFloat(valeurs['Pos_x'])*zoom;
 		var pos_y=image.position().top +parseFloat(valeurs['Pos_y'])*zoom;
-		if (valeurs['Mesure_depuis_haut'] == 'Non') { // Le pos_y est mesuré entre le haut de la tranche et le bas du texte
+		if (valeurs['Mesure_depuis_haut'] == 'Non') { // Le pos_y est mesurï¿½ entre le haut de la tranche et le bas du texte
 			pos_y-=parseFloat(hauteur);
 		}
 
-		var limites_drag=[(image.offset().left-parseFloat(largeur)),
-						  (image.offset().top -parseFloat(hauteur)),
-						  (image.offset().left+image.width()),
-						  (image.offset().top +image.height())];
+
 		position_texte.css({'left':pos_x+'px',
 							'top': pos_y+'px',
 							'width':largeur+'px',
@@ -2681,7 +2675,7 @@ function reload_all_previews() {
 }
 
 function charger_couleurs_frequentes() {
-	$.ajax({ // Couleurs utilisées dans l'ensemble des étapes de la conception de tranche
+	$.ajax({ // Couleurs utilisï¿½es dans l'ensemble des ï¿½tapes de la conception de tranche
 		url: urls['couleurs_frequentes']+['index',pays,magazine,numero].join('/'),
 		type: 'post',
 		dataType:'json',
@@ -2939,7 +2933,7 @@ function creer_modele_tranche(pays, magazine, numero, with_user, dimension_x, di
 	});
 
 	if (dimension_x) {
-		// Mise à jour de la fonction Dimensions avec les valeurs entrées
+		// Mise ï¿½ jour de la fonction Dimensions avec les valeurs entrï¿½es
 		var parametrage_dimensions =  'Dimension_x='+dimension_x +'&Dimension_y='+dimension_y;
 		$.ajax({
 			url: urls['update_wizard']+['index',pays,magazine,numero,-1,parametrage_dimensions,with_user].join('/'),
@@ -2987,7 +2981,7 @@ function set_option_wizard(id_wizard, nom_option, valeur) {
 
 
 function toFloat2Decimals(floatVal) {
-	return new String(floatVal).replace(/([0-9]+)(\.[0-9]{0,2})?.*/g,'$1$2');
+	return String(floatVal).replace(/([0-9]+)(\.[0-9]{0,2})?.*/g,'$1$2');
 }
 
 function init_action_bar() {
@@ -3165,7 +3159,7 @@ function prepublier_depublier(prepublier, btn, data, nom_image_temp) {
     });
 }
 
-function surveiller_selection_jrac(event, $viewport) {
+function surveiller_selection_jrac($viewport) {
 	var crop_inconsistent_element=$(this).d().find('.error.crop_inconsistent');
 	if ($viewport.observator.crop_consistent())
 		crop_inconsistent_element.addClass('cache');
@@ -3206,7 +3200,7 @@ function templatedToVal(templatedString) {
 						templatedString=templatedString.replace(regex, dimensions[axe]);
 				break;
 				case 'caracteres_speciaux':
-					templatedString=templatedString.replace(/Â°/,'°');
+					templatedString=templatedString.replace(/Â°/,'ï¿½');
 				break;
 
 			}
@@ -3253,7 +3247,7 @@ function rgb2hex(r, g, b) {
 	var hex = "";
 	var rgb = [r, g, b];
 	for (var i = 0; i < 3; i++) {
-		tmp = parseInt(rgb[i], 10).toString(16);
+		var tmp = parseInt(rgb[i], 10).toString(16);
 		if (tmp.length < 2)
 			hex += "0" + tmp;
 		else

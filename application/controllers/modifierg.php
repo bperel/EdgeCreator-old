@@ -7,7 +7,7 @@ class ModifierG extends EC_Controller {
 	static $nom_option;
 	static $nouvelle_valeur;
 	
-	function index($pays=null,$magazine=null,$etape=null,$numeros,$nom_option,$nouvelle_valeur, $debut_plage,$fin_plage, $nom_nouvelle_fonction=null, $est_etape_temporaire=false) {
+	function index($pays=null,$magazine=null,$etape=null,$numeros,$nom_option,$nouvelle_valeur, $nom_nouvelle_fonction=null, $est_etape_temporaire=false) {
 		try {
 			$est_etape_temporaire=$est_etape_temporaire === 'true';
 			$nouvelle_valeur=$nouvelle_valeur=='null' ? null : str_replace('[pt]','.',urldecode($nouvelle_valeur));
@@ -49,7 +49,8 @@ class ModifierG extends EC_Controller {
 			$valeurs=array();
 			$fonction=$this->Modele_tranche->get_fonction(self::$pays,self::$magazine,self::$etape);
 			if (!is_null($fonction)) {
-				$options=$this->Modele_tranche->get_options(self::$pays,self::$magazine,self::$etape,$fonction->Nom_fonction);
+				$options=$this->Modele_tranche->get_options(self::$pays, self::$magazine, self::$etape,
+                    $fonction->Nom_fonction);
 	
 				if ($nom_option == 'Actif') {
 					$intervalles=array();
