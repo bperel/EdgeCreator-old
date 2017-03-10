@@ -3,14 +3,9 @@ header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Headers: X-Requested-With, Content-Type');
 
 $no_database=true; // Ne pas utiliser les paramètres de connexion classiques
-include_once(BASEPATH.'/../../Inducks.class.php');
-Inducks::$use_local_db=true;//strpos($_SERVER['SERVER_ADDR'],'localhost') === false && strpos($_SERVER['SERVER_ADDR'],'127.0.0.1') === false;
-		
-class Modele_tranche extends CI_Model {
-    static $servers_file='servers.ini';
-	static $coa_server = null;
-	static $dm_server = null;
+include_once(BASEPATH.'/../application/helpers/dm_client.php');
 
+class Modele_tranche extends CI_Model {
 	static $just_connected;
 	static $id_session;
 	static $pays;
@@ -40,7 +35,7 @@ class Modele_tranche extends CI_Model {
 	}
 	
 	function requete_select_dm($requete) {
-		return Inducks::requete_select($requete, ServeurDb::$nom_db_DM,'ducksmanager.net');
+		return DmClient::get_query_results_from_remote(DmClient::$dm_server, $requete);
 	}
 	
 	function get_privilege() {
@@ -486,11 +481,11 @@ class Modele_tranche extends CI_Model {
 	}
 	
 	function get_pays() {
-		return Inducks::get_pays();
+		return DmClient::get_service_results(DmClient::$coa_server, 'GET','/coa/list/countries', []);
 	}
 	
 	function get_magazines($pays) {
-		return Inducks::get_liste_magazines($pays);
+        return DmClient::get_service_results(DmClient::$coa_server, 'GET','/coa/list/publications', [$pays]);
 	}
 	
 	function get_createurs_tranche($pays, $magazine, $numero) {
@@ -600,6 +595,8 @@ class Modele_tranche extends CI_Model {
 		if ($get_prets) {
 			$tranches_pretes=array();
 		}
+
+		// TODO
 		$numeros=Inducks::get_numeros($pays, $magazine, "numeros_et_createurs_tranche", true);
 		$id_user=$this->username_to_id(self::$username);
 		if (count(self::$utilisateurs) == 0) {
@@ -1494,89 +1491,6 @@ class Fonction_executable extends Fonction {
 		if (!$actif) return true;
 		return $str;
 	}
-
-    static function initCoaServers() {
-        self::$coa_server = null;
-        self::$dm_server = null;
-        $servers = parse_ini_file(self::$servers_file, true);
-        foreach($servers as $name=>$server) {
-            $serverObject = json_decode(json_encode($server));
-            if (isset($serverObject->role_passwords)) {
-                $roles = [];
-                array_walk($serverObject->role_passwords, function($role) use (&$roles) {
-                    list($roleName, $rolePassword) = explode(':', $role);
-                    $roles[$roleName] = $rolePassword;
-                });
-                $serverObject->role_passwords = $roles;
-            }
-            if ($serverObject->complete_coa_tables) {
-                self::$coa_server = $serverObject;
-            }
-            else {
-                self::$dm_server = $serverObject;
-            }
-        }
-    }
-
-    static function get_query_results_from_remote($server, $query) {
-		if (is_null(self::$coa_server)) {
-            self::initCoaServers();
-		}
-        $parameters = [
-            'query' => $query,
-            'db' => 'edgecreator'
-        ];
-        return self::get_service_results($server === 'coa' ? self::$coa_server : self::$dm_server, 'POST', '/rawsql', 'rawsql', $parameters);
-    }
-
-    /**
-     * @param stdClass $coaServer
-     * @param $method
-     * @param $path
-     * @param string $role
-     * @param array $parameters
-     * @return mixed|null
-     */
-    public static function get_service_results($coaServer, $method, $path, $role, $parameters = [])
-    {
-        $ch = curl_init();
-        $url = $coaServer->url . '/' . $coaServer->web_root . $path;
-
-        switch($method) {
-            case 'POST':
-                curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($parameters));
-                break;
-            case 'GET':
-                if (count($parameters) > 0) {
-                    $url .= '/' . implode('/', $parameters);
-                }
-                break;
-        }
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_POST, $method === 'POST');
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-        $headers = [
-            'Authorization: Basic ' . base64_encode(implode(':', [$role, $coaServer->role_passwords[$role]])),
-            'Content-Type: application/x-www-form-urlencoded',
-            'Cache-Control: no-cache',
-            'x-dm-version: 1.0',
-        ];
-
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-
-        $buffer = curl_exec($ch);
-        $responseCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
-
-        if (!empty($buffer) && $responseCode >= 200 && $responseCode < 300) {
-            $results = json_decode($buffer, true);
-            if (is_array($results)) {
-                return $results;
-            }
-        }
-        return [];
-    }
 
 }
 

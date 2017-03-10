@@ -1,8 +1,6 @@
 <?php
-include_once(BASEPATH.'/../../Inducks.class.php');
 include_once(BASEPATH.'/../application/models/modele_tranche.php');
-Inducks::$use_local_db=true;//strpos($_SERVER['SERVER_ADDR'],'localhost') === false && strpos($_SERVER['SERVER_ADDR'],'127.0.0.1') === false;
-		
+
 class Modele_tranche_Wizard extends Modele_tranche {
 	static $content_fields;
 	static $numero;
@@ -27,8 +25,12 @@ class Modele_tranche_Wizard extends Modele_tranche {
 			if (!in_array($resultat->Pays,$liste_pays))
 				$liste_pays[]=$resultat->Pays;
 		}
-		
-		$noms_pays = Inducks::get_pays();
+
+		// TODO
+        $noms_pays = DmClient::get_service_results(DmClient::$coa_server, 'GET','/coa/list/countries', []);
+        $noms_magazines = DmClient::get_service_results(DmClient::$coa_server, 'GET','/coa/list/publications', [$pays]);
+
+        $noms_pays = Inducks::get_pays();
 		foreach($liste_pays as $pays) {
 			$noms_magazines=Inducks::get_liste_magazines($pays);
 			foreach($resultats as $resultat) {
@@ -378,15 +380,19 @@ class Modele_tranche_Wizard extends Modele_tranche {
 
 		$resultats = $this->requete_select_dm($requete);
 		
+		$country_codes=array();
 		$publication_codes=array();
 		foreach($resultats as $resultat) {
+            $country_codes[]=$resultat['Pays'];
 			$publication_codes[]=$resultat['Pays'].'/'.$resultat['Magazine'];
 		}
-		list($noms_pays,$noms_magazines) = Inducks::get_noms_complets($publication_codes);
-		
-		foreach($resultats as $i=>$resultat) {
-			$resultats[$i]['Magazine_complet'] = $noms_magazines[$resultat['Pays'].'/'.$resultat['Magazine']]
-												.' ('.$noms_pays[$resultat['Pays']].')';
+
+        $noms_pays = DmClient::get_service_results(DmClient::$coa_server, 'GET','/coa/list/countries', [$country_codes]);
+        $noms_magazines = DmClient::get_service_results(DmClient::$coa_server, 'GET','/coa/list/publications', [$publication_codes]);
+
+		foreach($resultats as &$resultat) {
+			$resultat['Magazine_complet'] = $noms_magazines[$resultat['Pays'].'/'.$resultat['Magazine']]
+                                        .' ('.$noms_pays[$resultat['Pays']].')';
 		}
 		
 		return $resultats;

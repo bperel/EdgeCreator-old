@@ -32,9 +32,10 @@ class Numerosdispos extends EC_Controller {
 			list($numeros_dispos,$tranches_pretes)=$this->Modele_tranche->get_numeros_disponibles($pays,$magazine,true);
 
 			$nb_etapes=$this->Modele_tranche->get_nb_etapes($pays,$magazine);
-	
-			list($noms_complets_pays, $noms_complets_magazines) = Inducks::get_noms_complets(array($pays.'/'.$magazine));
-						
+
+            $noms_complets_pays = DmClient::get_service_results(DmClient::$coa_server, 'GET','/coa/list/countries', [$pays]);
+			$noms_complets_magazines = DmClient::get_service_results(DmClient::$coa_server, 'GET','/coa/list/publications', [$pays.'/'.$magazine]);
+
 			$data['numeros_dispos']=$numeros_dispos;
 			$data['tranches_pretes']=$tranches_pretes;
 			$data['nb_etapes']=$nb_etapes;
