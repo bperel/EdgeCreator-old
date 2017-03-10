@@ -14,7 +14,7 @@ class DmClient
     {
         self::$coa_server = null;
         self::$dm_server = null;
-        $servers = parse_ini_file(self::$servers_file, true);
+        $servers = parse_ini_file(BASEPATH.'../application/config/'.self::$servers_file, true);
         foreach ($servers as $name => $server) {
             $serverObject = json_decode(json_encode($server));
             if (isset($serverObject->role_passwords)) {
@@ -42,15 +42,21 @@ class DmClient
     {
         $db = $server === DmClient::$dm_server ? 'db301759616' : 'edgecreator';
 
-        if (is_null(self::$coa_server)) {
-            self::initCoaServers();
-        }
-
-        if ($server === self::$dm_server) {
-            return self::get_secured_page($server, 'sql.php?db=' . $db . '&req=' . urlencode($query));
+        if ($server === DmClient::$dm_server) {
+            $output = self::get_secured_page(self::$dm_server, 'sql.php?db=' . $db . '&req=' . urlencode($query));
+            $unserialized = @unserialize($output);
+            if (is_array($unserialized)) {
+                list($champs,$resultats) = $unserialized;
+                foreach($champs as $i_champ=>$nom_champ) {
+                    foreach($resultats as $i=>$resultat) {
+                        $resultats[$i][$nom_champ]=$resultat[$nom_champ];
+                    }
+                }
+                return $resultats;
+            }
         }
         else {
-            return self::get_service_results($server, 'POST', '/rawsql', [
+            return self::get_service_results(self::$coa_server, 'POST', '/rawsql', [
                 'query' => $query,
                 'db' => $db
             ]);
@@ -74,7 +80,7 @@ class DmClient
     }
 
     private static function get_secured_page(stdClass $dmServer, $url) {
-        return self::get_page(implode('/', ['http://'.$dmServer->url, $dmServer->web_root, $url.'&mdp='.sha1($dmServer->db_password)]));
+        return self::get_page(implode('/', ['http://'.$dmServer->ip, $dmServer->web_root, $url.'&mdp='.sha1($dmServer->db_password)]));
     }
 
     /**
@@ -88,7 +94,7 @@ class DmClient
     {
         $role = 'rawsql';
         $ch = curl_init();
-        $url = 'http://'.$server->url . '/' . $server->web_root . $path;
+        $url = 'http://'.$server->ip . '/' . $server->web_root . $path;
 
         switch ($method) {
             case 'POST':

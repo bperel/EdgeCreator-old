@@ -2,9 +2,6 @@
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Headers: X-Requested-With, Content-Type');
 
-$no_database=true; // Ne pas utiliser les paramètres de connexion classiques
-include_once(BASEPATH.'/../application/helpers/dm_client.php');
-
 class Modele_tranche extends CI_Model {
 	static $just_connected;
 	static $id_session;
@@ -72,8 +69,7 @@ class Modele_tranche extends CI_Model {
 	}
 	
 	function user_connects($user,$pass) {
-		$user=mysql_real_escape_string($user);
-		$pass=mysql_real_escape_string(sha1($pass));
+		$pass=sha1($pass);
 		global $erreur;
 		if (!$this->user_exists($user)) {
 			$erreur = 'Cet utilisateur n\'existe pas';
