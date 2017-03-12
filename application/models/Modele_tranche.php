@@ -483,6 +483,10 @@ class Modele_tranche extends CI_Model {
 	function get_magazines($pays) {
         return DmClient::get_service_results(DmClient::$coa_server, 'GET','/coa/list/publications', [$pays]);
 	}
+
+	function get_numeros($publicationcode) {
+        return DmClient::get_service_results(DmClient::$coa_server, 'GET','/coa/list/issues', [$publicationcode]);
+	}
 	
 	function get_createurs_tranche($pays, $magazine, $numero) {
 		$createurs_tranche_edgecreator_v1 = $this->get_createurs_tranche_edgecreator_v1($pays, $magazine, $numero);
@@ -586,49 +590,60 @@ class Modele_tranche extends CI_Model {
 	function get_numeros_disponibles($pays,$magazine,$get_prets=false) {
 		self::$pays = $pays;
 		self::$magazine = $magazine;
-		
-		$numeros_affiches=array('Aucun'=>'Aucun');
-		if ($get_prets) {
-			$tranches_pretes=array();
-		}
 
-		// TODO
-		$numeros=Inducks::get_numeros($pays, $magazine, "numeros_et_createurs_tranche", true);
-		$id_user=$this->username_to_id(self::$username);
-		if (count(self::$utilisateurs) == 0) {
-			self::setUtilisateurs();
-		}
-		foreach($numeros as $numero) {
-			$numero_affiche=$numero['issuenumber'];
-			$numeros_affiches[$numero_affiche]=$numero_affiche;
+        $id_user=$this->username_to_id(self::$username);
+        if (count(self::$utilisateurs) == 0) {
+            self::setUtilisateurs();
+        }
 
-			if ($get_prets && !is_null($numero['contributeurs'])) {
-				if ($numero['en_cours'] == 1) {
-					$tranches_pretes[$numero_affiche]='en_cours';
-				}
-				else {
-					$id_createur = array_search($numero['contributeurs'], self::$utilisateurs);
-					$tranches_pretes[$numero_affiche]=$id_createur == $id_user ? 'par_moi' : 'global';
-				}
+        $numeros = self::get_numeros($pays.'/'.$magazine);
+
+        $numeros_affiches=array('Aucun'=>'Aucun');
+        foreach($numeros as $numero) {
+            $numeros_affiches[$numero['issuenumber']] = $numero['issuenumber'];
+        }
+
+        if ($get_prets) {
+            $tranches_pretes = array();
+
+            $liste_numeros = implode(',', array_map(function ($numero) {
+                return "'" . $numero . "'";
+            }, $numeros));
+
+            // TODO chunks
+            $requete_creations = "
+				SELECT CONCAT(modeles.Pays,'/', modeles.Magazine) AS issuenumber, modeles.username contributeurs, IF(modeles.Active=0, 1, 0) en_cours
+				FROM tranches_en_cours_modeles modeles 
+				WHERE CONCAT(modeles.Pays,'/', modeles.Magazine) IN ($liste_numeros)";
+
+            $resultats_requete_creations = $this->requete_select_dm($requete_creations);
+
+            $resultats_requete_creations = array_combine(array_map(function($creation) {
+                return $creation['issuenumber'];
+            }, $resultats_requete_creations), $resultats_requete_creations);
+
+            foreach ($numeros as $numero) {
+                if (!empty($tranche_en_cours = $resultats_requete_creations[$numero['issuenumber']])) {
+                    $tranches_pretes[$numero['issuenumber']] = 'en_cours';
+                }
+            }
+
+			$requete_get_pretes = "
+				SELECT tp.issuenumber, IF(tp_c.contributeur IS NULL,'global','par_moi') AS type_contributeur
+				FROM tranches_pretes tp
+				LEFT JOIN tranches_pretes_contributeurs tp_c USING(publicationcode, issuenumber)
+				WHERE tp.publicationcode = '$pays/$magazine' AND tp_c.contribution = 'createur' AND tp_c.contributeur=$id_user";
+			$resultat_get_pretes = $this->requete_select_dm($requete_get_pretes);
+
+			foreach ($resultat_get_pretes as $tranche_prete) {
+				$tranches_pretes[$tranche_prete['issuenumber']] = $tranche_prete['type_contributeur'];
 			}
-		}
-		if ($get_prets) {
-			$requete_get_prets='SELECT issuenumber, createurs FROM tranches_pretes '
-							  .'WHERE publicationcode = \''.$pays.'/'.$magazine.'\'';
-			$resultat_get_prets=$this->requete_select_dm($requete_get_prets);
-			
-			foreach($resultat_get_prets as $tranche_prete) {
-				$createurs=explode(';',$tranche_prete['createurs']);
-				$ids_createurs = array();
-				foreach($createurs as $contributeur) {
-					$ids_createurs[] = array_search($contributeur, self::$utilisateurs);
-				}
-				$tranches_pretes[$tranche_prete['issuenumber']]=in_array($id_user, $ids_createurs) ? 'par_moi' : 'global';
-			}
-			
+
 			return array($numeros_affiches, $tranches_pretes);
+        }
+        else {
+            return $numeros_affiches;
 		}
-		return $numeros_affiches;
 	}
 	
 	function valeur_existe($id_valeur) {
