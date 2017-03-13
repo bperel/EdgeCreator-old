@@ -11,7 +11,7 @@ class Viewer_wizard extends EC_Controller {
 	static $parametrage;
 	static $fond_noir;
 	static $zoom;
-	static $etapes_actives=array();
+	static $etapes_actives= [];
 	static $externe=false;
 	static $is_debug=false;
 	static $etape_en_cours;
@@ -45,7 +45,7 @@ class Viewer_wizard extends EC_Controller {
 		$privilege=$this->Modele_tranche->get_privilege();
 		
 		if (is_null($pays) || is_null($magazine)) {
-			$this->load->view('errorview',array('Erreur'=>'Nombre d\'arguments insuffisant'));
+			$this->load->view('errorview', ['Erreur'=>'Nombre d\'arguments insuffisant']);
 			exit();
 		}
 		else {
@@ -95,7 +95,7 @@ class Viewer_wizard extends EC_Controller {
 		
 		$num_ordres=$this->Modele_tranche->get_ordres($pays,$magazine,$numero);
 		//print_r($ordres);
-		$dimensions=array();
+		$dimensions= [];
 		self::$etape_en_cours=new stdClass();
 		if ($externe === 'true') {
 			if (!self::$is_debug) {
@@ -112,7 +112,7 @@ class Viewer_wizard extends EC_Controller {
 		}
 		else {
 			$fond_noir_fait=false;
-			$options_preview=array();
+			$options_preview= [];
 			try {
                 foreach($num_ordres as $num_ordre) {
                     if ($num_ordre>-1 && $fond_noir && !$fond_noir_fait) {
@@ -123,7 +123,7 @@ class Viewer_wizard extends EC_Controller {
                         $fond_noir_fait=true;
                     }
 
-                    if ($num_ordre<0 || in_array($num_ordre,self::$etapes_actives) || self::$etapes_actives==array('all')) {
+                    if ($num_ordre<0 || in_array($num_ordre,self::$etapes_actives) || self::$etapes_actives== ['all']) {
                         $ordres[$num_ordre]=$this->Modele_tranche->get_fonction($pays,$magazine,$num_ordre,$numero);
                         self::$etape_en_cours->num_etape=$num_ordre;
                         self::$etape_en_cours->nom_fonction=$ordres[$num_ordre]->Nom_fonction;
@@ -132,8 +132,9 @@ class Viewer_wizard extends EC_Controller {
                             $fonction->Nom_fonction);
                         if ($num_ordre==-1)
                             $dimensions=$options2;
-                        if ((self::$etapes_actives==array('all') && ($num_etape_parametrage == $num_ordre || is_null($num_etape_parametrage)))
-                            || self::$etapes_actives!=array('all')) {
+                        if ((self::$etapes_actives== ['all'] && ($num_etape_parametrage == $num_ordre || is_null($num_etape_parametrage)))
+                            || self::$etapes_actives!= ['all']
+                        ) {
                             foreach(self::$parametrage as $parametre=>$valeur) {
                                 $options2->$parametre=$valeur;
                             }
@@ -158,13 +159,13 @@ class Viewer_wizard extends EC_Controller {
 			
 			
 			if (strpos($save,'integrate') !== false && $privilege == 'Admin' && self::$is_debug!==false) {
-				$data = array(
+				$data = [
 					'pays'=>$pays,
 					'magazine'=>$magazine,
 					'numero'=>$numero,
 					'options'=>$options_preview,
 					'username'=>$username_modele
-				);
+                ];
 				$this->load->view('integrateview',$data);
 			}
 			

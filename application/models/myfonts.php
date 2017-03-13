@@ -33,7 +33,7 @@ class MyFonts extends CI_Model {
 	}
 	
 	function build() {
-		$this->data = array(
+		$this->data = [
 			'seed'=>'43',
 			'dock'=>'false',
 			'size'=>$this->precision,
@@ -44,7 +44,7 @@ class MyFonts extends CI_Model {
 			'bg'=>$this->color_bg,
 			'goodies'=>'ot.liga',
 			urlencode('i[0]')=>urlencode($this->font.',,720,144')
-		);
+        ];
 		$texte_clean=str_replace("'","\'",preg_replace('#[ ]+\.$#','',$this->text));
 		$requete_image_existe='SELECT ID FROM images_myfonts '
 							 .'WHERE Font = \''.$this->font.'\' AND Color = \''.$this->color.'\' AND ColorBG = \''.$this->color_bg.'\''
@@ -101,7 +101,7 @@ class Post extends CI_Model {
 	
 	function __construct($url, $_data,$type='POST',$cookie='') {
 		// convert variables array to string:
-		$data = array();
+		$data = [];
 		while(list($n,$v) = each($_data)){
 			$data[] = ($n).'='.($v);
 		}

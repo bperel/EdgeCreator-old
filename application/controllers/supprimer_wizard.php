@@ -5,8 +5,8 @@ class Supprimer_Wizard extends EC_Controller {
 	static $etape;
 	
 	function index($pays=null,$magazine=null,$numero=null,$etape=null) {
-		if (in_array(null,array($pays,$magazine,$etape,$numero))) {
-			$this->load->view('errorview',array('Erreur'=>'Nombre d\'arguments insuffisant'));
+		if (in_array(null, [$pays,$magazine,$etape,$numero])) {
+			$this->load->view('errorview', ['Erreur'=>'Nombre d\'arguments insuffisant']);
 			exit();
 		}
 		$this->init_model();

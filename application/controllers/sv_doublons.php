@@ -8,8 +8,8 @@ class Sv_doublons extends EC_Controller {
 	
 	function index($pays=null,$magazine=null) {
 		
-		if (in_array(null,array($pays,$magazine))) {
-			$this->load->view('errorview',array('Erreur'=>'Nombre d\'arguments insuffisant'));
+		if (in_array(null, [$pays,$magazine])) {
+			$this->load->view('errorview', ['Erreur'=>'Nombre d\'arguments insuffisant']);
 			exit();
 		}
 		self::$pays=$pays;

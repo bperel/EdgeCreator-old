@@ -12,28 +12,28 @@ class Numerosdispos extends EC_Controller {
 		
 		if ($pays == null) {
 			if ($get_tranches_non_pretes) {
-				$data=array('mode'=>'get_tranches_non_pretes');
+				$data= ['mode'=>'get_tranches_non_pretes'];
 				$data['tranches_non_pretes']=$this->Modele_tranche->get_tranches_non_pretes();
 			}
 			else {
-				$data=array('mode'=>'get_pays');
+				$data= ['mode'=>'get_pays'];
 				$pays=$this->Modele_tranche->get_pays();
 				$data['pays']=$pays;
 			}			
 		}
 		else if ($magazine == null) {
-			$data=array('mode'=>'get_magazines');
+			$data= ['mode'=>'get_magazines'];
 			$magazines=$this->Modele_tranche->get_magazines($pays);
 			$data['magazines']=$magazines;
 			
 		}
 		else {
-			$data=array('mode'=>'get_numeros');
+			$data= ['mode'=>'get_numeros'];
 			list($numeros_dispos,$tranches_pretes)=$this->Modele_tranche->get_numeros_disponibles($pays,$magazine,true);
 
 			$nb_etapes=$this->Modele_tranche->get_nb_etapes($pays,$magazine);
 	
-			list($noms_complets_pays, $noms_complets_magazines) = Inducks::get_noms_complets(array($pays.'/'.$magazine));
+			list($noms_complets_pays, $noms_complets_magazines) = Inducks::get_noms_complets([$pays.'/'.$magazine]);
 						
 			$data['numeros_dispos']=$numeros_dispos;
 			$data['tranches_pretes']=$tranches_pretes;

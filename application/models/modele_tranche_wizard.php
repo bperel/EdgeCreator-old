@@ -20,7 +20,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		
 		$query = $this->db->query($requete);
 		$resultats=$query->result();
-		$liste_pays=array();
+		$liste_pays= [];
 		foreach($resultats as $resultat) {
 			$resultat->Pays_complet='';
 			$resultat->Magazine_complet='';
@@ -43,7 +43,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 	}
 	
 	function get_ordres($pays,$magazine,$numero=null,$toutes_colonnes=false) {
-		$resultats_ordres=array();
+		$resultats_ordres= [];
 		$requete=' SELECT DISTINCT '.($toutes_colonnes?'*':'Ordre, Numero')
 				.' FROM tranches_en_cours_modeles_vue'
 			    .' WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\'';
@@ -123,7 +123,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 			$prop_descriptions=new ReflectionProperty(get_class($f), 'descriptions');
 			$descriptions=$prop_descriptions->getValue();
 			foreach(array_keys((array)$f->options) as $nouvelle_etape) {
-				$intervalles_option=array();
+				$intervalles_option= [];
 				$intervalles_option['valeur']=$f->options->$nouvelle_etape;
 				$intervalles_option['type']=$champs[$nouvelle_etape];
 				$intervalles_option['description']=isset($descriptions[$nouvelle_etape]) ? $descriptions[$nouvelle_etape] : '';
@@ -144,7 +144,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 	}
 
 	function decaler_etapes_a_partir_de($id_modele,$etape_debut, $inclure_cette_etape) {
-		$decalages=array();
+		$decalages= [];
 		$requete_select='SELECT DISTINCT Ordre '
 					   .'FROM tranches_en_cours_valeurs '
 					   .'WHERE ID_Modele = '.$id_modele.' '
@@ -153,7 +153,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		$resultats=$this->db->query($requete_select)->result();
 		foreach($resultats as $resultat) {
 			$etape=intval($resultat->Ordre);
-			$decalages[]=array('old'=>$etape, 'new'=>$etape+1);
+			$decalages[]= ['old'=>$etape, 'new'=>$etape+1];
 		}
 		$requete='UPDATE tranches_en_cours_valeurs '
 				.'SET Ordre=Ordre+1 ' 
@@ -313,7 +313,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 
 	function etendre_numero ($pays,$magazine,$numero,$nouveau_numero) {
 
-		$options = $this->get_valeurs_options($pays,$magazine, array($numero));
+		$options = $this->get_valeurs_options($pays,$magazine, [$numero]);
 		
 		if (count($options[$numero]) === 0) {
 			echo 'Aucune option d\'étape pour '.$pays.'/'.$magazine.' '.$numero;
@@ -343,10 +343,10 @@ class Modele_tranche_Wizard extends Modele_tranche {
 								.' WHERE ID_Modele='.$id_modele.' AND Nom_fonction=\''.$nom_fonction.'\''
 								.' ORDER BY Ordre';
 			$resultats=$this->db->query($requete_nettoyage)->result();
-			$etapes_et_options=array();
+			$etapes_et_options= [];
 			foreach($resultats as $resultat) {
 				if (!array_key_exists($resultat->Ordre, $etapes_et_options)) {
-					$etapes_et_options[$resultat->Ordre]=array();
+					$etapes_et_options[$resultat->Ordre]= [];
 				}
 				$etapes_et_options[$resultat->Ordre][]=$resultat->Option_nom;
 				echo "Etape ".$resultat->Ordre.', option '.$resultat->Option_nom."\n";
@@ -378,7 +378,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 
 		$resultats = $this->requete_select_dm($requete);
 		
-		$publication_codes=array();
+		$publication_codes= [];
 		foreach($resultats as $resultat) {
 			$publication_codes[]=$resultat['Pays'].'/'.$resultat['Magazine'];
 		}
@@ -426,7 +426,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
     }
 	
 	function get_couleurs_frequentes($id_modele) {
-		$couleurs=array();
+		$couleurs= [];
 		$requete= ' SELECT DISTINCT Option_valeur'
 				 .' FROM tranches_en_cours_modeles_vue'
 				 .' WHERE ID_Modele='.$id_modele.' AND Option_nom LIKE \'Couleur%\'';
@@ -460,5 +460,5 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		self::$numero=$numero;
 	}
 }
-Modele_tranche_Wizard::$content_fields=array('Ordre', 'Nom_fonction', 'Option_nom', 'Option_valeur');
+Modele_tranche_Wizard::$content_fields= ['Ordre', 'Nom_fonction', 'Option_nom', 'Option_valeur'];
 ?>

@@ -16,7 +16,8 @@ class Creer_Modele_Wizard extends EC_Controller {
         print_r($options);
         if (count($options) > 0) {
             // Copie des dimensions si elles ont été renseignées lors d'un envoi de photos
-            $this->Modele_tranche->update_etape($pays,$magazine,$numero,-1,array('Dimension_x'=>$options->Dimension_x, 'Dimension_y'=>$options->Dimension_y));
+            $this->Modele_tranche->update_etape($pays,$magazine,$numero,-1,
+                ['Dimension_x'=>$options->Dimension_x, 'Dimension_y'=>$options->Dimension_y]);
 
             //Mise à jour de la photo principale si une photo a été spécifiée lors de l'envoi de photos
             $nom_photo_principale = $this->Modele_tranche->get_photo_principale($pays,$magazine,$numero,false);
@@ -24,9 +25,9 @@ class Creer_Modele_Wizard extends EC_Controller {
             $this->Modele_tranche->setUsername($this->session->userdata('user'));
         }
 
-		$data = array(
+		$data = [
 			'infos_insertion'=>$infos_insertion
-		);
+        ];
 		
 		$this->load->view('insertview',$data);
 	}
