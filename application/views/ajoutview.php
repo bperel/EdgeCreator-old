@@ -6,7 +6,7 @@
 <table rules="all" style="margin-left:5px;border:1px solid black"><?php
 	foreach($options as $option_nom=>$option_valeur) {
 		?><tr><td><?=$option_nom?></td>
-	   <td><?=$fonction->getValeurModifiable($option_nom,array($intervalle=>$option_valeur),false)?></td></tr><?php
+	   <td><?=$fonction->getValeurModifiable($option_nom, [$intervalle=>$option_valeur],false)?></td></tr><?php
 	}
 ?>
 </table><br />

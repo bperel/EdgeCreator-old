@@ -24,7 +24,7 @@ function get_nom_fichier($nom, $pays, $magazine, $numero, $est_photo_tranche) {
             }
             $fichier=get_prochain_nom_fichier_dispo($dossier, $fichier, $extension_cible);
         }
-        else { // Photo d'élément
+        else { // Photo d'ï¿½lï¿½ment
             if (isset($magazine)) {
                 $fichier = basename($magazine.'.'.$nom);
             }
@@ -35,7 +35,7 @@ function get_nom_fichier($nom, $pays, $magazine, $numero, $est_photo_tranche) {
         }
     }
     $fichier=str_replace(' ','_',$fichier);
-    return array($dossier,$fichier);
+    return [$dossier,$fichier];
 }
 
 function get_prochain_nom_fichier_dispo($dossier, $fichier, $extension_cible) {

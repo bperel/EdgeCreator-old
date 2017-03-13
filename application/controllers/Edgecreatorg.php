@@ -38,7 +38,7 @@ class EdgeCreatorg extends Ec_Controller {
 		$erreur = '';
 		
 		
-		$data = array(
+		$data = [
 				'user'=>$this->session->userdata('user'),
 				'mode_expert'=>$this->session->userdata('mode_expert'),
 				'just_connected'=>$this->Modele_tranche->get_just_connected(),
@@ -50,7 +50,7 @@ class EdgeCreatorg extends Ec_Controller {
 				'etape_ouverture'=>$etape_ouverture,
 				'numero_debut_filtre'=>$numero_debut_filtre,
 				'numero_fin_filtre'=>$numero_fin_filtre
-		);
+        ];
 		$this->load->view('headergview',$data);
 		$this->load->view('wizarddialogsview',$data);
 		$this->load->view('edgecreatorgview',$data);

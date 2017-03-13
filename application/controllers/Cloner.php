@@ -3,8 +3,8 @@ class Cloner extends EC_Controller {
 	
 	function index($pays=null,$magazine=null,$numero=null,$pos_relative=null,$etape_courante=null) {
 		
-		if (in_array(null,array($pays,$magazine,$numero,$pos_relative,$etape_courante))) {
-			$this->load->view('errorview',array('Erreur'=> 'Nombre d\'arguments insuffisant'));
+		if (in_array(null, [$pays,$magazine,$numero,$pos_relative,$etape_courante])) {
+			$this->load->view('errorview', ['Erreur'=> 'Nombre d\'arguments insuffisant']);
 			exit();
 		}
 		
@@ -17,17 +17,17 @@ class Cloner extends EC_Controller {
 
 		$infos_insertion=$this->Modele_tranche->cloner_etape_numero($pays,$magazine,$numero,$pos_relative,$etape_courante);
 		
-		$data = array(
+		$data = [
 				'infos_insertion'=>$infos_insertion
-		);
+        ];
 		
 		$this->load->view('insertview',$data);
 		
 	}
 	
 	function est_clonable($pays=null,$magazine=null,$numeros=null) {
-		if (in_array(null,array($pays,$magazine,$numeros))) {
-			$this->load->view('errorview',array('Erreur'=> 'Nombre d\'arguments insuffisant'));
+		if (in_array(null, [$pays,$magazine,$numeros])) {
+			$this->load->view('errorview', ['Erreur'=> 'Nombre d\'arguments insuffisant']);
 			exit();
 		}
 		
@@ -36,9 +36,9 @@ class Cloner extends EC_Controller {
 		
 		$numeros_clonables = $this->Modele_tranche->get_numeros_clonables($pays,$magazine,explode(',',$numeros));
 		
-		$this->load->view('listergview', array(
+		$this->load->view('listergview', [
 			'liste'=>$numeros_clonables,
 			'format'=>'json'
-		));
+        ]);
 	}
 }

@@ -8,9 +8,9 @@ class Couleurs_Frequentes extends EC_Controller {
 		$id_modele=$this->Modele_tranche->get_id_modele($pays,$magazine,$numero);
 		$couleurs=$this->Modele_tranche->get_couleurs_frequentes($id_modele);
 
-		$data = array(
+		$data = [
 			'couleurs'=>$couleurs
-		);
+        ];
 		$this->load->view('couleursfrequentesview',$data);
 	}
 }

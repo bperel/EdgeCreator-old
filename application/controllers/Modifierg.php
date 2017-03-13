@@ -11,8 +11,8 @@ class ModifierG extends EC_Controller {
 		try {
 			$est_etape_temporaire=$est_etape_temporaire === 'true';
 			$nouvelle_valeur=$nouvelle_valeur=='null' ? null : str_replace('[pt]','.',urldecode($nouvelle_valeur));
-			if (in_array(null,array($pays,$magazine,$etape))) {
-				$this->load->view('errorview',array('Erreur'=>'Nombre d\'arguments insuffisant'));
+			if (in_array(null, [$pays,$magazine,$etape])) {
+				$this->load->view('errorview', ['Erreur'=>'Nombre d\'arguments insuffisant']);
 				exit();
 			}
 			self::$etape=$etape;
@@ -27,11 +27,11 @@ class ModifierG extends EC_Controller {
 			$this->load->helper('form');
 			
 			$this->load->model($this->session->userdata('mode_expert') === true ? 'Modele_tranche' : 'Modele_tranche_Wizard','Modele_tranche');
-			$data=array();
+			$data= [];
 			
 			$privilege=$this->Modele_tranche->get_privilege();
 			if ($privilege == 'Affichage') {
-				$this->load->view('errorview',array('Erreur'=>'droits insuffisants'));
+				$this->load->view('errorview', ['Erreur'=>'droits insuffisants']);
 				return;
 			}
 			$this->Modele_tranche->setUsername($this->session->userdata('user'));
@@ -44,31 +44,32 @@ class ModifierG extends EC_Controller {
 			if ($est_etape_temporaire) {
 				$this->Modele_tranche->dupliquer_modele_magazine_si_besoin($pays,$magazine);
 				$this->Modele_tranche->decaler_etapes_a_partir_de(self::$pays,self::$magazine,self::$etape);
-				$this->Modele_tranche->insert_ordre(self::$pays,self::$magazine,self::$etape,self::$numeros[0],self::$numeros[count(self::$numeros)-1],$nom_nouvelle_fonction,array());
+				$this->Modele_tranche->insert_ordre(self::$pays,self::$magazine,self::$etape,self::$numeros[0],self::$numeros[count(self::$numeros)-1],$nom_nouvelle_fonction,
+                    []);
 			}
-			$valeurs=array();
+			$valeurs= [];
 			$fonction=$this->Modele_tranche->get_fonction(self::$pays,self::$magazine,self::$etape);
 			if (!is_null($fonction)) {
 				$options=$this->Modele_tranche->get_options(self::$pays, self::$magazine, self::$etape,
                     $fonction->Nom_fonction);
 	
 				if ($nom_option == 'Actif') {
-					$intervalles=array();
+					$intervalles= [];
 					$numeros_debut=explode(';',$fonction->Numero_debut);
 					$numeros_fin=explode(';',$fonction->Numero_fin);
 					foreach($numeros_debut as $i=>$numero_debut)
 						$intervalles[]=$numero_debut.'~'.$numeros_fin[$i];
 					$intervalles=implode(';',$intervalles);
-					$valeurs_preexistantes=array($intervalles=>'on');
+					$valeurs_preexistantes= [$intervalles=>'on'];
 				}
 				else {
 					if (is_array($options->$nom_option))
 						$valeurs_preexistantes=$options->$nom_option;
 					else {
 						if (is_null($options->$nom_option))
-							$valeurs_preexistantes=array();
+							$valeurs_preexistantes= [];
 						else
-							$valeurs_preexistantes=array('Tous'=>$options->$nom_option);
+							$valeurs_preexistantes= ['Tous'=>$options->$nom_option];
 					}
 				}
 				
@@ -104,12 +105,12 @@ class ModifierG extends EC_Controller {
 					$valeurs[$numero]=self::$nouvelle_valeur;
 			}
 			$valeurs_distinctes=array_unique($valeurs);
-			$valeurs_distinctes_numeros_groupes=array();
+			$valeurs_distinctes_numeros_groupes= [];
 			foreach($valeurs_distinctes as $valeur_distincte) {
 				$numeros_associes=array_value_list($valeur_distincte, $valeurs);
 				sort($numeros_associes);
 				print_r($numeros_associes);
-				$valeurs_distinctes_numeros_groupes[$valeur_distincte]=array();
+				$valeurs_distinctes_numeros_groupes[$valeur_distincte]= [];
 				$numero_debut=null;
 				$i=0;
 				foreach($numeros_dispos as $numero_dispo) {
@@ -158,7 +159,7 @@ class ModifierG extends EC_Controller {
 
 function array_value_list ($match, $array)
 {
-	$occurences = array();
+	$occurences = [];
 	foreach ($array as $key => $value) {
 		if ($value == $match)
 			$occurences[]=$key;

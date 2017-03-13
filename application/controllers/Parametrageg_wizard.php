@@ -7,8 +7,8 @@ class ParametrageG_wizard extends EC_Controller {
 	
 	function index($pays=null,$magazine=null,$numero,$etape=null, $nom_option_sel='null') {
 		
-		if (in_array(null,array($pays,$magazine))) {
-			$this->load->view('errorview',array('Erreur'=> 'Nombre d\'arguments insuffisant'));
+		if (in_array(null, [$pays,$magazine])) {
+			$this->load->view('errorview', ['Erreur'=> 'Nombre d\'arguments insuffisant']);
 			exit();
 		}
 		self::$pays=$pays;
@@ -36,7 +36,7 @@ class ParametrageG_wizard extends EC_Controller {
 				$fonction_dimension->Nom_fonction='Dimensions';
 				$etapes[]=$fonction_dimension;
 			}
-			$data=array('etapes'=>$etapes);
+			$data= ['etapes'=>$etapes];
 		}
 		else {
 			$fonction=$this->Modele_tranche->get_fonction(self::$pays,self::$magazine,self::$etape,self::$numero);
@@ -60,9 +60,9 @@ class ParametrageG_wizard extends EC_Controller {
 				}
 			}
 			
-			$data = array(
+			$data = [
 				'options'=>$options
-			);
+            ];
 		}
 		$this->load->view('parametragegview',$data);
 	}

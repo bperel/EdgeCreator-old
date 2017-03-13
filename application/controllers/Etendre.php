@@ -8,8 +8,8 @@ class Etendre extends EC_Controller {
 	function index($pays=null,$magazine=null,$numero=null,$nouveau_numero=null) {
 		
 		try {
-			if (in_array(null,array($pays,$magazine,$numero,$nouveau_numero))) {
-				$this->load->view('errorview',array('Erreur'=> 'Nombre d\'arguments insuffisant'));
+			if (in_array(null, [$pays,$magazine,$numero,$nouveau_numero])) {
+				$this->load->view('errorview', ['Erreur'=> 'Nombre d\'arguments insuffisant']);
 				exit();
 			}
 			self::$pays=$pays;
@@ -25,7 +25,7 @@ class Etendre extends EC_Controller {
 
 			$privilege=$this->Modele_tranche->get_privilege();
 			if ($privilege == 'Affichage') {
-				$this->load->view('errorview',array('Erreur'=>'droits insuffisants'));
+				$this->load->view('errorview', ['Erreur'=>'droits insuffisants']);
 				return;
 			}
 			$this->Modele_tranche->setUsername($this->session->userdata('user'));
@@ -37,7 +37,7 @@ class Etendre extends EC_Controller {
 			$this->Modele_tranche->etendre_numero($pays,$magazine,$numero,$nouveau_numero);
 		}
 		catch (Exception $e) {
-	    	echo 'Exception reçue : ',  $e->getMessage(), "\n";
+	    	echo 'Exception reï¿½ue : ',  $e->getMessage(), "\n";
 	    	echo '<pre>';print_r($e->getTrace());echo '</pre>';
 		}
 	}

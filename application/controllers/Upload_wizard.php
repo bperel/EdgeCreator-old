@@ -31,10 +31,10 @@ class Upload_Wizard extends EC_Controller {
                     $erreur = get_message_fichier_trop_gros();
                     break;
                 case UPLOAD_ERR_PARTIAL:
-                    $erreur = 'L\'envoi a été interrompu';
+                    $erreur = 'L\'envoi a ï¿½tï¿½ interrompu';
                     break;
                 case UPLOAD_ERR_NO_FILE:
-                    $erreur = 'Le fichier envoyé est vide';
+                    $erreur = 'Le fichier envoyï¿½ est vide';
                     break;
                 default:
                     $erreur = 'Erreur interne lors de l\'envoi : #'.$_FILES['image']['error'];
@@ -53,8 +53,8 @@ class Upload_Wizard extends EC_Controller {
 
             $taille_maxi = $_POST['MAX_FILE_SIZE'];
             $taille = filesize($_FILES['image']['tmp_name']);
-            $extensions = $est_photo_tranche ? array('.jpg','.jpeg') : array('.png');
-            //Début des vérifications de sécurité...
+            $extensions = $est_photo_tranche ? ['.jpg','.jpeg'] : ['.png'];
+            //Dï¿½but des vï¿½rifications de sï¿½curitï¿½...
             if(!in_array($extension, $extensions)) //Si l'extension n'est pas dans le tableau
             {
                 $erreur = 'Vous devez uploader un fichier de type '.implode(' ou ',$extensions);
@@ -72,7 +72,7 @@ class Upload_Wizard extends EC_Controller {
             {
                 //On formate le nom du fichier ici...
                 $fichier = strtr($fichier,
-                    'ÀÁÂÃÄÅÇÈÉÊËÌÍÎÏÒÓÔÕÖÙÚÛÜİàáâãäåçèéêëìíîïğòóôõöùúûüıÿ',
+                    'ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½',
                     'AAAAAACEEEEIIIIOOOOOUUUUYaaaaaaceeeeiiiioooooouuuuyy');
 
                 if (@opendir($dossier) === false) {
@@ -128,7 +128,7 @@ class Upload_Wizard extends EC_Controller {
                 $this->contenu .= get_message_retour($est_photo_tranche);
             }
         }
-        $this->load->view('helperview',array('contenu'=>$this->contenu));
+        $this->load->view('helperview', ['contenu'=>$this->contenu]);
     }
 }
 

@@ -15,11 +15,13 @@ class Modele_tranche extends CI_Model {
 	static $dropdown_numeros;
 	static $fields;
 	static $user_possede_modele=null;
-	static $utilisateurs = array();
-	static $noms_fonctions = array('Agrafer','Arc_cercle','Degrade','DegradeTrancheAgrafee',
-								   'Image','Polygone','Rectangle','Remplir','TexteMyFonts');
+	static $utilisateurs = [];
+	static $noms_fonctions = [
+        'Agrafer','Arc_cercle','Degrade','DegradeTrancheAgrafee',
+								   'Image','Polygone','Rectangle','Remplir','TexteMyFonts'
+    ];
 
-	function __construct($tab=array())
+	function __construct($tab= [])
 	{
 		foreach($tab as $arg_name=>$arg_value)
 			$this->$arg_name=$arg_value;
@@ -107,7 +109,7 @@ class Modele_tranche extends CI_Model {
 	
 	function creer_id_session($user,$pass,$mode_expert) {
 		
-		$this->session->set_userdata(array('user' => $user, 'pass' => $pass, 'mode_expert'=>$mode_expert));
+		$this->session->set_userdata(['user' => $user, 'pass' => $pass, 'mode_expert'=>$mode_expert]);
 	}
 	
 	function user_possede_modele($pays=null,$magazine=null,$username=null) {
@@ -137,7 +139,7 @@ class Modele_tranche extends CI_Model {
 	
 	function get_modeles_magazine($pays,$magazine,$ordre=null)
 	{
-		$resultats_o=array();
+		$resultats_o= [];
 		$requete='SELECT '.implode(', ', self::$fields).' '
 				.'FROM edgecreator_modeles2 '
 				.'INNER JOIN edgecreator_valeurs ON edgecreator_modeles2.ID = edgecreator_valeurs.ID_Option '
@@ -155,7 +157,7 @@ class Modele_tranche extends CI_Model {
 	}
 
 	function get_ordres($pays,$magazine,$numero=null) {
-		$resultats_ordres=array();
+		$resultats_ordres= [];
 		$requete='SELECT DISTINCT Ordre, Numero_debut, Numero_fin '
 				.'FROM edgecreator_modeles2 '
 				.'INNER JOIN edgecreator_valeurs ON edgecreator_modeles2.ID = edgecreator_valeurs.ID_Option '
@@ -197,7 +199,7 @@ class Modele_tranche extends CI_Model {
 	}
 
 	function get_etapes_simple_magazine($pays,$magazine,$num_etape=null) {
-		$resultats_etapes=array();
+		$resultats_etapes= [];
 		$username=($this->user_possede_modele() ? self::$username : 'brunoperel');
 		$requete='SELECT DISTINCT Ordre, Nom_fonction, edgecreator_valeurs.ID AS ID_Valeur '
 				.'FROM edgecreator_modeles2 '
@@ -210,8 +212,8 @@ class Modele_tranche extends CI_Model {
 				 .' ORDER BY Ordre ';
 		$resultats = $this->db->query($requete)->result();
 		foreach($resultats as $resultat) {
-			$resultat->Numero_debut=array();
-			$resultat->Numero_fin=array();
+			$resultat->Numero_debut= [];
+			$resultat->Numero_fin= [];
 			$requete_intervalles='SELECT Numero_debut, Numero_fin '
 								.'FROM edgecreator_modeles2 '
 								.'INNER JOIN edgecreator_valeurs ON edgecreator_modeles2.ID = edgecreator_valeurs.ID_Option '
@@ -239,8 +241,8 @@ class Modele_tranche extends CI_Model {
 		if (count($resultats) == 0) {
 			return null;
 		}
-		$numeros_debut=array();
-		$numeros_fin=array();
+		$numeros_debut= [];
+		$numeros_fin= [];
 		foreach($resultats as $resultat) {
 			$intervalle=$this->getIntervalleShort($this->getIntervalle($resultat->Numero_debut, $resultat->Numero_fin));
 			if (!is_null($numero) && !est_dans_intervalle($numero, $intervalle))
@@ -284,7 +286,7 @@ class Modele_tranche extends CI_Model {
 		$option_nom='';
 		foreach($resultats as $resultat) {
 			if ($option_nom!=$resultat->Option_nom) {
-				$option_courante=array();
+				$option_courante= [];
 				if (!empty($option_nom) && is_null($numero))
 					uksort($resultats_options->$option_nom,'trier_intervalles');
 			}
@@ -320,7 +322,7 @@ class Modele_tranche extends CI_Model {
 			foreach($f->options as $nom_option=>$val) {
 				$intervalles_option=$f->options->$nom_option;
 				if (!is_array($intervalles_option))
-					$intervalles_option=array(null=>$intervalles_option);
+					$intervalles_option= [null=>$intervalles_option];
 				$intervalles_option['type']=$champs[$nom_option];
 				$intervalles_option['description']=isset($descriptions[$nom_option]) ? $descriptions[$nom_option] : '';
 				if (array_key_exists($nom_option, $valeurs_defaut))
@@ -411,7 +413,7 @@ class Modele_tranche extends CI_Model {
 						      .'INNER JOIN edgecreator_intervalles ON edgecreator_valeurs.ID = edgecreator_intervalles.ID_Valeur '
 						      .'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND username LIKE \''.self::$username.'\'';
 		$resultat_get_etapes=$this->db->query($requete_get_etapes)->result();
-		$dimensions=array();
+		$dimensions= [];
 		foreach($resultat_get_etapes as $resultat_etape) {
 			$etape=$resultat_etape->Ordre;
 			$requete_get_options='SELECT Numero_debut, Numero_fin, Option_nom, Option_valeur '
@@ -424,7 +426,7 @@ class Modele_tranche extends CI_Model {
 				foreach(array_keys($numeros_disponibles) as $numero) {
 					Viewer_wizard::$numero=$numero;
 					if (!isset($dimensions[$numero]))
-						$dimensions[$numero]=array();
+						$dimensions[$numero]= [];
 					if (isset($dimensions[$numero]['x']) && isset($dimensions[$numero]['y'])) {
 						Viewer_wizard::$largeur=$dimensions[$numero]['x'];
 						Viewer_wizard::$hauteur=$dimensions[$numero]['y'];
@@ -432,9 +434,9 @@ class Modele_tranche extends CI_Model {
 					$intervalle=$option->Numero_debut.'~'.$option->Numero_fin;
 					if (est_dans_intervalle($numero,$intervalle)) {
 						if (is_string($numeros_disponibles[$numero]))
-							$numeros_disponibles[$numero]=array();
+							$numeros_disponibles[$numero]= [];
 						if (!array_key_exists($etape,$numeros_disponibles[$numero]))
-							$numeros_disponibles[$numero][$etape]=array();
+							$numeros_disponibles[$numero][$etape]= [];
 						$valeur=is_null($option->Option_valeur)?'null':$option->Option_valeur;
 						$valeur_calculee=Fonction_executable::toTemplatedString($valeur,true);
 						if ($valeur_calculee !== true)
@@ -448,13 +450,13 @@ class Modele_tranche extends CI_Model {
 				}
 			}
 		}
-		$groupes_numeros=array();
+		$groupes_numeros= [];
 		foreach(array_keys($numeros_disponibles) as $numero) {
 			$numeros_disponibles[$numero]=serialize($numeros_disponibles[$numero]);
 		}
 		foreach($numeros_disponibles as $numero=>$etapes_serialized) {
 			if (!array_key_exists($etapes_serialized, $groupes_numeros))
-				$groupes_numeros[$etapes_serialized]=array();
+				$groupes_numeros[$etapes_serialized]= [];
 			$groupes_numeros[$etapes_serialized][]=$numero;
 		}
 		foreach($groupes_numeros as $groupe) {
@@ -469,7 +471,7 @@ class Modele_tranche extends CI_Model {
 				}
 			}
 		}
-		$groupes_numeros_lisibles=array();
+		$groupes_numeros_lisibles= [];
 		foreach($groupes_numeros as $i=>$groupe) {
 			$groupes_numeros_lisibles[json_encode(unserialize($i))]=$groupe;
 		}
@@ -517,18 +519,18 @@ class Modele_tranche extends CI_Model {
 						  .'WHERE Pays = \''.$pays.'\' AND Magazine=\''.$magazine.'\' AND Numero = \''.$numero.'\'';
 		$resultat_get_prets=$this->db->query($requete_get_prets)->result();
 		foreach($resultat_get_prets as $resultat) {
-			return $resultat->Active == 1 ? array() : array(array_search($resultat->createur, self::$utilisateurs));
+			return $resultat->Active == 1 ? [] : [array_search($resultat->createur, self::$utilisateurs)];
 		}
 		return null;
 	}
 	
-	function get_valeurs_options($pays,$magazine,$numeros=array()) {
-		$numeros_esc=array();
+	function get_valeurs_options($pays,$magazine,$numeros= []) {
+		$numeros_esc= [];
 		foreach($numeros as $numero) {
 			$numeros_esc[]='\''.$numero.'\'';
 		}
 
-        $resultats = array();
+        $resultats = [];
 		if (count($numeros) !== 0) {
 			$requete_get_options=
 				 ' SELECT 1 AS EC_v2, '.implode(', ', Modele_tranche_Wizard::$content_fields).' '
@@ -551,7 +553,7 @@ class Modele_tranche extends CI_Model {
             $resultats=$this->db->query($requete_get_options)->result();
         }
 
-		$options=array();
+		$options= [];
 		
 		foreach($resultats as $resultat) {
 			$option_nom=is_null($resultat->Option_nom) ? 'NULL' : ('\''.mysql_real_escape_string($resultat->Option_nom).'\'');
@@ -570,7 +572,7 @@ class Modele_tranche extends CI_Model {
 					$option->Option_valeur=$option_valeur;
 					
 					if (!array_key_exists($numero, $options)) {
-						$options[$numero]=array();
+						$options[$numero]= [];
 					}
 					$options[$numero][$option->Ordre.$option->Option_nom]=$option;
 				}
@@ -579,7 +581,7 @@ class Modele_tranche extends CI_Model {
 		return $options;
 	}
 	
-	function get_numeros_clonables($pays,$magazine,$numeros=array()) {
+	function get_numeros_clonables($pays,$magazine,$numeros= []) {
 		self::$pays = $pays;
 		self::$magazine = $magazine;
 		
@@ -598,13 +600,13 @@ class Modele_tranche extends CI_Model {
 
         $numeros = self::get_numeros($pays.'/'.$magazine);
 
-        $numeros_affiches=array('Aucun'=>'Aucun');
+        $numeros_affiches= ['Aucun'=>'Aucun'];
         foreach($numeros as $numero) {
             $numeros_affiches[$numero['issuenumber']] = $numero['issuenumber'];
         }
 
         if ($get_prets) {
-            $tranches_pretes = array();
+            $tranches_pretes = [];
 
             $liste_numeros = implode(',', array_map(function ($numero) {
                 return "'" . $numero . "'";
@@ -639,7 +641,7 @@ class Modele_tranche extends CI_Model {
 				$tranches_pretes[$tranche_prete['issuenumber']] = $tranche_prete['type_contributeur'];
 			}
 
-			return array($numeros_affiches, $tranches_pretes);
+			return [$numeros_affiches, $tranches_pretes];
         }
         else {
             return $numeros_affiches;
@@ -833,7 +835,7 @@ class Modele_tranche extends CI_Model {
 	}
 
 	function getFields() {
-		$fields=array();
+		$fields= [];
 		foreach(self::$fields as $field)
 			$fields[]=$this->$field;
 		return $fields;
@@ -853,12 +855,12 @@ class Modele_tranche extends CI_Model {
 	function getValeur($option_nom,$option_valeur) {
 		$texte='';
 		if (!is_array($option_valeur)) // Valeur par défaut
-			$option_valeur=array('Tous'=>$option_valeur);
+			$option_valeur= ['Tous'=>$option_valeur];
 		asort($option_valeur);
-		$option_valeur_groupe=array();
+		$option_valeur_groupe= [];
 		foreach($option_valeur as $intervalle=>$valeur) {
 			if (!array_key_exists($valeur, $option_valeur_groupe))
-				$option_valeur_groupe[$valeur]=array();
+				$option_valeur_groupe[$valeur]= [];
 			$option_valeur_groupe[$valeur][]=$intervalle;
 		}
 		uasort($option_valeur_groupe,'trier_intervalles');
@@ -898,12 +900,12 @@ class Modele_tranche extends CI_Model {
 
 	function getValeurModifiable($option_nom,$option_valeur,$modif=true) {
 		if (!is_array($option_valeur)) // Valeur par défaut
-			$option_valeur=array('Tous'=>$option_valeur);
+			$option_valeur= ['Tous'=>$option_valeur];
 		asort($option_valeur);
-		$option_valeur_groupe=array();
+		$option_valeur_groupe= [];
 		foreach($option_valeur as $intervalle=>$valeur) {
 			if (!array_key_exists($valeur, $option_valeur_groupe))
-				$option_valeur_groupe[$valeur]=array();
+				$option_valeur_groupe[$valeur]= [];
 			$option_valeur_groupe[$valeur][]=$intervalle;
 		}
 		uasort($option_valeur_groupe,'trier_intervalles');
@@ -984,7 +986,7 @@ class Modele_tranche extends CI_Model {
 		$numero_ajoute=false;
 		foreach ($intervalles as $i=>$intervalle) {
 			if (strpos($intervalle,'~') === false)
-				list($numero_debut,$numero_fin)=array($intervalle,$intervalle);
+				list($numero_debut,$numero_fin)= [$intervalle,$intervalle];
 			else
 				list($numero_debut,$numero_fin)=explode('~',$intervalle);
 			if (is_null($numero_fin))
@@ -1032,7 +1034,7 @@ class Modele_tranche extends CI_Model {
 			}
 			$i++;
 		}
-		return array($nouveau_numero_est_apres,$nouveau_numero_est_adjacent);
+		return [$nouveau_numero_est_apres,$nouveau_numero_est_adjacent];
 	}
 
 	function getIntervalleShort($intervalle) {
@@ -1078,14 +1080,14 @@ class Modele_tranche extends CI_Model {
 			$numeros_debut=explode(';',self::$numero_debut);
 			$numeros_fin=explode(';',self::$numero_fin);
 		}
-		$numeros_debut2=array();
-		$numeros_fin2=array();
+		$numeros_debut2= [];
+		$numeros_fin2= [];
 		foreach($numeros_debut as $i=>$numero_debut) {
 			if (strpos($numero_debut,'~')!==false) {
 				list($numeros_debut2[],$numeros_fin2[])=explode('~',$numero_debut);
 			}
 			else
-				list($numeros_debut2[],$numeros_fin2[])=array($numero_debut,$numeros_fin[$i]);
+				list($numeros_debut2[],$numeros_fin2[])= [$numero_debut,$numeros_fin[$i]];
 		}
 		$numeros_debut=$numeros_debut2;
 		$numeros_fin=$numeros_fin2;
@@ -1104,16 +1106,16 @@ class Modele_tranche extends CI_Model {
 
 	function getNumerosDebutFin($intervalle=null) {
 		if (is_null($intervalle))
-			return array(self::$numero_debut,self::$numero_fin);
+			return [self::$numero_debut,self::$numero_fin];
 		$regex_numeros_debut_fin='#Num&eacute;ros? ([^ ]+) (?:&agrave; ([^ ]+))?#is';
 		preg_match($regex_numeros_debut_fin, $intervalle.' ', $numeros_debut_fin);
 		if (isset($numeros_debut_fin[2]))
-			return array($numeros_debut_fin[1],$numeros_debut_fin[2]);
+			return [$numeros_debut_fin[1],$numeros_debut_fin[2]];
 		else {
 			if (isset($numeros_debut_fin[1]))
-				return array($numeros_debut_fin[1],$numeros_debut_fin[1]);
+				return [$numeros_debut_fin[1],$numeros_debut_fin[1]];
 			else
-				return array(self::$numero_debut,self::$numero_fin);
+				return [self::$numero_debut,self::$numero_fin];
 		}
 	}
 
@@ -1196,7 +1198,7 @@ class Modele_tranche extends CI_Model {
 	
 	
 	function get_liste($type,$arg=null,$arg2=null) {
-		$liste=array();
+		$liste= [];
 		switch($type) {
 			case 'Police':
 				$rep=BASEPATH.'fonts/';
@@ -1214,14 +1216,14 @@ class Modele_tranche extends CI_Model {
 			case 'Photos': 
 				$pays=$arg;
 				$magazine=$arg2;
-				$extensions=array();
+				$extensions= [];
 				if ($type === 'Source') {
 					$rep=Fonction_executable::getCheminElements($pays).'/';
-					$extensions=array('png');
+					$extensions= ['png'];
 				}
 				if ($type === 'Photos') {
 					$rep=Fonction_executable::getCheminPhotos($pays).'/';
-					$extensions=array('jpg','jpeg','png');
+					$extensions= ['jpg','jpeg','png'];
 				}
 				if (($dir = @opendir($rep)) === false) { // Sans doute un nouveau pays, on crée le sous-dossier
 					if (@opendir(preg_replace('#[^/]+/[^/]+/$#','',$rep))) {
@@ -1329,12 +1331,12 @@ class Modele_tranche extends CI_Model {
 	} 
 	
 }
-Modele_tranche::$fields=array('Pays', 'Magazine', 'Ordre', 'Nom_fonction', 'Option_nom', 'Option_valeur', 'Numero_debut', 'Numero_fin');
-Fonction::$valeurs_defaut=array('Remplir'=>array('Pos_x'=>0,'Pos_y'=>0));
+Modele_tranche::$fields= ['Pays', 'Magazine', 'Ordre', 'Nom_fonction', 'Option_nom', 'Option_valeur', 'Numero_debut', 'Numero_fin'];
+Fonction::$valeurs_defaut= ['Remplir'=> ['Pos_x'=>0,'Pos_y'=>0]];
 
 class Fonction extends Modele_tranche {
 	public $options;
-	static $valeurs_defaut=array();
+	static $valeurs_defaut= [];
 
 	function option($nom) {
 		if (isset($this->options->$nom)) {
@@ -1353,7 +1355,7 @@ class Fonction extends Modele_tranche {
 
 class Fonction_executable extends Fonction {
 
-	static $descriptions=array();
+	static $descriptions= [];
 	
 	function __construct($options,$creation=false,$get_options_defaut=true) {
 		if (!is_object($options)) {
@@ -1374,7 +1376,7 @@ class Fonction_executable extends Fonction {
 			$propriete_valeurs_defaut=new ReflectionProperty($classe, 'valeurs_defaut');
 			$valeurs_defaut=$propriete_valeurs_defaut->getValue();
 			foreach($valeurs_defaut as $nom=>$valeur) {
-				if (!isset($this->options->$nom) || $this->options->$nom == array()) {
+				if (!isset($this->options->$nom) || $this->options->$nom == []) {
 					$this->options->$nom=$valeur;
 				}
 			}
@@ -1401,7 +1403,7 @@ class Fonction_executable extends Fonction {
 			$propriete_champs=new ReflectionProperty($classe, 'champs');
 			$champs=$propriete_champs->getValue();
 			foreach(array_keys($champs) as $nom) {
-				if (!isset($this->options->$nom) || (strpos('Couleur', $nom)!==false && $this->options->$nom==array())) {
+				if (!isset($this->options->$nom) || (strpos('Couleur', $nom)!==false && $this->options->$nom== [])) {
 					self::erreur('Le champ "'.$nom.'" est indéfini !');
 				}
 			}
@@ -1457,12 +1459,14 @@ class Fonction_executable extends Fonction {
 	}
 
 	static function toTemplatedString($str,$actif=true) {
-		$tab=array('numero'=>'#\[Numero\]#is',
+		$tab= [
+            'numero'=>'#\[Numero\]#is',
 				   'numero[]'=>'#\[Numero\[([0-9]+)\]\]#is',
 				   'largeur'=>'#\[Largeur\]#is',
 				   'hauteur'=>'#\[Hauteur\]#is',
-				   'caracteres_speciaux'=>'#\Â°#is');
-		if ($str==array())
+				   'caracteres_speciaux'=>'#\Â°#is'
+        ];
+		if ($str== [])
 			$str='';
 		foreach($tab as $nom=>$regex) {
 			if (0 !== preg_match($regex, $str, $matches)) {
@@ -1506,11 +1510,13 @@ class Fonction_executable extends Fonction {
 }
 
 class Dimensions extends Fonction_executable {
-	static $champs=array('Dimension_x'=>'quantite','Dimension_y'=>'quantite');
-	static $valeurs_nouveau=array('Dimension_x'=>15,'Dimension_y'=>200);
-	static $valeurs_defaut=array();
-	static $descriptions=array('Dimension_x'=>'Largeur de la tranche', 
-							   'Dimension_y'=>'Hauteur de la tranche');
+	static $champs= ['Dimension_x'=>'quantite','Dimension_y'=>'quantite'];
+	static $valeurs_nouveau= ['Dimension_x'=>15,'Dimension_y'=>200];
+	static $valeurs_defaut= [];
+	static $descriptions= [
+        'Dimension_x'=>'Largeur de la tranche',
+							   'Dimension_y'=>'Hauteur de la tranche'
+    ];
 	
 	function __construct($options,$executer=true,$creation=false,$get_options_defaut=true) {
 		parent::__construct($options,$creation,$get_options_defaut);
@@ -1528,7 +1534,7 @@ class Dimensions extends Fonction_executable {
 		if ($this->options->Dimension_x < 0 || $this->options->Dimension_y < 0 ) {
 			self::erreur('Dimensions nÃ©gatives');
 		}
-		if ($this->options->Dimension_x == array() || $this->options->Dimension_y == array() ) {
+		if ($this->options->Dimension_x == [] || $this->options->Dimension_y == []) {
 			self::erreur('Dimensions nulles');
 		}
 	}
@@ -1536,12 +1542,14 @@ class Dimensions extends Fonction_executable {
 
 class Remplir extends Fonction_executable {
 	static $libelle='Remplir une zone avec une couleur';
-	static $champs=array('Pos_x'=>'quantite','Pos_y'=>'quantite','Couleur'=>'couleur');
-	static $valeurs_nouveau=array('Pos_x'=>0,'Pos_y'=>0,'Couleur'=>'AAAAAA');
-	static $valeurs_defaut=array('Pos_x'=>0,'Pos_y'=>0);
-	static $descriptions=array('Pos_x'=>'Abscisse du point de d&eacute;part du remplissage', 
+	static $champs= ['Pos_x'=>'quantite','Pos_y'=>'quantite','Couleur'=>'couleur'];
+	static $valeurs_nouveau= ['Pos_x'=>0,'Pos_y'=>0,'Couleur'=>'AAAAAA'];
+	static $valeurs_defaut= ['Pos_x'=>0,'Pos_y'=>0];
+	static $descriptions= [
+        'Pos_x'=>'Abscisse du point de d&eacute;part du remplissage',
 							   'Pos_y'=>'Ordonn&eacute;e du point de d&eacute;part du remplissage',
-							   'Couleur'=>'Couleur de remplissage');
+							   'Couleur'=>'Couleur de remplissage'
+    ];
 	
 	function __construct($options,$executer=true,$creation=false,$get_options_defaut=true) {
 		parent::__construct($options,$creation,$get_options_defaut);
@@ -1567,16 +1575,18 @@ class Remplir extends Fonction_executable {
 
 class Image extends Fonction_executable {
 	static $libelle='Ins&eacute;rer une image';
-	static $champs=array('Source'=>'fichier_ou_texte','Decalage_x'=>'quantite','Decalage_y'=>'quantite','Compression_x'=>'quantite','Compression_y'=>'quantite','Position'=>'liste');
-	static $valeurs_nouveau=array('Source'=>'','Decalage_x'=>'5','Decalage_y'=>'5','Compression_x'=>'0.6','Compression_y'=>'0.6','Position'=>'haut');
-	static $valeurs_defaut=array('Decalage_x'=>0,'Decalage_y'=>0,'Compression_x'=>1,'Compression_y'=>1,'Position'=>'haut');
+	static $champs= ['Source'=>'fichier_ou_texte','Decalage_x'=>'quantite','Decalage_y'=>'quantite','Compression_x'=>'quantite','Compression_y'=>'quantite','Position'=>'liste'];
+	static $valeurs_nouveau= ['Source'=>'','Decalage_x'=>'5','Decalage_y'=>'5','Compression_x'=>'0.6','Compression_y'=>'0.6','Position'=>'haut'];
+	static $valeurs_defaut= ['Decalage_x'=>0,'Decalage_y'=>0,'Compression_x'=>1,'Compression_y'=>1,'Position'=>'haut'];
 	
-	static $descriptions=array('Source'=>'Nom de l\'image', 
+	static $descriptions= [
+        'Source'=>'Nom de l\'image',
 							   'Decalage_x'=>'Marge gauche de l\'image', 
 							   'Decalage_y'=>'Marge haute de l\'image<br />(Par rapport au haut de l\'image si Position=haut, sinon par rapport au bas)',
 							   'Compression_x'=>'Compression de la largeur de l\'image',
 							   'Compression_y'=>'Compression de la hauteur de l\'image',
-							   'Position'=>'Position de l\'image par rapport &agrave; la tranche : Haut ou Bas');
+							   'Position'=>'Position de l\'image par rapport &agrave; la tranche : Haut ou Bas'
+    ];
 	
 	function __construct($options,$executer=true,$creation=false,$get_options_defaut=true) {
 		parent::__construct($options,$creation,$get_options_defaut);
@@ -1598,7 +1608,7 @@ class Image extends Fonction_executable {
 				$sous_image=imagecreatefrompng($chemin_reel);
 			break;
 		}
-		list($width,$height)=array(imagesx($sous_image),imagesy($sous_image));
+		list($width,$height)= [imagesx($sous_image),imagesy($sous_image)];
 		$hauteur_sous_image=Viewer_wizard::$largeur*($height/$width);
 		if ($this->options->Position=='bas') {
 			$this->options->Decalage_y=Viewer_wizard::$hauteur-$hauteur_sous_image-z($this->options->Decalage_y);
@@ -1631,11 +1641,12 @@ class Image extends Fonction_executable {
 
 class TexteMyFonts extends Fonction_executable {
 	static $libelle='Ajouter du texte';
-	static $champs=array('URL'=>'texte','Couleur_texte'=>'couleur','Couleur_fond'=>'couleur','Largeur'=>'quantite','Chaine'=>'texte','Pos_x'=>'quantite','Pos_y'=>'quantite','Compression_x'=>'quantite','Compression_y'=>'quantite','Rotation'=>'quantite','Demi_hauteur'=>'liste','Mesure_depuis_haut'=>'liste');
-	static $valeurs_nouveau=array('URL'=>'redrooster.block-gothic-rr.demi-extra-condensed','Couleur_texte'=>'000000','Couleur_fond'=>'ffffff','Largeur'=>'700','Chaine'=>'Le journal de Mickey','Pos_x'=>'0','Pos_y'=>'5','Compression_x'=>'0.3','Compression_y'=>'0.3','Rotation'=>'90','Demi_hauteur'=>'Oui','Mesure_depuis_haut'=>'Oui');
-	static $valeurs_defaut=array('Rotation'=>0,'Compression_x'=>'1','Compression_y'=>'1','Mesure_depuis_haut'=>'Oui');
+	static $champs= ['URL'=>'texte','Couleur_texte'=>'couleur','Couleur_fond'=>'couleur','Largeur'=>'quantite','Chaine'=>'texte','Pos_x'=>'quantite','Pos_y'=>'quantite','Compression_x'=>'quantite','Compression_y'=>'quantite','Rotation'=>'quantite','Demi_hauteur'=>'liste','Mesure_depuis_haut'=>'liste'];
+	static $valeurs_nouveau= ['URL'=>'redrooster.block-gothic-rr.demi-extra-condensed','Couleur_texte'=>'000000','Couleur_fond'=>'ffffff','Largeur'=>'700','Chaine'=>'Le journal de Mickey','Pos_x'=>'0','Pos_y'=>'5','Compression_x'=>'0.3','Compression_y'=>'0.3','Rotation'=>'90','Demi_hauteur'=>'Oui','Mesure_depuis_haut'=>'Oui'];
+	static $valeurs_defaut= ['Rotation'=>0,'Compression_x'=>'1','Compression_y'=>'1','Mesure_depuis_haut'=>'Oui'];
 	
-	static $descriptions=array('URL'=>'Nom de la police', 
+	static $descriptions= [
+        'URL'=>'Nom de la police',
 							   'Couleur_texte'=>'Couleur du texte',
 							   'Couleur_fond'=>'Couleur de l\'arri&egrave;re-plan du texte',
 							   'Largeur'=>'Largeur occup&eacute; par le texte',
@@ -1646,7 +1657,8 @@ class TexteMyFonts extends Fonction_executable {
 							   'Compression_y'=>'Compression de la hauteur du texte<br />(1 = Pas de compression)',
 							   'Rotation'=>'Rotation du texte<br />(0 = Pas de rotation)',
 							   'Demi_hauteur'=>'S&eacute;lectionnez "Oui" si jamais vous ne voyez le texte que sur la moiti&eacute; de sa hauteur',
-							   'Mesure_depuis_haut'=>'"Oui" si Pos_y doit repr&eacute;senter la marge jusqu\'au haut du texte, "Non" s\'il s\'agit de la marge jusqu\'au bas du texte');
+							   'Mesure_depuis_haut'=>'"Oui" si Pos_y doit repr&eacute;senter la marge jusqu\'au haut du texte, "Non" s\'il s\'agit de la marge jusqu\'au bas du texte'
+    ];
 
 	function __construct($options,$executer=true,$creation=false,$get_options_defaut=true,$supprimer_espaces_blancs=true, $options_avancees=true) {
 		parent::__construct($options,$creation,$get_options_defaut);
@@ -1736,12 +1748,13 @@ class TexteMyFonts extends Fonction_executable {
 
 class TexteTTF extends Fonction_executable {
 	static $libelle='Ajouter du texte';
-	static $champs=array('Pos_x'=>'quantite','Pos_y'=>'quantite','Rotation'=>'quantite','Taille'=>'quantite','Couleur'=>'couleur','Chaine'=>'texte','Police'=>'liste','Compression_x'=>'quantite','Compression_y'=>'quantite');
-	static $valeurs_nouveau=array('Pos_x'=>'3','Pos_y'=>'5','Rotation'=>'-90','Taille'=>'3.5','Couleur'=>'F50D05','Chaine'=>'Texte du num&eacute;ro [Numero]','Police'=>'Arial','Compression_x'=>'1','Compression_y'=>'1');
-	static $valeurs_defaut=array('Pos_x'=>0,'Pos_y'=>0,'Rotation'=>0,'Compression_x'=>'1','Compression_y'=>'1');
+	static $champs= ['Pos_x'=>'quantite','Pos_y'=>'quantite','Rotation'=>'quantite','Taille'=>'quantite','Couleur'=>'couleur','Chaine'=>'texte','Police'=>'liste','Compression_x'=>'quantite','Compression_y'=>'quantite'];
+	static $valeurs_nouveau= ['Pos_x'=>'3','Pos_y'=>'5','Rotation'=>'-90','Taille'=>'3.5','Couleur'=>'F50D05','Chaine'=>'Texte du num&eacute;ro [Numero]','Police'=>'Arial','Compression_x'=>'1','Compression_y'=>'1'];
+	static $valeurs_defaut= ['Pos_x'=>0,'Pos_y'=>0,'Rotation'=>0,'Compression_x'=>'1','Compression_y'=>'1'];
 	
 	
-	static $descriptions=array('Pos_x'=>'Marge du texte depuis la gauche de la tranche', 
+	static $descriptions= [
+        'Pos_x'=>'Marge du texte depuis la gauche de la tranche',
 							   'Pos_y'=>'Marge du texte depuis le haut de la tranche',
 							   'Rotation'=>'Rotation du texte<br />(0 = Pas de rotation)',
 							   'Taille'=>'Taille du texte, en pt',
@@ -1749,7 +1762,8 @@ class TexteTTF extends Fonction_executable {
 							   'Chaine'=>'Cha&icirc;ne de caract&egrave;res du texte',
 							   'Police'=>'Nom de la police de caract&egrave;res',
 							   'Compression_x'=>'Compression de la largeur de l\'image<br />(1 = Pas de compression)',
-							   'Compression_y'=>'Compression de la hauteur de l\'image<br />(1 = Pas de compression)');
+							   'Compression_y'=>'Compression de la hauteur de l\'image<br />(1 = Pas de compression)'
+    ];
 
 	function __construct($options,$executer=true,$creation=false,$get_options_defaut=true) {
 		parent::__construct($options,$creation,$get_options_defaut);
@@ -1796,13 +1810,15 @@ class TexteTTF extends Fonction_executable {
 
 class Polygone extends Fonction_executable {
 	static $libelle='Dessiner un polygone';
-	static $champs=array('X'=>'texte','Y'=>'texte','Couleur'=>'couleur');
-	static $valeurs_nouveau=array('X'=>'1,4,7,14','Y'=>'5,25,14,12','Couleur'=>'000000');
-	static $valeurs_defaut=array();
+	static $champs= ['X'=>'texte','Y'=>'texte','Couleur'=>'couleur'];
+	static $valeurs_nouveau= ['X'=>'1,4,7,14','Y'=>'5,25,14,12','Couleur'=>'000000'];
+	static $valeurs_defaut= [];
 	
-	static $descriptions=array('X'=>'Liste des abscisses des points, s&eacute;par&eacute;es par virgules', 
+	static $descriptions= [
+        'X'=>'Liste des abscisses des points, s&eacute;par&eacute;es par virgules',
 							   'Y'=>'Liste des ordonn&eacute;es des points, s&eacute;par&eacute;es par virgules', 
-							   'Couleur'=>'Couleur du polygone');
+							   'Couleur'=>'Couleur du polygone'
+    ];
 	
 
 	function __construct($options,$executer=true,$creation=false,$get_options_defaut=true) {
@@ -1811,8 +1827,8 @@ class Polygone extends Fonction_executable {
 			return;
 		$this->options->X=explode(',',str_replace(' ','',$this->options->X));
 		$this->options->Y=explode(',',str_replace(' ','',$this->options->Y));
-		$args=array(Viewer_wizard::$image);
-		$coord=array();
+		$args= [Viewer_wizard::$image];
+		$coord= [];
 		foreach(array_keys($this->options->X) as $i) {
 			$this->options->X[$i]=self::toTemplatedString($this->options->X[$i]);
 			$this->options->Y[$i]=self::toTemplatedString($this->options->Y[$i]);
@@ -1830,13 +1846,15 @@ class Polygone extends Fonction_executable {
 
 class Agrafer extends Fonction_executable {
 	static $libelle='Agrafer la tranche';
-	static $champs=array('Y1'=>'quantite','Y2'=>'quantite','Taille_agrafe'=>'quantite');
-	static $valeurs_nouveau=array('Y1'=>'[Hauteur]*0.2','Y2'=>'[Hauteur]*0.8','Taille_agrafe'=>'[Hauteur]*0.05');
-	static $valeurs_defaut=array('Y1'=>'[Hauteur]*0.2','Y2'=>'[Hauteur]*0.8','Taille_agrafe'=>'[Hauteur]*0.05');
+	static $champs= ['Y1'=>'quantite','Y2'=>'quantite','Taille_agrafe'=>'quantite'];
+	static $valeurs_nouveau= ['Y1'=>'[Hauteur]*0.2','Y2'=>'[Hauteur]*0.8','Taille_agrafe'=>'[Hauteur]*0.05'];
+	static $valeurs_defaut= ['Y1'=>'[Hauteur]*0.2','Y2'=>'[Hauteur]*0.8','Taille_agrafe'=>'[Hauteur]*0.05'];
 	
-	static $descriptions=array('Y1'=>'Marge de la 1&egrave;re agrafe par rapport au haut de la tranche', 
+	static $descriptions= [
+        'Y1'=>'Marge de la 1&egrave;re agrafe par rapport au haut de la tranche',
 							   'Y2'=>'Marge de la 2&egrave;me agrafe par rapport au haut de la tranche',
-							   'Taille_agrafe'=>'Hauteur de chaque agrafe');
+							   'Taille_agrafe'=>'Hauteur de chaque agrafe'
+    ];
 	
 	function __construct($options,$executer=true,$creation=false,$get_options_defaut=true) {
 		parent::__construct($options,$creation,$get_options_defaut);
@@ -1853,17 +1871,19 @@ class Agrafer extends Fonction_executable {
 
 class Degrade extends Fonction_executable {
 	static $libelle='Remplir une zone avec un d&eacute;grad&eacute;';
-	static $champs=array('Couleur_debut'=>'couleur','Couleur_fin'=>'couleur','Sens'=>'liste','Pos_x_debut'=>'quantite','Pos_x_fin'=>'quantite','Pos_y_debut'=>'quantite','Pos_y_fin'=>'quantite');
-	static $valeurs_nouveau=array('Couleur_debut'=>'D01721','Couleur_fin'=>'0000FF','Sens'=>'Vertical','Pos_x_debut'=>'3','Pos_x_fin'=>'[Largeur]-3','Pos_y_debut'=>'3','Pos_y_fin'=>'[Hauteur]*0.5');
-	static $valeurs_defaut=array();
+	static $champs= ['Couleur_debut'=>'couleur','Couleur_fin'=>'couleur','Sens'=>'liste','Pos_x_debut'=>'quantite','Pos_x_fin'=>'quantite','Pos_y_debut'=>'quantite','Pos_y_fin'=>'quantite'];
+	static $valeurs_nouveau= ['Couleur_debut'=>'D01721','Couleur_fin'=>'0000FF','Sens'=>'Vertical','Pos_x_debut'=>'3','Pos_x_fin'=>'[Largeur]-3','Pos_y_debut'=>'3','Pos_y_fin'=>'[Hauteur]*0.5'];
+	static $valeurs_defaut= [];
 	
-	static $descriptions=array('Couleur_debut'=>'Couleur du d&eacute;but du d&eacute;grad&eacute;', 
+	static $descriptions= [
+        'Couleur_debut'=>'Couleur du d&eacute;but du d&eacute;grad&eacute;',
 							   'Couleur_fin'=>'Couleur du fin du d&eacute;grad&eacute;',  
 							   'Sens'=>'"Horizontal" (de gauche &agrave; droite) ou "Vertical" (de haut en bas)',  
 							   'Pos_x_debut'=>'Marge du d&eacute;but du d&eacute;grad&eacute; par rapport &agrave; la gauche de la tranche',
 							   'Pos_x_fin'=>'Marge de la fin du d&eacute;grad&eacute; par rapport &agrave; la gauche de la tranche',
 							   'Pos_y_debut'=>'Marge du d&eacute;but du d&eacute;grad&eacute; par rapport au haut de la tranche',
-							   'Pos_y_fin'=>'Marge de la fin du d&eacute;grad&eacute; par rapport au haut de la tranche');
+							   'Pos_y_fin'=>'Marge de la fin du d&eacute;grad&eacute; par rapport au haut de la tranche'
+    ];
 	
 	function __construct($options,$executer=true,$creation=false,$get_options_defaut=true) {
 		parent::__construct($options,$creation,$get_options_defaut);
@@ -1876,8 +1896,8 @@ class Degrade extends Fonction_executable {
 		$this->options->Pos_y_fin=z(self::toTemplatedString($this->options->Pos_y_fin));
 		list($r1,$g1,$b1)=$this->getRGB($this->options->Couleur_debut);
 		list($r2,$g2,$b2)=$this->getRGB($this->options->Couleur_fin);
-		$couleur1=array($r1,$g1,$b1);
-		$couleur2=array($r2,$g2,$b2);
+		$couleur1= [$r1,$g1,$b1];
+		$couleur2= [$r2,$g2,$b2];
 		if ($this->options->Sens == 'Horizontal') {
 			if ($this->options->Pos_x_debut < $this->options->Pos_x_fin) {
 				$couleurs_inter=self::getMidColors($couleur1, $couleur2, abs($this->options->Pos_x_debut-$this->options->Pos_x_fin));
@@ -1915,9 +1935,9 @@ class Degrade extends Fonction_executable {
 		}
 	}
 	static function getMidColors($rgb1, $rgb2, $nb) {
-		$rgb_mid=array();
+		$rgb_mid= [];
 		for ($j = 1; $j <= $nb; $j++) {
-			$rgb_mid[$j]=array();
+			$rgb_mid[$j]= [];
 			for ($i = 0; $i < 3; $i++) {
 				if ($rgb1[$i] < $rgb2[$i]) {
 					$rgb_mid[$j][]= round(((max($rgb1[$i], $rgb2[$i]) - min($rgb1[$i], $rgb2[$i])) / ($nb + 1)) * $j + min($rgb1[$i], $rgb2[$i]));
@@ -1932,11 +1952,11 @@ class Degrade extends Fonction_executable {
 
 class DegradeTrancheAgrafee extends Fonction_executable {
 	static $libelle='Remplir la tranche avec un d&eacute;grad&eacute; et l\'agrafer';
-	static $champs=array('Couleur'=>'couleur');
-	static $valeurs_nouveau=array('Couleur'=>'D01721');
-	static $valeurs_defaut=array();
+	static $champs= ['Couleur'=>'couleur'];
+	static $valeurs_nouveau= ['Couleur'=>'D01721'];
+	static $valeurs_defaut= [];
 	
-	static $descriptions=array('Couleur'=>'Couleur de la tranche');
+	static $descriptions= ['Couleur'=>'Couleur de la tranche'];
 	
 	function __construct($options,$executer=true,$creation=false,$get_options_defaut=true) {
 		parent::__construct($options,$creation,$get_options_defaut);
@@ -1944,9 +1964,9 @@ class DegradeTrancheAgrafee extends Fonction_executable {
 			return;
 		$coef_degrade=1.75;
 		list($r1,$g1,$b1)=$this->getRGB($this->options->Couleur);
-		list($r2,$g2,$b2)=array(round($r1/$coef_degrade),round($g1/$coef_degrade),round($b1/$coef_degrade));
-		$couleur1=array($r1,$g1,$b1);
-		$couleur2=array($r2,$g2,$b2);
+		list($r2,$g2,$b2)= [round($r1/$coef_degrade),round($g1/$coef_degrade),round($b1/$coef_degrade)];
+		$couleur1= [$r1,$g1,$b1];
+		$couleur2= [$r2,$g2,$b2];
 		$milieu=round(Viewer_wizard::$largeur/2);
 		$couleurs_inter=Degrade::getMidColors($couleur1, $couleur2, $milieu);
 		imageline(Viewer_wizard::$image, $milieu, 0, $milieu, Viewer_wizard::$hauteur, imagecolorallocate(Viewer_wizard::$image, $r1,$g1,$b1));
@@ -1964,16 +1984,18 @@ class DegradeTrancheAgrafee extends Fonction_executable {
 
 class Rectangle extends Fonction_executable {
 	static $libelle='Dessiner un rectangle';
-	static $champs=array('Couleur'=>'couleur','Pos_x_debut'=>'quantite','Pos_x_fin'=>'quantite','Pos_y_debut'=>'quantite','Pos_y_fin'=>'quantite','Rempli'=>'liste');
-	static $valeurs_nouveau=array('Couleur'=>'D01721','Pos_x_debut'=>'3','Pos_x_fin'=>'[Largeur]-3','Pos_y_debut'=>'3','Pos_y_fin'=>'[Hauteur]*0.5','Rempli'=>'Non');
-	static $valeurs_defaut=array();
+	static $champs= ['Couleur'=>'couleur','Pos_x_debut'=>'quantite','Pos_x_fin'=>'quantite','Pos_y_debut'=>'quantite','Pos_y_fin'=>'quantite','Rempli'=>'liste'];
+	static $valeurs_nouveau= ['Couleur'=>'D01721','Pos_x_debut'=>'3','Pos_x_fin'=>'[Largeur]-3','Pos_y_debut'=>'3','Pos_y_fin'=>'[Hauteur]*0.5','Rempli'=>'Non'];
+	static $valeurs_defaut= [];
 	
-	static $descriptions=array('Couleur'=>'Couleur du rectangle', 
+	static $descriptions= [
+        'Couleur'=>'Couleur du rectangle',
 							   'Pos_x_debut'=>'Marge du d&eacute;but du rectangle par rapport &agrave; la gauche de la tranche',
 							   'Pos_x_fin'=>'Marge de la fin du rectangle par rapport &agrave; la gauche de la tranche',
 							   'Pos_y_debut'=>'Marge du d&eacute;but du rectangle par rapport au haut de la tranche',
 							   'Pos_y_fin'=>'Marge de la fin du rectangle par rapport au haut de la tranche',
-							   'Rempli'=>'"Oui" pour dessiner un rectangle rempli, "Non" pour dessiner seulement le contour');
+							   'Rempli'=>'"Oui" pour dessiner un rectangle rempli, "Non" pour dessiner seulement le contour'
+    ];
 	
 	function __construct($options,$executer=true,$creation=false,$get_options_defaut=true) {
 		parent::__construct($options,$creation,$get_options_defaut);
@@ -1995,18 +2017,20 @@ class Rectangle extends Fonction_executable {
 
 class Arc_cercle extends Fonction_executable {
 	static $libelle='Dessiner un arc de cercle';
-	static $champs=array('Couleur'=>'couleur','Pos_x_centre'=>'quantite','Pos_y_centre'=>'quantite','Largeur'=>'quantite','Hauteur'=>'quantite','Angle_debut'=>'quantite','Angle_fin'=>'quantite','Rempli'=>'liste');
-	static $valeurs_nouveau=array('Couleur'=>'BBBBBB','Pos_x_centre'=>'10','Pos_y_centre'=>'50','Largeur'=>'10','Hauteur'=>'20','Angle_debut'=>'0','Angle_fin'=>'360','Rempli'=>'Non');
-	static $valeurs_defaut=array();
+	static $champs= ['Couleur'=>'couleur','Pos_x_centre'=>'quantite','Pos_y_centre'=>'quantite','Largeur'=>'quantite','Hauteur'=>'quantite','Angle_debut'=>'quantite','Angle_fin'=>'quantite','Rempli'=>'liste'];
+	static $valeurs_nouveau= ['Couleur'=>'BBBBBB','Pos_x_centre'=>'10','Pos_y_centre'=>'50','Largeur'=>'10','Hauteur'=>'20','Angle_debut'=>'0','Angle_fin'=>'360','Rempli'=>'Non'];
+	static $valeurs_defaut= [];
 	
-	static $descriptions=array('Couleur'=>'Couleur de l\'arc de cercle', 
+	static $descriptions= [
+        'Couleur'=>'Couleur de l\'arc de cercle',
 							   'Pos_x_centre'=>'Marge du centre de l\arc par rapport &agrave; la gauche de la tranche',
 							   'Pos_y_centre'=>'Marge du centre de l\arc par rapport au haut de la tranche',
 							   'Largeur'=>'Largeur de l\'arc de cercle<br />(Correspond au diam&egrave;tre pour un cercle complet)',
 							   'Hauteur'=>'Hauteur de l\'arc de cercle<br />(Correspond au diam&egrave;tre pour un cercle complet)',
 							   'Angle_debut'=>'Angle du d&eacute;but de l\'arc de cercle<br />(0 pour un cercle complet)',
 							   'Angle_fin'=>'Angle de la fin de l\'arc de cercle<br />(360 pour un cercle complet)',
-							   'Rempli'=>'"Oui" pour dessiner un arc de cercle rempli, "Non" pour dessiner seulement le trait');
+							   'Rempli'=>'"Oui" pour dessiner un arc de cercle rempli, "Non" pour dessiner seulement le trait'
+    ];
 	
 	function __construct($options,$executer=true,$creation=false,$get_options_defaut=true) {
 		parent::__construct($options,$creation,$get_options_defaut);
@@ -2088,7 +2112,7 @@ function est_dans_intervalle($numero,$intervalle) {
 		$intervalles=explode(';',$intervalle);
 		foreach($intervalles as $intervalle) {
 			if (strpos($intervalle, '~') === false)
-				list($numero_debut,$numero_fin)=array($intervalle,$intervalle);
+				list($numero_debut,$numero_fin)= [$intervalle,$intervalle];
 			else
 				list($numero_debut,$numero_fin)=explode('~',$intervalle);
 			$numeros_debut[]=$numero_debut;
@@ -2096,7 +2120,7 @@ function est_dans_intervalle($numero,$intervalle) {
 		}
 	}
 	else
-		list($numeros_debut,$numeros_fin)=array(explode(';',$intervalle),explode(';',$intervalle));
+		list($numeros_debut,$numeros_fin)= [explode(';',$intervalle),explode(';',$intervalle)];
 	
 	foreach($numeros_debut as $i=>$numero_debut) {
 		$numero_fin=$numeros_fin[$i];
@@ -2123,7 +2147,7 @@ function est_dans_intervalle($numero,$intervalle) {
 
 function rgb2hex($r, $g, $b) {
 	$hex = "";
-	$rgb = array($r, $g, $b);
+	$rgb = [$r, $g, $b];
 	for ($i = 0; $i < 3; $i++) {
 		if (($rgb[$i] > 255) || ($rgb[$i] < 0)) {
 			echo "Error : input must be between 0 and 255";
@@ -2140,9 +2164,9 @@ function rgb2hex($r, $g, $b) {
 
 function hex2rgb($color){
 	if (strlen($color) != 6){
-		return array(0,0,0);
+		return [0,0,0];
 	}
-	$rgb = array();
+	$rgb = [];
 	for ($x=0;$x<3;$x++){
 		$rgb[$x] = hexdec(substr($color,(2*$x),2));
 	}
@@ -2151,19 +2175,19 @@ function hex2rgb($color){
 
 function getNumerosDebutFinShort($intervalle=null) {
 	if (is_null($intervalle))
-		return array(Modele_tranche::$numero_debut,Modele_tranche::$numero_fin);
+		return [Modele_tranche::$numero_debut,Modele_tranche::$numero_fin];
 	$numero_debut_fin=explode('~',$intervalle);
 	if (count($numero_debut_fin)==2)
 		return explode('~',$intervalle);
 	else
-		return array($intervalle,$intervalle);
+		return [$intervalle,$intervalle];
 }
 
 function decomposer_numero ($numero) {
-	if ($numero=='Tous') return array('Tous','Tous');
+	if ($numero=='Tous') return ['Tous','Tous'];
 	$regex_partie_numerique='#([A-Z]*)([0-9]*)#is';
 	preg_match($regex_partie_numerique, $numero,$resultat_numero_debut);
-	return array($resultat_numero_debut[1],$resultat_numero_debut[2]);
+	return [$resultat_numero_debut[1],$resultat_numero_debut[2]];
 }
 
 function trier_intervalles($intervalle1,$intervalle2) {
@@ -2193,7 +2217,7 @@ function imagettfbbox_t($size, $angle, $fontfile, $text){
 	// compute some usefull values
 	$ca = cos($a);
 	$sa = sin($a);
-	$ret = array();
+	$ret = [];
 	// perform transformations
 	for($i = 0; $i < 7; $i += 2){
 		$ret[$i] = round($coords[$i] * $ca + $coords[$i+1] * $sa);
@@ -2205,17 +2229,17 @@ function imagettfbbox_t($size, $angle, $fontfile, $text){
 		function calculateTextBox($text,$fontFile,$fontSize,$fontAngle) {
 		  $rect = imagettfbbox_t($fontSize,$fontAngle,$fontFile,$text);
 	
-		  $minX = min(array($rect[0],$rect[2],$rect[4],$rect[6]));
-		  $maxX = max(array($rect[0],$rect[2],$rect[4],$rect[6]));
-		  $minY = min(array($rect[1],$rect[3],$rect[5],$rect[7]));
-		  $maxY = max(array($rect[1],$rect[3],$rect[5],$rect[7]));
+		  $minX = min([$rect[0],$rect[2],$rect[4],$rect[6]]);
+		  $maxX = max([$rect[0],$rect[2],$rect[4],$rect[6]]);
+		  $minY = min([$rect[1],$rect[3],$rect[5],$rect[7]]);
+		  $maxY = max([$rect[1],$rect[3],$rect[5],$rect[7]]);
 	
-		  return array(
+		  return [
 			"left"   => abs($minX),
 			"top"	=> abs($minY),
 			"width"  => $maxX - $minX,
 			"height" => $maxY - $minY,
 			"box"	=> $rect
-		  );
+          ];
 		}
 ?>

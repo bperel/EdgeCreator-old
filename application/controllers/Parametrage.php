@@ -9,7 +9,7 @@ class Parametrage extends EC_Controller {
 	
 	function index($pays=null,$magazine=null,$ordre=null,$numero_debut=1,$numero_fin=1,$nom_fonction=null,$parametrage='',$appliquer=false) {
 		
-		if (in_array(null,array($pays,$magazine,$ordre,$nom_fonction))) {
+		if (in_array(null, [$pays,$magazine,$ordre,$nom_fonction])) {
 			echo 'Erreur : Nombre d\'arguments insuffisant';
 			exit();
 		}
@@ -31,10 +31,10 @@ class Parametrage extends EC_Controller {
 		$this->Modele_tranche->setNumerosDisponibles($numeros_dispos);
 		if ($appliquer) {
 			$parametrage=json_decode($parametrage);
-			$parametrage_f=array();
+			$parametrage_f= [];
 			foreach($parametrage as $ordre_fonction=>$options) {
 				list($ordre,$nom_fonction,$numero_debut,$numero_fin)=explode('~',$ordre_fonction);
-				$parametrage_f[$ordre_fonction]=array();
+				$parametrage_f[$ordre_fonction]= [];
 				foreach($options as $option_nom_intervalle=>$option_valeur) {
 					$parametrage_f[$ordre_fonction][$option_nom_intervalle]=urldecode(str_replace('^','%',$option_valeur));
 				}
@@ -53,7 +53,7 @@ class Parametrage extends EC_Controller {
 			
 			$numeros_dispos=$this->Modele_tranche->get_numeros_disponibles(self::$pays,self::$magazine,$fonction->Numero_debut,$fonction->Numero_fin);
 			$this->Modele_tranche->setDropdownNumeros(form_dropdown('', $numeros_dispos));
-			$numeros_debut_globaux=$numeros_fin_globaux=array();
+			$numeros_debut_globaux=$numeros_fin_globaux= [];
 			$numeros_debut=explode(';',$fonction->Numero_debut);
 			$numeros_fin=explode(';',$fonction->Numero_fin);
 			foreach($numeros_debut as $i=>$numero_debut) {
@@ -61,13 +61,13 @@ class Parametrage extends EC_Controller {
 				$numeros_debut_globaux[]=$this->Modele_tranche->setDropdownNumerosSelected($numero_debut,$this->Modele_tranche->setDropdownNumerosId('numero_debut'.$i));
 				$numeros_fin_globaux[]=$this->Modele_tranche->setDropdownNumerosSelected($numero_fin,$this->Modele_tranche->setDropdownNumerosId('numero_fin'.$i));
 			}
-			$data = array(
+			$data = [
 					'fonction'=>$fonction,
 					'options'=>$fonction->options,
 					'intervalle'=>$fonction->getIntervalle($fonction->Numero_debut, $fonction->Numero_fin),
 					'numeros_debut_globaux'=>$numeros_debut_globaux,
 					'numeros_fin_globaux'=>$numeros_fin_globaux,
-			);
+            ];
 
 			$this->load->view('parametrageview',$data);
 		}

@@ -14,8 +14,8 @@ class EdgeCreator extends EC_Controller {
 		$this->load->helper('url');
 
 		if (!is_null($pays) && !is_null($magazine)) {
-			$this->session->set_userdata(array('pays'=>self::$pays));
-			$this->session->set_userdata(array('magazine'=>self::$magazine));
+			$this->session->set_userdata(['pays'=>self::$pays]);
+			$this->session->set_userdata(['magazine'=>self::$magazine]);
 		}
 		if (!is_null($this->session->userdata('pays')) && !is_null($this->session->userdata('magazine'))) {
 			self::$pays=$this->session->userdata('pays');
@@ -27,7 +27,7 @@ class EdgeCreator extends EC_Controller {
 		$this->Modele_tranche->setMagazine(self::$magazine);
 		$num_ordres=$this->Modele_tranche->get_ordres(self::$pays,self::$magazine);
 		//print_r($etapes);
-		$etapes=array();
+		$etapes= [];
 		foreach($num_ordres as $num_ordre) {
 			$etapes[$num_ordre]=$this->Modele_tranche->get_fonctions(self::$pays,self::$magazine,$num_ordre);
 			foreach($etapes[$num_ordre] as &$fonction) {
@@ -37,25 +37,25 @@ class EdgeCreator extends EC_Controller {
 		}
 
 		$numeros_dispos=$this->Modele_tranche->get_numeros_disponibles(self::$pays,self::$magazine);
-		$liste_fonctions=array('Dimensions','Remplir','Agrafer','TexteTTF','TexteMyFonts','Image','Polygone','Degrade','DegradeTrancheAgrafee','Rectangle','Arc_cercle');
+		$liste_fonctions= ['Dimensions','Remplir','Agrafer','TexteTTF','TexteMyFonts','Image','Polygone','Degrade','DegradeTrancheAgrafee','Rectangle','Arc_cercle'];
 		sort($liste_fonctions);
-		$data = array(
+		$data = [
 				'title' => 'EdgeCreator',
 				'pays' => self::$pays,
 				'magazine'=>self::$magazine,
 				'etapes'=>$etapes,
 				'texte'=>'',
 				'liste_fonctions'=>form_dropdown('nouvelle_fonction',$liste_fonctions,count($etapes) == 0 ? array_search('Dimensions', $liste_fonctions)  : null,'id="nouvelle_fonction"')
-		);
-		$this->session->set_userdata(array('zoom'=>1));
+        ];
+		$this->session->set_userdata(['zoom'=>1]);
 
 		if (false!==$this->input->post('zoom')) {
-			$this->session->set_userdata(array('zoom'=>$this->input->post('zoom')));
+			$this->session->set_userdata(['zoom'=>$this->input->post('zoom')]);
 		}
-		$this->session->set_userdata(array('preview'=>'Aucun'));
+		$this->session->set_userdata(['preview'=>'Aucun']);
 
 		if (false!==$this->input->post('preview_issue')) {
-			$this->session->set_userdata(array('preview_issue'=>$this->input->post('preview_issue')));
+			$this->session->set_userdata(['preview_issue'=>$this->input->post('preview_issue')]);
 		}
 		$data['numeros_preview']=form_dropdown('preview_issue', $numeros_dispos, '[Aucun]','id="preview_issue"');
 		$data['numeros_debut_gen']=form_dropdown('preview_issue', $numeros_dispos, '[Aucun]','id="first_issue"');
@@ -67,14 +67,14 @@ class EdgeCreator extends EC_Controller {
 		$data['numeros_extension1_select']=form_dropdown('extension1', $numeros_dispos, end($numeros_dispos),'id="extension1"');
 		$data['numeros_extension2_select']=form_dropdown('extension2', $numeros_dispos, end($numeros_dispos),'id="extension2"');
 		
-		$num_etapes=array();
+		$num_etapes= [];
 		foreach(array_keys($etapes) as $num_etape) {
 			if ($num_etape != -1)
 				$num_etapes[$num_etape]=$num_etape;
 		}
 		$data['etapes_clonables']=count($num_etapes) == 0 ? '' : form_dropdown('etapes_clonables', $num_etapes, $num_etape);
 		
-		$data['zoom']=form_dropdown('zoom', array('1'=>1,'1.5'=>1.5,'2'=>2,'4'=>4,'8'=>8), 1.5,'id="zoom"')
+		$data['zoom']=form_dropdown('zoom', ['1'=>1,'1.5'=>1.5,'2'=>2,'4'=>4,'8'=>8], 1.5,'id="zoom"')
 							 .'<br /><br />';
 		$data['preview_form']='Num&eacute;ro de pr&eacute;visualisation : '
 							 .$data['numeros_preview']
