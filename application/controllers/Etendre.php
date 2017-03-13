@@ -18,7 +18,7 @@ class Etendre extends EC_Controller {
 			self::$nouveau_numero=$nouveau_numero;
 			
 			
-			$this->db->query('SET NAMES UTF8');
+
 			$this->load->helper('url');
 			
 			$this->init_model();

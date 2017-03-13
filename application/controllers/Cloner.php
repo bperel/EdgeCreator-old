@@ -7,8 +7,7 @@ class Cloner extends EC_Controller {
 			$this->load->view('errorview', ['Erreur'=> 'Nombre d\'arguments insuffisant']);
 			exit();
 		}
-		
-		$this->db->query('SET NAMES UTF8');
+        
 		$this->load->helper('url');
 		$this->load->helper('form');
 		

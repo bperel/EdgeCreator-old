@@ -22,7 +22,7 @@ class ModifierG extends EC_Controller {
 			self::$nom_option=$nom_option;
 			self::$nouvelle_valeur=$nouvelle_valeur;
 			
-			$this->db->query('SET NAMES UTF8');
+
 			$this->load->helper('url');
 			$this->load->helper('form');
 			

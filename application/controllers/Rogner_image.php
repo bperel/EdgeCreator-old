@@ -8,7 +8,7 @@ class Rogner_Image extends EC_Controller {
 			exit();
 		}
 		
-		$this->db->query('SET NAMES UTF8');
+
 		$this->init_model();
 		
 		new Rogner($pays, $magazine, $numero_original, $numero, $nom, $source, $destination, $x1, $x2, $y1, $y2);

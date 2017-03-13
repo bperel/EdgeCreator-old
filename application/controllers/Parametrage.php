@@ -21,8 +21,6 @@ class Parametrage extends EC_Controller {
 		self::$nom_fonction=$nom_fonction;
 		
 		$this->load->library('session');
-		$this->load->database();
-		$this->db->query('SET NAMES UTF8');
 		$this->load->helper('url');
 		$this->load->helper('form');
 		

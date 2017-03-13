@@ -7,7 +7,7 @@ class Photo_Principale extends EC_Controller {
 			exit();
 		}
 		
-		$this->db->query('SET NAMES UTF8');
+
 		$this->init_model();
         $this->Modele_tranche->setUsername($this->session->userdata('user'));
 		

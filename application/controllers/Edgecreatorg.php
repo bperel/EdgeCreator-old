@@ -4,7 +4,6 @@ class EdgeCreatorg extends Ec_Controller {
 	static $magazine;
 	
 	function login() {
-		$this->load->library('input');
 		$this->load->model($this->session->userdata('mode_expert') === true ? 'Modele_tranche' : 'Modele_tranche_Wizard','Modele_tranche');
 		
 		$this->logout();

@@ -8,17 +8,16 @@ class Modele_tranche_Wizard extends Modele_tranche {
 	function get_tranches_en_cours($id=null,$pays=null,$magazine=null,$numero=null) {
 		$requete='SELECT ID, Pays, Magazine, Numero, username '
 				.'FROM tranches_en_cours_modeles '
-				.'WHERE username=\''.mysql_real_escape_string(self::$username).'\' AND Active=1';
+				.'WHERE username=\''.self::$username.'\' AND Active=1';
 		if (!is_null($id)) {
 			$requete.=' AND ID='.$id;
 		}
 		elseif (!is_null($pays)) {
 			$requete.=' AND Pays=\''.$pays.'\' AND Magazine=\''.$magazine.'\' AND Numero=\''.$numero.'\'';
 		}
-		
-		$query = $this->db->query($requete);
-		$resultats=$query->result();
-		$liste_pays= [];
+        $resultats = DmClient::get_query_results_from_dm_server($requete, 'edgecreator');
+
+        $liste_pays= [];
 		foreach($resultats as $resultat) {
 			$resultat->Pays_complet='';
 			$resultat->Magazine_complet='';
@@ -27,12 +26,10 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		}
 
 		// TODO
-        $noms_pays = DmClient::get_service_results(DmClient::$coa_server, 'GET','/coa/list/countries', []);
-        $noms_magazines = DmClient::get_service_results(DmClient::$coa_server, 'GET','/coa/list/publications', [$pays]);
+        $noms_pays = DmClient::get_service_results(DmClient::$dm_server, 'GET','/coa/list/countries', [implode(',', array_unique($liste_pays))]);
+        $noms_magazines = DmClient::get_service_results(DmClient::$dm_server, 'GET','/coa/list/publications', [implode(',', array_unique($liste_pays))]);
 
-        $noms_pays = Inducks::get_pays();
 		foreach($liste_pays as $pays) {
-			$noms_magazines=Inducks::get_liste_magazines($pays);
 			foreach($resultats as $resultat) {
 				if ($resultat->Pays == $pays) {
 					$resultat->Pays_complet=$noms_pays[$resultat->Pays];
@@ -327,7 +324,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		
 		$requete_ajout_modele='INSERT INTO tranches_en_cours_modeles (Pays, Magazine, Numero, username, Active) '
 							 .'VALUES (\''.$pays.'\',\''.$magazine.'\',\''.$nouveau_numero.'\','
-							 .'\''.mysql_real_escape_string(self::$username).'\', 1)';
+							 .'\''.self::$username.'\', 1)';
 		$this->db->query($requete_ajout_modele);
 		$id_modele=$this->get_id_modele_tranche_en_cours_max();
 		
@@ -390,12 +387,10 @@ class Modele_tranche_Wizard extends Modele_tranche {
 			$publication_codes[]=$resultat['Pays'].'/'.$resultat['Magazine'];
 		}
 
-        $noms_pays = DmClient::get_service_results(DmClient::$coa_server, 'GET','/coa/list/countries', [$country_codes]);
-        $noms_magazines = DmClient::get_service_results(DmClient::$coa_server, 'GET','/coa/list/publications', [$publication_codes]);
+        $noms_magazines = DmClient::get_service_results(DmClient::$dm_server, 'GET','/coa/list/publications', [implode(',', array_unique($publication_codes))]);
 
 		foreach($resultats as &$resultat) {
-			$resultat['Magazine_complet'] = $noms_magazines[$resultat['Pays'].'/'.$resultat['Magazine']]
-                                        .' ('.$noms_pays[$resultat['Pays']].')';
+			$resultat['Magazine_complet'] = $noms_magazines[$resultat['Pays'].'/'.$resultat['Magazine']];
 		}
 		
 		return $resultats;

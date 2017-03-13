@@ -34,7 +34,7 @@ class Modele_tranche extends CI_Model {
 	}
 	
 	function requete_select_dm($requete) {
-		return DmClient::get_query_results_from_remote(DmClient::$dm_server, $requete);
+		return DmClient::get_query_results_from_dm_site($requete);
 	}
 	
 	function get_privilege() {
@@ -46,7 +46,7 @@ class Modele_tranche extends CI_Model {
 				$this->creer_id_session($_POST['user'],sha1($_POST['pass']),$_POST['mode_expert']);
 		}
 		else {
-			if ($this->session->userdata('user') !== false && $this->session->userdata('pass') !== false) {
+			if (!is_null($this->session->userdata('user')) && !is_null($this->session->userdata('pass'))) {
 				$privilege = $this->user_connects($this->session->userdata('user'),$this->session->userdata('pass'));
 				if ($privilege == null) {
 					$this->creer_id_session($this->session->userdata('user'),
@@ -85,7 +85,7 @@ class Modele_tranche extends CI_Model {
 				return null;
 			}
 			else {
-				$requete='SELECT privilege FROM edgecreator_droits WHERE username =\''.$user.'\'';
+				$requete='SELECT privilege FROM users_permissions WHERE username =\''.$user.'\' AND role = \'EdgeCreator\'';
 				$resultat = $this->requete_select_dm($requete);
 				if (count($resultat)==0) {
 					return 'Affichage';
@@ -121,9 +121,10 @@ class Modele_tranche extends CI_Model {
 										   .'INNER JOIN edgecreator_valeurs ON edgecreator_modeles2.ID = edgecreator_valeurs.ID_Option '
 										   .'INNER JOIN edgecreator_intervalles ON edgecreator_valeurs.ID = edgecreator_intervalles.ID_Valeur '
 										   .'WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' AND username = \''.$username.'\'';
-			$user_possede_modele = $this->db->query($requete_modele_magazine_existe)->first_row()->cpt > 0;
+			$user_possede_modele = DmClient::get_query_results_from_dm_server($requete_modele_magazine_existe, 'edgecreator')[0]['cpt'] > 0;
+            self::$user_possede_modele = $user_possede_modele;
 		}
-		return $user_possede_modele;
+		return self::$user_possede_modele;
 	}
 
 	function dupliquer_modele_magazine_si_besoin($pays,$magazine) {
@@ -479,11 +480,11 @@ class Modele_tranche extends CI_Model {
 	}
 	
 	function get_pays() {
-		return DmClient::get_service_results(DmClient::$coa_server, 'GET','/coa/list/countries', []);
+		return DmClient::get_service_results(DmClient::$dm_server, 'GET','/coa/list/countries', []);
 	}
 	
 	function get_magazines($pays) {
-        return DmClient::get_service_results(DmClient::$coa_server, 'GET','/coa/list/publications', [$pays]);
+        return DmClient::get_service_results(DmClient::$dm_server, 'GET','/coa/list/publications', [$pays]);
 	}
 
 	function get_numeros($publicationcode) {
@@ -537,7 +538,7 @@ class Modele_tranche extends CI_Model {
 				.' FROM tranches_en_cours_modeles_vue '
 				.' WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\''
 				.' AND Numero IN ('.implode(',', $numeros_esc).') '
-				.' AND username=\''.mysql_real_escape_string(self::$username).'\''
+				.' AND username=\''.self::$username.'\''
 				.' ORDER BY Ordre';
 			$resultats=$this->db->query($requete_get_options)->result();
 		}
@@ -556,8 +557,8 @@ class Modele_tranche extends CI_Model {
 		$options= [];
 		
 		foreach($resultats as $resultat) {
-			$option_nom=is_null($resultat->Option_nom) ? 'NULL' : ('\''.mysql_real_escape_string($resultat->Option_nom).'\'');
-			$option_valeur=is_null($resultat->Option_valeur) ? 'NULL' : ('\''.mysql_real_escape_string($resultat->Option_valeur).'\'');
+			$option_nom=is_null($resultat->Option_nom) ? 'NULL' : ('\''.$resultat->Option_nom.'\'');
+			$option_valeur=is_null($resultat->Option_valeur) ? 'NULL' : ('\''.$resultat->Option_valeur.'\'');
 			$est_ec_v2 = $resultat->EC_v2 == 1;
 			
 			foreach($numeros as $numero) {
@@ -769,7 +770,6 @@ class Modele_tranche extends CI_Model {
 	}
 
 	function insert_valeur_option($pays,$magazine,$etape,$nom_fonction,$option_nom,$valeur,$numero_debut,$numero_fin,$id_valeur=null) {
-		$valeur=mysql_real_escape_string($valeur);
 		if ($option_nom=='Actif') {
 			$this->insert($pays, $magazine, $etape, $nom_fonction, null, null, $numero_debut, $numero_fin, $id_valeur);
 			
@@ -795,8 +795,8 @@ class Modele_tranche extends CI_Model {
 		echo $requete_get_options."\n";
 		$resultats=$this->db->query($requete_get_options)->result();
 		foreach($resultats as $resultat) {
-			$option_nom=is_null($resultat->Option_nom) ? 'NULL' : ('\''.mysql_real_escape_string($resultat->Option_nom).'\'');
-			$option_valeur=is_null($resultat->Option_valeur) ? 'NULL' : ('\''.mysql_real_escape_string($resultat->Option_valeur).'\'');
+			$option_nom=is_null($resultat->Option_nom) ? 'NULL' : ('\''.$resultat->Option_nom.'\'');
+			$option_valeur=is_null($resultat->Option_valeur) ? 'NULL' : ('\''.$resultat->Option_valeur.'\'');
 			$intervalle=$this->getIntervalleShort($this->getIntervalle($resultat->Numero_debut, $resultat->Numero_fin));
 			if (est_dans_intervalle($numero,$intervalle)) {
 				if (!est_dans_intervalle($nouveau_numero,$intervalle)) {
@@ -810,14 +810,14 @@ class Modele_tranche extends CI_Model {
 									  .'AND Ordre = \''.$resultat->Ordre.'\' AND Nom_fonction = \''.$resultat->Nom_fonction.'\' '
 									  .'AND Option_nom '.$condition_option_nom.' AND Option_valeur '.$condition_option_valeur.' '
 									  .'AND Numero_debut = \''.$resultat->Numero_debut.'\' AND Numero_fin = \''.$resultat->Numero_fin.'\' '
-									  .'AND username = \''.mysql_real_escape_string($resultat->username).'\'';
+									  .'AND username = \''.$resultat->username.'\'';
 					echo $requete_id_valeur."\n";
 					$id_valeur = $this->db->query($requete_id_valeur)->first_row()->ID;
 					
 					
 					$req_suppression_existantes='DELETE FROM edgecreator_intervalles '
 											   .'WHERE ID_Valeur='.$id_valeur.' AND Numero_debut = \''.$resultat->Numero_debut.'\' AND Numero_fin = \''.$resultat->Numero_fin.'\' '
-											   .'AND username = \''.mysql_real_escape_string($resultat->username).'\'';
+											   .'AND username = \''.$resultat->username.'\'';
 					echo $req_suppression_existantes."\n";
 					$this->db->query($req_suppression_existantes);
 											
@@ -825,7 +825,7 @@ class Modele_tranche extends CI_Model {
 					foreach($intervalles as $intervalle) {
 						list($numero_debut,$numero_fin)=explode('~',$intervalle);
 						$req_ajout_nouvel_intervalle='INSERT INTO edgecreator_intervalles (ID_Valeur,Numero_debut,Numero_fin,username) '
-										    .'VALUES ('.$id_valeur.',\''.$numero_debut.'\',\''.$numero_fin.'\',\''.mysql_real_escape_string($resultat->username).'\')';
+										    .'VALUES ('.$id_valeur.',\''.$numero_debut.'\',\''.$numero_fin.'\',\''.$resultat->username.'\')';
 						echo $req_ajout_nouvel_intervalle."\n";
 						$this->db->query($req_ajout_nouvel_intervalle);
 					}

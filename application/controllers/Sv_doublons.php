@@ -20,7 +20,7 @@ class Sv_doublons extends EC_Controller {
 			return;
 		}
 		
-		$this->db->query('SET NAMES UTF8');
+
 		
 		$this->load->model($this->session->userdata('mode_expert') === true ? 'Modele_tranche' : 'Modele_tranche_Wizard','Modele_tranche');
 		$this->Modele_tranche->setUsername($this->session->userdata('user'));

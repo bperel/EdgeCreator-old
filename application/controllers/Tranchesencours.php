@@ -3,7 +3,7 @@ class TranchesEnCours extends EC_Controller {
 	
 	function load($id=null,$pays=null,$magazine=null,$numero=null) {
 		$id=$id==='null' ? null : $id;
-		$this->db->query('SET NAMES UTF8');
+		
 		
 		$this->load->model($this->session->userdata('mode_expert') === true ? 'Modele_tranche' : 'Modele_tranche_Wizard','Modele_tranche');
 		

@@ -8,8 +8,6 @@ class EdgeCreator extends EC_Controller {
 		self::$pays=$pays;
 		self::$magazine=$magazine;
 		$this->load->library('session');
-		$this->load->database();
-		$this->db->query('SET NAMES UTF8');
 		$this->load->helper('form');
 		$this->load->helper('url');
 

@@ -15,9 +15,7 @@ class ParametrageG extends EC_Controller {
 		self::$etape=$etape=='null'?null:$etape;
 		$nom_fonction=$nom_fonction=='null' ? null : $nom_fonction;
 		$nom_option=$nom_option_sel=='null' ? null : $nom_option_sel;
-		
-		
-		$this->db->query('SET NAMES UTF8');
+
 		$this->load->helper('url');
 		$this->load->helper('form');
 		

@@ -18,7 +18,7 @@ class ParametrageG_wizard extends EC_Controller {
 		$nom_option=$nom_option_sel=='null' ? null : $nom_option_sel;
 		
 		
-		$this->db->query('SET NAMES UTF8');
+
 		$this->load->helper('url');
 		$this->load->helper('form');
 		
