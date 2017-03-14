@@ -221,7 +221,7 @@ class Modele_tranche extends CI_Model {
 								.'INNER JOIN edgecreator_valeurs ON edgecreator_modeles2.ID = edgecreator_valeurs.ID_Option '
 								.'INNER JOIN edgecreator_intervalles ON edgecreator_intervalles.ID_Valeur = edgecreator_valeurs.ID '
 			    				.'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Ordre='.$resultat->Ordre.' AND Option_nom IS NULL ';
-            $resultats_intervalles = DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator');
+            $resultats_intervalles = DmClient::get_query_results_from_dm_server($requete_intervalles, 'db_edgecreator');
 			foreach($resultats_intervalles as $intervalle) {
 				$resultat->Numero_debut[]=$intervalle->Numero_debut;
 				$resultat->Numero_fin[]=$intervalle->Numero_fin;
@@ -730,7 +730,7 @@ class Modele_tranche extends CI_Model {
 		}
 		$this->insert($pays, $magazine, $ordre, $nom_fonction, null, null, $numero_debut, $numero_fin);
 		foreach($parametrage as $option_nom_intervalle=>$option_valeur) {
-			$option_valeur=str_replace("'","\'",$option_valeur);
+			$option_valeur=str_replace("'","\\'",$option_valeur);
 			list($option_nom,$intervalle)=explode('.',$option_nom_intervalle);
 			list($numero_debut,$numero_fin)=explode('~',$intervalle);
 				
@@ -744,7 +744,7 @@ class Modele_tranche extends CI_Model {
 		$requete_suppr='DELETE modeles, valeurs, intervalles FROM edgecreator_modeles2 modeles '
 					  .'INNER JOIN edgecreator_valeurs AS valeurs ON modeles.ID = valeurs.ID_Option '
 				      .'INNER JOIN edgecreator_intervalles AS intervalles ON valeurs.ID = intervalles.ID_Valeur '
-					  .'WHERE (Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Ordre LIKE \''.$ordre.'\' AND username LIKE \''.self::$username.'\'';
+					  .'WHERE (Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Ordre LIKE \''.$ordre.'\' AND username LIKE \''.self::$username.'\')';
 		if ($numero_debut!=null)
 			$requete_suppr.=' AND Nom_Fonction LIKE \''.$nom_fonction.'\' AND Numero_debut LIKE \''.$numero_debut.'\' AND Numero_fin LIKE \''.$numero_fin.'\'';
 		$requete_suppr.=')';
@@ -1070,7 +1070,7 @@ class Modele_tranche extends CI_Model {
 					$intervalles[$i].='~'.$intervalles[$i];
 			$intervalle=implode(';',$intervalles);
 		}
-		list($numero_debut_intervalle,$numero_fin_intervalle)=getNumerosDebutFinShort($intervalle,self::$numero_debut,self::$numero_fin);
+		list($numero_debut_intervalle,$numero_fin_intervalle)=getNumerosDebutFinShort($intervalle);
 		if ($modif) {
 			$numeros_debut=explode(';',$numero_debut_intervalle);
 			$numeros_fin=explode(';',$numero_fin_intervalle);
@@ -1212,14 +1212,17 @@ class Modele_tranche extends CI_Model {
 			case 'Photos': 
 				$pays=$arg;
 				$magazine=$arg2;
-				$extensions= [];
-				if ($type === 'Source') {
-					$rep=Fonction_executable::getCheminElements($pays).'/';
-					$extensions= ['png'];
-				}
-				if ($type === 'Photos') {
-					$rep=Fonction_executable::getCheminPhotos($pays).'/';
-					$extensions= ['jpg','jpeg','png'];
+				switch($type) {
+					case 'Source':
+						$rep=Fonction_executable::getCheminElements($pays).'/';
+						$extensions= ['png'];
+					break;
+					case 'Photos':
+						$rep=Fonction_executable::getCheminPhotos($pays).'/';
+						$extensions= ['jpg','jpeg','png'];
+					break;
+					default:
+						return [];
 				}
 				if (($dir = @opendir($rep)) === false) { // Sans doute un nouveau pays, on crée le sous-dossier
 					if (@opendir(preg_replace('#[^/]+/[^/]+/$#','',$rep))) {
@@ -1333,20 +1336,6 @@ Fonction::$valeurs_defaut= ['Remplir'=> ['Pos_x'=>0,'Pos_y'=>0]];
 class Fonction extends Modele_tranche {
 	public $options;
 	static $valeurs_defaut= [];
-
-	function option($nom) {
-		if (isset($this->options->$nom)) {
-			return $this->options->$nom;
-		}
-		else {
-			if (isset(self::$valeurs_defaut[$fonction->Nom_fonction][$nom]))
-				return self::$valeurs_defaut[$fonction->Nom_fonction][$nom];
-			else {
-				echo 'Aucune valeur dans la BD pour '.$nom."\n";
-				exit(0);
-			}
-		}
-	}
 }
 
 class Fonction_executable extends Fonction {
@@ -1354,6 +1343,7 @@ class Fonction_executable extends Fonction {
 	static $descriptions= [];
 	
 	function __construct($options,$creation=false,$get_options_defaut=true) {
+        parent::__construct();
 		if (!is_object($options)) {
 			$options=new stdClass();
 		}
@@ -1603,6 +1593,8 @@ class Image extends Fonction_executable {
 			case 'png':
 				$sous_image=imagecreatefrompng($chemin_reel);
 			break;
+			default:
+				return;
 		}
 		list($width,$height)= [imagesx($sous_image),imagesy($sous_image)];
 		$hauteur_sous_image=Viewer_wizard::$largeur*($height/$width);
@@ -1786,6 +1778,10 @@ class TexteTTF extends Fonction_executable {
 			if ($this->options->Rotation > 45 && $this->options->Rotation <135) {
 				$pos_x_tmp=$p['left'];
 				$pos_y_tmp=$p['top'];
+			}
+			else {
+                $pos_x_tmp = 0;
+                $pos_y_tmp = 0;
 			}
 			
 			imagettftext($image2,z($this->options->Taille),$this->options->Rotation,
@@ -2106,6 +2102,8 @@ function est_dans_intervalle($numero,$intervalle) {
 	}
 	if (strpos($intervalle,'~')!==false) {
 		$intervalles=explode(';',$intervalle);
+        $numeros_debut = [];
+        $numeros_fin = [];
 		foreach($intervalles as $intervalle) {
 			if (strpos($intervalle, '~') === false)
 				list($numero_debut,$numero_fin)= [$intervalle,$intervalle];

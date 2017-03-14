@@ -81,7 +81,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 				.'AND Numero=\''.$numero.'\'';
 
         $resultats = DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator');
-		return count($resultats) == 0 ? null : new Fonction($resultat);
+		return count($resultats) == 0 ? null : new Fonction($resultats);
 	}
 
 	function get_options(
@@ -147,7 +147,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 					   .'WHERE ID_Modele = '.$id_modele.' '
 					     .'AND Ordre'.($inclure_cette_etape ? '>=' : '>').$etape_debut.' '
 					   .'ORDER BY Ordre DESC';
-        $resultats = DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator');
+        $resultats = DmClient::get_query_results_from_dm_server($requete_select, 'db_edgecreator');
 		foreach($resultats as $resultat) {
 			$etape=intval($resultat->Ordre);
 			$decalages[]= ['old'=>$etape, 'new'=>$etape+1];
@@ -438,7 +438,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 	}
 	
 	function get_couleur_point_photo($pays,$magazine,$numero,$frac_x,$frac_y) {
-		$id_modele=$this->Modele_tranche->get_id_modele($pays,$magazine,$numero);
+		$id_modele=$this->get_id_modele($pays,$magazine,$numero);
 		$requete_nom_photo = ' SELECT NomPhotoPrincipale'
 							.' FROM tranches_en_cours_modeles'
 							.' WHERE ID='.$id_modele;
