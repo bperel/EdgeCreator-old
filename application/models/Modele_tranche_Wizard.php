@@ -15,24 +15,20 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		elseif (!is_null($pays)) {
 			$requete.=' AND Pays=\''.$pays.'\' AND Magazine=\''.$magazine.'\' AND Numero=\''.$numero.'\'';
 		}
-        $resultats = DmClient::get_query_results_from_dm_server($requete, 'edgecreator');
+        $resultats = DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator');
 
         $liste_pays= [];
 		foreach($resultats as $resultat) {
-			$resultat->Pays_complet='';
 			$resultat->Magazine_complet='';
 			if (!in_array($resultat->Pays,$liste_pays))
 				$liste_pays[]=$resultat->Pays;
 		}
 
-		// TODO
-        $noms_pays = DmClient::get_service_results(DmClient::$dm_server, 'GET','/coa/list/countries', [implode(',', array_unique($liste_pays))]);
         $noms_magazines = DmClient::get_service_results(DmClient::$dm_server, 'GET','/coa/list/publications', [implode(',', array_unique($liste_pays))]);
 
 		foreach($liste_pays as $pays) {
 			foreach($resultats as $resultat) {
 				if ($resultat->Pays == $pays) {
-					$resultat->Pays_complet=$noms_pays[$resultat->Pays];
 					$resultat->Magazine_complet=$noms_magazines[$resultat->Magazine];
 				}
 			}
@@ -50,9 +46,8 @@ class Modele_tranche_Wizard extends Modele_tranche {
 			$requete.=' AND Numero=\''.$numero.'\'';
 		}
 		$requete.=' AND username = \''.($this->user_possede_modele() ? self::$username : 'brunoperel').'\''
-				 .' ORDER BY Ordre'; 
-		$query = $this->db->query($requete);
-		$resultats=$query->result();
+				 .' ORDER BY Ordre';
+        $resultats = DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator');
 		foreach($resultats as $resultat) {
 			$resultats_ordres[]=$toutes_colonnes?$resultat:$resultat->Ordre;
 		}
@@ -71,7 +66,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 			$requete.='AND Ordre='.$num_etape.' ';
 		$requete.=' GROUP BY Ordre'
 				 .' ORDER BY Ordre ';
-		$resultats = $this->db->query($requete)->result();
+        $resultats = DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator');
 		return $resultats;
 	}
 
@@ -84,9 +79,9 @@ class Modele_tranche_Wizard extends Modele_tranche {
 				.'WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' AND Ordre='.$ordre.' '
 				.'AND username = \''.self::$username.'\' '
 				.'AND Numero=\''.$numero.'\'';
-		
-		$resultat = $this->db->query($requete)->row();
-		return count($resultat) == 0 ? null : new Fonction($resultat);
+
+        $resultats = DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator');
+		return count($resultats) == 0 ? null : new Fonction($resultat);
 	}
 
 	function get_options(
@@ -108,7 +103,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 			$requete.='AND Option_nom = \''.$nouvelle_etape.'\' ';
 		$requete.='ORDER BY Option_nom ASC';
 
-		$resultats=$this->db->query($requete)->result();
+        $resultats = DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator');
 		$resultats_options=new stdClass();
 		foreach($resultats as $resultat) {
 			$nom_fonction=$resultat->Nom_fonction;
@@ -142,7 +137,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 				.'FROM tranches_en_cours_modeles_vue '
 				.'WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' AND Option_nom IS NOT NULL '
 				.'AND username = \''.self::$username.'\'';
-		return $this->db->query($requete)->num_rows() == 0;
+        return count(DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator')) === 0;
 	}
 
 	function decaler_etapes_a_partir_de($id_modele,$etape_debut, $inclure_cette_etape) {
@@ -152,7 +147,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 					   .'WHERE ID_Modele = '.$id_modele.' '
 					     .'AND Ordre'.($inclure_cette_etape ? '>=' : '>').$etape_debut.' '
 					   .'ORDER BY Ordre DESC';
-		$resultats=$this->db->query($requete_select)->result();
+        $resultats = DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator');
 		foreach($resultats as $resultat) {
 			$etape=intval($resultat->Ordre);
 			$decalages[]= ['old'=>$etape, 'new'=>$etape+1];
@@ -161,14 +156,13 @@ class Modele_tranche_Wizard extends Modele_tranche {
 				.'SET Ordre=Ordre+1 ' 
 				.'WHERE ID_Modele = '.$id_modele.' '
 				  .'AND Ordre'.($inclure_cette_etape ? '>=' : '>').$etape_debut;
-		//echo $requete."\n";
-		$this->db->query($requete);
+        DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator');
 		return $decalages;
 	}
 	
 	function valeur_existe($id_valeur) {
 		$requete='SELECT ID FROM edgecreator_valeurs WHERE ID='.$id_valeur;
-		return $this->db->query($requete)->num_rows() > 0;
+        return count(DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator')) > 0;
 	}
 	
 	function insert_to_modele($id_modele,$ordre,$nom_fonction,$option_nom,$option_valeur) {
@@ -177,7 +171,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 
 		$requete='INSERT INTO tranches_en_cours_valeurs (ID_Modele,Ordre,Nom_fonction,Option_nom,Option_valeur) VALUES '
 				.'('.$id_modele.','.$ordre.',\''.$nom_fonction.'\','.$option_nom.','.$option_valeur.') ';
-		$this->db->query($requete);
+        DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator');
 	}
 	
 	function get_id_modele($pays,$magazine,$numero,$username=null) {
@@ -189,28 +183,28 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		if (!is_null($username)) {
 			$requete.=' AND username=\''.$username.'\' AND Active=1';
 		}
-		$resultat=$this->db->query($requete)->row(0);
+        $resultat = DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator')[0];
 		return $resultat->ID;
 	}
 	
 	function get_nom_fonction($id_modele,$ordre) {
 		$requete='SELECT Nom_fonction FROM tranches_en_cours_valeurs '
 				.'WHERE ID_Modele='.$id_modele.' AND Ordre='.$ordre;
-		$resultat=$this->db->query($requete)->row(0);
+        $resultat = DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator')[0];
 		return $resultat->Nom_fonction;
 	}
 	
 	function creer_modele($pays, $magazine, $numero) {
 		$requete='INSERT INTO tranches_en_cours_modeles (Pays, Magazine, Numero, username, Active) '
 				.'VALUES (\''.$pays.'\',\''.$magazine.'\',\''.$numero.'\',\''.self::$username.'\', 1)';
-		$this->db->query($requete);
+        DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator');
 		echo $requete."\n";
 	}
 	
 	function get_photo_principale($pays,$magazine,$numero) {
 		$requete='SELECT NomPhotoPrincipale FROM tranches_en_cours_modeles '
 				.'WHERE Pays=\''.$pays.'\' AND Magazine=\''.$magazine.'\' AND Numero=\''.$numero.'\'';
-		$resultat=$this->db->query($requete)->row(0);
+        $resultat = DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator')[0];
 		return $resultat->NomPhotoPrincipale;
 	}
 
@@ -236,7 +230,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		
 		$requete_suppr='DELETE valeurs FROM tranches_en_cours_valeurs AS valeurs '
 					  .'WHERE ID_Modele='.$id_modele.' AND Ordre='.$etape;
-		$this->db->query($requete_suppr);
+        DmClient::get_query_results_from_dm_server($requete_suppr, 'db_edgecreator');
 		echo $requete_suppr."\n";
 		
 		foreach($parametrage as $parametre=>$valeur) {
@@ -250,11 +244,13 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		$requete_maj='UPDATE tranches_en_cours_modeles '
 					.'SET NomPhotoPrincipale=\''.$nom_photo_principale.'\' '
 					.'WHERE ID='.$id_modele;
-		$this->db->query($requete_maj);
+        DmClient::get_query_results_from_dm_server($requete_maj, 'db_edgecreator');
 		echo $requete_maj."\n";
 	}
 
 	function cloner_etape_numero($pays,$magazine,$numero,$pos,$etape_courante) {
+        // TODO as DM server service
+
 		$inclure_avant = $pos==='avant' || $pos==='_';
 		$id_modele=$this->get_id_modele($pays,$magazine,$numero,self::$username);
 		$infos=new stdClass();
@@ -265,7 +261,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		$requete=' SELECT Nom_fonction, Option_nom, Option_valeur, ID_Modele'
 				.' FROM tranches_en_cours_valeurs '
 				.' WHERE ID_Modele='.$id_modele.' AND Ordre='.$etape_courante;
-		$resultats=$this->db->query($requete)->result();
+        $resultats = DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator');
 		foreach($resultats as $i=>$resultat) {
 			$resultat->Ordre=$nouvelle_etape;
 			$infos->nom_fonction=$resultat->Nom_fonction;
@@ -282,7 +278,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 					  .'WHERE ID_Modele=(SELECT m.ID FROM tranches_en_cours_modeles m '
 					  				   .'WHERE m.Pays = \''.$pays.'\' AND m.Magazine = \''.$magazine.'\' AND m.Numero = \''.$numero.'\' AND m.Active=1) '
 					  	.'AND Ordre = \''.$etape.'\'';
-		$this->db->query($requete_suppr);
+        DmClient::get_query_results_from_dm_server($requete_suppr, 'db_edgecreator');
 		echo $requete_suppr."\n";
 	}
 
@@ -299,18 +295,18 @@ class Modele_tranche_Wizard extends Modele_tranche {
 							      .'INNER JOIN edgecreator_intervalles AS intervalles ON valeurs.ID = intervalles.ID_Valeur '
 							      .'WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' '
 								  .'AND Ordre='.$etape.' AND Option_nom = \''.$nom_option.'\' AND username = \''.self::$username.'\'';
-		$this->db->query($requete_suppr_option);
+        DmClient::get_query_results_from_dm_server($requete_suppr_option, 'db_edgecreator');
 		echo $requete_suppr_option."\n";
 	}
 	
 	function get_id_modele_tranche_en_cours_max() {
 		$requete='SELECT MAX(ID) AS Max FROM tranches_en_cours_modeles';
-		return $this->db->query($requete)->first_row()->Max;
+        return DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator')[0]->Max;
 	}
 	
 	function get_id_valeur_max() {
 		$requete='SELECT MAX(ID) AS Max FROM edgecreator_valeurs';
-		return $this->db->query($requete)->first_row()->Max;
+        return DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator')[0]->Max;
 	}
 
 	function etendre_numero ($pays,$magazine,$numero,$nouveau_numero) {
@@ -325,14 +321,14 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		$requete_ajout_modele='INSERT INTO tranches_en_cours_modeles (Pays, Magazine, Numero, username, Active) '
 							 .'VALUES (\''.$pays.'\',\''.$magazine.'\',\''.$nouveau_numero.'\','
 							 .'\''.self::$username.'\', 1)';
-		$this->db->query($requete_ajout_modele);
+        DmClient::get_query_results_from_dm_server($requete_ajout_modele, 'db_edgecreator');
 		$id_modele=$this->get_id_modele_tranche_en_cours_max();
 		
 		foreach($options[$numero] as $option) {
 			$requete_ajout_valeur=' INSERT INTO tranches_en_cours_valeurs (ID_Modele, Ordre, Nom_fonction, Option_nom, Option_valeur)'
 								 .' VALUES ('.$id_modele .',\''.$option->Ordre.'\',\''.$option->Nom_fonction.'\','
 								 .' '.$option->Option_nom.','.$option->Option_valeur.')';
-			$this->db->query($requete_ajout_valeur);
+            DmClient::get_query_results_from_dm_server($requete_ajout_valeur, 'db_edgecreator');
 		}
 		
 		// Suppression des étapes incomplètes = étapes dont le nombre d'options est différent de celui défini
@@ -344,7 +340,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 								.' FROM tranches_en_cours_modeles_vue'
 								.' WHERE ID_Modele='.$id_modele.' AND Nom_fonction=\''.$nom_fonction.'\''
 								.' ORDER BY Ordre';
-			$resultats=$this->db->query($requete_nettoyage)->result();
+            $resultats = DmClient::get_query_results_from_dm_server($requete_nettoyage, 'db_edgecreator');
 			$etapes_et_options= [];
 			foreach($resultats as $resultat) {
 				if (!array_key_exists($resultat->Ordre, $etapes_et_options)) {
@@ -361,7 +357,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 									 .implode(', ', $champs_obligatoires_manquants)."\n");
 					$requete_suppression_etape=' DELETE FROM tranches_en_cours_valeurs'
 											  .' WHERE ID_Modele='.$id_modele.' AND Ordre='.$etape;
-					$this->db->query($requete_suppression_etape);
+                    DmClient::get_query_results_from_dm_server($requete_suppression_etape, 'db_edgecreator');
 				}
 			}
 		}		
@@ -402,7 +398,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		$requete_maj=' UPDATE tranches_en_cours_modeles '
 					.' SET Active=0'
 					.' WHERE ID='.$id_modele;
-		$this->db->query($requete_maj);
+        DmClient::get_query_results_from_dm_server($requete_maj, 'db_edgecreator');
 		echo $requete_maj."\n";
 	}
 
@@ -410,7 +406,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
         $requete_prepublication=' UPDATE tranches_en_cours_modeles '
             .' SET PretePourPublication='.($prepublier_ou_depublier ? '1' : '0')
             .' WHERE ID='.$id_modele;
-        $this->db->query($requete_prepublication);
+        DmClient::get_query_results_from_dm_server($requete_prepublication, 'db_edgecreator');
     }
 
     function copier_image_temp_vers_gen($pays, $magazine, $numero, $nom_image) {
@@ -425,7 +421,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
         $requete_maj=' UPDATE tranches_en_cours_modeles '
                     .' SET PretePourPublication=1, createurs=\''.$createurs.'\', photographes=\''.$photographes.'\''
                     .' WHERE ID='.$id_modele;
-        $this->db->query($requete_maj);
+        DmClient::get_query_results_from_dm_server($requete_maj, 'db_edgecreator');
         echo '<br />'.$requete_maj."\n";
     }
 	
@@ -434,7 +430,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		$requete= ' SELECT DISTINCT Option_valeur'
 				 .' FROM tranches_en_cours_modeles_vue'
 				 .' WHERE ID_Modele='.$id_modele.' AND Option_nom LIKE \'Couleur%\'';
-		$resultats=$this->db->query($requete)->result();
+        $resultats = DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator');
 		foreach($resultats as $resultat) {
 			$couleurs[]=$resultat->Option_valeur;
 		}
@@ -446,7 +442,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		$requete_nom_photo = ' SELECT NomPhotoPrincipale'
 							.' FROM tranches_en_cours_modeles'
 							.' WHERE ID='.$id_modele;
-		$resultat_nom_photo = $this->db->query($requete_nom_photo)->row();
+        $resultat_nom_photo = DmClient::get_query_results_from_dm_server($requete_nom_photo, 'db_edgecreator')[0];
 		
 		$chemin_photos = Fonction_executable::getCheminPhotos($pays);
 		$chemin_photo_tranche = $chemin_photos.'/'.$resultat_nom_photo->NomPhotoPrincipale;

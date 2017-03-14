@@ -61,7 +61,6 @@ class DmClient
      * @param string $query
      * @param $db
      * @return mixed|null
-     * @internal param stdClass $server DmClient::$coa_server or DmClient::$dm_server
      */
     public static function get_query_results_from_dm_server($query, $db)
     {
@@ -92,11 +91,11 @@ class DmClient
     }
 
     /**
-     * @param stdClass $server DmClient::$coa_server or DmClient::$dm_server
-     * @param $method
-     * @param $path
+     * @param stdClass $server
+     * @param string $method
+     * @param string $path
      * @param array $parameters
-     * @return mixed|null
+     * @return array|stdClass|null
      */
     public static function get_service_results($server, $method, $path, $parameters = [], $do_not_chunk = false)
     {
@@ -111,15 +110,7 @@ class DmClient
             case 'GET':
                 if (count($parameters) > 0) {
                     if (!$do_not_chunk && count($parameters) === 1 && isset(self::$chunkable_services[$path])) {
-                        $parameterListChunks = array_chunk(explode(',', $parameters[count($parameters) -1]), self::$chunkable_services[$path]);
-                        $results = [];
-                        foreach ($parameterListChunks as $parameterListChunk) {
-                            $results = array_merge(
-                                $results,
-                                self::get_service_results($server, $method, $path, [implode(',', $parameterListChunk)], true)
-                            );
-                        }
-                        return $results;
+                        return self::get_chunkable_service_results($server, $method, $path, $parameters);
                     }
                     $url .= '/' . implode('/', $parameters);
                 }
@@ -143,12 +134,42 @@ class DmClient
         curl_close($ch);
 
         if (!empty($buffer) && $responseCode >= 200 && $responseCode < 300) {
-            $results = json_decode($buffer, true);
-            if (is_array($results)) {
+            $results = json_decode($buffer);
+            if (is_array($results) || is_object($results)) {
                 return $results;
             }
         }
 
         return [];
+    }
+
+    /**
+     * @param stdClass $server
+     * @param string $method
+     * @param string $path
+     * @param array $parameters
+     * @return array|stdClass|null
+     */
+    private static function get_chunkable_service_results($server, $method, $path, $parameters)
+    {
+        $parameterListChunks = array_chunk(explode(',', $parameters[count($parameters) - 1]), self::$chunkable_services[$path]);
+        $results = null;
+        foreach ($parameterListChunks as $parameterListChunk) {
+            $result = self::get_service_results($server, $method, $path, [implode(',', $parameterListChunk)], true);
+            if (is_object($result)) {
+                if (is_null($results)) {
+                    $results = $result;
+                } else {
+                    $results = (object)array_merge_recursive((array)$results, (array)$result);
+                }
+            } else if (is_array($result)) {
+                if (is_null($results)) {
+                    $results = array();
+                } else {
+                    $results = array_merge($results, $result);
+                }
+            }
+        }
+        return $results;
     }
 }

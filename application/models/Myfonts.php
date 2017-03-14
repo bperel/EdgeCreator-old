@@ -49,7 +49,7 @@ class MyFonts extends CI_Model {
 		$requete_image_existe='SELECT ID FROM images_myfonts '
 							 .'WHERE Font = \''.$this->font.'\' AND Color = \''.$this->color.'\' AND ColorBG = \''.$this->color_bg.'\''
 							 .' AND Width = \''.$this->width.'\' AND Texte = \''.$texte_clean.'\'';
-		$requete_image_existe_resultat=$this->db->query($requete_image_existe)->result();
+        $requete_image_existe_resultat = DmClient::get_query_results_from_dm_server($requete_image_existe, 'db_edgecreator');
 		$image_existe=count($requete_image_existe_resultat) != 0;
 		if ($image_existe && !isset($_GET['force_post'])) {
 			$id_image=$requete_image_existe_resultat[0]->ID;
@@ -60,7 +60,7 @@ class MyFonts extends CI_Model {
 			}
 			else {
 				$requete_suppression_reference_image_inexistante='DELETE FROM images_myfonts WHERE ID='.$id_image;
-				$this->db->query($requete_suppression_reference_image_inexistante);
+                DmClient::get_query_results_from_dm_server($requete_suppression_reference_image_inexistante, 'db_edgecreator');
 			}
 		}
 		$this->p=new Post(
@@ -81,11 +81,13 @@ class MyFonts extends CI_Model {
 			if (strpos($this->chemin_image,'http') !== 0) {
 				$this->chemin_image='http:'.$this->chemin_image;
 			}
+
+            // TODO as DM server service
 			
 			$requete='INSERT INTO images_myfonts(ID,Font,Color,ColorBG,Width,Texte,Precision_) '
 					.'VALUES(NULL,\''.$this->font.'\',\''.$this->color.'\',\''.$this->color_bg.'\','
 					.'\''.$this->width.'\',\''.$texte_clean.'\',\''.$this->precision.'\')';
-			$this->db->query($requete);
+            DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator');
 			
 			$im=imagecreatefromgif($this->chemin_image);
 			imagegif($im,BASEPATH.'../../edges/images_myfonts/'.$this->db->insert_id().'.gif');

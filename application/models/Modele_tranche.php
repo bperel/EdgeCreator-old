@@ -121,7 +121,7 @@ class Modele_tranche extends CI_Model {
 										   .'INNER JOIN edgecreator_valeurs ON edgecreator_modeles2.ID = edgecreator_valeurs.ID_Option '
 										   .'INNER JOIN edgecreator_intervalles ON edgecreator_valeurs.ID = edgecreator_intervalles.ID_Valeur '
 										   .'WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' AND username = \''.$username.'\'';
-			$user_possede_modele = DmClient::get_query_results_from_dm_server($requete_modele_magazine_existe, 'edgecreator')[0]['cpt'] > 0;
+			$user_possede_modele = DmClient::get_query_results_from_dm_server($requete_modele_magazine_existe, 'db_edgecreator')[0]->cpt > 0;
             self::$user_possede_modele = $user_possede_modele;
 		}
 		return self::$user_possede_modele;
@@ -150,8 +150,8 @@ class Modele_tranche extends CI_Model {
 		if (!is_null($ordre))
 			$requete.='AND Ordre='.$ordre.' ';
 		$requete.='ORDER BY Ordre';
-		$query = $this->db->query($requete);
-		$resultats=$query->result();
+        $resultats = DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator');
+
 		foreach($resultats as $resultat)
 			$resultats_o[]=new Modele_tranche ($resultat);
 		return $resultats_o;
@@ -166,8 +166,7 @@ class Modele_tranche extends CI_Model {
 			    .'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' '
 				.'AND username LIKE \''.($this->user_possede_modele() ? self::$username : 'brunoperel').'\' '
 				.'ORDER BY Ordre';
-		$query = $this->db->query($requete);
-		$resultats=$query->result();
+        $resultats = DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator');
 		foreach($resultats as $resultat) {
 			if (!is_null($numero)) {
 				$numeros_debut=explode(';',$resultat->Numero_debut);
@@ -193,8 +192,7 @@ class Modele_tranche extends CI_Model {
 			    .'INNER JOIN edgecreator_intervalles ON edgecreator_valeurs.ID = edgecreator_intervalles.ID_Valeur '
 			    .'WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' AND Option_nom IS NULL '
 				.'AND username = \''.($this->user_possede_modele() ? self::$username : 'brunoperel').'\'';
-		$query = $this->db->query($requete);
-		$resultats=$query->result();
+        $resultats = DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator');
 			
 		return $resultats[0]->cpt;
 	}
@@ -211,7 +209,7 @@ class Modele_tranche extends CI_Model {
 			$requete.='AND Ordre='.$num_etape.' ';
 		$requete.=' GROUP BY Ordre'
 				 .' ORDER BY Ordre ';
-		$resultats = $this->db->query($requete)->result();
+        $resultats = DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator');
 		foreach($resultats as $resultat) {
 			$resultat->Numero_debut= [];
 			$resultat->Numero_fin= [];
@@ -220,7 +218,7 @@ class Modele_tranche extends CI_Model {
 								.'INNER JOIN edgecreator_valeurs ON edgecreator_modeles2.ID = edgecreator_valeurs.ID_Option '
 								.'INNER JOIN edgecreator_intervalles ON edgecreator_intervalles.ID_Valeur = edgecreator_valeurs.ID '
 			    				.'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Ordre='.$resultat->Ordre.' AND Option_nom IS NULL ';
-			$resultats_intervalles = $this->db->query($requete_intervalles)->result();
+            $resultats_intervalles = DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator');
 			foreach($resultats_intervalles as $intervalle) {
 				$resultat->Numero_debut[]=$intervalle->Numero_debut;
 				$resultat->Numero_fin[]=$intervalle->Numero_fin;
@@ -237,8 +235,7 @@ class Modele_tranche extends CI_Model {
 				.'FROM edgecreator_modeles_vue '
 				.'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Ordre='.$ordre.' AND Option_nom IS NULL '
 				.'AND username LIKE \''.($this->user_possede_modele() ? self::$username : 'brunoperel').'\'';
-		$query = $this->db->query($requete);
-		$resultats=$query->result();
+        $resultats = DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator');
 		if (count($resultats) == 0) {
 			return null;
 		}
@@ -282,8 +279,8 @@ class Modele_tranche extends CI_Model {
 		if (!is_null($nom_option))
 			$requete.='AND Option_nom LIKE \''.$nom_option.'\' ';
 		$requete.='ORDER BY Option_nom ASC';
-		
-		$resultats=$this->db->query($requete)->result();
+
+        $resultats = DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator');
 		$option_nom='';
 		foreach($resultats as $resultat) {
 			if ($option_nom!=$resultat->Option_nom) {
@@ -361,7 +358,7 @@ class Modele_tranche extends CI_Model {
 			    .'INNER JOIN edgecreator_intervalles ON edgecreator_valeurs.ID = edgecreator_intervalles.ID_Valeur '
 				.'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Option_nom IS NOT NULL '
 				.'AND username LIKE \''.($this->user_possede_modele() ? self::$username : 'brunoperel').'\'';
-		return $this->db->query($requete)->num_rows() == 0;
+        return count(DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator')) === 0;
 	}
 
 	function decaler_etapes_a_partir_de($pays,$magazine,$etape_debut) {
@@ -369,7 +366,7 @@ class Modele_tranche extends CI_Model {
 				.'INNER JOIN edgecreator_valeurs ON edgecreator_modeles2.ID = edgecreator_valeurs.ID_Option '
 			    .'INNER JOIN edgecreator_intervalles ON edgecreator_valeurs.ID = edgecreator_intervalles.ID_Valeur '
 				.'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Ordre>='.$etape_debut.' AND username LIKE \''.($this->user_possede_modele() ? self::$username : 'brunoperel').'\' ';
-		$resultat=$this->db->query($requete)->row(0);
+        $resultat = DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator')[0];
 		
 		if (!is_null($resultat)) {
 			$etape=$resultat->max_ordre;
@@ -380,7 +377,7 @@ class Modele_tranche extends CI_Model {
 					    .'INNER JOIN edgecreator_intervalles ON edgecreator_valeurs.ID = edgecreator_intervalles.ID_Valeur '
 						.'SET Ordre='.($i+1).' '
 						.'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Ordre='.$i.' AND username LIKE \''.($this->user_possede_modele() ? self::$username : 'brunoperel').'\'';
-				$this->db->query($requete);
+                DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator');
 			}
 		}
 		else
@@ -390,9 +387,9 @@ class Modele_tranche extends CI_Model {
 
 	function ajouter_preview($options_json) {
 		$requete='INSERT INTO tranches_previews(ID_Session,Options) VALUES (\''.self::$id_session.'\',\''.$options_json.'\')';
-		$this->db->query($requete);
+        DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator');
 		$requete_get_id_preview='SELECT Max(ID_Preview) AS ID FROM tranches_previews';
-		$resultats_get_id_preview=$this->db->query($requete_get_id_preview)->result();
+        $resultats_get_id_preview = DmClient::get_query_results_from_dm_server($requete_get_id_preview, 'db_edgecreator');
 		foreach($resultats_get_id_preview as $resultat)
 			return $resultat->ID;
 		return 1;
@@ -400,7 +397,7 @@ class Modele_tranche extends CI_Model {
 	
 	function get_preview_existe($options_json) {
 		$requete='SELECT ID_Preview FROM tranches_previews WHERE Options LIKE \''.$options_json.'\' AND ID_Session LIKE \''.self::$id_session.'\'';
-		$resultat=$this->db->query($requete)->result();
+        $resultat = DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator');
 		return count($resultat) > 0;
 	}
 	
@@ -413,7 +410,7 @@ class Modele_tranche extends CI_Model {
 							  .'INNER JOIN edgecreator_valeurs ON edgecreator_modeles2.ID = edgecreator_valeurs.ID_Option '
 						      .'INNER JOIN edgecreator_intervalles ON edgecreator_valeurs.ID = edgecreator_intervalles.ID_Valeur '
 						      .'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND username LIKE \''.self::$username.'\'';
-		$resultat_get_etapes=$this->db->query($requete_get_etapes)->result();
+        $resultat_get_etapes = DmClient::get_query_results_from_dm_server($requete_get_etapes, 'db_edgecreator');
 		$dimensions= [];
 		foreach($resultat_get_etapes as $resultat_etape) {
 			$etape=$resultat_etape->Ordre;
@@ -422,7 +419,7 @@ class Modele_tranche extends CI_Model {
 								.'INNER JOIN edgecreator_valeurs ON edgecreator_modeles2.ID = edgecreator_valeurs.ID_Option '
 							    .'INNER JOIN edgecreator_intervalles ON edgecreator_valeurs.ID = edgecreator_intervalles.ID_Valeur '
 							    .'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Ordre='.$etape.' AND username LIKE \''.self::$username.'\'';
-			$resultat_get_options=$this->db->query($requete_get_options)->result();
+            $resultat_get_options = DmClient::get_query_results_from_dm_server($requete_get_options, 'db_edgecreator');
 			foreach($resultat_get_options as $option) {
 				foreach(array_keys($numeros_disponibles) as $numero) {
 					Viewer_wizard::$numero=$numero;
@@ -467,7 +464,6 @@ class Modele_tranche extends CI_Model {
 					$numero=$groupe[$i];
 					$requete='INSERT INTO tranches_doublons(Pays,Magazine,Numero,NumeroReference) '
 							.'VALUES (\''.$pays.'\',\''.$magazine.'\',\''.$numero.'\',\''.$numero_reference.'\')';
-					//$this->db->query($requete);
 					echo $requete.'<br />';
 				}
 			}
@@ -488,7 +484,7 @@ class Modele_tranche extends CI_Model {
 	}
 
 	function get_numeros($publicationcode) {
-        return DmClient::get_service_results(DmClient::$coa_server, 'GET','/coa/list/issues', [$publicationcode]);
+        return DmClient::get_service_results(DmClient::$dm_server, 'GET','/coa/list/issues', [$publicationcode]);
 	}
 	
 	function get_createurs_tranche($pays, $magazine, $numero) {
@@ -518,7 +514,7 @@ class Modele_tranche extends CI_Model {
 		}
 		$requete_get_prets='SELECT username AS createur, Active FROM tranches_en_cours_modeles '
 						  .'WHERE Pays = \''.$pays.'\' AND Magazine=\''.$magazine.'\' AND Numero = \''.$numero.'\'';
-		$resultat_get_prets=$this->db->query($requete_get_prets)->result();
+        $resultat_get_prets = DmClient::get_query_results_from_dm_server($requete_get_prets, 'db_edgecreator');
 		foreach($resultat_get_prets as $resultat) {
 			return $resultat->Active == 1 ? [] : [array_search($resultat->createur, self::$utilisateurs)];
 		}
@@ -540,7 +536,7 @@ class Modele_tranche extends CI_Model {
 				.' AND Numero IN ('.implode(',', $numeros_esc).') '
 				.' AND username=\''.self::$username.'\''
 				.' ORDER BY Ordre';
-			$resultats=$this->db->query($requete_get_options)->result();
+            $resultats = DmClient::get_query_results_from_dm_server($requete_get_options, 'db_edgecreator');
 		}
 
         if (count($resultats) === 0) {
@@ -551,7 +547,7 @@ class Modele_tranche extends CI_Model {
                 . ' INNER JOIN edgecreator_intervalles AS intervalles ON valeurs.ID = intervalles.ID_Valeur '
                 . ' WHERE Pays = \'' . $pays . '\' AND Magazine = \'' . $magazine . '\' '
                 . ' ORDER BY Ordre';
-            $resultats=$this->db->query($requete_get_options)->result();
+            $resultats = DmClient::get_query_results_from_dm_server($requete_get_options, 'db_edgecreator');
         }
 
 		$options= [];
@@ -603,7 +599,7 @@ class Modele_tranche extends CI_Model {
 
         $numeros_affiches= ['Aucun'=>'Aucun'];
         foreach($numeros as $numero) {
-            $numeros_affiches[$numero['issuenumber']] = $numero['issuenumber'];
+            $numeros_affiches[$numero] = $numero;
         }
 
         if ($get_prets) {
@@ -626,8 +622,8 @@ class Modele_tranche extends CI_Model {
             }, $resultats_requete_creations), $resultats_requete_creations);
 
             foreach ($numeros as $numero) {
-                if (!empty($tranche_en_cours = $resultats_requete_creations[$numero['issuenumber']])) {
-                    $tranches_pretes[$numero['issuenumber']] = 'en_cours';
+                if (isset($resultats_requete_creations[$numero])) {
+                    $tranches_pretes[$numero] = 'en_cours';
                 }
             }
 
@@ -651,7 +647,7 @@ class Modele_tranche extends CI_Model {
 	
 	function valeur_existe($id_valeur) {
 		$requete='SELECT ID FROM edgecreator_valeurs WHERE ID='.$id_valeur;
-		return $this->db->query($requete)->num_rows() > 0;
+        return count(DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator')) === 0;
 	}
 	
 	function insert(
@@ -665,6 +661,7 @@ class Modele_tranche extends CI_Model {
         $numero_fin,
         $id_valeur = null
     ) {
+	    // TODO as DM server service
 		$option_nom=is_null($option_nom) ? 'NULL' : '\''.preg_replace("#([^\\\\])'#","$1\\'",$option_nom).'\'';
 		$option_valeur=is_null($option_valeur) ? 'NULL' : '\''.preg_replace("#([^\\\\])'#","$1\\'",$option_valeur).'\'';
 		
@@ -672,7 +669,7 @@ class Modele_tranche extends CI_Model {
 		$requete='INSERT INTO edgecreator_modeles2 (Pays,Magazine,Ordre,Nom_fonction,Option_nom) VALUES '
 				.'(\''.$pays.'\',\''.$magazine.'\',\''.$etape.'\',\''.$nom_fonction.'\','.$option_nom.') ';
 		echo $requete."\n";
-		$this->db->query($requete);
+        DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator');
 		$id_option = $this->db->insert_id();
 		
 		if (is_null($id_valeur) || !$this->valeur_existe($id_valeur)) {
@@ -682,12 +679,12 @@ class Modele_tranche extends CI_Model {
 				$requete='INSERT INTO edgecreator_valeurs (ID,Option_valeur,ID_Option) VALUES ('.$id_valeur.','.$option_valeur.','.$id_option.')';
 				
 			echo $requete."\n";
-			$this->db->query($requete);
+            DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator');
 			$id_valeur = $this->db->insert_id();
 		}
 		$requete='INSERT INTO edgecreator_intervalles (ID_Valeur,Numero_debut,Numero_fin,username) VALUES ('.$id_valeur.',\''.$numero_debut.'\',\''.$numero_fin.'\',\''.self::$username.'\')';
 		echo $requete."\n";
-		$this->db->query($requete);
+        DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator');
 			
 	}
 
@@ -696,7 +693,7 @@ class Modele_tranche extends CI_Model {
 					  .'INNER JOIN edgecreator_valeurs AS valeurs ON modeles.ID = valeurs.ID_Option '
 				      .'INNER JOIN edgecreator_intervalles AS intervalles ON valeurs.ID = intervalles.ID_Valeur '
 					  .'WHERE (Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Ordre LIKE \''.$ordre.'\' AND Nom_Fonction LIKE \''.$nom_fonction.'\' AND username LIKE \''.self::$username.'\')';
-		$this->db->query($requete_suppr);
+        DmClient::get_query_results_from_dm_server($requete_suppr, 'db_edgecreator');
 		echo $requete_suppr."\n";
 		$this->insert($pays, $magazine, $ordre, $nom_fonction, null, null, $numero_debut, $numero_fin);
 		
@@ -711,12 +708,14 @@ class Modele_tranche extends CI_Model {
 	}
 
 	function cloner_etape($pays,$magazine,$etape_courante,$etape) {
+        // TODO as DM server service
+
 		$requete='SELECT '.implode(', ', self::$fields).' '
 				.'FROM edgecreator_modeles2 '
 				.'INNER JOIN edgecreator_valeurs AS valeurs ON edgecreator_modeles2.ID = valeurs.ID_Option '
 			    .'INNER JOIN edgecreator_intervalles AS intervalles ON valeurs.ID = intervalles.ID_Valeur '
 				.'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Ordre='.$etape_courante.' AND username LIKE \''.self::$username.'\'';
-		$resultats=$this->db->query($requete)->result();
+        $resultats = DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator');
 		foreach($resultats as $resultat) {
 			$resultat->Ordre=$etape;
 		}
@@ -748,7 +747,7 @@ class Modele_tranche extends CI_Model {
 		if ($numero_debut!=null)
 			$requete_suppr.=' AND Nom_Fonction LIKE \''.$nom_fonction.'\' AND Numero_debut LIKE \''.$numero_debut.'\' AND Numero_fin LIKE \''.$numero_fin.'\'';
 		$requete_suppr.=')';
-		$this->db->query($requete_suppr);
+        $resultats = DmClient::get_query_results_from_dm_server($requete_suppr, 'db_edgecreator');
 		echo $requete_suppr."\n";
 	}
 
@@ -765,7 +764,7 @@ class Modele_tranche extends CI_Model {
 							      .'INNER JOIN edgecreator_intervalles AS intervalles ON valeurs.ID = intervalles.ID_Valeur '
 							      .'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' '
 								  .'AND Ordre='.$etape.' AND Option_nom = \''.$nom_option.'\' AND username = \''.self::$username.'\'';
-		$this->db->query($requete_suppr_option);
+        $resultats = DmClient::get_query_results_from_dm_server($requete_suppr_option, 'db_edgecreator');
 		echo $requete_suppr_option."\n";
 	}
 
@@ -781,8 +780,7 @@ class Modele_tranche extends CI_Model {
 	
 	function get_id_valeur_max() {
 		$requete='SELECT MAX(ID) AS Max FROM edgecreator_valeurs';
-		return $this->db->query($requete)->first_row()->Max;
-		
+        return DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator')[0]->Max;
 	}
 
 	function etendre_numero ($pays,$magazine,$numero,$nouveau_numero) {
@@ -793,7 +791,7 @@ class Modele_tranche extends CI_Model {
 							.'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' '
 							.'ORDER BY Ordre';
 		echo $requete_get_options."\n";
-		$resultats=$this->db->query($requete_get_options)->result();
+        $resultats = DmClient::get_query_results_from_dm_server($requete_get_options, 'db_edgecreator');
 		foreach($resultats as $resultat) {
 			$option_nom=is_null($resultat->Option_nom) ? 'NULL' : ('\''.$resultat->Option_nom.'\'');
 			$option_valeur=is_null($resultat->Option_valeur) ? 'NULL' : ('\''.$resultat->Option_valeur.'\'');
@@ -812,14 +810,14 @@ class Modele_tranche extends CI_Model {
 									  .'AND Numero_debut = \''.$resultat->Numero_debut.'\' AND Numero_fin = \''.$resultat->Numero_fin.'\' '
 									  .'AND username = \''.$resultat->username.'\'';
 					echo $requete_id_valeur."\n";
-					$id_valeur = $this->db->query($requete_id_valeur)->first_row()->ID;
+                    $id_valeur = DmClient::get_query_results_from_dm_server($requete_id_valeur, 'db_edgecreator')[0]->ID;
 					
 					
 					$req_suppression_existantes='DELETE FROM edgecreator_intervalles '
 											   .'WHERE ID_Valeur='.$id_valeur.' AND Numero_debut = \''.$resultat->Numero_debut.'\' AND Numero_fin = \''.$resultat->Numero_fin.'\' '
 											   .'AND username = \''.$resultat->username.'\'';
 					echo $req_suppression_existantes."\n";
-					$this->db->query($req_suppression_existantes);
+                    DmClient::get_query_results_from_dm_server($req_suppression_existantes, 'db_edgecreator');
 											
 					$intervalles=explode(';',$intervalle);
 					foreach($intervalles as $intervalle) {
@@ -827,7 +825,7 @@ class Modele_tranche extends CI_Model {
 						$req_ajout_nouvel_intervalle='INSERT INTO edgecreator_intervalles (ID_Valeur,Numero_debut,Numero_fin,username) '
 										    .'VALUES ('.$id_valeur.',\''.$numero_debut.'\',\''.$numero_fin.'\',\''.$resultat->username.'\')';
 						echo $req_ajout_nouvel_intervalle."\n";
-						$this->db->query($req_ajout_nouvel_intervalle);
+                        DmClient::get_query_results_from_dm_server($req_ajout_nouvel_intervalle, 'db_edgecreator');
 					}
 				}
 			}
@@ -1181,8 +1179,8 @@ class Modele_tranche extends CI_Model {
 	function urlDecode() {
 		$requete='SELECT ID, ID_Option, Option_valeur '
 				.'FROM edgecreator_valeurs ';
-		
-		$resultats=$this->db->query($requete)->result();
+
+        $resultats = DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator');
 		foreach($resultats as $resultat) {
 			if (is_null($resultat->Option_valeur))
 				continue;
@@ -1190,9 +1188,6 @@ class Modele_tranche extends CI_Model {
 			$resultat->Option_valeur=urldecode($resultat->Option_valeur);
 			$resultat->Option_valeur=str_replace("'","\'",$resultat->Option_valeur);
 			echo ' => '.$resultat->Option_valeur.'<br />';
-			//$requete_update='UPDATE edgecreator_valeurs SET Option_valeur=\''.urldecode($resultat->Option_valeur).'\' '
-			//			   .'WHERE ID='.$resultat->ID.' AND ID_Option='.$resultat->ID_Option;
-			//$this->db->query($requete_update);
 		}
 	}
 	

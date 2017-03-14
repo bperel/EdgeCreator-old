@@ -39,7 +39,7 @@ class Numerosdispos extends EC_Controller {
 			$data['numeros_dispos']=$numeros_dispos;
 			$data['tranches_pretes']=$tranches_pretes;
 			$data['nb_etapes']=$nb_etapes;
-			$data['nom_magazine']=$noms_complets_pays[$pays].' ('.$noms_complets_magazines[$pays.'/'.$magazine].')';
+			$data['nom_magazine']=$noms_complets_pays->$pays.' ('.$noms_complets_magazines->{$pays.'/'.$magazine}.')';
 	
 		}
 		$this->load->view('numerosdisposview',$data);
