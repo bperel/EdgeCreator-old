@@ -96,14 +96,17 @@ class Modele_tranche extends CI_Model {
 	}
 	
 	function username_to_id($username) {
-		$requete='SELECT ID FROM users WHERE username = \''.$username.'\'';
-		$resultat = $this->requete_select_dm($requete);
-		return $resultat[0]['ID'];
+        if (count(self::$utilisateurs) == 0) {
+            self::setUtilisateurs();
+        }
+        return array_search($username, self::$utilisateurs);
 	}
 
 	function user_exists($user) {
-		$requete='SELECT username FROM users WHERE username =\''.$user.'\'';
-		return count($this->requete_select_dm($requete)) > 0;
+        if (count(self::$utilisateurs) == 0) {
+            self::setUtilisateurs();
+        }
+        return in_array($user, self::$utilisateurs);
 	}
 	
 	
@@ -611,27 +614,25 @@ class Modele_tranche extends CI_Model {
 
             // TODO chunks
             $requete_creations = "
-				SELECT CONCAT(modeles.Pays,'/', modeles.Magazine) AS issuenumber, modeles.username contributeurs, IF(modeles.Active=0, 1, 0) en_cours
+				SELECT Numero AS issuenumber
 				FROM tranches_en_cours_modeles modeles 
-				WHERE CONCAT(modeles.Pays,'/', modeles.Magazine) IN ($liste_numeros)";
+				WHERE modeles.Active=0 AND modeles.Pays = '$pays' AND Magazine='$magazine' AND Numero IN ($liste_numeros)";
 
             $resultats_requete_creations = $this->requete_select_dm($requete_creations);
 
-            $resultats_requete_creations = array_combine(array_map(function($creation) {
-                return $creation['issuenumber'];
-            }, $resultats_requete_creations), $resultats_requete_creations);
-
-            foreach ($numeros as $numero) {
-                if (isset($resultats_requete_creations[$numero])) {
-                    $tranches_pretes[$numero] = 'en_cours';
-                }
+            foreach ($resultats_requete_creations as $numero) {
+                $tranches_pretes[$numero['issuenumber']] = 'en_cours';
             }
 
 			$requete_get_pretes = "
-				SELECT tp.issuenumber, IF(tp_c.contributeur IS NULL,'global','par_moi') AS type_contributeur
-				FROM tranches_pretes tp
-				LEFT JOIN tranches_pretes_contributeurs tp_c USING(publicationcode, issuenumber)
-				WHERE tp.publicationcode = '$pays/$magazine' AND tp_c.contribution = 'createur' AND tp_c.contributeur=$id_user";
+				SELECT 
+				  tp.issuenumber,
+                  IF((select 1
+                   FROM tranches_pretes_contributeurs tp_c
+                   where tp_c.publicationcode = tp.publicationcode AND tp_c.issuenumber = tp.issuenumber AND tp_c.contributeur=$id_user AND tp_c.contribution = 'createur'
+                  ),'par_moi', 'global') AS type_contributeur
+                FROM tranches_pretes tp
+                WHERE tp.publicationcode = '$pays/$magazine'";
 			$resultat_get_pretes = $this->requete_select_dm($requete_get_pretes);
 
 			foreach ($resultat_get_pretes as $tranche_prete) {
@@ -747,7 +748,7 @@ class Modele_tranche extends CI_Model {
 		if ($numero_debut!=null)
 			$requete_suppr.=' AND Nom_Fonction LIKE \''.$nom_fonction.'\' AND Numero_debut LIKE \''.$numero_debut.'\' AND Numero_fin LIKE \''.$numero_fin.'\'';
 		$requete_suppr.=')';
-        $resultats = DmClient::get_query_results_from_dm_server($requete_suppr, 'db_edgecreator');
+        DmClient::get_query_results_from_dm_server($requete_suppr, 'db_edgecreator');
 		echo $requete_suppr."\n";
 	}
 
@@ -764,7 +765,7 @@ class Modele_tranche extends CI_Model {
 							      .'INNER JOIN edgecreator_intervalles AS intervalles ON valeurs.ID = intervalles.ID_Valeur '
 							      .'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' '
 								  .'AND Ordre='.$etape.' AND Option_nom = \''.$nom_option.'\' AND username = \''.self::$username.'\'';
-        $resultats = DmClient::get_query_results_from_dm_server($requete_suppr_option, 'db_edgecreator');
+        DmClient::get_query_results_from_dm_server($requete_suppr_option, 'db_edgecreator');
 		echo $requete_suppr_option."\n";
 	}
 
