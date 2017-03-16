@@ -4,7 +4,6 @@ header('Access-Control-Allow-Headers: X-Requested-With, Content-Type');
 
 class Modele_tranche extends CI_Model {
 	static $just_connected;
-	static $id_session;
 	static $pays;
 	static $magazine;
 	static $username;
@@ -17,8 +16,7 @@ class Modele_tranche extends CI_Model {
 	static $user_possede_modele=null;
 	static $utilisateurs = [];
 	static $noms_fonctions = [
-        'Agrafer','Arc_cercle','Degrade','DegradeTrancheAgrafee',
-								   'Image','Polygone','Rectangle','Remplir','TexteMyFonts'
+        'Agrafer','Arc_cercle','Degrade','DegradeTrancheAgrafee', 'Image','Polygone','Rectangle','Remplir','TexteMyFonts'
     ];
 
 	function __construct($tab= [])
@@ -388,22 +386,6 @@ class Modele_tranche extends CI_Model {
 		
 	}
 
-	function ajouter_preview($options_json) {
-		$requete='INSERT INTO tranches_previews(ID_Session,Options) VALUES (\''.self::$id_session.'\',\''.$options_json.'\')';
-        DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator');
-		$requete_get_id_preview='SELECT Max(ID_Preview) AS ID FROM tranches_previews';
-        $resultats_get_id_preview = DmClient::get_query_results_from_dm_server($requete_get_id_preview, 'db_edgecreator');
-		foreach($resultats_get_id_preview as $resultat)
-			return $resultat->ID;
-		return 1;
-	}
-	
-	function get_preview_existe($options_json) {
-		$requete='SELECT ID_Preview FROM tranches_previews WHERE Options LIKE \''.$options_json.'\' AND ID_Session LIKE \''.self::$id_session.'\'';
-        $resultat = DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator');
-		return count($resultat) > 0;
-	}
-	
 	function sv_doublons($pays,$magazine) {
 		self::$numeros_dispos=$this->get_numeros_disponibles($pays, $magazine);
 		$numeros_disponibles=self::$numeros_dispos;
@@ -489,41 +471,7 @@ class Modele_tranche extends CI_Model {
 	function get_numeros($publicationcode) {
         return DmClient::get_service_results(DmClient::$dm_server, 'GET','/coa/list/issues', [$publicationcode]);
 	}
-	
-	function get_createurs_tranche($pays, $magazine, $numero) {
-		$createurs_tranche_edgecreator_v1 = $this->get_createurs_tranche_edgecreator_v1($pays, $magazine, $numero);
-		if (!is_null($createurs_tranche_edgecreator_v1)) {
-			return $createurs_tranche_edgecreator_v1;
-		}
-		else {
-			return $this->get_createurs_tranche_edgecreator_v2($pays, $magazine, $numero);
-		}
-	}
-	
-	function get_createurs_tranche_edgecreator_v1($pays, $magazine, $numero) {
-		$requete_get_prets='SELECT issuenumber, createurs FROM tranches_pretes '
-						  .'WHERE publicationcode = \''.$pays.'/'.$magazine.'\' AND replace(issuenumber,\' \',\'\') = \''.$numero.'\'';
-		$resultat_get_prets=$this->requete_select_dm($requete_get_prets);
-		if (count($resultat_get_prets) > 0) {
-			$createurs=explode(';',$resultat_get_prets[0]['createurs']);
-			return $createurs;
-		}
-		return null;
-	}
-	
-	function get_createurs_tranche_edgecreator_v2($pays, $magazine, $numero) {
-		if (count(self::$utilisateurs) == 0) {
-			self::setUtilisateurs();
-		}
-		$requete_get_prets='SELECT username AS createur, Active FROM tranches_en_cours_modeles '
-						  .'WHERE Pays = \''.$pays.'\' AND Magazine=\''.$magazine.'\' AND Numero = \''.$numero.'\'';
-        $resultat_get_prets = DmClient::get_query_results_from_dm_server($requete_get_prets, 'db_edgecreator');
-		foreach($resultat_get_prets as $resultat) {
-			return $resultat->Active == 1 ? [] : [array_search($resultat->createur, self::$utilisateurs)];
-		}
-		return null;
-	}
-	
+
 	function get_valeurs_options($pays,$magazine,$numeros= []) {
 		$numeros_esc= [];
 		foreach($numeros as $numero) {
@@ -708,21 +656,6 @@ class Modele_tranche extends CI_Model {
 		}
 	}
 
-	function cloner_etape($pays,$magazine,$etape_courante,$etape) {
-        // TODO as DM server service
-
-		$requete='SELECT '.implode(', ', self::$fields).' '
-				.'FROM edgecreator_modeles2 '
-				.'INNER JOIN edgecreator_valeurs AS valeurs ON edgecreator_modeles2.ID = valeurs.ID_Option '
-			    .'INNER JOIN edgecreator_intervalles AS intervalles ON valeurs.ID = intervalles.ID_Valeur '
-				.'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Ordre='.$etape_courante.' AND username LIKE \''.self::$username.'\'';
-        $resultats = DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator');
-		foreach($resultats as $resultat) {
-			$resultat->Ordre=$etape;
-		}
-		$this->db->insert_batch('edgecreator_modeles2',$resultats);
-	}
-
 	function insert_ordre($pays,$magazine,$ordre,$numero_debut,$numero_fin,$nom_fonction,$parametrage) {
 		$ordre_existe=count($this->get_etapes_simple_magazine($pays, $magazine, $ordre)) > 0;
 		if ($ordre_existe) {
@@ -738,18 +671,6 @@ class Modele_tranche extends CI_Model {
                 $numero_fin);
 			
 		}
-	}
-
-	function delete_ordre($pays,$magazine,$ordre,$numero_debut,$numero_fin,$nom_fonction) {
-		$requete_suppr='DELETE modeles, valeurs, intervalles FROM edgecreator_modeles2 modeles '
-					  .'INNER JOIN edgecreator_valeurs AS valeurs ON modeles.ID = valeurs.ID_Option '
-				      .'INNER JOIN edgecreator_intervalles AS intervalles ON valeurs.ID = intervalles.ID_Valeur '
-					  .'WHERE (Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Ordre LIKE \''.$ordre.'\' AND username LIKE \''.self::$username.'\')';
-		if ($numero_debut!=null)
-			$requete_suppr.=' AND Nom_Fonction LIKE \''.$nom_fonction.'\' AND Numero_debut LIKE \''.$numero_debut.'\' AND Numero_fin LIKE \''.$numero_fin.'\'';
-		$requete_suppr.=')';
-        DmClient::get_query_results_from_dm_server($requete_suppr, 'db_edgecreator');
-		echo $requete_suppr."\n";
 	}
 
 	function delete_option($pays,$magazine,$etape,$nom_option) {
@@ -831,13 +752,6 @@ class Modele_tranche extends CI_Model {
 				}
 			}
 		}
-	}
-
-	function getFields() {
-		$fields= [];
-		foreach(self::$fields as $field)
-			$fields[]=$this->$field;
-		return $fields;
 	}
 
 	function getRGB($couleurs) {
@@ -1102,25 +1016,6 @@ class Modele_tranche extends CI_Model {
 		}
 		return $texte;
 	}
-
-	function getNumerosDebutFin($intervalle=null) {
-		if (is_null($intervalle))
-			return [self::$numero_debut,self::$numero_fin];
-		$regex_numeros_debut_fin='#Num&eacute;ros? ([^ ]+) (?:&agrave; ([^ ]+))?#is';
-		preg_match($regex_numeros_debut_fin, $intervalle.' ', $numeros_debut_fin);
-		if (isset($numeros_debut_fin[2]))
-			return [$numeros_debut_fin[1],$numeros_debut_fin[2]];
-		else {
-			if (isset($numeros_debut_fin[1]))
-				return [$numeros_debut_fin[1],$numeros_debut_fin[1]];
-			else
-				return [self::$numero_debut,self::$numero_fin];
-		}
-	}
-
-	function setSessionID($id_session) {
-		self::$id_session=$id_session;
-	}
 	
 	function setPays($pays) {
 		self::$pays=$pays;
@@ -1159,40 +1054,13 @@ class Modele_tranche extends CI_Model {
 			$dropdown=self::$dropdown_numeros;
 		return str_replace('<select', '<select id="'.$id.'" ', $dropdown);
 	}
-	
-	function setDropdownNumerosName($name,$dropdown='static') {
-		if ($dropdown=='static')
-			$dropdown=self::$dropdown_numeros;
-		return preg_replace('#name="[^"]+"', 'name="'.$name.'"', $dropdown);
-	}
-	
+
 	function setDropdownNumerosSelected($value,$dropdown='static') {
 		if ($dropdown=='static')
 			$dropdown=self::$dropdown_numeros;
 		return str_replace('<option value="'.$value.'"', '<option value="'.$value.'" selected="selected" ', $dropdown);
 	}
-	
-	function getDropdownNumeros() {
-		return self::$dropdown_numeros;
-	}
-	
-	
-	function urlDecode() {
-		$requete='SELECT ID, ID_Option, Option_valeur '
-				.'FROM edgecreator_valeurs ';
 
-        $resultats = DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator');
-		foreach($resultats as $resultat) {
-			if (is_null($resultat->Option_valeur))
-				continue;
-			echo $resultat->Option_valeur;
-			$resultat->Option_valeur=urldecode($resultat->Option_valeur);
-			$resultat->Option_valeur=str_replace("'","\'",$resultat->Option_valeur);
-			echo ' => '.$resultat->Option_valeur.'<br />';
-		}
-	}
-	
-	
 	function get_liste($type,$arg=null,$arg2=null) {
 		$liste= [];
 		switch($type) {
@@ -1395,18 +1263,6 @@ class Fonction_executable extends Fonction {
 			}
 		}
 	}
-		
-	function afficher_si_existant() {
-		$ci =& get_instance();
-		$ci->load->model('Modele_tranche','Modele_tranche',true);
-		$modele_tranche=new Modele_tranche();
-		if ($modele_tranche->get_preview_existe($this->getJSONOptions())) {
-			$session_id=$modele_tranche->id_session;
-			header('Content-type: image/png');
-			imagepng(imagecreatefrompng('../edges/tmp_previews/'.$session_id.'/'.Viewer_wizard::$pays.'_'.Viewer_wizard::$magazine.'_'.Viewer_wizard::$numero.'_'.Viewer_wizard::$etape_en_cours->num_etape.'_'.z(1).'.png'));
-			exit(0);
-		}
-	}
 
 	function getJSONOptions() {
 		return json_encode($this->options);
@@ -1510,7 +1366,6 @@ class Dimensions extends Fonction_executable {
 			return;
 		$this->verifier_erreurs();
 		Viewer_wizard::$image=imagecreatetruecolor(z($this->options->Dimension_x), z($this->options->Dimension_y));
-		//imageantialias(Viewer_wizard::$image, true);
 		Viewer_wizard::$largeur=z($this->options->Dimension_x);
 		Viewer_wizard::$hauteur=z($this->options->Dimension_y);
 		imagefill(Viewer_wizard::$image,0,0,  imagecolorallocate(Viewer_wizard::$image, 255, 255, 255));
@@ -1544,11 +1399,9 @@ class Remplir extends Fonction_executable {
 		$this->options->Pos_x=z(self::toTemplatedString($this->options->Pos_x));
 		$this->options->Pos_y=z(self::toTemplatedString($this->options->Pos_y));
 		$this->verifier_erreurs();
-		$this->afficher_si_existant();
 		list($r,$g,$b)=$this->getRGB($this->options->Couleur);
 		$couleur=imagecolorallocate(Viewer_wizard::$image, $r,$g,$b);
 		imagefill(Viewer_wizard::$image, $this->options->Pos_x, $this->options->Pos_y, $couleur);
-		//imageline(Viewer_wizard::$image, $this->options->Pos_x, ($this->options->Pos_y-5), ($this->options->Pos_x+5), ($this->options->Pos_y+5), $couleur);
 	}
 	
 	function verifier_erreurs() {
@@ -1783,7 +1636,7 @@ class TexteTTF extends Fonction_executable {
                 $pos_x_tmp = 0;
                 $pos_y_tmp = 0;
 			}
-			
+
 			imagettftext($image2,z($this->options->Taille),$this->options->Rotation,
 						 $pos_x_tmp,$pos_y_tmp,
 						 $couleur_texte,BASEPATH.'fonts/'.$this->options->Police.'.ttf',$this->options->Chaine);
@@ -2203,37 +2056,39 @@ function trier_intervalles($intervalle1,$intervalle2) {
 	return 1;
 }
 
-function imagettfbbox_t($size, $angle, $fontfile, $text){
-	// compute size with a zero angle
-	$coords = imagettfbbox($size, 0, $fontfile, $text);
-	// convert angle to radians
-	$a = deg2rad($angle);
-	// compute some usefull values
-	$ca = cos($a);
-	$sa = sin($a);
-	$ret = [];
-	// perform transformations
-	for($i = 0; $i < 7; $i += 2){
-		$ret[$i] = round($coords[$i] * $ca + $coords[$i+1] * $sa);
-		$ret[$i+1] = round($coords[$i+1] * $ca - $coords[$i] * $sa);
-			}
-			return $ret;
-		}
-	
-		function calculateTextBox($text,$fontFile,$fontSize,$fontAngle) {
-		  $rect = imagettfbbox_t($fontSize,$fontAngle,$fontFile,$text);
-	
-		  $minX = min([$rect[0],$rect[2],$rect[4],$rect[6]]);
-		  $maxX = max([$rect[0],$rect[2],$rect[4],$rect[6]]);
-		  $minY = min([$rect[1],$rect[3],$rect[5],$rect[7]]);
-		  $maxY = max([$rect[1],$rect[3],$rect[5],$rect[7]]);
-	
-		  return [
-			"left"   => abs($minX),
-			"top"	=> abs($minY),
-			"width"  => $maxX - $minX,
-			"height" => $maxY - $minY,
-			"box"	=> $rect
-          ];
-		}
+function imagettfbbox_t($size, $angle, $fontfile, $text)
+{
+    // compute size with a zero angle
+    $coords = imagettfbbox($size, 0, $fontfile, $text);
+    // convert angle to radians
+    $a = deg2rad($angle);
+    // compute some usefull values
+    $ca = cos($a);
+    $sa = sin($a);
+    $ret = [];
+    // perform transformations
+    for ($i = 0; $i < 7; $i += 2) {
+        $ret[$i] = round($coords[$i] * $ca + $coords[$i + 1] * $sa);
+        $ret[$i + 1] = round($coords[$i + 1] * $ca - $coords[$i] * $sa);
+    }
+    return $ret;
+}
+
+function calculateTextBox($text, $fontFile, $fontSize, $fontAngle)
+{
+    $rect = imagettfbbox_t($fontSize, $fontAngle, $fontFile, $text);
+
+    $minX = min([$rect[0], $rect[2], $rect[4], $rect[6]]);
+    $maxX = max([$rect[0], $rect[2], $rect[4], $rect[6]]);
+    $minY = min([$rect[1], $rect[3], $rect[5], $rect[7]]);
+    $maxY = max([$rect[1], $rect[3], $rect[5], $rect[7]]);
+
+    return [
+        "left" => abs($minX),
+        "top" => abs($minY),
+        "width" => $maxX - $minX,
+        "height" => $maxY - $minY,
+        "box" => $rect
+    ];
+}
 ?>

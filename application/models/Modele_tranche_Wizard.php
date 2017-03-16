@@ -2,7 +2,7 @@
 include_once(BASEPATH.'../application/models/Modele_tranche.php');
 
 class Modele_tranche_Wizard extends Modele_tranche {
-	static $content_fields;
+	static $content_fields = ['Ordre', 'Nom_fonction', 'Option_nom', 'Option_valeur'];
 	static $numero;
 
 	function get_tranches_en_cours($id=null,$pays=null,$magazine=null,$numero=null) {
@@ -455,10 +455,5 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		$b = $rgb & 0xFF;
 		return rgb2hex($r,$g,$b);
 	}
-	
-	function setNumero($numero) {
-		self::$numero=$numero;
-	}
 }
-Modele_tranche_Wizard::$content_fields= ['Ordre', 'Nom_fonction', 'Option_nom', 'Option_valeur'];
 ?>
