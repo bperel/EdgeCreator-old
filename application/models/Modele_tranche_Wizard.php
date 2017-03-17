@@ -17,23 +17,20 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		}
         $resultats = DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator');
 
-        $liste_pays= [];
+        $liste_magazines= [];
 		foreach($resultats as $resultat) {
 			$resultat->Magazine_complet='';
-			if (!in_array($resultat->Pays,$liste_pays))
-				$liste_pays[]=$resultat->Pays;
+            $publicationcode = implode('/', [$resultat->Pays, $resultat->Magazine]);
+            if (!in_array($publicationcode, $liste_magazines))
+				$liste_magazines[]=$publicationcode;
 		}
 
-        $noms_magazines = DmClient::get_service_results(DmClient::$dm_server, 'GET','/coa/list/publications', [implode(',', array_unique($liste_pays))]);
+        $noms_magazines = DmClient::get_service_results(DmClient::$dm_server, 'GET','/coa/list/publications', [implode(',', array_unique($liste_magazines))]);
 
-		foreach($liste_pays as $pays) {
-			foreach($resultats as $resultat) {
-				if ($resultat->Pays == $pays) {
-					$resultat->Magazine_complet=$noms_magazines[$resultat->Magazine];
-				}
-			}
-			
-		}
+        foreach($resultats as $resultat) {
+            $publicationcode = implode('/', [$resultat->Pays, $resultat->Magazine]);
+            $resultat->Magazine_complet=$noms_magazines->{$publicationcode};
+        }
 		return $resultats;
 	}
 	

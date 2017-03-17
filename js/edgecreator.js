@@ -1,3 +1,5 @@
+var wizard = false;
+
 jQuery.fn.pluck = function(key) {
   var plucked = [];
   this.each(function() {
@@ -1029,92 +1031,106 @@ var onglet_sel='builder';
 var pays_sel=null;
 
 $(window).load(function() {
-    if (!$('#viewer'))
-        return;
-    
     $('#connexion,#deconnexion').button();
     $('.tip').tooltip();
-	
-    $('#tabs').tabs({
-    	show:function(event,ui) {
-    		onglet_sel=$(ui.tab).text();
-    		cacher_regles_sauf_onglet_courant();
-    		fixer_regles(true);
-    	    var type_chargement=onglet_sel=='Builder' ? 'etape' : 'numero';
-    	    selecteur_cellules_preview='#contenu_'+onglet_sel.toLowerCase()+' .ligne_previews .image_'+type_chargement;
 
-    	    if (onglet_sel=='Builder')
-    	        var titre_image_view='Voir la composition de cette tranche';
-    	    else
-    	        titre_image_view='Selectionner le premier numero a previsualiser';
-    	    changer_titres_images_view(titre_image_view);
-    	}
-    });
-     
-    $('#viewer').resizable({
-        handles: 'e',
-        minWidth: 200,
-        stop: function() {
-        	$('#corps').css({'marginLeft':($(this).width()-200)+'px'});
+    if (wizard) {
+        if (username === 'demo') {
+            afficher_dialogue_accueil();
         }
-    });
-    
-    $('#liste_pays').change(function() {
-        var element=$(this);
-        var nouveau_pays=element.val();
-        charger_liste_magazines(nouveau_pays);
-	});
-	
-	$('#liste_magazines').change(function() {
-		charger_liste_numeros($(this).val());
-	});
-	
-	reload_observers_filtres();
-	
-	$('#chargement').html('Chargement des pays...');
-    
-    $.ajax({
-        url: urls['numerosdispos']+['index'].join('/'),
-        dataType:'json',
-        type: 'post',
-        success:function(data) {
-            if (privilege != 'Affichage') {
-                var toggle_iframe_upload=$('<span>',{id:'toggle_iframe_upload'}).html('^');
-                var lien_upload=$('<a>',{href:'javascript:void(0)'})
-                    .css({'float':'right'})
-                    .html('Envoyer une image &agrave; EdgeCreator&nbsp;')
-                    .append(toggle_iframe_upload);
-                lien_upload.click(function() {
-                    if ($('#iframe_upload').length > 0) {
-                        $('#iframe_upload').remove();
-                        $('#toggle_iframe_upload').html('^');
-                    }
-                    else {
-                        var iframe_upload=$('<iframe>',{id:'iframe_upload',
-                                                        src:base_url+'index.php/helper/index/image_upload.php'});
-                        $('#upload_fichier').html(iframe_upload);
-                        $('#toggle_iframe_upload').html('v');
-                    }
-                });
-                $('#upload_fichier').append(lien_upload).append($('<br>'));
-            }
-            for (var i in data.pays) {
-                $('#liste_pays')
-                    .append($('<option>').val(i)
-                                .html(data.pays[i]));
-            }
-            pays_sel = pays == '' || typeof($('#liste_pays').children('[value="'+pays+'"]:first')) == 'undefined' ? 'fr' : pays;
-            $('#liste_pays').prop('selectedIndex',$('#liste_pays').children('[value="'+pays_sel+'"]:first').index());
-            
-			charger_liste_magazines(pays_sel);
+        else {
+            launch_wizard('wizard-1');
+            init_action_bar();
         }
-    });
-    
-    if (pays != "" && magazine != "")
-        charger_liste_numeros(magazine);
+    }
+    else {
+	
+        $('#tabs').tabs({
+            show:function(event,ui) {
+                onglet_sel=$(ui.tab).text();
+                cacher_regles_sauf_onglet_courant();
+                fixer_regles(true);
+                var type_chargement=onglet_sel=='Builder' ? 'etape' : 'numero';
+                selecteur_cellules_preview='#contenu_'+onglet_sel.toLowerCase()+' .ligne_previews .image_'+type_chargement;
+
+                if (onglet_sel=='Builder')
+                    var titre_image_view='Voir la composition de cette tranche';
+                else
+                    titre_image_view='Selectionner le premier numero a previsualiser';
+                changer_titres_images_view(titre_image_view);
+            }
+        });
+
+        $('#viewer').resizable({
+            handles: 'e',
+            minWidth: 200,
+            stop: function() {
+                $('#corps').css({'marginLeft':($(this).width()-200)+'px'});
+            }
+        });
+
+        $('#liste_pays').change(function() {
+            var element=$(this);
+            var nouveau_pays=element.val();
+            charger_liste_magazines(nouveau_pays);
+        });
+
+        $('#liste_magazines').change(function() {
+            charger_liste_numeros($(this).val());
+        });
+
+        reload_observers_filtres();
+
+        $('#chargement').html('Chargement des pays...');
+
+        $.ajax({
+            url: urls['numerosdispos']+['index'].join('/'),
+            dataType:'json',
+            type: 'post',
+            success:function(data) {
+                if (privilege != 'Affichage') {
+                    var toggle_iframe_upload=$('<span>',{id:'toggle_iframe_upload'}).html('^');
+                    var lien_upload=$('<a>',{href:'javascript:void(0)'})
+                        .css({'float':'right'})
+                        .html('Envoyer une image &agrave; EdgeCreator&nbsp;')
+                        .append(toggle_iframe_upload);
+                    lien_upload.click(function() {
+                        if ($('#iframe_upload').length > 0) {
+                            $('#iframe_upload').remove();
+                            $('#toggle_iframe_upload').html('^');
+                        }
+                        else {
+                            var iframe_upload=$('<iframe>',{id:'iframe_upload',
+                                                            src:base_url+'index.php/helper/index/image_upload.php'});
+                            $('#upload_fichier').html(iframe_upload);
+                            $('#toggle_iframe_upload').html('v');
+                        }
+                    });
+                    $('#upload_fichier').append(lien_upload).append($('<br>'));
+                }
+                for (var i in data.pays) {
+                    $('#liste_pays')
+                        .append($('<option>').val(i)
+                                    .html(data.pays[i]));
+                }
+                pays_sel = pays == '' || typeof($('#liste_pays').children('[value="'+pays+'"]:first')) == 'undefined' ? 'fr' : pays;
+                $('#liste_pays').prop('selectedIndex',$('#liste_pays').children('[value="'+pays_sel+'"]:first').index());
+
+                charger_liste_magazines(pays_sel);
+            }
+        });
+
+        if (pays != "" && magazine != "")
+            charger_liste_numeros(magazine);
+
+        $('#viewer_inner').scroll(function() {
+            adapter_scroll_reperes();
+            fixer_regles(false);
+        });
+    }
 
     $('#zoom_slider').slider({
-        value:1 /* Valeur n�1 du tableau, donc = 1.5*/,
+        value:1 /* Valeur n°1 du tableau, donc = 1.5*/,
         min:0,
         max:valeurs_possibles_zoom.length-1,
         step:1,
@@ -1146,22 +1162,6 @@ $(window).load(function() {
           }
     });
     
-    
-    $('.option_previews input').click(function() {
-        var element=$(this);
-        switch (element.attr('id')) {
-            case 'option_details':
-                $('#contenu_previews')
-                    .find('.numero_preview, .reload')	
-                    .css({display:element.is(':checked') ? 'block' : 'none'});
-                fixer_regles(false);
-            break;
-            case 'option_pretes_seulement':
-                
-            break;
-        }
-    });
-    
     if (privilege == 'Admin' || privilege == 'Edition') {
         $('#save_png').click(function() {
            if (typeof (numero_chargement) != 'undefined') {
@@ -1184,14 +1184,9 @@ $(window).load(function() {
             $('#toggle_helpers').html(
                 ($('#infos').hasClass('cache') ? 'Cacher':'Montrer')
                 +' l\'assistant');
-           $('#infos').toggleClass('cache');
+            $('#infos').toggleClass('cache');
         });
     }
-    
-    $('#viewer_inner').scroll(function() {
-		adapter_scroll_reperes();
-		fixer_regles(false);
-	});
 });
 
 function afficher_dialogue_contributeurs(callback) {
@@ -1216,17 +1211,6 @@ function charger_liste_magazines(pays_sel) {
 				$('#liste_magazines').prop('selectedIndex',$('#liste_magazines').children('[value="'+magazine+'"]').first().index());
 
             $('#chargement').html('');
-			
-			if (username == 'demo') {
-				afficher_dialogue_accueil();
-			}
-			else {
-				if (!mode_expert) { // Lancement de l'assistant
-				    $('.wizard button').button();
-				    launch_wizard('wizard-1');
-				    init_action_bar();
-				}
-			}
 		}
 	});
 }

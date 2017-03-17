@@ -1,3 +1,5 @@
+wizard = true;
+
 (function($){
 	$.fn.d = function(){
 		return this.closest('.ui-dialog');
