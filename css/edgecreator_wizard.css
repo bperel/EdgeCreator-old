@@ -163,7 +163,8 @@ button#connexion, button#deconnexion {
 
 #wizard-1 #tranches_en_cours {
     position: static !important;
-    margin-left: 20px;
+	margin-top: 20px;
+	padding: 15px;
     display: block;
 }
 
@@ -187,25 +188,21 @@ button#connexion, button#deconnexion {
 	height: 100px;
 }
 
-#tranches_en_cours li label.libelle_tranche_en_cours, #tranches_non_pretes li label {
+#wizard-1 #tranches_en_cours .groupe_tranches {
+	margin-top: 2px;
+}
+
+#tranches_en_cours label.libelle_tranche_en_cours, #tranches_non_pretes label {
 	padding-left: 32px;
 	background-repeat: no-repeat;
 	background-position: 10px;
 }
 
-#tranches_en_cours li label.prepublier,
-#tranches_en_cours li label.depublier {
+#tranches_en_cours button.prepublier,
+#tranches_en_cours button.depublier {
+	margin: 0 5px 0 10px;
     padding-left: 0;
     float: right;
-    margin-right: 5px;
-}
-
-#tranches_en_cours li span, #tranches_non_pretes li span {
-	text-align: left;
-}
-
-#wizard-1 #tranches_en_cours li label .ui-button-text {
-	white-space: nowrap;
 }
 
 #wizard-proposition-clonage table td {

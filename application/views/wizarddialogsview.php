@@ -46,7 +46,7 @@
 	</form>
 </div>
 
-<div id="wizard-1" class="first wizard" title="Accueil EdgeCreator">
+<div id="wizard-1" class="first wizard extensible" title="Accueil EdgeCreator">
 	<p>
 		Vous êtes à présent connecté(e) sur EdgeCreator.
 	</p>
@@ -64,17 +64,16 @@
 				<input type="radio" name="choix" value="to-wizard-modifier" id="to-wizard-modifier"/>
 				<label class="toutes_bordures" for="to-wizard-modifier">Modifier une tranche de magazine</label><br />
 				<input type="radio" name="choix" value="to-wizard-conception" id="to-wizard-conception"/>
-				<label class="bordure_gauche" for="to-wizard-conception">Poursuivre une conception de tranche</label>
-    			<button id="selectionner_tranche_en_cours">Sélectionnez une tranche</button>
 			</div>
-			<ul id="tranches_en_cours" class="liste_numeros cache">
+			<ul id="tranches_en_cours" class="liste_numeros">
                 <div name="tranches_non_affectees">Tranches non affectées :</div>
                 <div name="tranches_affectees">Tranches en cours de conception par vous :</div>
-				<li class="template">
-					<input type="radio" id="numero_tranche_en_cours" name="choix_tranche_en_cours">
-					<label for="numero_tranche_en_cours" class="toutes_bordures libelle_tranche_en_cours">Label</label>
-                    <label class="prepublier">Pré-publier</label><label class="depublier cache">Dé-publier</label>
-				</li>
+				<div class="groupe_tranches template">
+                    <input type="radio" id="numero_tranche_en_cours" name="choix_tranche_en_cours">
+                    <label for="numero_tranche_en_cours" class="toutes_bordures libelle_tranche_en_cours">Label</label>
+                    <button class="prepublier">Pré-publier</button>
+                    <button class="depublier cache">Dé-publier</button>
+				</div>
 			</ul>
             <input type="hidden" name="est_nouvelle_conception_tranche" />
 		</form>

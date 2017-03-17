@@ -618,29 +618,9 @@ function wizard_init(wizard_id) {
 		event.preventDefault();
 	});
 
-	// Actions � l'initialisation de l'assistant
+	// Actions à l'initialisation de l'assistant
 	switch(wizard_id) {
 		case 'wizard-1':
-			$('#selectionner_tranche_en_cours')
-				.button({
-					text: false,
-					icons: {
-					  primary: "ui-icon-triangle-1-s"
-					}
-				  })
-				  .click(function() {
-					$( this ).parent().next().show().position({
-					  my: "right",
-					  at: "right bottom",
-					  of: this
-					});
-					return false;
-				  })
-				  .parent()
-					.buttonset()
-					.next()
-					  .hide();
-
 			$.ajax({
 				url: urls['tranchesencours']+['load'].join('/'),
 				dataType:'json',
@@ -1253,7 +1233,7 @@ function afficher_liste_magazines(wizard_id, id_element_liste, data) {
 
 		$.each(noms_sections, function() {
 			var section = elementListe.find('[name="'+this.toString()+'"]');
-			if (section.children('li').length === 0) {
+			if (section.children('.groupe_tranches').length === 0) {
 				section.remove();
 			}
 		});
