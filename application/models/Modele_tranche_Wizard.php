@@ -25,7 +25,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 				$liste_magazines[]=$publicationcode;
 		}
 
-        $noms_magazines = DmClient::get_service_results(DmClient::$dm_server, 'GET','/coa/list/publications', [implode(',', array_unique($liste_magazines))]);
+        $noms_magazines = DmClient::get_service_results(DmClient::$dm_server, 'GET', '/coa/list/publications', [implode(',', array_unique($liste_magazines))]);
 
         foreach($resultats as $resultat) {
             $publicationcode = implode('/', [$resultat->Pays, $resultat->Magazine]);
@@ -77,8 +77,8 @@ class Modele_tranche_Wizard extends Modele_tranche {
 				.'AND username = \''.self::$username.'\' '
 				.'AND Numero=\''.$numero.'\'';
 
-        $resultats = DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator');
-		return count($resultats) == 0 ? null : new Fonction($resultats);
+        $premier_resultat = DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator')[0];
+		return count($premier_resultat) == 0 ? null : new Fonction($premier_resultat);
 	}
 
 	function get_options(
@@ -96,8 +96,8 @@ class Modele_tranche_Wizard extends Modele_tranche {
 				.'FROM tranches_en_cours_modeles_vue '
 				.'WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' AND Numero = \''.$nom_fonction.'\' AND Ordre='.$ordre.' AND Option_nom IS NOT NULL '
 				.'AND username = \''.($this->user_possede_modele() ? self::$username : 'brunoperel').'\' ';
-		if (!is_null($nouvelle_etape))
-			$requete.='AND Option_nom = \''.$nouvelle_etape.'\' ';
+		if (!is_null($nom_option))
+			$requete.='AND Option_nom = \''.$nom_option.'\' ';
 		$requete.='ORDER BY Option_nom ASC';
 
         $resultats = DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator');
@@ -380,7 +380,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 			$publication_codes[]=$resultat['Pays'].'/'.$resultat['Magazine'];
 		}
 
-        $noms_magazines = DmClient::get_service_results(DmClient::$dm_server, 'GET','/coa/list/publications', [implode(',', array_unique($publication_codes))]);
+        $noms_magazines = DmClient::get_service_results(DmClient::$dm_server, 'GET', '/coa/list/publications', [implode(',', array_unique($publication_codes))]);
 
 		foreach($resultats as &$resultat) {
 			$resultat['Magazine_complet'] = $noms_magazines[$resultat['Pays'].'/'.$resultat['Magazine']];

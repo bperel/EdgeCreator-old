@@ -67,10 +67,10 @@ class DmClient
         return self::get_service_results(self::$dm_server, 'POST', '/rawsql', [
             'query' => $query,
             'db' => $db
-        ]);
+        ], 'rawsql');
     }
 
-    private static function get_page($url) {
+    public static function get_page($url) {
         $handle = @fopen($url, "r");
 
         if ($handle) {
@@ -95,29 +95,31 @@ class DmClient
      * @param string $method
      * @param string $path
      * @param array $parameters
-     * @return array|stdClass|null
+     * @param string $role
+     * @param bool $do_not_chunk
+     * @return array|null|stdClass
      */
-    public static function get_service_results($server, $method, $path, $parameters = [], $do_not_chunk = false)
+    public static function get_service_results($server, $method, $path, $parameters = [], $role = 'rawsql', $do_not_chunk = false)
     {
-        $role = 'rawsql';
         $ch = curl_init();
         $url = 'http://'.$server->ip . '/' . $server->web_root . $path;
 
         switch ($method) {
             case 'POST':
+            case 'PUT':
                 curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($parameters));
                 break;
             case 'GET':
                 if (count($parameters) > 0) {
                     if (!$do_not_chunk && count($parameters) === 1 && isset(self::$chunkable_services[$path])) {
-                        return self::get_chunkable_service_results($server, $method, $path, $parameters);
+                        return self::get_chunkable_service_results($server, $method, $path, $parameters, $role);
                     }
                     $url .= '/' . implode('/', $parameters);
                 }
                 break;
         }
         curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_POST, $method === 'POST');
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $headers = [
@@ -148,14 +150,15 @@ class DmClient
      * @param string $method
      * @param string $path
      * @param array $parameters
-     * @return array|stdClass|null
+     * @param string $role
+     * @return array|null|stdClass
      */
-    private static function get_chunkable_service_results($server, $method, $path, $parameters)
+    private static function get_chunkable_service_results($server, $method, $path, $parameters, $role)
     {
         $parameterListChunks = array_chunk(explode(',', $parameters[count($parameters) - 1]), self::$chunkable_services[$path]);
         $results = null;
         foreach ($parameterListChunks as $parameterListChunk) {
-            $result = self::get_service_results($server, $method, $path, [implode(',', $parameterListChunk)], true);
+            $result = self::get_service_results($server, $method, $path, [implode(',', $parameterListChunk)], $role, true);
             if (is_object($result)) {
                 if (is_null($results)) {
                     $results = $result;

@@ -26,8 +26,13 @@ class Modele_tranche extends CI_Model {
 		parent::__construct();
 		$_SESSION['lang']='fr';
 	}
-	
-	function get_just_connected() {
+
+    public static function getCheminImages()
+    {
+        return BASEPATH . '../../DucksManager/edges';
+    }
+
+    function get_just_connected() {
 		return self::$just_connected;
 	}
 	
@@ -461,15 +466,15 @@ class Modele_tranche extends CI_Model {
 	}
 	
 	function get_pays() {
-		return DmClient::get_service_results(DmClient::$dm_server, 'GET','/coa/list/countries', []);
+		return DmClient::get_service_results(DmClient::$dm_server, 'GET', '/coa/list/countries', []);
 	}
 	
 	function get_magazines($pays) {
-        return DmClient::get_service_results(DmClient::$dm_server, 'GET','/coa/list/publications', [$pays]);
+        return DmClient::get_service_results(DmClient::$dm_server, 'GET', '/coa/list/publications', [$pays]);
 	}
 
 	function get_numeros($publicationcode) {
-        return DmClient::get_service_results(DmClient::$dm_server, 'GET','/coa/list/issues', [$publicationcode]);
+        return DmClient::get_service_results(DmClient::$dm_server, 'GET', '/coa/list/issues', [$publicationcode]);
 	}
 
 	function get_valeurs_options($pays,$magazine,$numeros= []) {
@@ -1287,17 +1292,17 @@ class Fonction_executable extends Fonction {
 		}
 		Modele_tranche::rendu_image();
 	}
-	
-	static function getCheminPhotos($pays=null) {
+
+    static function getCheminPhotos($pays=null) {
 		if (is_null($pays))
 			$pays=self::$pays;
-		return BASEPATH.'../../edges/'.$pays.'/photos';
+		return Modele_tranche::getCheminImages() .'/'.$pays.'/photos';
 	}
 	
 	static function getCheminElements($pays=null) {
 		if (is_null($pays))
 			$pays=self::$pays;
-		return BASEPATH.'../../edges/'.$pays.'/elements';
+        return Modele_tranche::getCheminImages() .'/'.$pays.'/elements';
 	}
 
 	static function toTemplatedString($str,$actif=true) {
@@ -1518,8 +1523,8 @@ class TexteMyFonts extends Fonction_executable {
 		$this->options->Couleur_texte=rgb2hex($r_texte,$g_texte,$b_texte);
 
 		$ci =& get_instance();
-		$ci->load->model('MyFonts','MyFonts',true);
-		$post=new MyFonts($this->options->URL,
+		$ci->load->model('Myfonts');
+		$post=new Myfonts($this->options->URL,
 						  $this->options->Couleur_texte,
 						  $this->options->Couleur_fond,
 						  $this->options->Largeur,

@@ -1,5 +1,5 @@
 <?php
-class MyFonts extends CI_Model {
+class Myfonts extends CI_Model {
 	var $p;
 	var $chemin_image;
 	static $regex_source_image='#src=[^"]+"(.*\.gif)#isU';
@@ -82,17 +82,20 @@ class MyFonts extends CI_Model {
 				$this->chemin_image='http:'.$this->chemin_image;
 			}
 
-            // TODO as DM server service
-			
-			$requete='INSERT INTO images_myfonts(ID,Font,Color,ColorBG,Width,Texte,Precision_) '
-					.'VALUES(NULL,\''.$this->font.'\',\''.$this->color.'\',\''.$this->color_bg.'\','
-					.'\''.$this->width.'\',\''.$texte_clean.'\',\''.$this->precision.'\')';
-            DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator');
-			
-			$im=imagecreatefromgif($this->chemin_image);
-			imagegif($im,BASEPATH.'../../edges/images_myfonts/'.$this->db->insert_id().'.gif');
+            $resultat = DmClient::get_service_results(DmClient::$dm_server, 'PUT', '/edgecreator/myfontspreview', [
+                'font' => $this->font,
+                'fgColor' => $this->color,
+                'bgColor' => $this->color_bg,
+                'width' => $this->width,
+                'text' => $texte_clean,
+                'precision' => $this->precision,
+            ], 'edgecreator');
+
+            $im=imagecreatefromgif($this->chemin_image);
+            imagegif($im, Modele_tranche::getCheminImages().'/images_myfonts/'.$resultat->previewid.'.gif');
+
+            $this->im=$im;
 		}
-		$this->im=$im;
 	}
 }
 
@@ -110,7 +113,7 @@ class Post extends CI_Model {
 		$data = implode('&', $data);
 
         $this->url=$url.'?'.$data;
-		$this->content = Util::get_page($this->url);
+		$this->content = DmClient::get_page($this->url);
 		
 		return;
 		

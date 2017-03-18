@@ -33,8 +33,8 @@ class Numerosdispos extends EC_Controller {
 
 			$nb_etapes=$this->Modele_tranche->get_nb_etapes($pays,$magazine);
 
-            $noms_complets_pays = DmClient::get_service_results(DmClient::$dm_server, 'GET','/coa/list/countries', [$pays]);
-			$noms_complets_magazines = DmClient::get_service_results(DmClient::$dm_server, 'GET','/coa/list/publications', [$pays.'/'.$magazine]);
+            $noms_complets_pays = DmClient::get_service_results(DmClient::$dm_server, 'GET', '/coa/list/countries', [$pays]);
+			$noms_complets_magazines = DmClient::get_service_results(DmClient::$dm_server, 'GET', '/coa/list/publications', [$pays . '/' . $magazine]);
 
 			$data['numeros_dispos']=$numeros_dispos;
 			$data['tranches_pretes']=$tranches_pretes;
