@@ -1193,10 +1193,11 @@ class Modele_tranche extends CI_Model {
 		if (Viewer_wizard::$is_debug===false)
 			header('Content-type: image/png');
 		imagepng(Viewer_wizard::$image);
-	
-		@rmdir('../edges/'.Viewer_wizard::$pays.'/tmp/');
-		@mkdir('../edges/'.Viewer_wizard::$pays.'/tmp/');
-		$nom_image='../edges/'.Viewer_wizard::$pays.'/tmp/'.Viewer_wizard::$random_id.'.png';
+
+		$dossier_image=Modele_tranche::getCheminImages().'/'.Viewer_wizard::$pays.'/tmp/';
+		@rmdir($dossier_image);
+		@mkdir($dossier_image);
+		$nom_image=$dossier_image.Viewer_wizard::$random_id.'.png';
 		imagepng(Viewer_wizard::$image,$nom_image);
 		
 		exit();
