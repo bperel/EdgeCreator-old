@@ -98,6 +98,7 @@ class DmClient
      * @param string $role
      * @param bool $do_not_chunk
      * @return array|null|stdClass
+     * @throws Exception
      */
     public static function get_service_results($server, $method, $path, $parameters = [], $role = 'rawsql', $do_not_chunk = false)
     {
@@ -105,10 +106,6 @@ class DmClient
         $url = 'http://'.$server->ip . '/' . $server->web_root . $path;
 
         switch ($method) {
-            case 'POST':
-            case 'PUT':
-                curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($parameters));
-                break;
             case 'GET':
                 if (count($parameters) > 0) {
                     if (!$do_not_chunk && count($parameters) === 1 && isset(self::$chunkable_services[$path])) {
@@ -116,7 +113,9 @@ class DmClient
                     }
                     $url .= '/' . implode('/', $parameters);
                 }
-                break;
+            break;
+            default:
+                curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($parameters));
         }
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
@@ -142,7 +141,7 @@ class DmClient
             }
         }
 
-        return [];
+        throw new Exception('Call to service '.$method.' '.$server->web_root . $path. ' failed');
     }
 
     /**
