@@ -1,8 +1,9 @@
 <?php
-include_once(BASEPATH.'/../application/controllers/viewer_wizard.php');
+include_once(BASEPATH.'/../application/controllers/Viewer_wizard.php');
 
-class Viewer_myfonts extends Viewer_wizard {
-	
+class Viewer_myfonts extends EC_Controller {
+    static $is_debug=false;
+
 	function index($url,$couleur_texte,$couleur_fond,$largeur,$chaine,$demi_hauteur,$rotation,$largeur_tranche,$debug=false) {
 		self::$is_debug = $debug === 'true';
 		

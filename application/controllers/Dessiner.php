@@ -1,5 +1,5 @@
 <?php
-include_once(BASEPATH.'/../application/controllers/viewer_wizard.php');
+include_once(BASEPATH.'/../application/controllers/Viewer_wizard.php');
 
 class Dessiner extends EC_Controller {
 	

@@ -1,5 +1,5 @@
 <?php
-include_once('viewer_wizard.php');
+include_once('Viewer_wizard.php');
 class Sv_doublons extends EC_Controller {
 	static $pays;
 	static $magazine;

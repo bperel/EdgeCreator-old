@@ -55,7 +55,7 @@ class ParametrageG_wizard extends EC_Controller {
 				}
 				else {
 					$options=$this->Modele_tranche->get_options(self::$pays, self::$magazine, self::$etape,
-                        self::$numero, false, false, $nom_option);
+                        self::$numero, false, true, $nom_option);
 				}
 			}
 			
