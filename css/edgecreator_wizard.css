@@ -244,6 +244,10 @@ button#connexion, button#deconnexion {
 	display: inline-block;
 }
 
+.wizard.preview_etape #photo_tranche {
+	margin-left: 3px;
+}
+
 .wizard.preview_etape #photo_tranche img.cross {
 	cursor: crosshair;
 }

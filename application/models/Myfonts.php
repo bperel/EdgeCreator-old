@@ -59,8 +59,7 @@ class Myfonts extends CI_Model {
 				return;
 			}
 			else {
-				$requete_suppression_reference_image_inexistante='DELETE FROM images_myfonts WHERE ID='.$id_image;
-                DmClient::get_query_results_from_dm_server($requete_suppression_reference_image_inexistante, 'db_edgecreator');
+                DmClient::get_service_results(DmClient::$dm_server, 'DELETE', '/edgecreator/myfontspreview/'.$id_image, [], 'edgecreator');
 			}
 		}
 		$this->p=new Post(
