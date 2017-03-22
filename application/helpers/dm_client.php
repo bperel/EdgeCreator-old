@@ -15,8 +15,11 @@ class DmClient
         '/coa/list/publications' => 10
     ];
 
-    static function initCoaServers()
+    static $userData;
+
+    static function init($userdata)
     {
+        self::$userData = $userdata;
         self::$dm_server = null;
         self::$dm_site = null;
         $servers = parse_ini_file(BASEPATH.'../application/config/'.self::$servers_file, true);
@@ -127,6 +130,10 @@ class DmClient
             'Cache-Control: no-cache',
             'x-dm-version: 1.0',
         ];
+        if (!is_null(self::$userData['user'])) {
+            $headers[] = 'x-dm-user: ' . self::$userData['user'];
+            $headers[] = 'x-dm-pass: ' . self::$userData['pass'];
+        }
 
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 

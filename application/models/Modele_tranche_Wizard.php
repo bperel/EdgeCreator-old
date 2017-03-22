@@ -5,7 +5,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 	static $content_fields = ['Ordre', 'Nom_fonction', 'Option_nom', 'Option_valeur'];
 	static $numero;
 
-	function get_tranches_en_cours($id=null,$pays=null,$magazine=null,$numero=null) {
+    function get_tranches_en_cours($id=null,$pays=null,$magazine=null,$numero=null) {
 		$requete='SELECT ID, Pays, Magazine, Numero, username '
 				.'FROM tranches_en_cours_modeles '
 				.'WHERE username=\''.self::$username.'\' AND Active=1';
@@ -137,26 +137,20 @@ class Modele_tranche_Wizard extends Modele_tranche {
         return count(DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator')) === 0;
 	}
 
-	function decaler_etapes_a_partir_de($id_modele,$etape_debut, $inclure_cette_etape) {
-		$decalages= [];
-		$requete_select='SELECT DISTINCT Ordre '
-					   .'FROM tranches_en_cours_valeurs '
-					   .'WHERE ID_Modele = '.$id_modele.' '
-					     .'AND Ordre'.($inclure_cette_etape ? '>=' : '>').$etape_debut.' '
-					   .'ORDER BY Ordre DESC';
-        $resultats = DmClient::get_query_results_from_dm_server($requete_select, 'db_edgecreator');
-		foreach($resultats as $resultat) {
-			$etape=intval($resultat->Ordre);
-			$decalages[]= ['old'=>$etape, 'new'=>$etape+1];
-		}
-		$requete='UPDATE tranches_en_cours_valeurs '
-				.'SET Ordre=Ordre+1 ' 
-				.'WHERE ID_Modele = '.$id_modele.' '
-				  .'AND Ordre'.($inclure_cette_etape ? '>=' : '>').$etape_debut;
-        DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator');
-		return $decalages;
+	function decaler_etapes_a_partir_de($pays,$magazine,$numero,$etape_debut, $inclure_cette_etape) {
+        $inclure_cette_etape = $inclure_cette_etape ? 'inclusive' : 'exclusive';
+
+        $resultat = DmClient::get_service_results(
+            DmClient::$dm_server,
+            'POST',
+            "/edgecreator/step/shift/$pays/$magazine/$numero/$etape_debut/$inclure_cette_etape",
+            [],
+            'edgecreator'
+        );
+
+		return $resultat->shifts;
 	}
-	
+
 	function valeur_existe($id_valeur) {
 		$requete='SELECT ID FROM edgecreator_valeurs WHERE ID='.$id_valeur;
         return count(DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator')) > 0;
@@ -205,12 +199,14 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		return $resultat->NomPhotoPrincipale;
 	}
 
-	function insert_etape($pays,$magazine,$numero,$pos,$etape,$nom_fonction) {
-		$inclure_avant = $pos==='avant' || $pos==='_';
+	function insert_etape($pays, $magazine, $numero, $pos_relative, $etape, $nom_fonction) {
+		$inclure_avant = $pos_relative==='avant' || $etape === -1;
 		$id_modele=$this->get_id_modele($pays,$magazine,$numero,self::$username);
 		$infos=new stdClass();
-		
-		$infos->decalages=$this->decaler_etapes_a_partir_de($id_modele,$etape, $inclure_avant);
+
+		if ($etape > -1) {
+		    $infos->decalages=$this->decaler_etapes_a_partir_de($pays,$magazine,$numero,$etape, $inclure_avant);
+        }
 		
 		$nouvelle_fonction=new $nom_fonction(false, null, true);
 		$numero_etape=$inclure_avant ? $etape : $etape+1;
@@ -246,25 +242,19 @@ class Modele_tranche_Wizard extends Modele_tranche {
 	}
 
 	function cloner_etape_numero($pays,$magazine,$numero,$pos,$etape_courante) {
-        // TODO as DM server service
-
 		$inclure_avant = $pos==='avant' || $pos==='_';
 		$id_modele=$this->get_id_modele($pays,$magazine,$numero,self::$username);
 		$infos=new stdClass();
 		
-		$infos->decalages=$this->decaler_etapes_a_partir_de($id_modele,$etape_courante, $inclure_avant);
+		$infos->decalages=$this->decaler_etapes_a_partir_de($pays,$magazine,$numero,$etape_courante, $inclure_avant);
 		
-		$nouvelle_etape=$inclure_avant ? $etape_courante : $etape_courante+1;		
-		$requete=' SELECT Nom_fonction, Option_nom, Option_valeur, ID_Modele'
-				.' FROM tranches_en_cours_valeurs '
-				.' WHERE ID_Modele='.$id_modele.' AND Ordre='.$etape_courante;
-        $resultats = DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator');
-		foreach($resultats as $i=>$resultat) {
-			$resultat->Ordre=$nouvelle_etape;
-			$infos->nom_fonction=$resultat->Nom_fonction;
-			$resultats[$i]=(array) $resultats[$i];
-		}
-		$this->db->insert_batch('tranches_en_cours_valeurs',$resultats);
+		$nouvelle_etape=$inclure_avant ? $etape_courante : $etape_courante+1;
+
+        DmClient::get_service_results(DmClient::$dm_server, 'POST',
+            "/edgecreator/step/clone/$pays/$magazine/$numero/$etape_courante/to/$nouvelle_etape",
+            [],
+            'edgecreator'
+        );
 		
 		$infos->numero_etape=$nouvelle_etape;
 		return $infos;

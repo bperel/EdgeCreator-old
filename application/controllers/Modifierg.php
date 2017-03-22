@@ -43,7 +43,6 @@ class ModifierG extends EC_Controller {
 	
 			if ($est_etape_temporaire) {
 				$this->Modele_tranche->dupliquer_modele_magazine_si_besoin($pays,$magazine);
-				$this->Modele_tranche->decaler_etapes_a_partir_de(self::$pays,self::$magazine,self::$etape);
 				$this->Modele_tranche->insert_ordre(self::$pays,self::$magazine,self::$etape,self::$numeros[0],self::$numeros[count(self::$numeros)-1],$nom_nouvelle_fonction,
                     []);
 			}

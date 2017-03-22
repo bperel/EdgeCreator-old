@@ -367,7 +367,8 @@ class Modele_tranche extends CI_Model {
         return count(DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator')) === 0;
 	}
 
-	function decaler_etapes_a_partir_de($pays,$magazine,$etape_debut) {
+	// Obsolete
+	function ecv1_decaler_etapes_a_partir_de($pays,$magazine,$etape_debut) {
 		$requete='SELECT Max(Ordre) AS max_ordre FROM edgecreator_modeles2 '
 				.'INNER JOIN edgecreator_valeurs ON edgecreator_modeles2.ID = edgecreator_valeurs.ID_Option '
 			    .'INNER JOIN edgecreator_intervalles ON edgecreator_valeurs.ID = edgecreator_intervalles.ID_Valeur '

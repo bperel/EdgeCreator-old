@@ -11,7 +11,7 @@ class EC_Controller extends CI_Controller {
     function __construct()
     {
         parent::__construct();
-        DmClient::initCoaServers();
+        DmClient::init($this->session->userdata());
     }
 
     function init_model() {
