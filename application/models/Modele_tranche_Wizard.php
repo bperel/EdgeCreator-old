@@ -243,20 +243,20 @@ class Modele_tranche_Wizard extends Modele_tranche {
 
 	function cloner_etape_numero($pays,$magazine,$numero,$pos,$etape_courante) {
 		$inclure_avant = $pos==='avant' || $pos==='_';
-		$id_modele=$this->get_id_modele($pays,$magazine,$numero,self::$username);
 		$infos=new stdClass();
 		
 		$infos->decalages=$this->decaler_etapes_a_partir_de($pays,$magazine,$numero,$etape_courante, $inclure_avant);
 		
 		$nouvelle_etape=$inclure_avant ? $etape_courante : $etape_courante+1;
 
-        DmClient::get_service_results(DmClient::$dm_server, 'POST',
+        $resultat = DmClient::get_service_results(DmClient::$dm_server, 'POST',
             "/edgecreator/step/clone/$pays/$magazine/$numero/$etape_courante/to/$nouvelle_etape",
             [],
             'edgecreator'
         );
 		
 		$infos->numero_etape=$nouvelle_etape;
+		$infos->nom_fonction=$resultat->functionName;
 		return $infos;
 	}
 
