@@ -218,18 +218,14 @@ class Modele_tranche_Wizard extends Modele_tranche {
 	}
 
 	function update_etape($pays,$magazine,$numero,$etape,$parametrage) {
-		$id_modele=$this->get_id_modele($pays,$magazine,$numero,self::$username);
-		$nom_fonction=$this->get_nom_fonction($id_modele,$etape);
-		
-		$requete_suppr='DELETE valeurs FROM tranches_en_cours_valeurs AS valeurs '
-					  .'WHERE ID_Modele='.$id_modele.' AND Ordre='.$etape;
-        DmClient::get_query_results_from_dm_server($requete_suppr, 'db_edgecreator');
-		echo $requete_suppr."\n";
-		
-		foreach($parametrage as $parametre=>$valeur) {
-			$this->insert_to_modele($id_modele, $etape, $nom_fonction, $parametre, $valeur);
-		}
-	}
+        DmClient::get_service_results(
+            DmClient::$dm_server,
+            'POST',
+            "/edgecreator/v2/step/$pays/$magazine/$numero/$etape",
+            ['options' => $parametrage],
+            'edgecreator'
+        );
+    }
 	
 	function update_photo_principale($pays,$magazine,$numero,$nom_photo_principale) {
 		$id_modele=$this->get_id_modele($pays,$magazine,$numero,self::$username);
