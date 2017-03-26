@@ -29,7 +29,7 @@ $.fn.remplirIntituleNumero = function(data) {
 
 		var element = conteneur_intitule.find('[name="'+nom+'"]');
 		if (nom === 'wizard_pays') {
-			element.attr({src: '../DucksManager/images/flags/'+valeur+'.png'});
+			element.attr({src: 'images/flags/'+valeur+'.png'});
 		}
 		else {
 			element.text(valeur);
@@ -883,7 +883,7 @@ function wizard_init(wizard_id) {
 					numero=tranche.Numero;
 
 					$('#nom_complet_tranche_en_cours')
-						.html($('<img>').attr({src:'../DucksManager/images/flags/'+pays+'.png'}))
+						.html($('<img>').attr({src:'images/flags/'+pays+'.png'}))
 						.append(' '+tranche.str_userfriendly);
 				}
 			});
@@ -1212,7 +1212,7 @@ function afficher_liste_magazines(wizard_id, id_element_liste, data) {
 				.val(id_tranche);
 			bouton_tranche_en_cours.find('label.libelle_tranche_en_cours')
 				.attr({'for':id_tranche})
-				.css({'background-image': 'url("../DucksManager/images/flags/'+tranche_en_cours.Pays+'.png")'})
+				.css({'background-image': 'url("images/flags/'+tranche_en_cours.Pays+'.png")'})
                 .data(tranche_en_cours)
 				.html(tranche_en_cours.str_userfriendly)
 				.click(function() {
