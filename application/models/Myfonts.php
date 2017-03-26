@@ -36,7 +36,7 @@ class Myfonts extends CI_Model {
 		$this->data = [
 			'seed'=>'43',
 			'dock'=>'false',
-			'size'=>$this->precision,
+			'size'=>$this->precision*2,
 			'w'=>$this->width,
 			'src'=>'custom',
 			'text'=>str_replace(' ','%20',$this->text),
@@ -53,7 +53,7 @@ class Myfonts extends CI_Model {
 		$image_existe=count($requete_image_existe_resultat) != 0;
 		if ($image_existe && !isset($_GET['force_post'])) {
 			$id_image=$requete_image_existe_resultat[0]->ID;
-			$this->chemin_image=BASEPATH.'../../edges/images_myfonts/'.$id_image.'.gif';
+			$this->chemin_image=Modele_tranche::getCheminImages().'/images_myfonts/'.$id_image.'.gif';
 			if (false !== (@$im=imagecreatefromgif($this->chemin_image))) { // Image stock�e, pas besoin de la reg�n�rer
 				$this->im=$im;
 				return;

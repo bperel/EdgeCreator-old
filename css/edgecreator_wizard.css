@@ -408,7 +408,6 @@ button#connexion, button#deconnexion {
 	outline: 1px solid black;
 	background-color: white;
 	float: left;
-	position: absolute;
 }
 
 .ajout_etape {

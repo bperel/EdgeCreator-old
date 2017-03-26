@@ -126,10 +126,9 @@ $(function() {
 	farb=$.farbtastic($('#picker'))
 		.linkTo(
 			function() { // mousedrag
-				affecter_couleur_input(input_farb, farb.color.replace(/#/g,''));
-				callback_test_picked_color();
 			},
 			function() { // mouseup
+                affecter_couleur_input(input_farb, farb.color.replace(/#/g,''));
 				callback_test_picked_color();
 			}
 		);
