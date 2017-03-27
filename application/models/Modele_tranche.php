@@ -1190,17 +1190,19 @@ class Modele_tranche extends CI_Model {
 		return $liste;
 	}
 	
-	static function rendu_image() {
+	static function rendu_image($save) {
 		if (Viewer_wizard::$is_debug===false)
 			header('Content-type: image/png');
 		imagepng(Viewer_wizard::$image);
 
-		$dossier_image=Modele_tranche::getCheminImages().'/'.Viewer_wizard::$pays.'/tmp/';
-		@rmdir($dossier_image);
-		@mkdir($dossier_image);
-		$nom_image=$dossier_image.Viewer_wizard::$random_id.'.png';
-		imagepng(Viewer_wizard::$image,$nom_image);
-		
+		if ($save) {
+            $dossier_image=Modele_tranche::getCheminImages().'/'.Viewer_wizard::$pays.'/tmp/';
+            @rmdir($dossier_image);
+            @mkdir($dossier_image);
+            $nom_image=$dossier_image.Viewer_wizard::$random_id.'.png';
+            imagepng(Viewer_wizard::$image,$nom_image);
+        }
+
 		exit();
 	} 
 	
@@ -1292,7 +1294,8 @@ class Fonction_executable extends Fonction {
 						 ($i+1)*Viewer_wizard::$largeur/3,Viewer_wizard::$hauteur,
 						 $noir,BASEPATH.'fonts/Arial.ttf',$texte_erreur);
 		}
-		Modele_tranche::rendu_image();
+		Modele_tranche::rendu_image(false);
+		exit();
 	}
 
     static function getCheminPhotos($pays=null) {

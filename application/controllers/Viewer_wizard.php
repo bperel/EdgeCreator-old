@@ -169,7 +169,7 @@ class Viewer_wizard extends EC_Controller {
 				$this->load->view('integrateview',$data);
 			}
 			
-			$this->Modele_tranche->rendu_image();
+			$this->Modele_tranche->rendu_image($save === 'save');
 		}
 	}
 }

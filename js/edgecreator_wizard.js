@@ -1186,7 +1186,7 @@ function afficher_liste_magazines(wizard_id, id_element_liste, data) {
             var data = btn.siblings('.libelle_tranche_en_cours').data();
             var prepublier_ou_depublier = btn.hasClass('prepublier');
             if (prepublier_ou_depublier) {
-                charger_image('etape', urls['viewer_wizard'] + ['index', data.Pays, data.Magazine, data.Numero, '1.5', 'all', '_', 'false', 'false', 'false'].join('/'), null, function (image) {
+                charger_image('etape', urls['viewer_wizard'] + ['index', data.Pays, data.Magazine, data.Numero, '1.5', 'all', '_', 'save', 'false', 'false'].join('/'), null, function (image) {
                     var nom_image_temp=image.attr('src').match(/[.0-9]+$/g)[0];
                     prepublier_depublier(true, btn, data, nom_image_temp);
                 });
