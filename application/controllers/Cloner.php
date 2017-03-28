@@ -1,9 +1,9 @@
 <?php
 class Cloner extends EC_Controller {
 	
-	function index($pays=null,$magazine=null,$numero=null,$pos_relative=null,$etape_courante=null) {
+	function index($pos_relative=null,$etape_courante=null) {
 		
-		if (in_array(null, [$pays,$magazine,$numero,$pos_relative,$etape_courante])) {
+		if (in_array(null, [$pos_relative,$etape_courante])) {
 			$this->load->view('errorview', ['Erreur'=> 'Nombre d\'arguments insuffisant']);
 			exit();
 		}
@@ -14,7 +14,7 @@ class Cloner extends EC_Controller {
 		$this->load->model($this->session->userdata('mode_expert') === true ? 'Modele_tranche' : 'Modele_tranche_Wizard','Modele_tranche');
 		$this->Modele_tranche->setUsername($this->session->userdata('user'));
 
-		$infos_insertion=$this->Modele_tranche->cloner_etape_numero($pays,$magazine,$numero,$pos_relative,$etape_courante);
+		$infos_insertion=$this->Modele_tranche->cloner_etape_numero($pos_relative, $etape_courante);
 		
 		$data = [
 				'infos_insertion'=>$infos_insertion

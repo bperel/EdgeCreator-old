@@ -80,7 +80,7 @@ $(function() {
 							var frac = [ (e.offsetX || e.clientX - $(e.target).offset().left) / $(this).width(),
 										 (e.offsetY || e.clientY - $(e.target).offset().top)  / $(this).height() ];
 							$.ajax({
-								url: urls['couleur_point_photo']+['index',pays,magazine,numero,frac[0],frac[1]].join('/'),
+								url: urls['couleur_point_photo']+['index',frac[0],frac[1]].join('/'),
 								type: 'post',
 								success:function(data) {
 									$('#picker')[0].farbtastic.setColor('#'+data);
@@ -148,6 +148,7 @@ var pays;
 var magazine;
 var numero;
 var numeros_multiples;
+var id_modele;
 
 var wizard_options={};
 var id_wizard_courant=null;
@@ -233,7 +234,7 @@ function launch_wizard(id, p) {
 					switch(panelOuvert) {
 						case 0: // A partir de z�ro
 							$.ajax({
-								url: urls['insert_wizard']+['index',pays,magazine,numero,formData.pos,formData.etape,formData.nom_fonction].join('/'),
+								url: urls['insert_wizard']+['index',formData.pos,formData.etape,formData.nom_fonction].join('/'),
 								type: 'post',
 								dataType:'json',
 								success:function(data) {
@@ -248,7 +249,7 @@ function launch_wizard(id, p) {
 						break;
 						case 1: // Clonage
 							$.ajax({
-								url: urls['cloner']+['index',pays,magazine,numero,formData.pos,formData.etape_a_cloner].join('/'),
+								url: urls['cloner']+['index',formData.pos,formData.etape_a_cloner].join('/'),
 								type: 'post',
 								dataType:'json',
 								success:function(data) {
@@ -286,7 +287,7 @@ function launch_wizard(id, p) {
 							}
 							if ($('#wizard-conception').is(':visible')) {
 								if (est_photo_renseignee) {
-									maj_photo_principale(pays, magazine, numero);
+									maj_photo_principale();
 								}
 								$( this ).dialog().dialog( "close" );
 							}
@@ -691,7 +692,7 @@ function wizard_init(wizard_id) {
 						var match_photo_principale = ('/'+nom_fichier_rogne).match(REGEX_FICHIER_PHOTO);
 						if (match_photo_principale) {
 							nom_photo_principale = match_photo_principale[1];
-							maj_photo_principale(data.wizard_pays, data.wizard_magazine, data.wizard_numero, false);
+							maj_photo_principale(false);
 						}
 						else {
 							jqueryui_alert('Photo de tranche invalide : '+nom_fichier_rogne,'Cr�ation de mod�le');
@@ -823,10 +824,7 @@ function wizard_init(wizard_id) {
 
 		case 'wizard-conception':
 			if (get_option_wizard('wizard-1','choix_tranche_en_cours') !== undefined) {
-				var tranche_en_cours=get_option_wizard('wizard-1','choix_tranche_en_cours').split(/_/g);
-				pays=tranche_en_cours[1];
-				magazine=tranche_en_cours[2];
-				numero=tranche_en_cours[3];
+				id_modele=get_option_wizard('wizard-1','choix_tranche_en_cours').split(/_/g)[1];
 
 				var est_nouvelle_tranche=get_option_wizard('wizard-1','est_nouvelle_conception_tranche') === 'true';
 
@@ -1206,7 +1204,7 @@ function afficher_liste_magazines(wizard_id, id_element_liste, data) {
 			}
 
 			var bouton_tranche_en_cours=elementListe.find('.template').clone(true).removeClass('template');
-			var id_tranche=['tranche', tranche_en_cours.Pays, tranche_en_cours.Magazine, tranche_en_cours.Numero].join('_');
+			var id_tranche=['tranche', tranche_en_cours.ID].join('_');
 			bouton_tranche_en_cours.find('input')
 				.attr({'id':id_tranche})
 				.val(id_tranche);
@@ -2657,7 +2655,7 @@ function reload_all_previews() {
 
 function charger_couleurs_frequentes() {
 	$.ajax({ // Couleurs utilis�es dans l'ensemble des �tapes de la conception de tranche
-		url: urls['couleurs_frequentes']+['index',pays,magazine,numero].join('/'),
+		url: urls['couleurs_frequentes']+['index'].join('/'),
 		type: 'post',
 		dataType:'json',
 		success:function(data) {
@@ -3029,7 +3027,7 @@ function afficher_photo_tranche() {
 	}
 	else {
 		$.ajax({
-			url: urls['photo_principale']+['index',pays,magazine,numero].join('/'),
+			url: urls['photo_principale']+['index'].join('/'),
 			type: 'post',
 			success:function(nom_photo) {
 				if (nom_photo && nom_photo !== 'null') {
@@ -3041,7 +3039,7 @@ function afficher_photo_tranche() {
 	}
 }
 
-function maj_photo_principale(pays_maj, magazine_maj, numero_maj, with_user) {
+function maj_photo_principale(with_user) {
 	if (nom_photo_principale === null) {
 		return;
 	}
@@ -3049,7 +3047,7 @@ function maj_photo_principale(pays_maj, magazine_maj, numero_maj, with_user) {
 		with_user = true;
 	}
 	$.ajax({
-		url: urls['update_photo']+['index',pays_maj, magazine_maj, numero_maj, nom_photo_principale, with_user].join('/'),
+		url: urls['update_photo']+['index', nom_photo_principale, with_user].join('/'),
 		type: 'post',
 		success:function() {
 			if ($('#wizard-conception').is(':visible')) {
