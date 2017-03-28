@@ -30,12 +30,12 @@
 	</p>
 </div>
 
-<div id="login-form" class="wizard" title="Connexion à EdgeCreator">
+<div id="wizard-login-form" class="wizard" title="Connexion à EdgeCreator">
 	<p>
 		Entrez vos identifiants DucksManager habituels ci-dessous et cliquez sur "Connexion".
 	</p>
 	<p class="erreurs"></p>
-	<form>
+	<form id="login-form" method="post">
 		<fieldset>
 			<label for="username">Pseudo: </label>
 			<input type="text" name="username" id="username" class="text ui-widget-content ui-corner-all" />

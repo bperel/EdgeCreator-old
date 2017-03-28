@@ -1789,26 +1789,33 @@ function afficher_dialogue_accueil() {
 }
 
 function jquery_connexion() {
-	$( "#login-form" ).dialog({
+	$( "#wizard-login-form" ).dialog({
 		width: 500,
 		modal: false,
-		buttons: {
-			"Connexion":function() {
-				$.ajax({
-			        url: base_url+'index.php/edgecreatorg/login',
-			        type: 'post',
-			        data: 'user='+$('#username').val()+'&pass='+$('#password').val()+"&mode_expert="+$('#mode_expert').prop('checked'),
-			        success:function(data) {
-			            if (data.indexOf("Erreur") == 0)
-			            	$( "#login-form" ).find('.erreurs').html(data);
-			            else {
-			            	location.reload();
-			            }
-			        }
-				});
-			}
-		}
+        buttons: [
+            {
+                text: "Connexion",
+                type: "submit",
+                form: "login-form" // <-- Make the association
+            }
+        ]
 	});
+
+	$('#login-form').submit(function() {
+        $.ajax({
+            url: base_url+'index.php/edgecreatorg/login',
+            type: 'post',
+            data: 'user='+$('#username').val()+'&pass='+$('#password').val()+"&mode_expert="+$('#mode_expert').prop('checked'),
+            success:function(data) {
+                if (data.indexOf("Erreur") == 0)
+                    $( "#wizard-login-form" ).find('.erreurs').html(data);
+                else {
+                    location.reload();
+                }
+            }
+        });
+        return false;
+    });
 }
 
 function logout() {
