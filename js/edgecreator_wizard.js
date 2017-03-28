@@ -322,7 +322,7 @@ function launch_wizard(id, p) {
 				   	var designers=	 typeof(form.designers)	=== "string" ? form.designers 	: form.designers.join(',') .replace(/ /g, "+");
 					var nom_image=$('.image_etape.finale .image_preview').attr('src').match(/[.0-9]+$/g)[0];
 					$.ajax({
-						url: urls['valider_modele']+['index',pays,magazine,numero,nom_image,designers,photographes].join('/'),
+						url: urls['valider_modele']+['index',nom_image,designers,photographes].join('/'),
 						type: 'post',
 						success:function() {
 							jqueryui_alert_from_d($('#wizard-confirmation-validation-modele-ok'), function() {
@@ -861,7 +861,7 @@ function wizard_init(wizard_id) {
 
 						dimensions = {x: parseInt(dimension_x), y: parseInt(dimension_y)};
 					}
-					maj_photo_principale(pays, magazine, numero);
+					maj_photo_principale();
 				}
 			}
 
@@ -894,7 +894,7 @@ function wizard_init(wizard_id) {
 			wizard.parent().css({'left':(wizard.parent().offset().left-LARGEUR_DIALOG_TRANCHE_FINALE-20)+'px'});
 
 			$.ajax({ // Num�ros d'�tapes
-				url: urls['parametrageg_wizard']+['index',pays,magazine,numero,'null'].join('/'),
+				url: urls['parametrageg_wizard']+['index'].join('/'),
 				type: 'post',
 				dataType: 'json',
 				success:function(data) {
@@ -915,7 +915,7 @@ function wizard_init(wizard_id) {
 					charger_couleurs_frequentes();
 
 					$.ajax({ // D�tails des �tapes
-						url: urls['parametrageg_wizard']+['index',pays,magazine,numero,-1,'null'].join('/'),
+						url: urls['parametrageg_wizard']+['index',-1,'null'].join('/'),
 						type: 'post',
 						dataType:'json',
 						success:function(data) {
@@ -967,7 +967,7 @@ function wizard_init(wizard_id) {
 										var parametrage=form_options.serialize();
 
 										$.ajax({
-											url: urls['update_wizard']+['index',pays,magazine,numero,-1,parametrage].join('/'),
+											url: urls['update_wizard']+['index',-1,parametrage].join('/'),
 											type: 'post',
 											success:function() {
 												reload_all_previews();
@@ -1465,7 +1465,7 @@ function ajouter_preview_etape(num_etape, nom_fonction) {
 					"Supprimer": function() {
 						var etape=$('#num_etape_a_supprimer').html();
 						$.ajax({
-							url: urls['supprimer_wizard']+['index',pays,magazine,numero,etape].join('/'),
+							url: urls['supprimer_wizard']+['index',etape].join('/'),
 							type: 'post',
 							success:function() {
 								$('#wizard-confirmation-suppression').dialog().dialog( "close" );
@@ -1636,7 +1636,7 @@ function recuperer_et_alimenter_options_preview(num_etape) {
 	var section_preview_etape=$('.wizard.preview_etape').getElementsWithData('etape',num_etape);
 	var nom_fonction=section_preview_etape.d().data('nom_fonction');
 	$.ajax({
-		url: urls['parametrageg_wizard']+['index',pays,magazine,numero,num_etape,'null'].join('/'),
+		url: urls['parametrageg_wizard']+['index',num_etape,'null'].join('/'),
 		type: 'post',
 		dataType:'json',
 		success:function(data) {
@@ -2337,7 +2337,7 @@ function valider(callback) {
 	else {
 		callback = callback || function(){};
 		$.ajax({
-			url: urls['update_wizard']+['index',pays,magazine,numero,num_etape_courante,parametrage].join('/'),
+			url: urls['update_wizard']+['index',num_etape_courante,parametrage].join('/'),
 			type: 'post',
 			success:function() {
 				charger_couleurs_frequentes();
@@ -2916,7 +2916,7 @@ function creer_modele_tranche(pays, magazine, numero, with_user, dimension_x, di
 		// Mise � jour de la fonction Dimensions avec les valeurs entr�es
 		var parametrage_dimensions =  'Dimension_x='+dimension_x +'&Dimension_y='+dimension_y;
 		$.ajax({
-			url: urls['update_wizard']+['index',pays,magazine,numero,-1,parametrage_dimensions,with_user].join('/'),
+			url: urls['update_wizard']+['index',-1,parametrage_dimensions,with_user].join('/'),
 			type: 'post',
 			async: false
 		});
@@ -2984,7 +2984,7 @@ function init_action_bar() {
 				case 'corbeille':
 					jqueryui_alert_from_d($('#wizard-confirmation-desactivation-modele'), function() {
 						$.ajax({
-							url: urls['desactiver_modele']+['index',pays,magazine,numero].join('/'),
+							url: urls['desactiver_modele']+['index'].join('/'),
 							type: 'post',
 							success:function() {
 								location.reload();
@@ -3129,7 +3129,7 @@ function afficher_galerie(type_images, data, container) {
 
 function prepublier_depublier(prepublier, btn, data, nom_image_temp) {
     $.ajax({
-        url: urls['prepublier'] + ['index', prepublier, data.ID, data.Pays, data.Magazine, data.Numero, nom_image_temp].join('/'),
+        url: urls['prepublier'] + ['index', prepublier, nom_image_temp].join('/'),
         type: 'post',
         success: function () {
             if (prepublier) {

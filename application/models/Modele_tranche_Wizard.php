@@ -54,47 +54,40 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		return $resultats_ordres;
 	}
 
-	function get_etapes_simple($pays,$magazine,$numero,$num_etape=null) {
+	function get_etapes_simple() {
+        $id_modele = $this->session->userdata('id_modele');
+
 		$requete='SELECT '.implode(', ', self::$content_fields).' '
 				.'FROM tranches_en_cours_modeles_vue '
-			    .'WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' AND Numero = \''.$numero.'\' '
+			    .'WHERE ID_Modele = \''.$id_modele.'\' '
 				.'AND username = \''.self::$username.'\' ';
-		if (!is_null($num_etape))
-			$requete.='AND Ordre='.$num_etape.' ';
 		$requete.=' GROUP BY Ordre'
 				 .' ORDER BY Ordre ';
         $resultats = DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator');
 		return $resultats;
 	}
 
-	function get_fonction($pays,$magazine,$ordre,$numero=null) {
-	    if (is_null($numero)) {
-	        return [];
-        }
+	function get_fonction_ec_v2($ordre) {
+        $id_modele = $this->session->userdata('id_modele');
 		$requete='SELECT '.implode(', ', self::$content_fields).' '
 				.'FROM tranches_en_cours_modeles_vue '
-				.'WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' AND Ordre='.$ordre.' '
-				.'AND username = \''.self::$username.'\' '
-				.'AND Numero=\''.$numero.'\'';
+                .'WHERE ID_Modele = \''.$id_modele.'\' AND Ordre='.$ordre.' '
+				.'AND username = \''.self::$username.'\'';
 
         $premier_resultat = DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator')[0];
 		return count($premier_resultat) == 0 ? null : new Fonction($premier_resultat);
 	}
 
-	function get_options(
-        $pays,
-        $magazine,
+	function get_options_ec_v2(
         $ordre,
-        $nom_fonction,
-        $numero = null,
         $inclure_infos_options = false,
         $nouvelle_etape = false,
         $nom_option = null
     ) {
-		$numero=false;
+        $id_modele = $this->session->userdata('id_modele');
 		$requete='SELECT '.implode(', ', self::$content_fields).' '
 				.'FROM tranches_en_cours_modeles_vue '
-				.'WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' AND Numero = \''.$nom_fonction.'\' AND Ordre='.$ordre.' AND Option_nom IS NOT NULL '
+				.'WHERE ID_Modele = \''.$id_modele.'\' AND Ordre='.$ordre.' AND Option_nom IS NOT NULL '
 				.'AND username = \''.($this->user_possede_modele() ? self::$username : 'brunoperel').'\' ';
 		if (!is_null($nom_option))
 			$requete.='AND Option_nom = \''.$nom_option.'\' ';
@@ -108,7 +101,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 			$valeur=$resultat->Option_valeur;
 			$resultats_options->$option_nom=$valeur;
 		}
-		$f=new $nom_fonction($resultats_options,false,$numero,!$inclure_infos_options); // Ajout des champs avec valeurs par défaut
+		$f=new $nom_fonction($resultats_options,false,false,!$inclure_infos_options); // Ajout des champs avec valeurs par défaut
 		if ($inclure_infos_options) {
 			$prop_champs=new ReflectionProperty(get_class($f), 'champs');
 			$champs=$prop_champs->getValue();
@@ -218,11 +211,13 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		return $infos;
 	}
 
-	function update_etape($pays,$magazine,$numero,$etape,$parametrage) {
+	function update_etape($etape,$parametrage) {
+        $id_modele = $this->session->userdata('id_modele');
+
         DmClient::get_service_results(
             DmClient::$dm_server,
             'POST',
-            "/edgecreator/v2/step/$pays/$magazine/$numero/$etape",
+            "/edgecreator/v2/step/$id_modele/$etape",
             ['options' => $parametrage],
             'edgecreator'
         );
@@ -259,11 +254,11 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		return $infos;
 	}
 
-	function supprimer_etape($pays,$magazine,$numero,$etape) {
+	function supprimer_etape($etape) {
+        $id_modele = $this->session->userdata('id_modele');
+
 		$requete_suppr='DELETE FROM tranches_en_cours_valeurs '
-					  .'WHERE ID_Modele=(SELECT m.ID FROM tranches_en_cours_modeles m '
-					  				   .'WHERE m.Pays = \''.$pays.'\' AND m.Magazine = \''.$magazine.'\' AND m.Numero = \''.$numero.'\' AND m.Active=1) '
-					  	.'AND Ordre = \''.$etape.'\'';
+					  .'WHERE ID_Modele='.$id_modele.' AND Ordre = \''.$etape.'\'';
         DmClient::get_query_results_from_dm_server($requete_suppr, 'db_edgecreator');
 		echo $requete_suppr."\n";
 	}
@@ -378,8 +373,8 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		return $resultats;
 	}
 	
-	function desactiver_modele($pays,$magazine,$numero) {
-		$id_modele=$this->get_id_modele($pays,$magazine,$numero,self::$username);
+	function desactiver_modele() {
+        $id_modele = $this->session->userdata('id_modele');
 		
 		$requete_maj=' UPDATE tranches_en_cours_modeles '
 					.' SET Active=0'
@@ -388,21 +383,28 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		echo $requete_maj."\n";
 	}
 
-    function prepublier_modele($id_modele, $prepublier_ou_depublier) {
+    function prepublier_modele( $prepublier_ou_depublier) {
+        $id_modele = $this->session->userdata('id_modele');
+
         $requete_prepublication=' UPDATE tranches_en_cours_modeles '
             .' SET PretePourPublication='.($prepublier_ou_depublier ? '1' : '0')
             .' WHERE ID='.$id_modele;
         DmClient::get_query_results_from_dm_server($requete_prepublication, 'db_edgecreator');
     }
 
-    function copier_image_temp_vers_gen($pays, $magazine, $numero, $nom_image) {
-        $src_image = '../edges/' . $pays . '/tmp/' . $nom_image . '.png';
-        $dest_image = '../edges/' . $pays . '/gen/' . $magazine . '.' . $numero . '.png';
+    function copier_image_temp_vers_gen($nom_image) {
+        $id_modele = $this->session->userdata('id_modele');
+
+        // TODO load model from DM server
+        $model = json_decode(DmClient::get_service_results(DmClient::$dm_server, 'GET', "/edgecreator/v2/model/$id_modele"));
+
+        $src_image = '../edges/' . $model->Pays . '/tmp/' . $nom_image . '.png';
+        $dest_image = '../edges/' . $model->Pays . '/gen/' . $model->Magazine . '.' . $model->Numero . '.png';
         copy($src_image, $dest_image);
     }
 	
 	function marquer_modele_comme_pret_publication($pays,$magazine,$numero,$createurs,$photographes) {
-        $id_modele = $this->get_id_modele($pays,$magazine,$numero,self::$username);
+        $id_modele = $this->get_id_modele($pays,$magazine,$numero);
 
         $requete_maj=' UPDATE tranches_en_cours_modeles '
                     .' SET PretePourPublication=1, createurs=\''.$createurs.'\', photographes=\''.$photographes.'\''

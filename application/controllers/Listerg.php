@@ -13,8 +13,8 @@ class ListerG extends EC_Controller {
 		$liste=$this->Modele_tranche->get_liste($nom_option,$pays,$magazine);
 
 			$data = [
-					'liste'=>$liste,
-					'format'=>$format
+                'liste'=>$liste,
+                'format'=>$format
             ];
 
 			$this->load->view('listergview',$data);
