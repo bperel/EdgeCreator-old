@@ -1,9 +1,10 @@
 version: '2'
 services:
   web:
+    container_name: edgecreator_web
     build: .
     ports:
-     - "8001:80"
+     - "8002:80"
     volumes:
      - .:/var/www/html/EdgeCreator
      - ../edges:/var/www/html/DucksManager/edges

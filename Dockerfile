@@ -27,4 +27,6 @@ RUN cd /usr/src && \
 
 RUN mkdir -p /var/www/html/DucksManager/edges && \
     chown -R www-data:www-data /var/www/html/DucksManager/edges && \
-    chmod a+w -R /var/www/html/DucksManager/edges
+    chmod a+w -R /var/www/html/DucksManager/edges && \
+    mkdir -p /var/www/html/EdgeCreator/_sessions && \
+    chmod a+w -R /var/www/html/EdgeCreator/_sessions
