@@ -570,7 +570,7 @@ var selecteur_cellules_preview=null;
 function charger_image(type_chargement,src,num,callback) {
 	callback= callback || function(){};
 		
-	var est_etape_ouverte = modification_etape != null && modification_etape.data('etape') == num;
+	var est_etape_ouverte = modification_etape && modification_etape.data('etape') == num;
     var image=$('<img>')
     	.addClass('image_preview'+(est_etape_ouverte ? ' cache':''))
     	.data(type_chargement,num);

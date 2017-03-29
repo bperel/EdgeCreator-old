@@ -42,8 +42,7 @@ $.fn.remplirIntituleNumero = function(data) {
 };
 
 $(window).scroll(function() {
-	if (modification_etape !== null
-	 && modification_etape.find('#options-etape--Polygone').length !== 0) {
+	if (modification_etape && modification_etape.find('#options-etape--Polygone').length > 0) {
 		var options=modification_etape.find('[name="form_options"]');
 		positionner_points_polygone(options);
 	}
@@ -825,6 +824,8 @@ function wizard_init(wizard_id) {
 			break;
 
 		case 'wizard-conception':
+            id_modele = null;
+
 			if (get_option_wizard('wizard-1','choix_tranche_en_cours') !== undefined) {
 				id_modele=get_option_wizard('wizard-1','choix_tranche_en_cours').split(/_/g)[1];
 
@@ -835,14 +836,11 @@ function wizard_init(wizard_id) {
 					set_option_wizard('wizard-1','est_nouvelle_conception_tranche','false');
 					return;
 				}
-				else {
-					afficher_photo_tranche();
-				}
 			}
 			else { // Nouvelle tranche => param�trage des dimensions, etc.
 				if (get_option_wizard('wizard-creer-collection','choix_tranche') !== undefined
 				 || get_option_wizard('wizard-creer-hors-collection','wizard_pays') !== undefined) {
-          var tranche_collection = get_option_wizard('wizard-creer-collection','choix_tranche');
+          			var tranche_collection = get_option_wizard('wizard-creer-collection','choix_tranche');
 					if (tranche_collection !== undefined) {
 						var tranche=tranche_collection.match(REGEX_NUMERO);
 						pays=tranche[1];
@@ -864,7 +862,6 @@ function wizard_init(wizard_id) {
 
 						dimensions = {x: parseInt(dimension_x), y: parseInt(dimension_y)};
 					}
-					maj_photo_principale();
 				}
 			}
 
@@ -873,7 +870,7 @@ function wizard_init(wizard_id) {
 			}
 
 			$.ajax({
-				url: urls['tranchesencours']+['load','null',pays,magazine,numero].join('/'),
+				url: urls['tranchesencours']+['load',id_modele || 'null', pays || 'null', magazine || 'null', numero || 'null'].join('/'),
 				type: 'post',
 				dataType:'json',
 				async: false,
@@ -882,190 +879,173 @@ function wizard_init(wizard_id) {
 					pays=tranche.Pays;
 					magazine=tranche.Magazine;
 					numero=tranche.Numero;
+					id_modele=tranche.ID;
+                    nom_photo_principale=tranche.NomPhotoPrincipale;
 
 					$('#nom_complet_tranche_en_cours')
 						.html($('<img>').attr({src:'images/flags/'+pays+'.png'}))
 						.append(' '+tranche.str_userfriendly);
-				}
-			});
 
-			afficher_photo_tranche();
+					$('#action_bar').removeClass('cache');
+					selecteur_cellules_preview='.wizard.preview_etape div.image_etape';
+					wizard.dialog().dialog('option','position',['right','top']);
+					wizard.parent().css({'left':(wizard.parent().offset().left-LARGEUR_DIALOG_TRANCHE_FINALE-20)+'px'});
 
-			$('#action_bar').removeClass('cache');
-			selecteur_cellules_preview='.wizard.preview_etape div.image_etape';
-			wizard.dialog().dialog('option','position',['right','top']);
-			wizard.parent().css({'left':(wizard.parent().offset().left-LARGEUR_DIALOG_TRANCHE_FINALE-20)+'px'});
-
-			$.ajax({ // Num�ros d'�tapes
-				url: urls['parametrageg_wizard']+['index'].join('/'),
-				type: 'post',
-				dataType: 'json',
-				success:function(data) {
-					var etapes=data;
-					etapes_valides=[];
-					for (var etape=0;etape<etapes.length;etape++) {
-						etapes_valides.push(etapes[etape]);
-					}
-
-					etapes_valides.sort(function(etape1,etape2) {
-						if (parseInt(etape1.Ordre)<parseInt(etape2.Ordre))
-							return -1;
-						if (parseInt(etape1.Ordre)>parseInt(etape2.Ordre))
-							return 1;
-						return 0;
-					});
-
-					charger_couleurs_frequentes();
-
-					$.ajax({ // D�tails des �tapes
-						url: urls['parametrageg_wizard']+['index',-1,'null'].join('/'),
+					$.ajax({ // Num�ros d'�tapes
+						url: urls['parametrageg_wizard']+['index'].join('/'),
 						type: 'post',
-						dataType:'json',
-						success:function(data) {
-							$('#zoom').removeClass('cache');
-							$('#zoom_slider').slider({change:function(event,ui) {
-								zoom=valeurs_possibles_zoom[ui.value];
-								$('#zoom_value').html(zoom);
-								reload_all_previews();
-								if (modification_etape !== null) {
-									modification_etape.find('.preview_etape')
-										.css({'min-height': $('.preview_vide').height()});
+						dataType: 'json',
+						success:function(etapes) {
+							etapes_valides=etapes.filter(function(etape) {
+								return parseInt(etape.Ordre) > -1;
+							});
 
-									var valeurs=modification_etape.find('[name="form_options"]').serializeObject();
-									var section_preview_etape = modification_etape.find('.preview_etape');
-									var nom_fonction=modification_etape.data('nom_fonction');
-									alimenter_options_preview(valeurs, section_preview_etape, nom_fonction);
-								}
-								$('#zoom_slider .ui-slider-handle').blur();
-							}});
+							charger_couleurs_frequentes();
 
-							var texte="";
-							for (var option_nom in data) {
-								for (var intervalle in data[option_nom]) {
-									if (intervalle !== 'type' && intervalle !== 'valeur_defaut' && intervalle !=='description') {
-										if (intervalle === "valeur" && typeof(data[option_nom][intervalle]) ==='undefined')
-											texte=data[option_nom]['valeur_defaut'];
-										else
-											texte=data[option_nom][intervalle];
-									}
-								}
-								switch(option_nom) {
-									case 'Dimension_x':
-										$('#Dimension_x').val(texte);
-										dimensions.x = parseInt(texte);
-									break;
-									case 'Dimension_y':
-										$('#Dimension_y').val(texte);
-										dimensions.y = parseInt(texte);
-									break;
-								}
-							}
-							$('#modifier_dimensions')
-								.removeClass('cache')
-								.button()
-								.click(function(event) {
-									event.preventDefault();
-									verifier_changements_etapes_sauves($('.modif').d(),'wizard-confirmation-rechargement',function() {
-										var form_options=$(event.currentTarget).d().find('[name="form_options"]');
-										var parametrage=form_options.serialize();
+							$.ajax({ // D�tails des �tapes
+								url: urls['parametrageg_wizard']+['index',-1,'null'].join('/'),
+								type: 'post',
+								dataType:'json',
+								success:function(data) {
+									$('#zoom').removeClass('cache');
+									$('#zoom_slider').slider({change:function(event,ui) {
+										zoom=valeurs_possibles_zoom[ui.value];
+										$('#zoom_value').html(zoom);
+										reload_all_previews();
+										if (modification_etape) {
+											modification_etape.find('.preview_etape')
+												.css({'min-height': $('.preview_vide').height()});
 
-										$.ajax({
-											url: urls['update_wizard']+['index',-1,parametrage].join('/'),
-											type: 'post',
-											success:function() {
-												reload_all_previews();
+											var valeurs=modification_etape.find('[name="form_options"]').serializeObject();
+											var section_preview_etape = modification_etape.find('.preview_etape');
+											var nom_fonction=modification_etape.data('nom_fonction');
+											alimenter_options_preview(valeurs, section_preview_etape, nom_fonction);
+										}
+										$('#zoom_slider .ui-slider-handle').blur();
+									}});
+
+									var texte="";
+									for (var option_nom in data) {
+										for (var intervalle in data[option_nom]) {
+											if (intervalle !== 'type' && intervalle !== 'valeur_defaut' && intervalle !=='description') {
+												if (intervalle === "valeur" && typeof(data[option_nom][intervalle]) ==='undefined')
+													texte=data[option_nom]['valeur_defaut'];
+												else
+													texte=data[option_nom][intervalle];
 											}
-										});
-									});
-								});
-
-							$('#wizard-conception .chargement').addClass('cache');
-							$('#wizard-conception form').removeClass('cache');
-
-							chargements=[];
-							for (var i=0;i<etapes_valides.length;i++) {
-								var etape=etapes_valides[i];
-								var num_etape=etape.Ordre;
-								if (num_etape !== -1) {
-									var nom_fonction=etapes_valides[i].Nom_fonction;
-									ajouter_preview_etape(num_etape, nom_fonction);
-								}
-							}
-
-							var wizard_etape_finale = $('.wizard.preview_etape.initial').clone(true);
-							var div_preview=$('<div>').data('etape','final').addClass('image_etape finale');
-							wizard_etape_finale.html(div_preview).append($('<span>',{'id':'photo_tranche'}));
-
-							wizard_etape_finale.dialog({
-								resizable: false,
-								draggable: false,
-								width: LARGEUR_DIALOG_TRANCHE_FINALE,
-								minWidth: 0,
-								height: 'auto',
-								position: ['right','top'],
-								closeOnEscape: false,
-								modal: false,
-								open:function(ui) {
-									$(this).removeClass('initial').addClass('final');
-									$(this).data('etape','finale');
-									$(this).d().addClass('dialog-preview-etape finale')
-																 .data('etape','finale');
-									$(this).d().find(".ui-dialog-titlebar-close").hide();
-									$(this).d().find('.ui-dialog-titlebar').css({'padding':'.3em .6em;','text-align':'center'})
-																				.html('Tranche<br />finale');
-								}
-							});
-
-							wizard_etape_finale.d().resize(function() {
-								placer_dialogues_preview();
-								if (modification_etape !== null
-								 && modification_etape.find('#options-etape--Polygone').length !== 0) {
-									var options=modification_etape.find('[name="form_options"]');
-									positionner_points_polygone(options);
-								}
-							});
-
-							charger_previews();
-
-							$('.ajout_etape').click(function() {
-								if (modification_etape === null) {
-									etape_ajout=$(this).data().etape;
-									etape_ajout_pos=$(this).data().pos;
-									launch_wizard('wizard-ajout-etape');
-								}
-								else {
-									verifier_changements_etapes_sauves(modification_etape,'wizard-confirmation-annulation', function() {
-										launch_wizard('wizard-ajout-etape');
-									});
-								}
-							});
-
-							$('.wizard.preview_etape:not(.final)').click(function() {
-								var dialogue=$(this).d();
-								if (dialogue.hasClass('cloneable')) {
-									return;
-								}
-								if (modification_etape !== null) {
-									if (dialogue.data('etape') === modification_etape.data('etape'))
-										return;
-									else {
-										verifier_changements_etapes_sauves(modification_etape,'wizard-confirmation-annulation', function() {
-											ouvrir_dialogue_preview(dialogue);
-										});
-										return;
+										}
+										switch(option_nom) {
+											case 'Dimension_x':
+												$('#Dimension_x').val(texte);
+												dimensions.x = parseInt(texte);
+											break;
+											case 'Dimension_y':
+												$('#Dimension_y').val(texte);
+												dimensions.y = parseInt(texte);
+											break;
+										}
 									}
-								}
-								else {
-									if (dialogue.find('.image_preview').length === 0) {
-										return;
+									$('#modifier_dimensions')
+										.removeClass('cache')
+										.button()
+										.click(function(event) {
+											event.preventDefault();
+											verifier_changements_etapes_sauves($('.modif').d(),'wizard-confirmation-rechargement',function() {
+												var form_options=$(event.currentTarget).d().find('[name="form_options"]');
+												var parametrage=form_options.serialize();
+
+												$.ajax({
+													url: urls['update_wizard']+['index',-1,parametrage].join('/'),
+													type: 'post',
+													success:function() {
+														reload_all_previews();
+													}
+												});
+											});
+										});
+
+									$('#wizard-conception .chargement').addClass('cache');
+									$('#wizard-conception form').removeClass('cache');
+
+									chargements=[];
+									for (var i=0;i<etapes_valides.length;i++) {
+										var etape=etapes_valides[i];
+										var num_etape=etape.Ordre;
+										if (num_etape !== -1) {
+											var nom_fonction=etapes_valides[i].Nom_fonction;
+											ajouter_preview_etape(num_etape, nom_fonction);
+										}
 									}
+
+									var wizard_etape_finale = $('.wizard.preview_etape.initial').clone(true);
+									var div_preview=$('<div>').data('etape','final').addClass('image_etape finale');
+									wizard_etape_finale.html(div_preview).append($('<span>',{'id':'photo_tranche'}));
+
+									wizard_etape_finale.dialog({
+										resizable: false,
+										draggable: false,
+										width: LARGEUR_DIALOG_TRANCHE_FINALE,
+										minWidth: 0,
+										height: 'auto',
+										position: ['right','top'],
+										closeOnEscape: false,
+										modal: false,
+										open:function(ui) {
+											$(this).removeClass('initial').addClass('final');
+											$(this).data('etape','finale');
+											$(this).d().addClass('dialog-preview-etape finale')
+																		 .data('etape','finale');
+											$(this).d().find(".ui-dialog-titlebar-close").hide();
+											$(this).d().find('.ui-dialog-titlebar').css({'padding':'.3em .6em;','text-align':'center'})
+																						.html('Tranche<br />finale');
+
+                                            afficher_photo_tranche();
+										}
+									});
+
+									wizard_etape_finale.d().resize(function() {
+										placer_dialogues_preview();
+										if (modification_etape && modification_etape.find('#options-etape--Polygone').length !== 0) {
+											var options=modification_etape.find('[name="form_options"]');
+											positionner_points_polygone(options);
+										}
+									});
+									charger_previews();
+
+									$('.ajout_etape').click(function() {
+										if (modification_etape) {
+                                            verifier_changements_etapes_sauves(modification_etape,'wizard-confirmation-annulation', function() {
+                                                launch_wizard('wizard-ajout-etape');
+                                            });
+										}
+										else {
+											etape_ajout=$(this).data().etape;
+											etape_ajout_pos=$(this).data().pos;
+											launch_wizard('wizard-ajout-etape');
+										}
+									});
+
+									$('.wizard.preview_etape:not(.final)').click(function() {
+										var dialogue=$(this).d();
+										if (!dialogue.hasClass('cloneable')) {
+											if (modification_etape) {
+                                                if (dialogue.data('etape') !== modification_etape.data('etape')) {
+                                                    verifier_changements_etapes_sauves(modification_etape,'wizard-confirmation-annulation', function() {
+                                                        ouvrir_dialogue_preview(dialogue);
+                                                    });
+                                                }
+											}
+											else {
+                                                if (dialogue.find('.image_preview').length > 0) {
+                                                    ouvrir_dialogue_preview(dialogue);
+                                                }
+											}
+										}
+									});
 								}
-								ouvrir_dialogue_preview(dialogue);
 							});
-							afficher_photo_tranche();
 						}
 					});
-
 				}
 			});
 		break;
@@ -1484,8 +1464,7 @@ function ajouter_preview_etape(num_etape, nom_fonction) {
 		if (!($(e.target).hasClass('wizard') || $(e.target).hasClass('ui-dialog'))) {
 			return;
 		}
-		if (modification_etape !== null
-		 && modification_etape.find('#options-etape--Polygone').length !== 0) {
+		if (modification_etape && modification_etape.find('#options-etape--Polygone').length !== 0) {
 			var options=modification_etape.find('[name="form_options"]');
 			positionner_points_polygone(options);
 		}
@@ -2646,7 +2625,7 @@ function reload_all_previews() {
 		var dialogue=image.d();
 		var num_etape=dialogue.data('etape');
 
-		if (modification_etape !== null) {
+		if (modification_etape) {
 			if (dialogue.data('etape') === modification_etape.data('etape'))
 				recuperer_et_alimenter_options_preview(num_etape);
 		}

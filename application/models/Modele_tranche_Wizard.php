@@ -5,25 +5,21 @@ class Modele_tranche_Wizard extends Modele_tranche {
 	static $content_fields = ['Ordre', 'Nom_fonction', 'Option_nom', 'Option_valeur'];
 	static $numero;
 
-    function get_tranches_en_cours($id=null,$pays=null,$magazine=null,$numero=null) {
-		$requete='SELECT ID, Pays, Magazine, Numero, username '
+    function get_tranches_en_cours($id_modele=null, $pays=null, $magazine=null, $numero=null) {
+		$requete='SELECT ID, Pays, Magazine, Numero, NomPhotoPrincipale, username '
 				.'FROM tranches_en_cours_modeles '
 				.'WHERE username=\''.self::$username.'\' AND Active=1';
-		if (!is_null($id)) {
-			$requete.=' AND ID='.$id;
+		if (!is_null($id_modele)) {
+			$requete.=' AND ID='.$id_modele;
 		}
 		elseif (!is_null($pays)) {
 			$requete.=' AND Pays=\''.$pays.'\' AND Magazine=\''.$magazine.'\' AND Numero=\''.$numero.'\'';
 		}
         $resultats = DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator');
 
-        $liste_magazines= [];
-		foreach($resultats as $resultat) {
-			$resultat->Magazine_complet='';
-            $publicationcode = implode('/', [$resultat->Pays, $resultat->Magazine]);
-            if (!in_array($publicationcode, $liste_magazines))
-				$liste_magazines[]=$publicationcode;
-		}
+        $liste_magazines= array_map(function($resultat) {
+            return implode('/', [$resultat->Pays, $resultat->Magazine]);
+        }, $resultats);
 
         $noms_magazines = DmClient::get_service_results(DmClient::$dm_server, 'GET', '/coa/list/publications', [implode(',', array_unique($liste_magazines))]);
 
@@ -79,10 +75,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 	}
 
     function get_options_ec_v2(
-        $pays,
-        $magazine,
         $ordre,
-        $numero = null,
         $inclure_infos_options = false,
         $nouvelle_etape = false,
         $nom_option = null
@@ -124,10 +117,12 @@ class Modele_tranche_Wizard extends Modele_tranche {
         return $f->options;
     }
 
-	function has_no_option($pays, $magazine) {
+	function has_no_option_ec_v2() {
+        $id_modele = $this->session->userdata('id_modele');
+
 		$requete='SELECT Option_nom '
 				.'FROM tranches_en_cours_modeles_vue '
-				.'WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' AND Option_nom IS NOT NULL '
+				.'WHERE ID_Modele = \''.$id_modele.'\' AND Option_nom IS NOT NULL '
 				.'AND username = \''.self::$username.'\'';
         return count(DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator')) === 0;
 	}

@@ -39,11 +39,11 @@ class ParametrageG_wizard extends EC_Controller {
 			}
 			else {
 				
-				if ($this->Modele_tranche->has_no_option(self::$pays, self::$magazine)) {
+				if ($this->Modele_tranche->has_no_option_ec_v2()) {
 					$options=$this->Modele_tranche->get_noms_champs($fonction->Nom_fonction);
 				}
 				else {
-                    $options=$this->Modele_tranche->get_options_ec_v2(self::$etape, false, $nom_option);
+                    $options=$this->Modele_tranche->get_options_ec_v2(self::$etape, true, false, $nom_option);
 				}
 			}
 			
