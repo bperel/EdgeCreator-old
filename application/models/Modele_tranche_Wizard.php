@@ -81,53 +81,49 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		return count($premier_resultat) == 0 ? null : new Fonction($premier_resultat);
 	}
 
-	function get_options(
+    function get_options_ec_v2(
         $pays,
         $magazine,
         $ordre,
-        $nom_fonction,
         $numero = null,
         $inclure_infos_options = false,
         $nouvelle_etape = false,
         $nom_option = null
     ) {
-		$numero=false;
-		$requete='SELECT '.implode(', ', self::$content_fields).' '
-				.'FROM tranches_en_cours_modeles_vue '
-				.'WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' AND Numero = \''.$nom_fonction.'\' AND Ordre='.$ordre.' AND Option_nom IS NOT NULL '
-				.'AND username = \''.($this->user_possede_modele() ? self::$username : 'brunoperel').'\' ';
-		if (!is_null($nom_option))
-			$requete.='AND Option_nom = \''.$nom_option.'\' ';
-		$requete.='ORDER BY Option_nom ASC';
+        $requete='SELECT '.implode(', ', self::$content_fields).' '
+            .'FROM tranches_en_cours_modeles_vue '
+            .'WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' AND Numero = \''.$numero.'\' AND Ordre='.$ordre.' AND Option_nom IS NOT NULL '
+            .'AND username = \''.($this->user_possede_modele() ? self::$username : 'brunoperel').'\' ';
+        if (!is_null($nom_option))
+            $requete.='AND Option_nom = \''.$nom_option.'\' ';
+        $requete.='ORDER BY Option_nom ASC';
 
         $resultats = DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator');
-		$resultats_options=new stdClass();
-		foreach($resultats as $resultat) {
-			$nom_fonction=$resultat->Nom_fonction;
-			$option_nom=$resultat->Option_nom;
-			$valeur=$resultat->Option_valeur;
-			$resultats_options->$option_nom=$valeur;
-		}
-		$f=new $nom_fonction($resultats_options,false,$numero,!$inclure_infos_options); // Ajout des champs avec valeurs par défaut
-		if ($inclure_infos_options) {
-			$prop_champs=new ReflectionProperty(get_class($f), 'champs');
-			$champs=$prop_champs->getValue();
-			$prop_valeurs_defaut=new ReflectionProperty(get_class($f), 'valeurs_defaut');
-			$valeurs_defaut=$prop_valeurs_defaut->getValue();
-			$prop_descriptions=new ReflectionProperty(get_class($f), 'descriptions');
-			$descriptions=$prop_descriptions->getValue();
-			foreach(array_keys((array)$f->options) as $nouvelle_etape) {
-				$intervalles_option= [];
-				$intervalles_option['valeur']=$f->options->$nouvelle_etape;
-				$intervalles_option['type']=$champs[$nouvelle_etape];
-				$intervalles_option['description']=isset($descriptions[$nouvelle_etape]) ? $descriptions[$nouvelle_etape] : '';
-				if (array_key_exists($nouvelle_etape, $valeurs_defaut))
-					$intervalles_option['valeur_defaut']=$valeurs_defaut[$nouvelle_etape];
-				$f->options->$nouvelle_etape=$intervalles_option;
-			}
-		}
-		return $f->options;
-	}
+        $resultats_options=new stdClass();
+        foreach($resultats as $resultat) {
+            $resultats_options->{$resultat->Option_nom} = $resultat->Option_valeur;
+        }
+        $nom_fonction = $resultats[0]->Nom_fonction;
+        $f=new $nom_fonction($resultats_options,false,false,!$nouvelle_etape); // Ajout des champs avec valeurs par défaut
+        if ($inclure_infos_options) {
+            $prop_champs=new ReflectionProperty(get_class($f), 'champs');
+            $champs=$prop_champs->getValue();
+            $prop_valeurs_defaut=new ReflectionProperty(get_class($f), 'valeurs_defaut');
+            $valeurs_defaut=$prop_valeurs_defaut->getValue();
+            $prop_descriptions=new ReflectionProperty(get_class($f), 'descriptions');
+            $descriptions=$prop_descriptions->getValue();
+            foreach(array_keys((array)$f->options) as $nom_option) {
+                $intervalles_option=[];
+                $intervalles_option['valeur']=$f->options->$nom_option;
+                $intervalles_option['type']=$champs[$nom_option];
+                $intervalles_option['description']=isset($descriptions[$nom_option]) ? $descriptions[$nom_option] : '';
+                if (array_key_exists($nom_option, $valeurs_defaut))
+                    $intervalles_option['valeur_defaut']=$valeurs_defaut[$nom_option];
+                $f->options->$nom_option=$intervalles_option;
+            }
+        }
+        return $f->options;
+    }
 
 	function has_no_option($pays, $magazine) {
 		$requete='SELECT Option_nom '

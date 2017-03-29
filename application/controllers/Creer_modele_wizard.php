@@ -11,7 +11,7 @@ class Creer_Modele_Wizard extends EC_Controller {
 		$this->Modele_tranche->creer_modele($pays,$magazine,$numero);
 		$infos_insertion=$this->Modele_tranche->insert_etape($pays,$magazine,$numero, null,-1,'Dimensions');
 
-        $options = $this->Modele_tranche->get_options($pays, $magazine, -1, $numero, false, false, null, false);
+        $options = $this->Modele_tranche->get_options_ec_v2($pays, $magazine, -1, $numero, false, false, null, false);
         print_r($options);
         if (count($options) > 0) {
             // Copie des dimensions si elles ont été renseignées lors d'un envoi de photos
