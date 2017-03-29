@@ -8,7 +8,7 @@ wizard = true;
 	$.fn.valeur = function(nom_option){
 		if (this.hasClass('options_etape'))
 			return this.find('[name="option-'+nom_option+'"]');
-		 else
+		else
 			return this.find('[name="'+nom_option+'"]');
 	};
 })(jQuery);
@@ -76,8 +76,9 @@ $(function() {
 					$('#photo_tranche img')
 						.addClass('cross')
 						.click(function(e) {
-							var frac = [ (e.offsetX || e.clientX - $(e.target).offset().left) / $(this).width(),
-										 (e.offsetY || e.clientY - $(e.target).offset().top)  / $(this).height() ];
+							var frac = [
+								(e.offsetX || e.clientX - $(e.target).offset().left) / $(this).width(),
+								(e.offsetY || e.clientY - $(e.target).offset().top)  / $(this).height() ];
 							$.ajax({
 								url: urls['couleur_point_photo']+['index',frac[0],frac[1]].join('/'),
 								type: 'post',
@@ -93,7 +94,7 @@ $(function() {
 	});
 	$('#pas_de_photo_tranche').html($('#message-aucune-image-de-tranche .libelle').clone(true));
 
-	// D�placement des objets
+	// Déplacement des objets
 	$('body').on('keyup', function(e) {
 		// Don't scroll page
 		e.preventDefault();
@@ -127,7 +128,7 @@ $(function() {
 			function() { // mousedrag
 			},
 			function() { // mouseup
-                affecter_couleur_input(input_farb, farb.color.replace(/#/g,''));
+				affecter_couleur_input(input_farb, farb.color.replace(/#/g,''));
 				callback_test_picked_color();
 			}
 		);
@@ -171,11 +172,13 @@ var COTE_CARRE_DEPLACEMENT=10;
 
 var PADDING_PARAMETRAGE_ETAPE=10;
 
-var TEMPLATES ={'numero':/\[Numero\]/,
-				'numero[]':/\[Numero\[([0-9]+)\]\]/ig,
-				'largeur':/(?:([0-9.]+)(\*))?\[Largeur\](?:(\*)([0-9.]+))?/i,
-				'hauteur':/(?:([0-9.]+)(\*))?\[Hauteur\](?:(\*)([0-9.]+))?/i,
-				'caracteres_speciaux':/°/i};
+var TEMPLATES ={
+	'numero':/\[Numero\]/,
+	'numero[]':/\[Numero\[([0-9]+)\]\]/ig,
+	'largeur':/(?:([0-9.]+)(\*))?\[Largeur\](?:(\*)([0-9.]+))?/i,
+	'hauteur':/(?:([0-9.]+)(\*))?\[Hauteur\](?:(\*)([0-9.]+))?/i,
+	'caracteres_speciaux':/Â°/i
+};
 
 var REGEX_FICHIER_PHOTO=/\/([^\/]+\.([^.]+)\.photo_([^.]+?)\.[a-z]+)$/;
 var REGEX_FICHIER_PHOTO_MULTIPLE=/.*_([^\.]+)\.jpg$/;
@@ -202,11 +205,11 @@ function can_launch_wizard(id) {
 function launch_wizard(id, p) {
 	id_wizard_courant=id;
 
-	p = p || {}; // Param�tres de surcharge
+	p = p || {}; // Paramètres de surcharge
 	var buttons={},
 		dialogue = $('#'+id),
 		first 	 = dialogue.hasClass('first') 	  || (p.first 	  !== undefined	&& p.first),
-		deadend = dialogue.hasClass('deadend') 	  || (p.deadend   !== undefined	&& p.deadend),
+		deadend = dialogue.hasClass('deadend') 	  || (p.deadend	!== undefined	&& p.deadend),
 		modal	 = dialogue.hasClass('modal')	  || (p.modal 	  !== undefined	&& p.modal),
 		closeable= dialogue.hasClass('closeable') || (p.closeable !== undefined	&& p.closeable),
 		extensible=dialogue.hasClass('extensible')|| (p.extensible!== undefined	&& p.extensible);
@@ -231,7 +234,7 @@ function launch_wizard(id, p) {
 					var formData=$(this).find('form').serializeObject();
 					var panelOuvert = $('#wizard-ajout-etape .accordion').accordion('option','active');
 					switch(panelOuvert) {
-						case 0: // A partir de z�ro
+						case 0: // A partir de zéro
 							$.ajax({
 								url: urls['insert_wizard']+['index',formData.pos,formData.etape,formData.nom_fonction].join('/'),
 								type: 'post',
@@ -295,13 +298,16 @@ function launch_wizard(id, p) {
 							}
 						break;
 						case 'autres_photos':
-			   				tester_options_preview(['Source']);
+							tester_options_preview(['Source']);
 							$(this).dialog().dialog( "close" );
 						break;
 						case 'photos_texte':
-							wizard_goto($('#'+id), 'wizard-myfonts',
-										{height: $(window).height()-60, width: $(window).width()-40,
-										 modal:true, first: true});
+							wizard_goto($('#'+id), 'wizard-myfonts', {
+								height: $(window).height()-60,
+								width: $(window).width()-40,
+								modal:true,
+								first: true
+							});
 							$(this).dialog().dialog( "close" );
 
 						break;
@@ -316,9 +322,9 @@ function launch_wizard(id, p) {
 		case 'wizard-confirmation-validation-modele-contributeurs':
 			buttons["OK"]=function() {
 				if (wizard_check(id)) {
-				   	var form=$('#'+id+' form').serializeObject();
-				   	var photographes=typeof(form.photographes) === "string" ? form.photographes : form.photographes.join(',') .replace(/ /g, "+");
-				   	var designers=	 typeof(form.designers)	=== "string" ? form.designers 	: form.designers.join(',') .replace(/ /g, "+");
+					var form=$('#'+id+' form').serializeObject();
+					var photographes=typeof(form.photographes) === "string" ? form.photographes : form.photographes.join(',') .replace(/ /g, "+");
+					var designers=	 typeof(form.designers)	=== "string" ? form.designers 	: form.designers.join(',') .replace(/ /g, "+");
 					var nom_image=$('.image_etape.finale .image_preview').attr('src').match(/[.0-9]+$/g)[0];
 					$.ajax({
 						url: urls['valider_modele']+['index',nom_image,designers,photographes].join('/'),
@@ -329,9 +335,10 @@ function launch_wizard(id, p) {
 							});
 						},
 						error:function() {
-							jqueryui_alert("Une erreur est survenue pendant la validation de la tranche.<br />"
-										  +"Contactez le webmaster",
-										  "Erreur");
+							jqueryui_alert(
+								"Une erreur est survenue pendant la validation de la tranche.<br />Contactez le webmaster",
+								"Erreur"
+							);
 						}
 					});
 				}
@@ -378,12 +385,13 @@ function launch_wizard(id, p) {
 			if ($(this).hasClass('main'))
 				dialog.addClass('main');
 
-			$(this).css({'max-height':(
-										$('#body').height()
-									   -dialog.find('.ui-dialog-titlebar').height()
-									   -dialog.find('.ui-dialog-buttonpane').height()*2
-									   -dialog.css('top')
-									 )+'px'});
+			$(this).css({
+				'max-height':(
+					$('#body').height()
+					-dialog.find('.ui-dialog-titlebar').height()
+					-dialog.find('.ui-dialog-buttonpane').height()*2
+					-dialog.css('top')
+				)+'px'});
 
 			if (!closeable) {
 				dialog.find(".ui-dialog-titlebar-close").hide();
@@ -490,18 +498,18 @@ function wizard_check(wizard_id) {
 								function(element) { return $(element).val(); }
 							);
 							if (numeros_invalides.length > 0) {
-								erreur='La tranche des num�ros suivants est d&eacute;j&agrave; disponible ou en cours de conception : <br />' + numeros_invalides.join('<br />');
+								erreur='La tranche des numéros suivants est d&eacute;j&agrave; disponible ou en cours de conception : <br />' + numeros_invalides.join('<br />');
 							}
 						}
 						if (!erreur && wizard_id === 'wizard-modifier'
-					     && wizard.find('[name="wizard_numero"]').find('option:selected').is('.en_cours')) {
+						  && wizard.find('[name="wizard_numero"]').find('option:selected').is('.en_cours')) {
 							erreur='La tranche de ce num&eacute;ro est d&eacute;j&agrave; en cours de conception.';
 						}
 
 						if (erreur) {
 							erreur+='<br />'
-								   +'S&eacute;lectionnez "Modifier une tranche de magazine" dans l\'&eacute;cran pr&eacute;c&eacute;dent pour la modifier '
-								   +'ou s&eacute;lectionnez un autre num&eacute;ro.';
+								+'S&eacute;lectionnez "Modifier une tranche de magazine" dans l\'&eacute;cran pr&eacute;c&eacute;dent pour la modifier '
+								+'ou s&eacute;lectionnez un autre num&eacute;ro.';
 						}
 					}
 				}
@@ -541,7 +549,7 @@ function wizard_check(wizard_id) {
 					if ($('.rectangle_selection_tranche:not(.template)').filter(function() {
 						return $(this).find('.intitule_magazine').length === 0;
 					}).length > 0) {
-						erreur='Vous n\'avez pas sp�cifi� les num�ros de toutes les zones de la photo.';
+						erreur='Vous n\'avez pas spécifié les numéros de toutes les zones de la photo.';
 					}
 				break;
 				case 'wizard-modifier':
@@ -694,7 +702,7 @@ function wizard_init(wizard_id) {
 							maj_photo_principale(false);
 						}
 						else {
-							jqueryui_alert('Photo de tranche invalide : '+nom_fichier_rogne,'Cr�ation de mod�le');
+							jqueryui_alert('Photo de tranche invalide : '+nom_fichier_rogne,'Création de modèle');
 						}
 					}
 				);
@@ -746,13 +754,13 @@ function wizard_init(wizard_id) {
 					numeros_multiples = [numero];
 				}
 				else {
-					pays=	 get_option_wizard('wizard-creer-hors-collection', 'wizard_pays');
+					pays =	 get_option_wizard('wizard-creer-hors-collection', 'wizard_pays');
 					magazine=get_option_wizard('wizard-creer-hors-collection', 'wizard_magazine');
 					numeros_multiples=get_option_wizard('wizard-creer-hors-collection', 'wizard_numero');
 					if (typeof numeros_multiples !== 'object') {
-                        numeros_multiples = [numeros_multiples];
-                    }
-                    numero=numeros_multiples[0];
+						numeros_multiples = [numeros_multiples];
+					}
+					numero=numeros_multiples[0];
 				}
 			}
 			selecteur_cellules_preview='#'+wizard_id+' .tranches_affichees_magazine td';
@@ -763,9 +771,9 @@ function wizard_init(wizard_id) {
 		case 'wizard-clonage':
 			wizard.parent().find('.ui-dialog-buttonpane button').button("option", "disabled", true);
 			var numero_a_cloner = get_option_wizard('wizard-proposition-clonage', 'tranche_similaire');
-            wizard.find('.numero_similaire').html(numero_a_cloner);
-            cloner_numero(numero_a_cloner, numeros_multiples.slice(0));
-        break;
+				wizard.find('.numero_similaire').html(numero_a_cloner);
+				cloner_numero(numero_a_cloner, numeros_multiples.slice(0));
+		  break;
 
 		case 'wizard-clonage-silencieux':
 			wizard.parent().find('.ui-dialog-buttonpane button').button("option", "disabled", true);
@@ -796,21 +804,21 @@ function wizard_init(wizard_id) {
 			$('#pasDePhoto').prop({checked: false});
 			wizard.find('.accordion').accordion({
 				activate: function( event, ui ) {
-          var toWizardResize = $('#to-wizard-resize');
+					var toWizardResize = $('#to-wizard-resize');
 
-          toWizardResize.addClass('cache');
-					switch ($(ui.newHeader).attr('id')) {
-						case 'gallery':
-							var type_gallerie = wizard.hasClass('photo_principale') ? 'Photos' : 'Source';
-							lister_images_gallerie(type_gallerie);
-						break;
-						case 'section_photo':
-							toWizardResize.removeClass('cache');
-							var nom_fichier_photo = $('#photo_tranche img').attr('src').match(/\/([^\/]+$)/)[1];
-							afficher_galerie('Photos', [nom_fichier_photo], wizard.find('.selectionner_photo_tranche'));
-						break;
+					toWizardResize.addClass('cache');
+						switch ($(ui.newHeader).attr('id')) {
+							case 'gallery':
+								var type_gallerie = wizard.hasClass('photo_principale') ? 'Photos' : 'Source';
+								lister_images_gallerie(type_gallerie);
+							break;
+							case 'section_photo':
+								toWizardResize.removeClass('cache');
+								var nom_fichier_photo = $('#photo_tranche img').attr('src').match(/\/([^\/]+$)/)[1];
+								afficher_galerie('Photos', [nom_fichier_photo], wizard.find('.selectionner_photo_tranche'));
+							break;
+						}
 					}
-				}
 			});
 		break;
 
@@ -818,13 +826,13 @@ function wizard_init(wizard_id) {
 			var dimensions_connues= get_option_wizard('wizard-1','choix') === 'to-wizard-conception';
 
 			if (dimensions_connues) {
-				creer_modele_tranche(pays,magazine,numero,true); // Cr�ation du mod�le sans les dimensions (qui seront copi�es du mod�le non affect�)
+				creer_modele_tranche(pays,magazine,numero,true); // Création du modèle sans les dimensions (qui seront copiées du modèle non affecté)
 				wizard_goto($('#'+id_wizard_courant), 'wizard-conception');
 			}
 			break;
 
 		case 'wizard-conception':
-            id_modele = null;
+			id_modele = null;
 
 			if (get_option_wizard('wizard-1','choix_tranche_en_cours') !== undefined) {
 				id_modele=get_option_wizard('wizard-1','choix_tranche_en_cours').split(/_/g)[1];
@@ -837,10 +845,10 @@ function wizard_init(wizard_id) {
 					return;
 				}
 			}
-			else { // Nouvelle tranche => param�trage des dimensions, etc.
+			else { // Nouvelle tranche => paramétrage des dimensions, etc.
 				if (get_option_wizard('wizard-creer-collection','choix_tranche') !== undefined
 				 || get_option_wizard('wizard-creer-hors-collection','wizard_pays') !== undefined) {
-          			var tranche_collection = get_option_wizard('wizard-creer-collection','choix_tranche');
+					var tranche_collection = get_option_wizard('wizard-creer-collection','choix_tranche');
 					if (tranche_collection !== undefined) {
 						var tranche=tranche_collection.match(REGEX_NUMERO);
 						pays=tranche[1];
@@ -855,7 +863,7 @@ function wizard_init(wizard_id) {
 
 					if (get_option_wizard('wizard-clonage','choix')=== undefined) { // S'il n'y a pas eu clonage, on ne connait pas les dimensions de la tranche
 
-						// Ajout du mod�le de tranche et de la fonction Dimensions avec les param�tres par d�faut
+						// Ajout du modèle de tranche et de la fonction Dimensions avec les paramètres par défaut
 						var dimension_x = get_option_wizard('wizard-dimensions','Dimension_x');
 						var dimension_y = get_option_wizard('wizard-dimensions','Dimension_y');
 						creer_modele_tranche(pays, magazine, numero, true, dimension_x, dimension_y);
@@ -880,18 +888,18 @@ function wizard_init(wizard_id) {
 					magazine=tranche.Magazine;
 					numero=tranche.Numero;
 					id_modele=tranche.ID;
-                    nom_photo_principale=tranche.NomPhotoPrincipale;
+						  nom_photo_principale=tranche.NomPhotoPrincipale;
 
 					$('#nom_complet_tranche_en_cours')
-						.html($('<img>').attr({src:'images/flags/'+pays+'.png'}))
+						.html($('<img>').attr({src: 'images/flags/'+pays+'.png'}))
 						.append(' '+tranche.str_userfriendly);
 
 					$('#action_bar').removeClass('cache');
 					selecteur_cellules_preview='.wizard.preview_etape div.image_etape';
 					wizard.dialog().dialog('option','position',['right','top']);
-					wizard.parent().css({'left':(wizard.parent().offset().left-LARGEUR_DIALOG_TRANCHE_FINALE-20)+'px'});
+					wizard.parent().css({left: (wizard.parent().offset().left-LARGEUR_DIALOG_TRANCHE_FINALE-20)+'px'});
 
-					$.ajax({ // Num�ros d'�tapes
+					$.ajax({ // Numéros d'étapes
 						url: urls['parametrageg_wizard']+['index'].join('/'),
 						type: 'post',
 						dataType: 'json',
@@ -902,13 +910,13 @@ function wizard_init(wizard_id) {
 
 							charger_couleurs_frequentes();
 
-							$.ajax({ // D�tails des �tapes
+							$.ajax({ // Détails des étapes
 								url: urls['parametrageg_wizard']+['index',-1,'null'].join('/'),
 								type: 'post',
 								dataType:'json',
 								success:function(data) {
 									$('#zoom').removeClass('cache');
-									$('#zoom_slider').slider({change:function(event,ui) {
+									$('#zoom_slider').slider({change: function(event,ui) {
 										zoom=valeurs_possibles_zoom[ui.value];
 										$('#zoom_value').html(zoom);
 										reload_all_previews();
@@ -979,7 +987,7 @@ function wizard_init(wizard_id) {
 
 									var wizard_etape_finale = $('.wizard.preview_etape.initial').clone(true);
 									var div_preview=$('<div>').data('etape','final').addClass('image_etape finale');
-									wizard_etape_finale.html(div_preview).append($('<span>',{'id':'photo_tranche'}));
+									wizard_etape_finale.html(div_preview).append($('<span>',{id: 'photo_tranche'}));
 
 									wizard_etape_finale.dialog({
 										resizable: false,
@@ -993,13 +1001,18 @@ function wizard_init(wizard_id) {
 										open:function(ui) {
 											$(this).removeClass('initial').addClass('final');
 											$(this).data('etape','finale');
-											$(this).d().addClass('dialog-preview-etape finale')
-																		 .data('etape','finale');
+											$(this).d()
+												.addClass('dialog-preview-etape finale')
+												.data('etape','finale');
 											$(this).d().find(".ui-dialog-titlebar-close").hide();
-											$(this).d().find('.ui-dialog-titlebar').css({'padding':'.3em .6em;','text-align':'center'})
-																						.html('Tranche<br />finale');
+											$(this).d().find('.ui-dialog-titlebar')
+												.css({
+													padding: '.3em .6em;',
+													'text-align':'center'
+												})
+												.html('Tranche<br />finale');
 
-                                            afficher_photo_tranche();
+											afficher_photo_tranche();
 										}
 									});
 
@@ -1014,9 +1027,9 @@ function wizard_init(wizard_id) {
 
 									$('.ajout_etape').click(function() {
 										if (modification_etape) {
-                                            verifier_changements_etapes_sauves(modification_etape,'wizard-confirmation-annulation', function() {
-                                                launch_wizard('wizard-ajout-etape');
-                                            });
+											verifier_changements_etapes_sauves(modification_etape,'wizard-confirmation-annulation', function() {
+												launch_wizard('wizard-ajout-etape');
+											});
 										}
 										else {
 											etape_ajout=$(this).data().etape;
@@ -1029,16 +1042,16 @@ function wizard_init(wizard_id) {
 										var dialogue=$(this).d();
 										if (!dialogue.hasClass('cloneable')) {
 											if (modification_etape) {
-                                                if (dialogue.data('etape') !== modification_etape.data('etape')) {
-                                                    verifier_changements_etapes_sauves(modification_etape,'wizard-confirmation-annulation', function() {
-                                                        ouvrir_dialogue_preview(dialogue);
-                                                    });
-                                                }
+												if (dialogue.data('etape') !== modification_etape.data('etape')) {
+													verifier_changements_etapes_sauves(modification_etape,'wizard-confirmation-annulation', function() {
+														ouvrir_dialogue_preview(dialogue);
+													});
+												}
 											}
 											else {
-                                                if (dialogue.find('.image_preview').length > 0) {
-                                                    ouvrir_dialogue_preview(dialogue);
-                                                }
+												if (dialogue.find('.image_preview').length > 0) {
+													ouvrir_dialogue_preview(dialogue);
+												}
 											}
 										}
 									});
@@ -1063,9 +1076,9 @@ function wizard_init(wizard_id) {
 				dataType:'json',
 				type: 'post',
 				success:function(data) {
-					var select=$('<select>',{'name':'nom_fonction'});
+					var select=$('<select>',{name: 'nom_fonction'});
 					for (var i in data) {
-						select.append($('<option>',{'value':i}).html(data[i]));
+						select.append($('<option>',{value: i}).html(data[i]));
 					}
 					$('#liste_fonctions').html(select);
 				}
@@ -1088,7 +1101,7 @@ function wizard_init(wizard_id) {
 		break;
 		case 'wizard-resize':
 			wizard.find('img')
-			  .jrac({image_height:480})
+			  .jrac({image_height: 480})
 				.bind('jrac_events', surveiller_selection_jrac);
 		break;
 
@@ -1103,29 +1116,29 @@ function wizard_init(wizard_id) {
 				type: 'post',
 				dataType:'json',
 				success:function(data) {
-				   var utilisateur_courant=$('#utilisateur').html();
+					var utilisateur_courant=$('#utilisateur').html();
 
-			 	   $.each(wizard.find('span'),function(i,span) {
-			 		   var div=$('<div>');
-			 		   var type_contribution=$(span).attr('id');
-			 		   for (var username in data) {
-			 			   var id = $(span).attr('id')+'_'+username;
-			 			   var option = $('<input>',{
-			 				   id:   id,
-			 				   name: $(span).attr('id'),
-			 				   type: 'checkbox'
-			 			   }).val(username);
-			 			   var coche=(type_contribution === 'photographes' &&  data[username].indexOf('p') !== -1)
-								  || (type_contribution === 'designers' 	  && (data[username].indexOf('d') !== -1
-										  								   || utilisateur_courant===username));
-			 			   option.prop({'checked': coche, 'readOnly': coche});
-			 			   $(span).append(
+			 		$.each(wizard.find('span'),function(i,span) {
+			 			var div=$('<div>');
+			 			var type_contribution=$(span).attr('id');
+			 			for (var username in data) {
+			 				var id = $(span).attr('id')+'_'+username;
+			 				var option = $('<input>',{
+			 					id:	id,
+			 					name: $(span).attr('id'),
+			 					type: 'checkbox'
+			 				}).val(username);
+			 				var coche=(type_contribution === 'photographes' && data[username].indexOf('p') !== -1)
+										 || (type_contribution === 'designers' 	  && data[username].indexOf('d') !== -1)
+										 || utilisateur_courant===username;
+			 				option.prop({checked: coche,readOnly: coche});
+			 				$(span).append(
 			 					$('<div>')
-			 					   	.css({'font-weight':coche?'bold':'normal'})
-			 					   	.append(option)
-			 					   	.append($('<label>',{'for': id}).text(username)));
-			 		   }
-			 	   });
+									.css({'font-weight':coche?'bold':'normal'})
+									.append(option)
+									.append($('<label>',{for: id}).text(username)));
+			 			}
+			 		});
 				}
 			});
 		break;
@@ -1133,7 +1146,7 @@ function wizard_init(wizard_id) {
 			var image_selectionnee = window.location.host === 'localhost'
 				? prompt('URL image ?')
 				: $('#wizard-images input[name="selected"]').val();
-			wizard.find('iframe').attr({src:'http://www.myfonts.com/WhatTheFont/upload?url='+image_selectionnee});
+			wizard.find('iframe').attr({src: 'http://www.myfonts.com/WhatTheFont/upload?url='+image_selectionnee});
 			$('.toggle_exemple').click(function() {
 				$('.exemple_cache, .exemple_affiche').toggleClass('cache');
 			});
@@ -1159,20 +1172,20 @@ function afficher_liste_magazines(wizard_id, id_element_liste, data) {
 
 		var noms_sections = ['tranches_non_affectees', 'tranches_affectees'];
 
-        wizard.find('.prepublier, .depublier').button().click(function() {
-            var btn = $(this);
-            var data = btn.siblings('.libelle_tranche_en_cours').data();
-            var prepublier_ou_depublier = btn.hasClass('prepublier');
-            if (prepublier_ou_depublier) {
-                charger_image('etape', urls['viewer_wizard'] + ['index', data.Pays, data.Magazine, data.Numero, '1.5', 'all', '_', 'save', 'false', 'false'].join('/'), null, function (image) {
-                    var nom_image_temp=image.attr('src').match(/[.0-9]+$/g)[0];
-                    prepublier_depublier(true, btn, data, nom_image_temp);
-                });
-            }
-            else {
-                prepublier_depublier(false, btn, data);
-            }
-        });
+		wizard.find('.prepublier, .depublier').button().click(function() {
+			var btn = $(this);
+			var data = btn.siblings('.libelle_tranche_en_cours').data();
+			var prepublier_ou_depublier = btn.hasClass('prepublier');
+			if (prepublier_ou_depublier) {
+				charger_image('etape', urls['viewer_wizard'] + ['index', data.Pays, data.Magazine, data.Numero, '1.5', 'all', '_', 'save', 'false', 'false'].join('/'), null, function (image) {
+					var nom_image_temp=image.attr('src').match(/[.0-9]+$/g)[0];
+					prepublier_depublier(true, btn, data, nom_image_temp);
+				});
+			}
+			else {
+				 prepublier_depublier(false, btn, data);
+			}
+	  });
 
 		$.each(tranches, function(i, tranche_en_cours) {
 			var element_type_tranche;
@@ -1186,12 +1199,12 @@ function afficher_liste_magazines(wizard_id, id_element_liste, data) {
 			var bouton_tranche_en_cours=elementListe.find('.template').clone(true).removeClass('template');
 			var id_tranche=['tranche', tranche_en_cours.ID].join('_');
 			bouton_tranche_en_cours.find('input')
-				.attr({'id':id_tranche})
+				.attr({id: id_tranche})
 				.val(id_tranche);
 			bouton_tranche_en_cours.find('label.libelle_tranche_en_cours')
-				.attr({'for':id_tranche})
+				.attr({for: id_tranche})
 				.css({'background-image': 'url("images/flags/'+tranche_en_cours.Pays+'.png")'})
-                .data(tranche_en_cours)
+					 .data(tranche_en_cours)
 				.html(tranche_en_cours.str_userfriendly)
 				.click(function() {
 					wizard.find('[name="est_nouvelle_conception_tranche"]').val($(this).closest('[name="tranches_non_affectees"]').length > 0);
@@ -1259,7 +1272,7 @@ function afficher_tranches_proches(pays, magazine, numeros, est_contexte_clonage
 					numero_selectionne_trouve=true;
 				}
 				else if (est_tranche_prete) {
-					// On arr�te apr�s 5x2 tranches similaires + le nouveau num�ro
+					// On arrête après 5x2 tranches similaires + le nouveau numéro
 					if (!numero_selectionne_trouve || tranches_affichees.length < NB_MAX_TRANCHES_SIMILAIRES_PROPOSEES*2 + 1) {
 						tranches_pretes.push(numero_existant);
 						tranches_affichees.push(numero_existant);
@@ -1269,7 +1282,7 @@ function afficher_tranches_proches(pays, magazine, numeros, est_contexte_clonage
 		}
 
 		if (!numero_selectionne_trouve) {
-			// Entrer ici signifie qu'il n'y a pas de tranches pr�tes apr�s le num�ro s�lectionn�
+			// Entrer ici signifie qu'il n'y a pas de tranches prêtes après le numéro sélectionné
 			tranches_affichees = limiter_tranches_pretes_parmi_tranches_affichees(tranches_affichees, tranches_pretes, false);
 		}
 
@@ -1284,7 +1297,7 @@ function afficher_tranches_proches(pays, magazine, numeros, est_contexte_clonage
 			return;
 		}
 
-		if (est_contexte_clonage) { // Filtrage des tranches qui sont pr�tes mais sans mod�le
+		if (est_contexte_clonage) { // Filtrage des tranches qui sont prêtes mais sans modèle
 			var tranches_clonables = $.ajax({
 				url: urls['cloner']+['est_clonable',pays,magazine,tranches_affichees.join(',')].join('/'),
 				type: 'post',
@@ -1320,7 +1333,7 @@ function afficher_tranches_proches(pays, magazine, numeros, est_contexte_clonage
 			var td_tranche=$('<td>').data('numero',numero_tranche_affichee);
 			var td_numero= $('<td>').addClass('libelle_numero').data('numero',numero_tranche_affichee);
 			var td_radio = $('<td>');
-			ligne_tranches_affichees.append(td_tranche); // On ins�re ce <td> avant les autres pour qu'il soit trouv� par le chargeur d'image
+			ligne_tranches_affichees.append(td_tranche); // On insère ce <td> avant les autres pour qu'il soit trouvé par le chargeur d'image
 			if (numeros.indexOf(numero_tranche_affichee) !== -1) {
 				td_numero.append($('<b>').html('n&deg;'+numero_tranche_affichee+'<br />(nouvelle tranche)'));
 				if (!est_contexte_clonage) { // Contexte validation de tranche
@@ -1329,7 +1342,7 @@ function afficher_tranches_proches(pays, magazine, numeros, est_contexte_clonage
 			}
 			else {
 				td_numero.html('n&deg;'+numero_tranche_affichee);
-				td_radio.html($('<input>',{'type':'radio', 'name':'tranche_similaire','readonly':'readonly'}).val(numero_tranche_affichee));
+				td_radio.html($('<input>',{type: 'radio',name: 'tranche_similaire',readonly: 'readonly'}).val(numero_tranche_affichee));
 				var est_tranche_publiee = data.tranches_pretes[numero_tranche_affichee] !== 'en_cours';
 				reload_numero(numero_tranche_affichee, est_tranche_publiee);
 			}
@@ -1363,30 +1376,30 @@ function afficher_tranches_proches(pays, magazine, numeros, est_contexte_clonage
 }
 
 function cloner_numero(numero_a_cloner, nouveaux_numeros) {
-    var wizard = $('#wizard-clonage');
-    var nouveau_numero = nouveaux_numeros.shift();
-    wizard.find('.nouveau_numero').html(nouveau_numero);
-    $.ajax({
-        url: urls['etendre'] + ['index', pays, magazine, numero_a_cloner, nouveau_numero].join('/'),
-        type: 'post',
-        success: function (data) {
-            if (typeof(data.erreur) !== 'undefined')
-                jqueryui_alert(data);
-            else {
-                if (nouveaux_numeros.length) {
-                    cloner_numero(numero_a_cloner, nouveaux_numeros);
-                }
-                else {
-                    wizard.parent().find('.ui-dialog-buttonpane button').button("option", "disabled", false);
-                    wizard.find('.loading').addClass('cache');
-                    wizard.find('.done').removeClass('cache');
-                }
-            }
-        },
-        error: function (data) {
-            jqueryui_alert('Erreur : ' + data);
-        }
-    });
+	var wizard = $('#wizard-clonage');
+	var nouveau_numero = nouveaux_numeros.shift();
+	wizard.find('.nouveau_numero').html(nouveau_numero);
+	$.ajax({
+		url: urls['etendre'] + ['index', pays, magazine, numero_a_cloner, nouveau_numero].join('/'),
+		type: 'post',
+		success: function (data) {
+			if (typeof(data.erreur) !== 'undefined')
+				jqueryui_alert(data);
+			else {
+				if (nouveaux_numeros.length) {
+					cloner_numero(numero_a_cloner, nouveaux_numeros);
+				}
+				else {
+					wizard.parent().find('.ui-dialog-buttonpane button').button("option", "disabled", false);
+					wizard.find('.loading').addClass('cache');
+					wizard.find('.done').removeClass('cache');
+				}
+			}
+		},
+		error: function (data) {
+			jqueryui_alert('Erreur : ' + data);
+		}
+	});
 }
 
 function traiter_tranches_en_cours(data) {
@@ -1407,8 +1420,9 @@ function ajouter_preview_etape(num_etape, nom_fonction) {
 		.addClass('preview_vide cache')
 		.width (dimensions.x *zoom)
 		.height(dimensions.y *zoom);
-	wizard_etape.append(div_preview)
-				.append(div_preview_vide);
+	wizard_etape
+		.append(div_preview)
+		.append(div_preview_vide);
 
 	var posX = $('#wizard-conception').parent().offset().left-(etapes_valides.length);
 	wizard_etape.dialog({
@@ -1424,12 +1438,12 @@ function ajouter_preview_etape(num_etape, nom_fonction) {
 			$(this).removeClass('initial');
 			$(this).data('etape',num_etape);
 			$(this).d().addClass('dialog-preview-etape')
-					   .data('etape',num_etape)
-					   .data('nom_fonction',nom_fonction);
-			$(this).d().find('.ui-dialog-titlebar').addClass('logo_option')
-												   .css({'padding':'.3em .6em;'})
-										 		   .prepend($('<img>',{'height':18,'src':base_url+'images/fonctions/'+nom_fonction+'.png',
- 	   															 	   'alt':nom_fonction}));
+				.data('etape',num_etape)
+				.data('nom_fonction',nom_fonction);
+			$(this).d().find('.ui-dialog-titlebar')
+				.addClass('logo_option')
+				.css({padding: '.3em .6em;'})
+				.prepend($('<img>',{height: 18,src: base_url+'images/fonctions/'+nom_fonction+'.png',alt: nom_fonction}));
 			$(this).d().find('.ui-dialog-title').addClass('cache').html(nom_fonction);
 		},
 		beforeClose:function() {
@@ -1475,7 +1489,7 @@ function ajouter_preview_etape(num_etape, nom_fonction) {
 
 function charger_previews(forcer_placement_dialogues) {
 	forcer_placement_dialogues = forcer_placement_dialogues || false;
-	chargements.push('final'); // On ajoute l'�tape finale
+	chargements.push('final'); // On ajoute l'étape finale
 
 	numero_chargement=numero;
 	chargement_courant=0;
@@ -1511,10 +1525,14 @@ function ouvrir_dialogue_preview(dialogue) {
 	var largeur_tranche=section_preview_vide.width();
 	section_preview_etape.dialog().dialog('option', 'width', largeur_max_preview_etape_ouverte());
 	dialogue.find('.ui-dialog-titlebar .ui-dialog-title').removeClass('cache');
-	section_preview_vide.after($('#options-etape--'+nom_fonction)
-						.removeClass('cache')
-						.css({'margin-left':(section_preview_vide.position().left+largeur_tranche+5*zoom)+'px',
-							  'min-height':section_preview_vide.height()+'px'}));
+	section_preview_vide
+		.after($('#options-etape--'+nom_fonction)
+			.removeClass('cache')
+			.css({
+				'margin-left':(section_preview_vide.position().left+largeur_tranche+5*zoom)+'px',
+				'min-height':section_preview_vide.height()+'px'
+			})
+		);
 
 	section_preview_etape.dialog().dialog('option','buttons',{
 		'Fermer': function() {
@@ -1530,8 +1548,9 @@ function ouvrir_dialogue_preview(dialogue) {
 }
 
 function fermer_dialogue_preview(dialogue) {
-	dialogue.removeClass('modif')
-			.css({'width':'auto'});
+	dialogue
+		.removeClass('modif')
+		.css({width: 'auto'});
 	dialogue.find('.ui-dialog-buttonpane').remove();
 	dialogue.find('.ui-dialog-titlebar .ui-dialog-title').addClass('cache');
 	dialogue.find('.options_etape').addClass('cache');
@@ -1546,37 +1565,39 @@ function fermer_dialogue_preview(dialogue) {
 
 function placer_dialogues_preview() {
 	var dialogues=$('.dialog-preview-etape').add($('#wizard-conception').d());
-	dialogues.sort(function(dialogue1,dialogue2) { // Tri�s par num�ro d'�tape, de droite � gauche
+	dialogues.sort(function(dialogue1,dialogue2) { // Triés par numéro d'étape, de droite à gauche
 		return $(dialogue2).data('etape') === 'finale' ? 1 : $(dialogue2).data('etape') - $(dialogue1).data('etape');
 	});
 	var min_marge_gauche=0;
 	$.each(dialogues,function(i,dialogue) {
 		var largeur=$(dialogue).width();
 		if (i === 0) {
-			$(dialogue).css({'left':$(window).width()-largeur-MARGE_DROITE_TRANCHE_FINALE});
+			$(dialogue).css({left: $(window).width()-largeur-MARGE_DROITE_TRANCHE_FINALE});
 		}
 		else {
 			var dialogue_suivant=$(dialogues[i-1]);
-			var marge_gauche=dialogue_suivant.offset().left-largeur
-							-(i===2 ? SEPARATION_CONCEPTION_ETAPES : LARGEUR_INTER_ETAPES);
-			$(dialogue).css({'left':marge_gauche+'px'});
+			var marge_gauche=
+				dialogue_suivant.offset().left
+			 -largeur
+				-(i===2 ? SEPARATION_CONCEPTION_ETAPES : LARGEUR_INTER_ETAPES);
+			$(dialogue).css({left: marge_gauche+'px'});
 			min_marge_gauche=Math.min(marge_gauche,min_marge_gauche);
 		}
 	});
 
 	if (min_marge_gauche < 0) {
 		$.each(dialogues,function(i,dialogue) {
-			$(dialogue).css({'left':parseInt($(dialogue).css('left'))-min_marge_gauche+'px'});
+			$(dialogue).css({left: parseInt($(dialogue).css('left'))-min_marge_gauche+'px'});
 		});
 	}
 
 	$('.ajout_etape:not(.template)').remove();
 
 	dialogues=$('.dialog-preview-etape:not(.finale)').d();
-	if (dialogues.length === 0) { // Aucune �tape n'existe. On cr�� avec le dialogue de conception pour r�f�rence
+	if (dialogues.length === 0) { // Aucune étape n'existe. On crée avec le dialogue de conception pour référence
 		dialogues=$('#wizard-conception').d();
 	}
-	dialogues.sort(function(dialogue1,dialogue2) { // Tri�s par offset gauche, de droite � gauche
+	dialogues.sort(function(dialogue1,dialogue2) { // Triés par offset gauche, de droite à gauche
 		return $(dialogue2).offset().left - $(dialogue1).offset().left;
 	});
 	$.each(dialogues,function(i,dialogue) {
@@ -1584,25 +1605,26 @@ function placer_dialogues_preview() {
 		var estDialogueConception = elDialogue.data('etape') === undefined;
 		if (estDialogueConception) { // Dialogue de conception
 			var etape = -1;
-			var positions = ['apres']; // L'�tape sera positionn�e apr�s l'�tape -1 (=dimensions de tranche)
+			var positions = ['apres']; // L'étape sera positionnée après l'étape -1 (=dimensions de tranche)
 		}
 		else {
 			var etape = parseInt(elDialogue.data('etape'));
 			var positions = i===dialogues.length-1 ? ['avant','apres']:['apres'];
 		}
 		$.each(positions,function(j,pos) {
-      var ajoutEtapeTemplate = $('.ajout_etape.template');
+		var ajoutEtapeTemplate = $('.ajout_etape.template');
 
-      var pos_gauche=elDialogue.offset().left
-				+ (pos==='avant' || estDialogueConception
-					?(-ajoutEtapeTemplate.width()-2)
-					:(+ajoutEtapeTemplate.width()+elDialogue.width())
-				);
+		var pos_gauche=
+			elDialogue.offset().left
+		  + (pos==='avant' || estDialogueConception
+				?(-ajoutEtapeTemplate.width()-2)
+				:(+ajoutEtapeTemplate.width()+elDialogue.width())
+			);
 			var ajout_etape=ajoutEtapeTemplate.clone(true).removeClass('template hidden')
-			   .css({'left':pos_gauche+'px'})
-			   .css({'top':elDialogue.offset().top+'px'})
-			   .data('etape',etape)
-			   .data('pos',pos);
+				.css({left: pos_gauche+'px'})
+				.css({top: elDialogue.offset().top+'px'})
+				.data('etape',etape)
+				.data('pos',pos);
 			$('body').prepend(ajout_etape);
 		});
 	});
@@ -1630,20 +1652,20 @@ function recuperer_et_alimenter_options_preview(num_etape) {
 }
 
 function positionner_agrafe(elAgrafes, image, posRelativeY1, posRelativeY2, hauteur) {
-    var pos_x_debut = image.position().left + image.width() / 2 - .25 * zoom;
-    var largeur = zoom;
-    var pos_y_agrafe1 = image.position().top + posRelativeY1;
-    var pos_y_agrafe2 = image.position().top + posRelativeY2;
+	var pos_x_debut = image.position().left + image.width() / 2 - .25 * zoom;
+	var largeur = zoom;
+	var pos_y_agrafe1 = image.position().top + posRelativeY1;
+	var pos_y_agrafe2 = image.position().top + posRelativeY2;
 
-    elAgrafes.filter('.premiere').css({'top': pos_y_agrafe1 + 'px'});
-    elAgrafes.filter('.deuxieme').css({'top': pos_y_agrafe2 + 'px'});
-    elAgrafes
-        .css({
-            left: pos_x_debut + 'px',
-            width:    largeur + 'px',
-            height:   hauteur + 'px'
-        })
-        .removeClass('cache');
+	elAgrafes.filter('.premiere').css({top: pos_y_agrafe1 + 'px'});
+	elAgrafes.filter('.deuxieme').css({top: pos_y_agrafe2 + 'px'});
+	elAgrafes
+		.css({
+			left: pos_x_debut + 'px',
+			width:	 largeur + 'px',
+			height:	hauteur + 'px'
+		})
+		.removeClass('cache');
 }
 
 
@@ -1652,13 +1674,14 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 	var form_userfriendly=section_preview_etape.find('.options_etape');
 	var form_options = section_preview_etape.find('[name="form_options"]');
 	if (form_options.length === 0) {
-		form_options=$('<form>',{'name':'form_options'});
+		form_options=$('<form>',{name: 'form_options'});
 		for(var nom_option in valeurs) {
-			form_options.append($('<input>',{'name':nom_option,'type':'hidden'}).val(templatedToVal(valeurs[nom_option])));
+			form_options.append($('<input>',{name: nom_option,type: 'hidden'}).val(templatedToVal(valeurs[nom_option])));
 		}
-		section_preview_etape.append(form_options)
-							 .append(form_options.clone(true)
-									 				.attr({'name':'form_options_orig'}));
+		section_preview_etape
+			.append(form_options)
+			.append(form_options.clone(true)
+				.attr({name: 'form_options_orig'}));
 	}
 
 	var image = section_preview_etape.find('.preview_vide');
@@ -1666,8 +1689,9 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 		.width (dimensions.x*zoom)
 		.height(dimensions.y*zoom);
 
-	var padding_dialogue = form_userfriendly.d().outerWidth(false)
-						 - form_userfriendly.d().innerWidth();
+	var padding_dialogue =
+		form_userfriendly.d().outerWidth(false)
+	 -form_userfriendly.d().innerWidth();
 	form_userfriendly.css({'margin-left':(padding_dialogue+image.width()+PADDING_PARAMETRAGE_ETAPE)+'px'});
 
 	var checkboxes=[];
@@ -1675,28 +1699,28 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 		case 'Agrafer':
 			var agrafes = form_userfriendly.find('.agrafe');
 
-            positionner_agrafe(
-                agrafes,
-				image,
-				parseFloat(templatedToVal(valeurs['Y1']))*zoom,
-				parseFloat(templatedToVal(valeurs['Y2']))*zoom,
-				parseFloat(templatedToVal(valeurs['Taille_agrafe']))*zoom
-			);
+				positionner_agrafe(
+					agrafes,
+					image,
+					parseFloat(templatedToVal(valeurs['Y1']))*zoom,
+					parseFloat(templatedToVal(valeurs['Y2']))*zoom,
+					parseFloat(templatedToVal(valeurs['Taille_agrafe']))*zoom
+				);
 
-            agrafes
-				.draggable({
-					axis: 'y',
-					stop:function(event) {
-						var element=$(event.target);
-						tester_options_preview([element.hasClass('premiere') ? 'Y1' : 'Y2'],element);
-					}
-				})
-				.resizable({
-					handles:'s',
-					resize:function(event, ui) {
-						tester_options_preview(['Taille_agrafe'],ui.element);
-					}
-				});
+				agrafes
+					.draggable({
+						axis: 'y',
+						stop:function(event) {
+							var element=$(event.target);
+							tester_options_preview([element.hasClass('premiere') ? 'Y1' : 'Y2'],element);
+						}
+					})
+					.resizable({
+						handles:'s',
+						resize:function(event, ui) {
+							tester_options_preview(['Taille_agrafe'],ui.element);
+						}
+					});
 		break;
 
 		case 'Degrade':
@@ -1710,43 +1734,44 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 
 			rectangle
 				.css({
-					top:	pos_y_debut 		   +'px',
-					left:   pos_x_debut 		   +'px',
+					top:	pos_y_debut 			+'px',
+					left:	pos_x_debut 			+'px',
 					width:  (pos_x_fin-pos_x_debut)+'px',
 					height: (pos_y_fin-pos_y_debut)+'px'
 				})
 				.removeClass('cache')
-				.draggable({//containment:limites_drag,
-					 stop:function() {
+				.draggable({
+					stop:function() {
 						tester_options_preview(['Pos_x_debut','Pos_y_debut','Pos_x_fin','Pos_y_fin']);
-					 }
+					}
 				})
 				.resizable({
-					 stop:function() {
-						 tester_options_preview(['Pos_x_fin', 'Pos_y_fin']);
-					 }
+					stop:function() {
+						tester_options_preview(['Pos_x_fin', 'Pos_y_fin']);
+					}
 				});
 			coloriser_rectangle_degrade(rectangle,'#'+valeurs['Couleur_debut'],'#'+valeurs['Couleur_fin'],valeurs['Sens']);
 
 			var choix = form_userfriendly.find('[name="option-Sens"]');
 			choix.click(function() {
-   				tester_options_preview(['Sens']);
-   				coloriser_rectangle_degrade(rectangle,null,null,$(this).val());
+				tester_options_preview(['Sens']);
+				coloriser_rectangle_degrade(rectangle,null,null,$(this).val());
 			});
 		break;
 
 		case 'DegradeTrancheAgrafee':
-            positionner_agrafe(form_userfriendly.find('.agrafe'), image, 0.2*image.height(), 0.8*image.height(), 0.05*image.height());
+			positionner_agrafe(form_userfriendly.find('.agrafe'), image, 0.2*image.height(), 0.8*image.height(), 0.05*image.height());
 
 			var rectangle1 = form_userfriendly.find('.premier.rectangle_degrade');
 			var rectangle2 = form_userfriendly.find('.deuxieme.rectangle_degrade');
 
-			rectangle1.css({'left':image.position().left+'px'});
-			rectangle2.css({'left':parseInt(image.position().left+image.width()/2)+'px'});
+			rectangle1.css({left: image.position().left+'px'});
+			rectangle2.css({left: parseInt(image.position().left+image.width()/2)+'px'});
 			form_userfriendly.find('.rectangle_degrade')
-				.css({'top':	image.position().top +'px',
-					  'width':  image.width()/2	  	 +'px',
-					  'height': image.height()		 +'px'})
+				.css({
+					'top':	image.position().top +'px',
+					'width':  image.width()/2	   +'px',
+					'height': image.height()		 +'px'})
 				.removeClass('cache');
 			coloriser_rectangles_degrades(valeurs['Couleur']);
 
@@ -1755,20 +1780,23 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 			$('.preview_vide').css({'background-color': '#'+valeurs['Couleur']});
 
 			var largeur_croix=form_userfriendly.find('.point_remplissage').width()/2;
-			var limites_drag=[(image.offset().left			 	 -largeur_croix+1),
-							  (image.offset().top 			 	 -largeur_croix+1),
-							  (image.offset().left+image.width() -largeur_croix-1),
-							  (image.offset().top +image.height()-largeur_croix-1)];
+			var limites_drag=[
+				(image.offset().left			 	 -largeur_croix+1),
+				(image.offset().top 			 	 -largeur_croix+1),
+				(image.offset().left+image.width() -largeur_croix-1),
+				(image.offset().top +image.height()-largeur_croix-1)];
 			form_userfriendly.find('.point_remplissage')
 				.css({
 					left:(image.position().left-largeur_croix+1+parseFloat(valeurs['Pos_x'])*zoom)+'px',
-					top :(image.position().top -largeur_croix+1+parseFloat(valeurs['Pos_y'])*zoom)+'px'})
-                .removeClass('cache')
+					top :(image.position().top -largeur_croix+1+parseFloat(valeurs['Pos_y'])*zoom)+'px'
+				})
+				.removeClass('cache')
 				.draggable({
 					containment:limites_drag,
-		            stop:function() {
-		                tester_options_preview(['Pos_x', 'Pos_y']);
-		            }});
+					stop:function() {
+						tester_options_preview(['Pos_x', 'Pos_y']);
+					}
+				});
 		break;
 		case 'Arc_cercle':
 
@@ -1784,13 +1812,14 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 			dessiner(arc, 'Arc_cercle', form_options);
 
 			checkboxes.push('Rempli');
-			form_userfriendly.valeur('Rempli')
-							 .val(valeurs['Rempli'] === 'Oui')
-							 .change(function() {
-								 var nom_option=$(this).attr('name').replace(REGEX_OPTION,'$1');
-								 tester_options_preview([nom_option]);
-								 dessiner(arc, 'Arc_cercle', $('[name="form_options"]'));
-							 });
+			form_userfriendly
+				.valeur('Rempli')
+				.val(valeurs['Rempli'] === 'Oui')
+				.change(function() {
+					var nom_option=$(this).attr('name').replace(REGEX_OPTION,'$1');
+					tester_options_preview([nom_option]);
+					dessiner(arc, 'Arc_cercle', $('[name="form_options"]'));
+				});
 			form_userfriendly.valeur('drag-resize').change(function() {
 				var arc = section_preview_etape.find('.preview_vide .arc_position');
 				if ($(this).val()==='deplacement') {
@@ -1799,7 +1828,7 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 					}
 					arc.draggable({
 						stop: function() {
-						   tester_options_preview(['Pos_x_centre', 'Pos_y_centre']);
+							tester_options_preview(['Pos_x_centre', 'Pos_y_centre']);
 						}
 					});
 				}
@@ -1808,11 +1837,11 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 						arc.draggable("destroy");
 					}
 					arc.resizable({
-						 stop: function() {
-						   tester_options_preview(['Largeur','Hauteur','Pos_x_centre','Pos_y_centre']);
-						   dessiner(arc, 'Arc_cercle', $('[name="form_options"]'));
-						 }
-					 });
+						stop: function() {
+							tester_options_preview(['Largeur','Hauteur','Pos_x_centre','Pos_y_centre']);
+							dessiner(arc, 'Arc_cercle', $('[name="form_options"]'));
+						}
+					});
 				}
 			});
 			form_userfriendly.find('#Arc_deplacement').click();
@@ -1854,30 +1883,33 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 			var pos_x_fin=image.position().left+parseFloat(templatedToVal(valeurs['Pos_x_fin']))*zoom;
 			var pos_y_fin=image.position().top +parseFloat(templatedToVal(valeurs['Pos_y_fin']))*zoom;
 
-			position_rectangle.css({left:			  pos_x_debut +'px',
-									top: 			  pos_y_debut +'px',
-									width: (pos_x_fin-pos_x_debut)+'px',
-									height:(pos_y_fin-pos_y_debut)+'px'})
-						  .removeClass('cache')
-						  .draggable({//containment:limites_drag,
-					  		  stop:function() {
-				   				tester_options_preview(['Pos_x_debut','Pos_y_debut','Pos_x_fin','Pos_y_fin']);
-				   			  }
-						  })
-						  .resizable({
-								stop:function() {
-					   				tester_options_preview(['Pos_x_fin','Pos_y_fin']);
-					   			}
-						  });
+			position_rectangle
+				.css({
+					left:			  pos_x_debut +'px',
+					top: 			  pos_y_debut +'px',
+					width: (pos_x_fin-pos_x_debut)+'px',
+					height:(pos_y_fin-pos_y_debut)+'px'})
+				.removeClass('cache')
+				.draggable({
+					stop:function() {
+						tester_options_preview(['Pos_x_debut','Pos_y_debut','Pos_x_fin','Pos_y_fin']);
+					}
+				})
+				.resizable({
+					stop:function() {
+						tester_options_preview(['Pos_x_fin','Pos_y_fin']);
+					}
+				});
 
 			checkboxes.push('Rempli');
-			form_userfriendly.valeur('Rempli')
-							 .val(valeurs['Rempli'] === 'Oui')
-							 .change(function() {
-								 var nom_option=$(this).attr('name').replace(REGEX_OPTION,'$1');
-								 tester_options_preview([nom_option]);
-								 coloriser_rectangle_preview(valeurs['Couleur'],$(this).prop('checked'));
-							 });
+			form_userfriendly
+				.valeur('Rempli')
+				.val(valeurs['Rempli'] === 'Oui')
+				.change(function() {
+					var nom_option=$(this).attr('name').replace(REGEX_OPTION,'$1');
+					tester_options_preview([nom_option]);
+					coloriser_rectangle_preview(valeurs['Couleur'],$(this).prop('checked'));
+				});
 
 			coloriser_rectangle_preview(valeurs['Couleur'],valeurs['Rempli'] === 'Oui');
 
@@ -1903,7 +1935,7 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 				$('#wizard-images')
 					.addClass('autres_photos')
 					.removeClass('photo_principale photos_texte');
-				launch_wizard('wizard-images', {modal:true, first: true, width: 600});
+				launch_wizard('wizard-images',{modal: true, first: true, width: 600});
 			});
 
 		break;
@@ -1914,10 +1946,10 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 			});
 
 			var tester_et_charger_preview_myfonts = function() {
-                var nom_option=$(this).attr('name').replace(REGEX_OPTION,'$1');
-                tester_options_preview([nom_option]);
-                load_myfonts_preview(true,true,true);
-            };
+				var nom_option=$(this).attr('name').replace(REGEX_OPTION,'$1');
+				tester_options_preview([nom_option]);
+				load_myfonts_preview(true,true,true);
+			};
 
 			form_userfriendly.find('input[name="option-Chaine"],input[name="option-URL"],input[name="option-Largeur"]')
 				.blur(tester_et_charger_preview_myfonts);
@@ -1926,7 +1958,7 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 				$('#wizard-images')
 					.addClass('photos_texte')
 					.removeClass('photo_principale autres_photos');
-				launch_wizard('wizard-images', {modal:true, first: true, width: 600});
+				launch_wizard('wizard-images',{modal: true, first: true, width: 600});
 			});
 
 			checkboxes.push('Demi_hauteur');
@@ -1936,8 +1968,9 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 
 			$(document).mouseup( stopRotate);
 			var input_rotation=form_userfriendly.valeur('Rotation');
-			input_rotation.data('currentRotation',0)
-						  .mousedown( startRotate );
+			input_rotation
+				.data('currentRotation',0)
+				.mousedown( startRotate );
 			$('[name~="fixer_rotation"]').click(function() {
 				var angle=$(this).prop('name').split(/ /g)[1];
 				rotateImageDegValue(input_rotation,angle);
@@ -1981,8 +2014,9 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 	});
 
 	for (var i in checkboxes) {
-		form_userfriendly.valeur(checkboxes[i])
-						 .attr('checked',valeurs[checkboxes[i]]==='Oui');
+		form_userfriendly
+			.valeur(checkboxes[i])
+			.attr('checked',valeurs[checkboxes[i]]==='Oui');
 	}
 }
 
@@ -1999,10 +2033,13 @@ function dessiner(element, type, form_options, callback) {
 		break;
 	}
 
-	element.css({left:(parseFloat(form_options.valeur('Pos_x_centre').val())*zoom
-					 - parseFloat(form_options.valeur('Largeur').val())	    *zoom/2)+'px',
-				 top :(parseFloat(form_options.valeur('Pos_y_centre').val())*zoom
-					 - parseFloat(form_options.valeur('Hauteur').val())	    *zoom/2)+'px'});
+	element.css({
+		left:
+			( parseFloat(form_options.valeur('Pos_x_centre').val())*zoom
+			- parseFloat(form_options.valeur('Largeur').val())		 *zoom/2)+'px',
+		top :
+			( parseFloat(form_options.valeur('Pos_y_centre').val())*zoom
+			- parseFloat(form_options.valeur('Hauteur').val())		 *zoom/2)+'px'});
 
 	$.each($(options),function(i,nom_option) {
 		if (nom_option === 'Pos_x_centre')
@@ -2013,7 +2050,7 @@ function dessiner(element, type, form_options, callback) {
 			url_appel+="/"+form_options.valeur(nom_option).val();
 	});
 	element
-		.attr({'src':url_appel})
+		.attr({src: url_appel})
 		.load(function() {
 			$(this).removeClass('cache');
 			callback();
@@ -2053,21 +2090,23 @@ function positionner_points_polygone(form_options) {
 		var nouveau_point= options_etape.find('.point_polygone.modele')
 			.clone(true)
 				.removeClass('modele cache')
-				.attr({'name':'point'+point[0]})
-				.css({'margin-left':point[1]+'px',
-			 		  'margin-top': point[2]+'px'})
-			 	.mouseleave(function() {
-			 		$(this).removeClass('focus');
-			 		if ($(this).draggable()) {
-			 			$(this).draggable("destroy");
-					}
-			 		$(this).click(function() {});
-			 	})
-			 	.mouseover(function() {
-			 		$(this).addClass('focus');
-			 		var action = options_etape.valeur('action').filter(':checked').val();
+				.attr({name: 'point'+point[0]})
+				.css({
+					'margin-left':point[1]+'px',
+					'margin-top': point[2]+'px'
+				})
+			.mouseleave(function() {
+				$(this).removeClass('focus');
+				if ($(this).draggable()) {
+					$(this).draggable("destroy");
+				}
+				$(this).click(function() {});
+			})
+			.mouseover(function() {
+				$(this).addClass('focus');
+				var action = options_etape.valeur('action').filter(':checked').val();
 
-			 		switch(action) {
+				switch(action) {
 					case 'ajout':
 						$(this).click(function() {
 							var millis=new Date().getTime();
@@ -2084,32 +2123,37 @@ function positionner_points_polygone(form_options) {
 								point2=$('.point_polygone[name="point0"]');
 							}
 							for (var i=$('.point_polygone:not(.modele)').length -1; i>=num_point1+1; i--) {
-								$('.point_polygone[name="point'+i+'"]').attr({'name':'point'+(i+1)});
+								$('.point_polygone[name="point'+i+'"]').attr({name: 'point'+(i+1)});
 							}
-							var nouveau_point={'margin-left':(parseFloat(point1.css('margin-left').replace(/px$/,''))
-											   				 +parseFloat(point2.css('margin-left').replace(/px$/,'')))/2,
-											   'margin-top': (parseFloat(point1.css('margin-top' ).replace(/px$/,''))
-													   		 +parseFloat(point2.css('margin-top' ).replace(/px$/,'')))/2};
+							var nouveau_point={
+								'margin-left':
+									( parseFloat(point1.css('margin-left').replace(/px$/,''))
+									+ parseFloat(point2.css('margin-left').replace(/px$/,'')))/2,
+								'margin-top':
+									( parseFloat(point1.css('margin-top' ).replace(/px$/,''))
+									+ parseFloat(point2.css('margin-top' ).replace(/px$/,'')))/2};
 
-							point1.after($('<div>').addClass('point_polygone')
-												   .attr({'name':'point'+(num_point1+1)})
-												   .css(nouveau_point));
+							point1.after(
+								$('<div>')
+									.addClass('point_polygone')
+									.attr({name: 'point'+(num_point1+1)})
+									.css(nouveau_point));
 
-				 			tester_options_preview(['X','Y']);
-				 			dessiner(polygone, 'Polygone', form_options, function() {
-					 			positionner_points_polygone(form_options);
-				 			});
+							tester_options_preview(['X','Y']);
+							dessiner(polygone, 'Polygone', form_options, function() {
+								positionner_points_polygone(form_options);
+							});
 						});
 					break;
 					case 'deplacement':
 						$(this).draggable({
-					 		stop: function() {
-					 			tester_options_preview(['X','Y']);
+							stop: function() {
+								tester_options_preview(['X','Y']);
 
-					 			var form_options = $('[name="form_options"]');
-					 			dessiner(polygone, 'Polygone', form_options, function() {
-						 			positionner_points_polygone(form_options);
-					 			});
+								var form_options = $('[name="form_options"]');
+								dessiner(polygone, 'Polygone', form_options, function() {
+									positionner_points_polygone(form_options);
+								});
 							}
 						});
 					break;
@@ -2127,10 +2171,10 @@ function positionner_points_polygone(form_options) {
 										var nom_point=$('#nom_point_a_supprimer').html();
 										$('.point_polygone[name="'+nom_point+'"]:not(.modele)').remove();
 
-							 			tester_options_preview(['X','Y']);
-							 			dessiner(polygone, 'Polygone', form_options, function() {
-								 			positionner_points_polygone(form_options);
-							 			});
+										tester_options_preview(['X','Y']);
+										dessiner(polygone, 'Polygone', form_options, function() {
+											positionner_points_polygone(form_options);
+										});
 									}
 								}
 							});
@@ -2138,7 +2182,7 @@ function positionner_points_polygone(form_options) {
 
 					break;
 				}
-			 });
+			});
 		preview_vide.append(nouveau_point);
 	}
 
@@ -2163,7 +2207,7 @@ function positionner_image(preview) {
 	}
 	else {
 		pos_y=image.position().top +parseFloat(valeurs['Decalage_y'])*zoom;
-		if (valeurs['Mesure_depuis_haut'] === 'Non') { // Le pos_y est mesur� entre le haut de la tranche et le bas du texte
+		if (valeurs['Mesure_depuis_haut'] === 'Non') { // Le pos_y est mesuré entre le haut de la tranche et le bas du texte
 			pos_y-=parseFloat(hauteur);
 		}
 	}
@@ -2184,10 +2228,10 @@ function positionner_image(preview) {
 		.removeClass('cache')
 		.html(
 			$('<img>')
-				.attr({'src':preview.attr('src')})
+				.attr({src: preview.attr('src')})
 				.error(afficher_erreur_image_inexistante)
 		)
-		.draggable({//containment:limites_drag
+		.draggable({
 			stop:function() {
 				tester_options_preview(['Decalage_x','Decalage_y']);
 			}
@@ -2206,7 +2250,7 @@ function definir_et_positionner_image(source) {
 	var form_userfriendly=modification_etape.find('.options_etape');
 	var apercu_image=form_userfriendly.find('.apercu_image');
 	apercu_image
-		.attr({'src':dm_base_url+'/edges/'+pays+'/elements/'+source})
+		.attr({src: dm_base_url+'/edges/'+pays+'/elements/'+source})
 		.load(function() {
 			positionner_image($(this));
 		})
@@ -2229,28 +2273,29 @@ function coloriser_rectangles_degrades(c1) {
 	var coef_degrade=1.75;
 
 	var c1_rgb=hex2rgb(c1);
-	var c2=rgb2hex(parseInt(c1_rgb[0]/coef_degrade),
-				   parseInt(c1_rgb[1]/coef_degrade),
-				   parseInt(c1_rgb[2]/coef_degrade));
+	var c2=rgb2hex(
+		parseInt(c1_rgb[0]/coef_degrade),
+		parseInt(c1_rgb[1]/coef_degrade),
+		parseInt(c1_rgb[2]/coef_degrade));
 	coloriser_rectangle_degrade(modification_etape.find('.premier.rectangle_degrade'), c1,c2);
 	coloriser_rectangle_degrade(modification_etape.find('.deuxieme.rectangle_degrade'),c2,c1);
 }
 
 function coloriser_rectangle_degrade(element,couleur1,couleur2, sens) {
 	sens = sens || 'Horizontal';
-	if (couleur1 === null) {// On garde la m�me couleur
+	if (couleur1 === null) {// On garde la même couleur
 		var regex=/, from\(((?:(?!\),).)+)/g;
 		couleur1 = element.css('background').match(regex)[0].replace(regex,'$1');
 	}
-	if (couleur2 === null) {// On garde la m�me couleur
+	if (couleur2 === null) {// On garde la même couleur
 		var regex = /, to\(((?:(?!\)\) ).)+)/g;
 		couleur2 = element.css('background').match(regex)[0].replace(regex,'$1');
 	}
 	if (sens === 'Horizontal') {
-		element.css({'background': '-webkit-gradient(linear, left top, right top, from('+couleur1+'), to('+couleur2+'))'});
+		element.css({background: '-webkit-gradient(linear, left top, right top, from('+couleur1+'), to('+couleur2+'))'});
 	}
 	else {
-		element.css({'background': '-webkit-gradient(linear, left top, left bottom, from('+couleur1+'), to('+couleur2+'))'});
+		element.css({background: '-webkit-gradient(linear, left top, left bottom, from('+couleur1+'), to('+couleur2+'))'});
 	}
 }
 
@@ -2383,12 +2428,14 @@ function tester_options_preview(noms_options, element) {
 					var arc=dialogue.find('.arc_position');
 					switch(nom_option) {
 						case 'Pos_x_centre':
-							val = toFloat2Decimals(parseFloat(form_options.valeur('Largeur').val())/2
-												 + parseFloat(arc.position().left)/zoom);
+							val = toFloat2Decimals(
+								parseFloat(form_options.valeur('Largeur').val())/2
+							 +parseFloat(arc.position().left)/zoom);
 						break;
 						case 'Pos_y_centre':
-							val = toFloat2Decimals(parseFloat(form_options.valeur('Hauteur').val())/2
-									 			 + parseFloat(arc.position().top)/zoom);
+							val = toFloat2Decimals(
+								parseFloat(form_options.valeur('Hauteur').val())/2
+							 +parseFloat(arc.position().top)/zoom);
 						break;
 						case 'Largeur':
 							val=arc.width()/zoom;
@@ -2506,8 +2553,9 @@ function tester_options_preview(noms_options, element) {
 						break;
 						case 'Largeur':
 							var largeur_courante=form_options.valeur('Largeur').val();
-							var largeur_physique_preview=dialogue.find('div.extension_largeur').offset().left
-														-dialogue.find('.finition_texte_genere .apercu_myfonts img').offset().left;
+							var largeur_physique_preview=
+								dialogue.find('div.extension_largeur').offset().left
+							 -dialogue.find('.finition_texte_genere .apercu_myfonts img').offset().left;
 							val=parseInt(largeur_courante)* (largeur_physique_preview/largeur_physique_preview_initiale);
 						break;
 						case 'Demi_hauteur':
@@ -2523,11 +2571,14 @@ function tester_options_preview(noms_options, element) {
 		form_options.valeur(nom_option).val(val);
 
 		if (nom_fonction === 'MyFonts' && ['Chaine','URL','Largeur','Demi_hauteur','Rotation'].indexOf(nom_option) !== -1) {
-			var generer_preview_proprietes = nom_option === 'Chaine'  || nom_option === 'URL',
-				generer_preview_finition = nom_option === 'Largeur' || nom_option === 'Demi_hauteur';
-			generer_et_positionner_preview_myfonts(generer_preview_proprietes,
-												   generer_preview_finition,
-												   true);
+			var generer_preview_proprietes = nom_option === 'Chaine'  || nom_option === 'URL';
+			var generer_preview_finition   = nom_option === 'Largeur' || nom_option === 'Demi_hauteur';
+
+			generer_et_positionner_preview_myfonts(
+				generer_preview_proprietes,
+				generer_preview_finition,
+				true
+			);
 		}
 		else {
 			tester_apres=true;
@@ -2554,26 +2605,29 @@ function generer_et_positionner_preview_myfonts(gen_preview_proprietes, gen_prev
 
 		var pos_x=image.position().left+parseFloat(valeurs['Pos_x'])*zoom;
 		var pos_y=image.position().top +parseFloat(valeurs['Pos_y'])*zoom;
-		if (valeurs['Mesure_depuis_haut'] === 'Non') { // Le pos_y est mesur� entre le haut de la tranche et le bas du texte
+		if (valeurs['Mesure_depuis_haut'] === 'Non') { // Le pos_y est mesuré entre le haut de la tranche et le bas du texte
 			pos_y-=parseFloat(hauteur);
 		}
 
-		position_texte.css({'left':pos_x+'px',
-							'top': pos_y+'px',
-							'width':largeur+'px',
-							'height':hauteur+'px'})
-					  .removeClass('cache')
-					  .draggable({//containment:limites_drag,
-				  		  stop:function() {
-			   				tester_options_preview(['Pos_x','Pos_y']);
-			   				tester();
-			   			  }
-					  })
-					  .resizable({
-							stop:function() {
-				   				tester_options_preview(['Compression_x','Compression_y']);
-				   			}
-					  });
+		position_texte
+			.css({
+				left: pos_x + 'px',
+				top: pos_y + 'px',
+				width: largeur + 'px',
+				height: hauteur + 'px'
+			})
+			.removeClass('cache')
+			.draggable({
+				stop:function() {
+					tester_options_preview(['Pos_x','Pos_y']);
+					tester();
+				}
+			})
+			.resizable({
+				stop:function() {
+					tester_options_preview(['Compression_x','Compression_y']);
+				}
+			});
 		var image_a_positionner = image_preview_ajustee.clone(false);
 		if (position_texte.find('img').length === 0) {
 			position_texte.append(image_a_positionner);
@@ -2626,7 +2680,7 @@ function reload_all_previews() {
 }
 
 function charger_couleurs_frequentes() {
-	$.ajax({ // Couleurs utilis�es dans l'ensemble des �tapes de la conception de tranche
+	$.ajax({ // Couleurs utilisées dans l'ensemble des étapes de la conception de tranche
 		url: urls['couleurs_frequentes']+['index'].join('/'),
 		type: 'post',
 		dataType:'json',
@@ -2653,14 +2707,16 @@ function affecter_couleur_input(input_couleur, couleur) {
 	var r=couleur.substring(0,2),
 		g=couleur.substring(2,4),
 		b=couleur.substring(4,6);
-	var couleur_foncee=parseInt(r,16)
-					  *parseInt(g,16)
-					  *parseInt(b,16) < 100*100*100;
+	var couleur_foncee=
+		parseInt(r,16)
+	 *parseInt(g,16)
+	 *parseInt(b,16) < 100*100*100;
 	input_couleur
-		.css({'background-color':'#'+couleur,
-			  'color':couleur_foncee ? '#ffffff' : '#000000'})
+		.css({
+			'background-color':'#'+couleur,
+			'color':couleur_foncee ? '#ffffff' : '#000000'
+		})
 		.val(couleur);
-
 }
 
 
@@ -2688,8 +2744,10 @@ function callback_test_picked_color() {
 			load_myfonts_preview(true,true,true);
 		break;
 		case 'Rectangle':
-			coloriser_rectangle_preview(couleur,
-										form_options.valeur('Rempli').val()==='Oui');
+			coloriser_rectangle_preview(
+				couleur,
+				form_options.valeur('Rempli').val()==='Oui'
+			);
 		break;
 		case 'Arc_cercle':
 			dessiner($('.preview_vide .arc_position'), 'Arc_cercle', form_options);
@@ -2732,7 +2790,7 @@ function load_myfonts_preview(preview1, preview2, preview3, callback) {
 		url_appel+='/'+dimensions.x;
 
 		$(this)
-			.attr({'src':url_appel})
+			.attr({src: url_appel})
 			.off('load')
 			.load(function() {
 				$(this).removeClass('loading').removeClass('cache');
@@ -2764,16 +2822,18 @@ function placer_extension_largeur_preview() {
 	largeur_physique_preview_initiale=image_integration.width();
 
 	dialogue.find('.finition_texte_genere .extension_largeur').removeClass('cache')
-			.css({'margin-left':(image_integration.width())+'px',
-				  'height':image_integration.height()+'px',
-				  'left':''})
-			.draggable({
-				axis: 'x',
-				stop:function() {
-					tester_options_preview(['Largeur']);
-					load_myfonts_preview(false,true,false);
-				}
-			});
+		.css({
+			'margin-left':(image_integration.width())+'px',
+			'height':image_integration.height()+'px',
+			'left':''
+		})
+		.draggable({
+			axis: 'x',
+			stop:function() {
+				tester_options_preview(['Largeur']);
+				load_myfonts_preview(false,true,false);
+			}
+		});
 }
 
 function wizard_charger_liste_pays() {
@@ -2788,9 +2848,10 @@ function wizard_charger_liste_pays() {
 		success:function(data) {
 			wizard_pays.html('');
 			for (var i in data.pays) {
-				wizard_pays.append($('<option>')
-						   .val(i)
-						   .html(data.pays[i]));
+				wizard_pays
+					.append($('<option>')
+						.val(i)
+						.html(data.pays[i]));
 			}
 			wizard_pays.val(get_option_wizard(id_wizard_courant, 'wizard_pays') || 'fr');
 
@@ -2818,9 +2879,11 @@ function wizard_charger_liste_magazines(pays_sel) {
 		success:function(data) {
 			wizard_magazine.html('');
 			for (var i in data.magazines) {
-				wizard_magazine.append($('<option>')
-							   .val(i)
-							   .html(data.magazines[i]));
+				wizard_magazine
+					.append($('<option>')
+						.val(i)
+						.html(data.magazines[i])
+					);
 			}
 			if (get_option_wizard(id_wizard_courant, 'wizard_magazine') !== undefined)
 				wizard_magazine.val(get_option_wizard(id_wizard_courant, 'wizard_magazine'));
@@ -2840,8 +2903,8 @@ function wizard_charger_liste_numeros(publicationcode_sel) {
 	var wizard_numero=$('#'+id_wizard_courant+' [name="wizard_numero"]');
 	wizard_numero.html($('<option>').text('Chargement...'));
 
-    pays = publicationcode_sel.split('/')[0];
-    magazine = publicationcode_sel.split('/')[1];
+	pays = publicationcode_sel.split('/')[0];
+	magazine = publicationcode_sel.split('/')[1];
 
 	charger_liste_numeros(pays, magazine,function(data) {
 		numeros_dispos=data.numeros_dispos;
@@ -2885,7 +2948,7 @@ function creer_modele_tranche(pays, magazine, numero, with_user, dimension_x, di
 	});
 
 	if (dimension_x) {
-		// Mise � jour de la fonction Dimensions avec les valeurs entr�es
+		// Mise à jour de la fonction Dimensions avec les valeurs entrées
 		var parametrage_dimensions =  'Dimension_x='+dimension_x +'&Dimension_y='+dimension_y;
 		$.ajax({
 			url: urls['update_wizard']+['index',-1,parametrage_dimensions,with_user].join('/'),
@@ -2904,8 +2967,9 @@ function rogner_image(image, nom, source, destination, pays_destination, magazin
 	callback = callback || function() {};
 
 	$.ajax({
-		url: urls['rogner_image'] + ['index', pays_destination, magazine_destination, numero_image || 'null', numero_destination,
-											  nom, source, destination, x1, x2, y1, y2].join('/'),
+		url: urls['rogner_image'] + [
+			'index', pays_destination, magazine_destination, numero_image || 'null', numero_destination,
+			nom, source, destination, x1, x2, y1, y2].join('/'),
 		type: 'post',
 		success: callback
 	});
@@ -2939,7 +3003,7 @@ function toFloat2Decimals(floatVal) {
 function init_action_bar() {
 	$.each($('#action_bar img.action'), function() {
 		var nom=$(this).attr('name');
-		$(this).attr({'src':'images/'+nom+'.png'});
+		$(this).attr({src: 'images/'+nom+'.png'});
 
 		$(this).click(function() {
 			var nom=$(this).attr('name');
@@ -2951,7 +3015,7 @@ function init_action_bar() {
 					$('#wizard-images')
 						.addClass('photo_principale')
 						.removeClass('autres_photos photos_texte');
-					launch_wizard('wizard-images', {modal:true, first: true, width: 600});
+					launch_wizard('wizard-images',{modal: true, first: true, width: 600});
 				break;
 				case 'corbeille':
 					jqueryui_alert_from_d($('#wizard-confirmation-desactivation-modele'), function() {
@@ -2965,7 +3029,7 @@ function init_action_bar() {
 					});
 				break;
 				case 'valider':
-					launch_wizard('wizard-confirmation-validation-modele', {modal:true, first: true, closeable: true});
+					launch_wizard('wizard-confirmation-validation-modele',{modal: true, first: true, closeable: true});
 				break;
 			}
 
@@ -2978,20 +3042,25 @@ function afficher_photo_tranche() {
 		var image = $('<img>').height(parseInt($('#Dimension_y').val()) * zoom);
 		$('#photo_tranche').html(image);
 		var selecteur_depuis_photo = $('#selecteur_couleur #depuis_photo');
-		image.attr({'src':dm_base_url+'/edges/'+pays+'/photos/'+nom_photo_principale});
+		image.attr({src: dm_base_url+'/edges/'+pays+'/photos/'+nom_photo_principale});
 		image.load(function() {
-			$(this).css({'display':'inline'});
+			$(this).css({display: 'inline'});
 			$('.image_etape.finale')
 				.width (dimensions.x*zoom)
 				.height(dimensions.y*zoom);
-			$('.dialog-preview-etape.finale').width(Math.max(LARGEUR_DIALOG_TRANCHE_FINALE,
-													dimensions.x * zoom+$(this).width() + 14));
+			$('.dialog-preview-etape.finale')
+				.width(
+					Math.max(
+						LARGEUR_DIALOG_TRANCHE_FINALE,
+						dimensions.x * zoom+$(this).width() + 14
+					)
+				);
 			jqueryui_clear_message('aucune-image-de-tranche');
 			selecteur_depuis_photo.find('[name="description_selection_couleur"]').toggle(true);
 			selecteur_depuis_photo.find('[name="pas_de_photo_tranche"]').toggle(false);
 		});
 		image.error(function() {
-			$(this).css({'display':'none'});
+			$(this).css({display: 'none'});
 			jqueryui_message('warning','aucune-image-de-tranche');
 			selecteur_depuis_photo.find('[name="description_selection_couleur"]').toggle(false);
 			selecteur_depuis_photo.find('[name="pas_de_photo_tranche"]').toggle(true);
@@ -3042,8 +3111,9 @@ function lister_images_gallerie(type_images) {
 
 function afficher_galerie(type_images, data, container) {
 	if (data['erreur']) {
-		jqueryui_alert('Le r&eacute;pertoire d\'images '+data['erreur']+' n\'existe pas',
-					   'Erreur interne');
+		jqueryui_alert(
+			'Le r&eacute;pertoire d\'images '+data['erreur']+' n\'existe pas',
+			'Erreur interne');
 	}
 	else {
 		container = container || $('#wizard-images form .selectionner_photo');
@@ -3067,29 +3137,32 @@ function afficher_galerie(type_images, data, container) {
 			for (var i in data) {
 				var li=ul.find('li.template').clone(true).removeClass('template');
 				li.find('em').html(data[i].replace(/[^\.]+\./g,''));
-				li.find('img').prop({'src':dm_base_url+'/edges/'+pays+'/'+sous_repertoire+'/'+data[i],
-									 'title':data[i]});
+				li.find('img').prop({
+					'src':dm_base_url+'/edges/'+pays+'/'+sous_repertoire+'/'+data[i],
+					'title':data[i]
+				});
 				li.find('input').val(data[i]);
 				li.find('.filename').text(data[i]).attr({title: data[i]});
 				ul.append(li);
 			}
-			container.find('ul.gallery li img').removeClass('selected')
-										  .unbind('click')
-										  .click(function() {
-				var selected = !$(this).hasClass('selected');
+			container.find('ul.gallery li img')
+				.removeClass('selected')
+				.unbind('click')
+				.click(function() {
+					var selected = !$(this).hasClass('selected');
 
-				container.find('ul.gallery li img').removeClass('selected');
-				container.find('#to-wizard-resize').toggleClass('cache', !selected);
+					container.find('ul.gallery li img').removeClass('selected');
+					container.find('#to-wizard-resize').toggleClass('cache', !selected);
 
-				if (selected) {
-					$(this).addClass('selected');
-					$('#wizard-images [name="selected"]').val($(this).attr('src'));
+					if (selected) {
+						$(this).addClass('selected');
+						$('#wizard-images [name="selected"]').val($(this).attr('src'));
 
-					var destination_rognage = container.attr('name') === 'section_photo' ? 'elements' : 'photos';
-					$('#wizard-resize [name="destination"]').val(destination_rognage);
-					$('#wizard-resize img').attr({'src':$(this).attr('src')});
-				}
-			});
+						var destination_rognage = container.attr('name') === 'section_photo' ? 'elements' : 'photos';
+						$('#wizard-resize [name="destination"]').val(destination_rognage);
+						$('#wizard-resize img').attr({src: $(this).attr('src')});
+					}
+				});
 			if (type_images === 'Photos' && nom_photo_principale !== null) {
 				container.find('ul.gallery li img[src$="'+nom_photo_principale+'"]').click();
 			}
@@ -3100,15 +3173,15 @@ function afficher_galerie(type_images, data, container) {
 }
 
 function prepublier_depublier(prepublier, btn, data, nom_image_temp) {
-    $.ajax({
-        url: urls['prepublier'] + ['index', prepublier, nom_image_temp].join('/'),
-        type: 'post',
-        success: function () {
-            if (prepublier) {
-                btn.siblings('.depublier').removeClass('cache');
-            }
-        }
-    });
+	$.ajax({
+		url: urls['prepublier'] + ['index', prepublier, nom_image_temp].join('/'),
+		type: 'post',
+		success: function () {
+			if (prepublier) {
+				btn.siblings('.depublier').removeClass('cache');
+			}
+		}
+	});
 }
 
 function surveiller_selection_jrac($viewport) {
@@ -3152,7 +3225,7 @@ function templatedToVal(templatedString) {
 						templatedString=templatedString.replace(regex, dimensions[axe]);
 				break;
 				case 'caracteres_speciaux':
-					templatedString=templatedString.replace(/°/,'�');
+					templatedString=templatedString.replace(/Â°/,'°');
 				break;
 
 			}
@@ -3162,9 +3235,9 @@ function templatedToVal(templatedString) {
 }
 
 function afficher_erreur_image_inexistante() {
-    var src = $(this).attr('src');
-    var nom_image = src.substring(src.lastIndexOf('/') + 1, src.length);
-    jqueryui_alert('L\'image ' + nom_image + ' n\'existe pas');
+	var src = $(this).attr('src');
+	var nom_image = src.substring(src.lastIndexOf('/') + 1, src.length);
+	jqueryui_alert('L\'image ' + nom_image + ' n\'existe pas');
 }
 
 function jqueryui_clear_message(id) {
