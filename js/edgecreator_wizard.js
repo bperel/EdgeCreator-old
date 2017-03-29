@@ -1629,6 +1629,24 @@ function recuperer_et_alimenter_options_preview(num_etape) {
 	});
 }
 
+function positionner_agrafe(elAgrafes, image, posRelativeY1, posRelativeY2, hauteur) {
+    var pos_x_debut = image.position().left + image.width() / 2 - .25 * zoom;
+    var largeur = zoom;
+    var pos_y_agrafe1 = image.position().top + posRelativeY1;
+    var pos_y_agrafe2 = image.position().top + posRelativeY2;
+
+    elAgrafes.filter('.premiere').css({'top': pos_y_agrafe1 + 'px'});
+    elAgrafes.filter('.deuxieme').css({'top': pos_y_agrafe2 + 'px'});
+    elAgrafes
+        .css({
+            left: pos_x_debut + 'px',
+            width:    largeur + 'px',
+            height:   hauteur + 'px'
+        })
+        .removeClass('cache');
+}
+
+
 function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction) {
 
 	var form_userfriendly=section_preview_etape.find('.options_etape');
@@ -1655,22 +1673,17 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 	var checkboxes=[];
 	switch(nom_fonction) {
 		case 'Agrafer':
-			var agrafe1=form_userfriendly.find('.agrafe.premiere');
-			var agrafe2=form_userfriendly.find('.agrafe.deuxieme');
+			var agrafes = form_userfriendly.find('.agrafe');
 
-			var pos_x_debut=image.position().left+image.width()/2-.25*zoom;
-			var largeur=zoom;
-			var pos_y_agrafe1=image.position().top +parseFloat(templatedToVal(valeurs['Y1']))*zoom;
-			var pos_y_agrafe2=image.position().top +parseFloat(templatedToVal(valeurs['Y2']))*zoom;
-			var hauteur= parseFloat(templatedToVal(valeurs['Taille_agrafe']))*zoom;
+            positionner_agrafe(
+                agrafes,
+				image,
+				parseFloat(templatedToVal(valeurs['Y1']))*zoom,
+				parseFloat(templatedToVal(valeurs['Y2']))*zoom,
+				parseFloat(templatedToVal(valeurs['Taille_agrafe']))*zoom
+			);
 
-			agrafe1.css({'top':	pos_y_agrafe1+'px'});
-			agrafe2.css({'top':	pos_y_agrafe2+'px'});
-			$('.agrafe')
-				.css({'left':   pos_x_debut	+'px',
-					  'width':  largeur	  	+'px',
-					  'height': hauteur	  	+'px'})
-				.removeClass('cache')
+            agrafes
 				.draggable({
 					axis: 'y',
 					stop:function(event) {
@@ -1695,21 +1708,24 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 
 			var rectangle = form_userfriendly.find('.rectangle_degrade');
 
-			rectangle.css({'top':	pos_y_debut 		   +'px',
-						   'left':   pos_x_debut 		   +'px',
-						   'width':  (pos_x_fin-pos_x_debut)+'px',
-						   'height': (pos_y_fin-pos_y_debut)+'px'})
-					 .removeClass('cache')
-					 .draggable({//containment:limites_drag,
-						 stop:function() {
-			   				tester_options_preview(['Pos_x_debut','Pos_y_debut','Pos_x_fin','Pos_y_fin']);
-						 }
-					 })
-					 .resizable({
-						 stop:function() {
-							 tester_options_preview(['Pos_x_fin', 'Pos_y_fin']);
-				   		 }
-					 });
+			rectangle
+				.css({
+					top:	pos_y_debut 		   +'px',
+					left:   pos_x_debut 		   +'px',
+					width:  (pos_x_fin-pos_x_debut)+'px',
+					height: (pos_y_fin-pos_y_debut)+'px'
+				})
+				.removeClass('cache')
+				.draggable({//containment:limites_drag,
+					 stop:function() {
+						tester_options_preview(['Pos_x_debut','Pos_y_debut','Pos_x_fin','Pos_y_fin']);
+					 }
+				})
+				.resizable({
+					 stop:function() {
+						 tester_options_preview(['Pos_x_fin', 'Pos_y_fin']);
+					 }
+				});
 			coloriser_rectangle_degrade(rectangle,'#'+valeurs['Couleur_debut'],'#'+valeurs['Couleur_fin'],valeurs['Sens']);
 
 			var choix = form_userfriendly.find('[name="option-Sens"]');
@@ -1720,27 +1736,10 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 		break;
 
 		case 'DegradeTrancheAgrafee':
-			var agrafe1=form_userfriendly.find('.premiere.agrafe');
-			var agrafe2=form_userfriendly.find('.deuxieme.agrafe');
-
-			var pos_x_debut=image.position().left+image.width()/2-.25*zoom;
-			var largeur=zoom;
-			var pos_y_agrafe1=image.position().top +0.2*image.height();
-			var pos_y_agrafe2=image.position().top +0.8*image.height();
-			var hauteur= image.height()*0.05;
-
-			agrafe1.css({'top':	pos_y_agrafe1+'px'});
-			agrafe2.css({'top':	pos_y_agrafe2+'px'});
-			form_userfriendly.find('.agrafe')
-				.css({'left':   pos_x_debut	+'px',
-					  'width':  largeur	  	+'px',
-					  'height': hauteur	  	+'px'})
-				.removeClass('cache');
+            positionner_agrafe(form_userfriendly.find('.agrafe'), image, 0.2*image.height(), 0.8*image.height(), 0.05*image.height());
 
 			var rectangle1 = form_userfriendly.find('.premier.rectangle_degrade');
 			var rectangle2 = form_userfriendly.find('.deuxieme.rectangle_degrade');
-
-			var c1=valeurs['Couleur'];
 
 			rectangle1.css({'left':image.position().left+'px'});
 			rectangle2.css({'left':parseInt(image.position().left+image.width()/2)+'px'});
@@ -1749,7 +1748,7 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 					  'width':  image.width()/2	  	 +'px',
 					  'height': image.height()		 +'px'})
 				.removeClass('cache');
-			coloriser_rectangles_degrades(c1);
+			coloriser_rectangles_degrades(valeurs['Couleur']);
 
 		break;
 		case 'Remplir':
@@ -1914,11 +1913,14 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 				form_userfriendly.valeur(option_nom).val(valeurs[option_nom]);
 			});
 
-			form_userfriendly.find('input[name="option-Chaine"],input[name="option-URL"],input[name="option-Largeur"]').blur(function() {
-				var nom_option=$(this).attr('name').replace(REGEX_OPTION,'$1');
-				tester_options_preview([nom_option]);
-				load_myfonts_preview(true,true,true);
-			});
+			var tester_et_charger_preview_myfonts = function() {
+                var nom_option=$(this).attr('name').replace(REGEX_OPTION,'$1');
+                tester_options_preview([nom_option]);
+                load_myfonts_preview(true,true,true);
+            };
+
+			form_userfriendly.find('input[name="option-Chaine"],input[name="option-URL"],input[name="option-Largeur"]')
+				.blur(tester_et_charger_preview_myfonts);
 
 			form_userfriendly.find('.modifier_police').click(function() {
 				$('#wizard-images')
@@ -1928,14 +1930,11 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 			});
 
 			checkboxes.push('Demi_hauteur');
-			form_userfriendly.valeur('Demi_hauteur')
-								.change(function() {
-									var nom_option=$(this).attr('name').replace(REGEX_OPTION,'$1');
-									tester_options_preview([nom_option]);
-									load_myfonts_preview(true,true,true);
-								});
+			form_userfriendly
+				.valeur('Demi_hauteur')
+				.change(tester_et_charger_preview_myfonts);
 
-			$(document).mouseup( stopRotate );
+			$(document).mouseup( stopRotate);
 			var input_rotation=form_userfriendly.valeur('Rotation');
 			input_rotation.data('currentRotation',0)
 						  .mousedown( startRotate );
@@ -1945,10 +1944,9 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 			});
 			rotateImageDegValue(input_rotation,-1*parseFloat(valeurs['Rotation']));
 
-
 			form_userfriendly.find('.accordion').accordion({
 				active: 0,
-				activate:function(ui) {
+				activate:function() {
 					var section_active_integration=$(this).find('.ui-accordion-content-active').hasClass('finition_texte_genere');
 					if (section_active_integration) {
 						generer_et_positionner_preview_myfonts(false,true,false);
@@ -2041,9 +2039,11 @@ function positionner_points_polygone(form_options) {
 	for (var i=0;i<liste_x.length;i++) {
 		var x=zoom*parseFloat(liste_x[i]);
 		var y=zoom*parseFloat(liste_y[i]);
-		points_a_placer.push([i,
-							  x-COTE_CARRE_DEPLACEMENT/2,
-							  y-COTE_CARRE_DEPLACEMENT/2]);
+		points_a_placer.push([
+			i,
+			x-COTE_CARRE_DEPLACEMENT/2,
+			y-COTE_CARRE_DEPLACEMENT/2
+		]);
 
 	}
 
@@ -2066,6 +2066,7 @@ function positionner_points_polygone(form_options) {
 			 	.mouseover(function() {
 			 		$(this).addClass('focus');
 			 		var action = options_etape.valeur('action').filter(':checked').val();
+
 			 		switch(action) {
 					case 'ajout':
 						$(this).click(function() {
@@ -2167,38 +2168,35 @@ function positionner_image(preview) {
 		}
 	}
 
-
-
 	if (position_image.hasClass('ui-resizable')) {
 		position_image.resizable('destroy');
 	}
 
-	position_image.addClass('outlined')
-				  .css({'outline-color':'#000000',
-						'background-image':'',
-						'background-color':'white',
-						'left':pos_x+'px',
-						'top': pos_y+'px',
-						'width':largeur+'px',
-						'height':hauteur+'px'})
-				  .removeClass('cache')
-				  .html($('<img>')
-					.attr({'src':preview.attr('src')})
-					.error(function() {
-						var src=$(this).attr('src');
-						var nom_image=src.substring(src.lastIndexOf('/')+1,src.length);
-						jqueryui_alert('L\'image '+nom_image+' n\'existe pas');
-					}))
-			  	  .draggable({//containment:limites_drag,
-			  		  stop:function() {
-		   				tester_options_preview(['Decalage_x','Decalage_y']);
-		   			  }
-				  })
-				  .resizable({
-						stop:function() {
-			   				tester_options_preview(['Compression_x','Compression_y']);
-			   			}
-				  });
+	position_image
+		.addClass('outlined')
+		.css({'outline-color':'#000000',
+			'background-image':'',
+			'background-color':'white',
+			'left':pos_x+'px',
+			'top': pos_y+'px',
+			'width':largeur+'px',
+			'height':hauteur+'px'})
+		.removeClass('cache')
+		.html(
+			$('<img>')
+				.attr({'src':preview.attr('src')})
+				.error(afficher_erreur_image_inexistante)
+		)
+		.draggable({//containment:limites_drag
+			stop:function() {
+				tester_options_preview(['Decalage_x','Decalage_y']);
+			}
+		})
+		.resizable({
+			stop:function() {
+				tester_options_preview(['Compression_x','Compression_y']);
+			}
+		});
 }
 
 function definir_et_positionner_image(source) {
@@ -2212,11 +2210,7 @@ function definir_et_positionner_image(source) {
 		.load(function() {
 			positionner_image($(this));
 		})
-		.error(function() {
-			var src=$(this).attr('src');
-			var nom_image=src.substring(src.lastIndexOf('/')+1,src.length);
-			jqueryui_alert('L\'image '+nom_image+' n\'existe pas');
-		});
+		.error(afficher_erreur_image_inexistante);
 }
 function coloriser_rectangle_preview(couleur,est_rempli) {
 	if (est_rempli) {
@@ -2262,7 +2256,7 @@ function coloriser_rectangle_degrade(element,couleur1,couleur2, sens) {
 
 function verifier_changements_etapes_sauves(dialogue, id_dialogue_proposition_sauvegarde, callback) {
 	callback=callback || function() {};
-	if (dialogue.find('[name="form_options"]').serialize()
+	if ( dialogue.find('[name="form_options"]').serialize()
 	 !== dialogue.find('[name="form_options_orig"]').serialize()) {
 		$("#"+id_dialogue_proposition_sauvegarde).dialog({
 			resizable: false,
@@ -2563,7 +2557,6 @@ function generer_et_positionner_preview_myfonts(gen_preview_proprietes, gen_prev
 		if (valeurs['Mesure_depuis_haut'] === 'Non') { // Le pos_y est mesur� entre le haut de la tranche et le bas du texte
 			pos_y-=parseFloat(hauteur);
 		}
-
 
 		position_texte.css({'left':pos_x+'px',
 							'top': pos_y+'px',
@@ -3168,6 +3161,11 @@ function templatedToVal(templatedString) {
 	return templatedString;
 }
 
+function afficher_erreur_image_inexistante() {
+    var src = $(this).attr('src');
+    var nom_image = src.substring(src.lastIndexOf('/') + 1, src.length);
+    jqueryui_alert('L\'image ' + nom_image + ' n\'existe pas');
+}
 
 function jqueryui_clear_message(id) {
 	var id_message = 'message-'+id;
