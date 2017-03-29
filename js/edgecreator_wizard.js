@@ -152,6 +152,7 @@ var id_modele;
 
 var wizard_options={};
 var id_wizard_courant=null;
+var wizard_courant=null;
 var id_wizard_precedent=null;
 var num_etape_courante=null;
 var nom_photo_principale=null;
@@ -203,19 +204,22 @@ function can_launch_wizard(id) {
 }
 
 function launch_wizard(id, p) {
+
 	id_wizard_courant=id;
+	wizard_courant=$('#'+id);
 
 	p = p || {}; // Paramètres de surcharge
 	var buttons={},
-		dialogue = $('#'+id),
+		dialogue = wizard_courant,
 		first 	 = dialogue.hasClass('first') 	  || (p.first 	  !== undefined	&& p.first),
 		deadend = dialogue.hasClass('deadend') 	  || (p.deadend	!== undefined	&& p.deadend),
 		modal	 = dialogue.hasClass('modal')	  || (p.modal 	  !== undefined	&& p.modal),
 		closeable= dialogue.hasClass('closeable') || (p.closeable !== undefined	&& p.closeable),
 		extensible=dialogue.hasClass('extensible')|| (p.extensible!== undefined	&& p.extensible);
 
-	$('#'+id+' .buttonset').buttonset();
-	$('#'+id+' .button').button();
+
+	wizard_courant.find('.buttonset').buttonset();
+	wizard_courant.find('.button').button();
 	$('#wizard-1 .buttonset .disabled').button("option", "disabled", true);
 
 	if (!first) {
@@ -276,7 +280,7 @@ function launch_wizard(id, p) {
 				if (action_suivante !== null) {
 					var type_gallerie='';
 					$.each(['photo_principale','autres_photos','photos_texte'], function(i,classe) {
-						if ($('#'+id).hasClass(classe)) {
+						if (wizard_courant.hasClass(classe)) {
 							type_gallerie=classe;
 						}
 					});
@@ -302,7 +306,7 @@ function launch_wizard(id, p) {
 							$(this).dialog().dialog( "close" );
 						break;
 						case 'photos_texte':
-							wizard_goto($('#'+id), 'wizard-myfonts', {
+							wizard_goto(wizard_courant, 'wizard-myfonts', {
 								height: $(window).height()-60,
 								width: $(window).width()-40,
 								modal:true,
@@ -322,7 +326,7 @@ function launch_wizard(id, p) {
 		case 'wizard-confirmation-validation-modele-contributeurs':
 			buttons["OK"]=function() {
 				if (wizard_check(id)) {
-					var form=$('#'+id+' form').serializeObject();
+					var form=wizard_courant.find('form').serializeObject();
 					var photographes=typeof(form.photographes) === "string" ? form.photographes : form.photographes.join(',') .replace(/ /g, "+");
 					var designers=	 typeof(form.designers)	=== "string" ? form.designers 	: form.designers.join(',') .replace(/ /g, "+");
 					var nom_image=$('.image_etape.finale .image_preview').attr('src').match(/[.0-9]+$/g)[0];
@@ -401,10 +405,10 @@ function launch_wizard(id, p) {
 		},
 		close: function() {
 			if (closeable) {
-				var form = $('#'+id+' form');
+				var form = wizard_courant.find('form');
 				var hasOnClose = form.serializeObject().onClose;
 				if (hasOnClose) {
-					wizard_goto($('#id'), form.serializeObject().onClose.replace(REGEX_TO_WIZARD,'$1'));
+					wizard_goto(wizard_courant, form.serializeObject().onClose.replace(REGEX_TO_WIZARD,'$1'));
 				}
 			}
 		}
@@ -614,14 +618,14 @@ function wizard_init(wizard_id) {
 
 	// Transfert vers un autre assistant
 	wizard.find('button[value^="to-wizard-"]').click(function() {
-		wizard_do($('#'+id_wizard_courant),'goto_'+$(this).val().replace(REGEX_TO_WIZARD,'$1'));
+		wizard_do(wizard_courant,'goto_'+$(this).val().replace(REGEX_TO_WIZARD,'$1'));
 		event.preventDefault();
 	});
 
 	// Action en restant dans l'assistant
 	wizard.find('button[value^="do-in-wizard-"]').click(function() {
 		var action = $(this).val().replace(REGEX_DO_IN_WIZARD,'$1');
-		wizard_do($('#'+id_wizard_courant),action);
+		wizard_do(wizard_courant,action);
 		event.preventDefault();
 	});
 
@@ -827,7 +831,7 @@ function wizard_init(wizard_id) {
 
 			if (dimensions_connues) {
 				creer_modele_tranche(pays,magazine,numero,true); // Création du modèle sans les dimensions (qui seront copiées du modèle non affecté)
-				wizard_goto($('#'+id_wizard_courant), 'wizard-conception');
+				wizard_goto(wizard_courant, 'wizard-conception');
 			}
 			break;
 
@@ -840,7 +844,7 @@ function wizard_init(wizard_id) {
 				var est_nouvelle_tranche=get_option_wizard('wizard-1','est_nouvelle_conception_tranche') === 'true';
 
 				if (est_nouvelle_tranche) {
-					wizard_goto($('#'+id_wizard_courant), 'wizard-proposition-clonage');
+					wizard_goto(wizard_courant, 'wizard-proposition-clonage');
 					set_option_wizard('wizard-1','est_nouvelle_conception_tranche','false');
 					return;
 				}
@@ -1179,11 +1183,11 @@ function afficher_liste_magazines(wizard_id, id_element_liste, data) {
 			if (prepublier_ou_depublier) {
 				charger_image('etape', urls['viewer_wizard'] + ['index', data.Pays, data.Magazine, data.Numero, '1.5', 'all', '_', 'save', 'false', 'false'].join('/'), null, function (image) {
 					var nom_image_temp=image.attr('src').match(/[.0-9]+$/g)[0];
-					prepublier_depublier(true, btn, data, nom_image_temp);
+					prepublier_depublier(true, btn, nom_image_temp);
 				});
 			}
 			else {
-				 prepublier_depublier(false, btn, data);
+				 prepublier_depublier(false, btn);
 			}
 	  });
 
@@ -2838,7 +2842,7 @@ function placer_extension_largeur_preview() {
 
 function wizard_charger_liste_pays() {
 	chargement_listes=true;
-	var wizard_pays=$('#'+id_wizard_courant+' [name="wizard_pays"]');
+	var wizard_pays=wizard_courant.find('[name="wizard_pays"]');
 	wizard_pays.html($('<option>').text('Chargement...'));
 
 	$.ajax({
@@ -2855,7 +2859,7 @@ function wizard_charger_liste_pays() {
 			}
 			wizard_pays.val(get_option_wizard(id_wizard_courant, 'wizard_pays') || 'fr');
 
-			$('#'+id_wizard_courant+' [name="wizard_pays"]').change(function() {
+			wizard_courant.find('[name="wizard_pays"]').change(function() {
 				wizard_charger_liste_magazines($(this).val());
 			});
 
@@ -2867,7 +2871,7 @@ function wizard_charger_liste_pays() {
 
 function wizard_charger_liste_magazines(pays_sel) {
 	chargement_listes=true;
-	var wizard_magazine=$('#'+id_wizard_courant+' [name="wizard_magazine"]');
+	var wizard_magazine=wizard_courant.find('[name="wizard_magazine"]');
 	wizard_magazine.html($('<option>').text('Chargement...'));
 
 	pays=pays_sel;
@@ -2900,7 +2904,7 @@ function wizard_charger_liste_magazines(pays_sel) {
 
 function wizard_charger_liste_numeros(publicationcode_sel) {
 	chargement_listes=true;
-	var wizard_numero=$('#'+id_wizard_courant+' [name="wizard_numero"]');
+	var wizard_numero=wizard_courant.find('[name="wizard_numero"]');
 	wizard_numero.html($('<option>').text('Chargement...'));
 
 	pays = publicationcode_sel.split('/')[0];
@@ -3172,7 +3176,7 @@ function afficher_galerie(type_images, data, container) {
 	}
 }
 
-function prepublier_depublier(prepublier, btn, data, nom_image_temp) {
+function prepublier_depublier(prepublier, btn, nom_image_temp) {
 	$.ajax({
 		url: urls['prepublier'] + ['index', prepublier, nom_image_temp].join('/'),
 		type: 'post',
