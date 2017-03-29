@@ -139,7 +139,6 @@ class Modele_tranche extends CI_Model {
 			foreach($options as $option) {
 				$this->insert($option->Pays, $option->Magazine, $option->Ordre, $option->Nom_fonction,
                     $option->Option_nom, $option->Option_valeur, $option->Numero_debut, $option->Numero_fin, null);
-				
 			}
 		}
 	}

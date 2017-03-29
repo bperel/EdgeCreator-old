@@ -1123,7 +1123,7 @@ function wizard_init(wizard_id) {
 					var utilisateur_courant=$('#utilisateur').html();
 
 			 		$.each(wizard.find('span'),function(i,span) {
-			 			var div=$('<div>');
+					  var div=$('<div>');
 			 			var type_contribution=$(span).attr('id');
 			 			for (var username in data) {
 			 				var id = $(span).attr('id')+'_'+username;
@@ -1189,7 +1189,7 @@ function afficher_liste_magazines(wizard_id, id_element_liste, data) {
 			else {
 				 prepublier_depublier(false, btn);
 			}
-	  });
+		});
 
 		$.each(tranches, function(i, tranche_en_cours) {
 			var element_type_tranche;
@@ -1616,14 +1616,14 @@ function placer_dialogues_preview() {
 			var positions = i===dialogues.length-1 ? ['avant','apres']:['apres'];
 		}
 		$.each(positions,function(j,pos) {
-		var ajoutEtapeTemplate = $('.ajout_etape.template');
+			var ajoutEtapeTemplate = $('.ajout_etape.template');
 
-		var pos_gauche=
-			elDialogue.offset().left
-		  + (pos==='avant' || estDialogueConception
-				?(-ajoutEtapeTemplate.width()-2)
-				:(+ajoutEtapeTemplate.width()+elDialogue.width())
-			);
+			var pos_gauche=
+				elDialogue.offset().left
+			  + (pos==='avant' || estDialogueConception
+					?(-ajoutEtapeTemplate.width()-2)
+					:(+ajoutEtapeTemplate.width()+elDialogue.width())
+				);
 			var ajout_etape=ajoutEtapeTemplate.clone(true).removeClass('template hidden')
 				.css({left: pos_gauche+'px'})
 				.css({top: elDialogue.offset().top+'px'})

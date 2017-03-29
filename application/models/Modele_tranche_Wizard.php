@@ -259,31 +259,9 @@ class Modele_tranche_Wizard extends Modele_tranche {
         DmClient::get_query_results_from_dm_server($requete_suppr, 'db_edgecreator');
 		echo $requete_suppr."\n";
 	}
-
-	function delete_option($pays,$magazine,$etape,$nom_option) {
-		if ($nom_option=='Actif')
-			$requete_suppr_option='DELETE modeles, valeurs, intervalles FROM edgecreator_modeles2 modeles '
-								  .'INNER JOIN edgecreator_valeurs AS valeurs ON modeles.ID = valeurs.ID_Option '
-							      .'INNER JOIN edgecreator_intervalles AS intervalles ON valeurs.ID = intervalles.ID_Valeur '
-							      .'WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' '
-								  .'AND Ordre='.$etape.' AND Option_nom IS NULL AND username = \''.self::$username.'\'';
-		else
-			$requete_suppr_option='DELETE modeles, valeurs, intervalles FROM edgecreator_modeles2 modeles '
-								  .'INNER JOIN edgecreator_valeurs AS valeurs ON modeles.ID = valeurs.ID_Option '
-							      .'INNER JOIN edgecreator_intervalles AS intervalles ON valeurs.ID = intervalles.ID_Valeur '
-							      .'WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' '
-								  .'AND Ordre='.$etape.' AND Option_nom = \''.$nom_option.'\' AND username = \''.self::$username.'\'';
-        DmClient::get_query_results_from_dm_server($requete_suppr_option, 'db_edgecreator');
-		echo $requete_suppr_option."\n";
-	}
 	
 	function get_id_modele_tranche_en_cours_max() {
 		$requete='SELECT MAX(ID) AS Max FROM tranches_en_cours_modeles';
-        return DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator')[0]->Max;
-	}
-	
-	function get_id_valeur_max() {
-		$requete='SELECT MAX(ID) AS Max FROM edgecreator_valeurs';
         return DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator')[0]->Max;
 	}
 
