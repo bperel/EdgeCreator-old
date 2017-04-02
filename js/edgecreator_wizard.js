@@ -747,8 +747,9 @@ function wizard_init(wizard_id) {
 					numeros_multiples = [numero];
 				}
 				else {
-					pays=	 get_option_wizard('wizard-creer-hors-collection', 'wizard_pays');
-					magazine=get_option_wizard('wizard-creer-hors-collection', 'wizard_magazine');
+					var publicationcode=get_option_wizard('wizard-creer-hors-collection', 'wizard_magazine');
+                    pays = publicationcode.split('/')[0];
+                    magazine = publicationcode.split('/')[1];
 					numeros_multiples=get_option_wizard('wizard-creer-hors-collection', 'wizard_numero');
 					if (typeof numeros_multiples !== 'object') {
                         numeros_multiples = [numeros_multiples];
@@ -1337,7 +1338,7 @@ function afficher_tranches_proches(pays, magazine, numeros, est_contexte_clonage
                 }
 			}
 
-			if (!est_contexte_clonage) {
+			if (!(est_contexte_clonage && est_tranche_courante)) {
                 reload_numero(numero_tranche_affichee, est_tranche_publiee && !est_tranche_courante, !est_tranche_courante);
 			}
 
@@ -2803,7 +2804,7 @@ function wizard_charger_liste_pays() {
 				wizard_charger_liste_magazines($(this).val());
 			});
 
-			wizard_charger_liste_magazines(pays_sel);
+			wizard_charger_liste_magazines(wizard_pays.val());
 		}
 	});
 }

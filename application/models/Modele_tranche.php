@@ -482,6 +482,10 @@ class Modele_tranche extends CI_Model {
         return DmClient::get_service_results_ec(DmClient::$dm_server, 'GET', '/coa/list/issues', [$publicationcode]);
 	}
 
+    static function get_numero_clean($numero) {
+        return str_replace('+','',str_replace(' ','',$numero));
+    }
+
 	function get_valeurs_options($pays,$magazine,$numeros= []) {
 		$numeros_esc= [];
 		foreach($numeros as $numero) {
@@ -514,15 +518,16 @@ class Modele_tranche extends CI_Model {
 		$options= [];
 		
 		foreach($resultats as $resultat) {
-			$option_nom=is_null($resultat->Option_nom) ? 'NULL' : ('\''.$resultat->Option_nom.'\'');
-			$option_valeur=is_null($resultat->Option_valeur) ? 'NULL' : ('\''.$resultat->Option_valeur.'\'');
+			$option_nom=$resultat->Option_nom;
+			$option_valeur=$resultat->Option_valeur;
 			$est_ec_v2 = $resultat->EC_v2 == 1;
 			
 			foreach($numeros as $numero) {
 				if ($est_ec_v2
 				 || est_dans_intervalle(
 						$numero,
-						$this->getIntervalleShort($this->getIntervalle($resultat->Numero_debut, $resultat->Numero_fin)))) {
+						$this->getIntervalleShort($this->getIntervalle($resultat->Numero_debut, $resultat->Numero_fin)))
+                ) {
 					$option = new stdClass();
 					$option->Ordre=$resultat->Ordre;
 					$option->Nom_fonction=$resultat->Nom_fonction;
@@ -532,7 +537,10 @@ class Modele_tranche extends CI_Model {
 					if (!array_key_exists($numero, $options)) {
 						$options[$numero]= [];
 					}
-					$options[$numero][$option->Ordre.$option->Option_nom]=$option;
+					if (!array_key_exists($option->Ordre, $options[$numero])) {
+						$options[$numero][$option->Ordre]= [];
+					}
+					$options[$numero][$option->Ordre][$resultat->Option_nom]=$option;
 				}
 			}
 		}
@@ -560,7 +568,8 @@ class Modele_tranche extends CI_Model {
 
         $numeros_affiches= ['Aucun'=>'Aucun'];
         foreach($numeros as $numero) {
-            $numeros_affiches[$numero] = $numero;
+            $numero_clean = self::get_numero_clean($numero);
+            $numeros_affiches[$numero_clean] = $numero_clean;
         }
 
         if ($get_prets) {

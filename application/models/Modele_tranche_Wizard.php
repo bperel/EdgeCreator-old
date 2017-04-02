@@ -281,32 +281,37 @@ class Modele_tranche_Wizard extends Modele_tranche {
 	}
 
 	function etendre_numero ($pays,$magazine,$numero,$nouveau_numero) {
+        $options = $this->get_valeurs_options($pays,$magazine, [$numero]);
 
-		$options = $this->get_valeurs_options($pays,$magazine, [$numero]);
-		
 		if (count($options[$numero]) === 0) {
 			echo 'Aucune option d\'étape pour '.$pays.'/'.$magazine.' '.$numero;
 			return;
 		}
-		
-		$requete_ajout_modele='INSERT INTO tranches_en_cours_modeles (Pays, Magazine, Numero, username, Active) '
-							 .'VALUES (\''.$pays.'\',\''.$magazine.'\',\''.$nouveau_numero.'\','
-							 .'\''.self::$username.'\', 1)';
-        DmClient::get_query_results_from_dm_server($requete_ajout_modele, 'db_edgecreator');
-		$id_modele=$this->get_id_modele_tranche_en_cours_max();
-		
-		foreach($options[$numero] as $option) {
-			$requete_ajout_valeur=' INSERT INTO tranches_en_cours_valeurs (ID_Modele, Ordre, Nom_fonction, Option_nom, Option_valeur)'
-								 .' VALUES ('.$id_modele .',\''.$option->Ordre.'\',\''.$option->Nom_fonction.'\','
-								 .' '.$option->Option_nom.','.$option->Option_valeur.')';
-            DmClient::get_query_results_from_dm_server($requete_ajout_valeur, 'db_edgecreator');
-		}
-		
+        $id_modele = DmClient::get_service_results_ec(
+            DmClient::$dm_server,
+            'PUT',
+            "/edgecreator/v2/model/$pays/$magazine/$nouveau_numero"
+        )->modelid;
+
+        foreach($options[$numero] as $etape => $options_etape) {
+            echo "Clonage de l'étape $etape\n";
+            if (array_key_exists(null, $options_etape)) {
+                DmClient::get_service_results_ec(
+                    DmClient::$dm_server,
+                    'POST',
+                    "/edgecreator/v2/step/$id_modele/$etape", [
+                        'options' => $options_etape,
+                        'stepfunctionname' => $options_etape[null]->Nom_fonction
+                    ]
+                );
+            }
+        }
+
 		// Suppression des étapes incomplètes = étapes dont le nombre d'options est différent de celui défini
-		
+
 		foreach(self::$noms_fonctions as $nom_fonction) {
 			$champs_obligatoires = array_diff(array_keys($nom_fonction::$champs), array_keys($nom_fonction::$valeurs_defaut));
-			
+
 			$requete_nettoyage = ' SELECT Ordre, Option_nom'
 								.' FROM tranches_en_cours_modeles_vue'
 								.' WHERE ID_Modele='.$id_modele.' AND Nom_fonction=\''.$nom_fonction.'\''
@@ -318,22 +323,24 @@ class Modele_tranche_Wizard extends Modele_tranche {
 					$etapes_et_options[$resultat->Ordre]= [];
 				}
 				$etapes_et_options[$resultat->Ordre][]=$resultat->Option_nom;
-				echo "Etape ".$resultat->Ordre.', option '.$resultat->Option_nom."\n";
 			}
-			
+
 			foreach($etapes_et_options as $etape=>$options) {
 				$champs_obligatoires_manquants = array_diff($champs_obligatoires, $options);
 				if (count($champs_obligatoires_manquants) > 0) {
 					echo utf8_encode("\nEtape $etape : l'étape sera supprimée car les champs suivants ne sont pas renseignés : "
 									 .implode(', ', $champs_obligatoires_manquants)."\n");
-					$requete_suppression_etape=' DELETE FROM tranches_en_cours_valeurs'
-											  .' WHERE ID_Modele='.$id_modele.' AND Ordre='.$etape;
-                    DmClient::get_query_results_from_dm_server($requete_suppression_etape, 'db_edgecreator');
+
+					DmClient::get_service_results_ec(
+                        DmClient::$dm_server,
+                        'DELETE',
+                        "/edgecreator/v2/step/$id_modele/$etape"
+                    );
 				}
 			}
-		}		
+		}
 	}
-	
+
 	function get_tranches_non_pretes() {
 		$username = $this->session->userdata('user');
 		$id_user = $this->username_to_id($username);
