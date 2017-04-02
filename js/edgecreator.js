@@ -525,12 +525,13 @@ function reload_etape(num_etape,recharger_finale) {
     charger_preview_etape(chargements[chargement_courant],true);
 }
 
-function reload_numero(numero, est_externe) {
+function reload_numero(numero, est_externe, visu) {
 	est_externe = est_externe || false;
+	visu = visu === undefined ? true : visu;
     chargements=[];
     chargements.push(numero);
     chargement_courant=0;
-    charger_previews_numeros(chargements[chargement_courant],true, est_externe);
+    charger_previews_numeros(chargements[chargement_courant],visu, est_externe);
 }
 
 function charger_previews_numeros(numero,est_visu,est_externe) {
@@ -569,18 +570,16 @@ var selecteur_cellules_preview=null;
 
 function charger_image(type_chargement,src,num,callback) {
 	callback= callback || function(){};
-		
+    var est_visu=src.indexOf('/save') === -1;
 	var est_etape_ouverte = modification_etape && modification_etape.data('etape') == num;
+
     var image=$('<img>')
     	.addClass('image_preview'+(est_etape_ouverte ? ' cache':''))
+    	.toggleClass('save', !est_visu)
     	.data(type_chargement,num);
-    var est_visu=src.indexOf('/save') == -1;
-    if (est_visu) {
-        var random=Math.random();
-        src+='/'+random;
-    }
-    else {
-        src+='/'+username;
+    src+='/'+Math.random();
+
+    if (!est_visu) {
         switch(privilege) {
             case 'Admin':break;
             case 'Edition':
@@ -610,12 +609,12 @@ function charger_image(type_chargement,src,num,callback) {
     	if (!est_visu && chargement_courant >= chargements.length) {
 	        switch(privilege) {
 		        case 'Admin':
-		            if (type_chargement=='etape')
-		                jqueryui_alert($('<div>').html('Image enregistr&eacute;e')
-		                		.after($('<a>',{'href':'../../edges/'+pays+'/gen/'+magazine+'.'+numero+'.png','target':'_blank'}).html('&gt; Voir l\'image enregistr&eacute;e')));
-		            else
-		                jqueryui_alert('Images enregistr&eacute;es');
-		            $('#ligne_'+numero_chargement).addClass('cree_par_moi');
+		            // if (type_chargement=='etape')
+		            //     jqueryui_alert($('<div>').html('Image enregistr&eacute;e')
+		            //     		.after($('<a>',{'href':'../../edges/'+pays+'/gen/'+magazine+'.'+numero+'.png','target':'_blank'}).html('&gt; Voir l\'image enregistr&eacute;e')));
+		            // else
+		            //     jqueryui_alert('Images enregistr&eacute;es');
+		            // $('#ligne_'+numero_chargement).addClass('cree_par_moi');
 		            
 		        break;
 		        case 'Edition':

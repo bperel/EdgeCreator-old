@@ -93,6 +93,18 @@ class DmClient
         return self::get_page(implode('/', ['http://'.$dmServer->ip, $dmServer->web_root, $url.'&mdp='.sha1($dmServer->db_password)]));
     }
 
+
+    /**
+     * @param stdClass $server
+     * @param string $method
+     * @param string $path
+     * @param array $parameters
+     * @return array|null|stdClass
+     */
+    public static function get_service_results_ec($server, $method, $path, $parameters = []) {
+        return self::get_service_results($server, $method, $path, $parameters, 'edgecreator');
+    }
+
     /**
      * @param stdClass $server
      * @param string $method
@@ -103,7 +115,7 @@ class DmClient
      * @return array|null|stdClass
      * @throws Exception
      */
-    public static function get_service_results($server, $method, $path, $parameters = [], $role = 'rawsql', $do_not_chunk = false)
+    private static function get_service_results($server, $method, $path, $parameters = [], $role = 'rawsql', $do_not_chunk = false)
     {
         $ch = curl_init();
         $url = 'http://'.$server->ip . '/' . $server->web_root . $path;

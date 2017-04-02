@@ -21,7 +21,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
             return implode('/', [$resultat->Pays, $resultat->Magazine]);
         }, $resultats);
 
-        $noms_magazines = DmClient::get_service_results(DmClient::$dm_server, 'GET', '/coa/list/publications', [implode(',', array_unique($liste_magazines))]);
+        $noms_magazines = DmClient::get_service_results_ec(DmClient::$dm_server, 'GET', '/coa/list/publications', [implode(',', array_unique($liste_magazines))]);
 
         foreach($resultats as $resultat) {
             $publicationcode = implode('/', [$resultat->Pays, $resultat->Magazine]);
@@ -130,12 +130,8 @@ class Modele_tranche_Wizard extends Modele_tranche {
 	function decaler_etapes_a_partir_de($id_modele,$etape_debut, $inclure_cette_etape) {
         $inclure_cette_etape = $inclure_cette_etape ? 'inclusive' : 'exclusive';
 
-        $resultat = DmClient::get_service_results(
-            DmClient::$dm_server,
-            'POST',
-            "/edgecreator/step/shift/$id_modele/$etape_debut/$inclure_cette_etape",
-            [],
-            'edgecreator'
+        $resultat = DmClient::get_service_results_ec(
+            DmClient::$dm_server, 'POST', "/edgecreator/v2/step/shift/$id_modele/$etape_debut/$inclure_cette_etape", []
         );
 
 		return $resultat->shifts;
@@ -211,12 +207,11 @@ class Modele_tranche_Wizard extends Modele_tranche {
 	function update_etape($etape,$parametrage) {
         $id_modele = $this->session->userdata('id_modele');
 
-        DmClient::get_service_results(
+        DmClient::get_service_results_ec(
             DmClient::$dm_server,
             'POST',
             "/edgecreator/v2/step/$id_modele/$etape",
-            ['options' => $parametrage],
-            'edgecreator'
+            ['options' => $parametrage]
         );
     }
 	
@@ -240,10 +235,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		
 		$nouvelle_etape=$inclure_avant ? $etape_courante : $etape_courante+1;
 
-        $resultat = DmClient::get_service_results(DmClient::$dm_server, 'POST',
-            "/edgecreator/step/clone/$id_modele/$etape_courante/to/$nouvelle_etape",
-            [],
-            'edgecreator'
+        $resultat = DmClient::get_service_results_ec(DmClient::$dm_server, 'POST', "/edgecreator/v2/step/clone/$id_modele/$etape_courante/to/$nouvelle_etape", []
         );
 		
 		$infos->numero_etape=$nouvelle_etape;
@@ -254,10 +246,11 @@ class Modele_tranche_Wizard extends Modele_tranche {
 	function supprimer_etape($etape) {
         $id_modele = $this->session->userdata('id_modele');
 
-		$requete_suppr='DELETE FROM tranches_en_cours_valeurs '
-					  .'WHERE ID_Modele='.$id_modele.' AND Ordre = \''.$etape.'\'';
-        DmClient::get_query_results_from_dm_server($requete_suppr, 'db_edgecreator');
-		echo $requete_suppr."\n";
+        DmClient::get_service_results_ec(
+            DmClient::$dm_server,
+            'DELETE',
+            "/edgecreator/v2/step/$id_modele/$etape"
+        );
 	}
 
 	function delete_option($pays,$magazine,$etape,$nom_option) {
@@ -361,7 +354,12 @@ class Modele_tranche_Wizard extends Modele_tranche {
 			$publication_codes[]=$resultat['Pays'].'/'.$resultat['Magazine'];
 		}
 
-        $noms_magazines = DmClient::get_service_results(DmClient::$dm_server, 'GET', '/coa/list/publications', [implode(',', array_unique($publication_codes))]);
+        $noms_magazines = DmClient::get_service_results_ec(
+            DmClient::$dm_server,
+            'GET',
+            '/coa/list/publications',
+            [implode(',', array_unique($publication_codes))]
+        );
 
 		foreach($resultats as &$resultat) {
 			$resultat['Magazine_complet'] = $noms_magazines[$resultat['Pays'].'/'.$resultat['Magazine']];
@@ -372,12 +370,8 @@ class Modele_tranche_Wizard extends Modele_tranche {
 	
 	function desactiver_modele() {
         $id_modele = $this->session->userdata('id_modele');
-		
-		$requete_maj=' UPDATE tranches_en_cours_modeles '
-					.' SET Active=0'
-					.' WHERE ID='.$id_modele;
-        DmClient::get_query_results_from_dm_server($requete_maj, 'db_edgecreator');
-		echo $requete_maj."\n";
+
+        DmClient::get_service_results_ec(DmClient::$dm_server, 'POST', "/edgecreator/model/v2/$id_modele/deactivate");
 	}
 
     function prepublier_modele( $prepublier_ou_depublier) {
@@ -392,22 +386,21 @@ class Modele_tranche_Wizard extends Modele_tranche {
     function copier_image_temp_vers_gen($nom_image) {
         $id_modele = $this->session->userdata('id_modele');
 
-        // TODO load model from DM server
-        $model = json_decode(DmClient::get_service_results(DmClient::$dm_server, 'GET', "/edgecreator/v2/model/$id_modele"));
+        $model = DmClient::get_service_results_ec(DmClient::$dm_server, 'GET', "/edgecreator/v2/model/$id_modele");
 
-        $src_image = '../edges/' . $model->Pays . '/tmp/' . $nom_image . '.png';
-        $dest_image = '../edges/' . $model->Pays . '/gen/' . $model->Magazine . '.' . $model->Numero . '.png';
+        $src_image =  self::getCheminImages().'/' . $model->pays . '/tmp/' . $nom_image . '.png';
+        $dest_image = self::getCheminImages().'/' . $model->pays . '/gen/' . $model->magazine . '.' . $model->numero . '.png';
+        @mkdir(self::getCheminImages().'/' . $model->pays . '/tmp');
         copy($src_image, $dest_image);
     }
 	
-	function marquer_modele_comme_pret_publication($pays,$magazine,$numero,$createurs,$photographes) {
-        $id_modele = $this->get_id_modele($pays,$magazine,$numero);
+	function marquer_modele_comme_pret_publication($createurs,$photographes) {
+        $id_modele = $this->session->userdata('id_modele');
 
-        $requete_maj=' UPDATE tranches_en_cours_modeles '
-                    .' SET PretePourPublication=1, createurs=\''.$createurs.'\', photographes=\''.$photographes.'\''
-                    .' WHERE ID='.$id_modele;
-        DmClient::get_query_results_from_dm_server($requete_maj, 'db_edgecreator');
-        echo '<br />'.$requete_maj."\n";
+        DmClient::get_service_results_ec(DmClient::$dm_server, 'POST', "/edgecreator/model/v2/$id_modele/readytopublish/1", [
+            'photographers' => explode(',', $photographes),
+            'designers' => explode(',', $createurs)
+        ]);
     }
 	
 	function get_couleurs_frequentes() {

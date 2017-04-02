@@ -45,17 +45,17 @@ class Modele_tranche extends CI_Model {
 		$_POST['mode_expert']=isset($_POST['mode_expert']) && $_POST['mode_expert'] === 'true' ? true : false;
 		if (isset($_POST['user'])) {
 			self::$just_connected=true;
-			if (!is_null($privilege = $this->user_connects($_POST['user'],$_POST['pass'])))
+			if ($this->user_connects($_POST['user'], $_POST['pass'])) {
+			    $privilege = $this->get_privilege_from_username($_POST['user']);
 				$this->creer_id_session($_POST['user'],sha1($_POST['pass']),$_POST['mode_expert']);
+            }
 		}
 		else {
 			if (!is_null($this->session->userdata('user')) && !is_null($this->session->userdata('pass'))) {
-				$privilege = $this->user_connects($this->session->userdata('user'),$this->session->userdata('pass'));
-				if ($privilege == null) {
-					$this->creer_id_session($this->session->userdata('user'),
-											$this->session->userdata('pass'),
-											$this->session->userdata('mode_expert'));
-				}
+                $privilege = $this->get_privilege_from_username($this->session->userdata('user'));
+                $this->creer_id_session($this->session->userdata('user'),
+                                        $this->session->userdata('pass'),
+                                        $this->session->userdata('mode_expert'));
 			}
 			else {
 				$this->creer_id_session('demo',md5('demodemo'),false);
@@ -66,36 +66,40 @@ class Modele_tranche extends CI_Model {
 	}
 	
 	function setUtilisateurs() {
-		$requete_utilisateurs='SELECT ID, username FROM users';
-		$resultat_utilisateurs=$this->requete_select_dm($requete_utilisateurs);
-		foreach ($resultat_utilisateurs as $utilisateur) {
-			self::$utilisateurs[$utilisateur['ID']]=$utilisateur['username'];
-		}
+	    if (empty(self::$utilisateurs)) {
+            $requete_utilisateurs='SELECT ID, username FROM users';
+            $resultat_utilisateurs=$this->requete_select_dm($requete_utilisateurs);
+            foreach ($resultat_utilisateurs as $utilisateur) {
+                self::$utilisateurs[$utilisateur['ID']]=$utilisateur['username'];
+            }
+        }
 	}
 	
-	function user_connects($user,$pass) {
+	function user_connects($user, $pass) {
 		$pass=sha1($pass);
 		global $erreur;
 		if (!$this->user_exists($user)) {
 			$erreur = 'Cet utilisateur n\'existe pas';
-			return null;
+			return false;
 		}
 		else {
-			$requete='SELECT username FROM users WHERE username =\''.$user.'\' AND password = \''.$pass.'\'';
-			$resultat = $this->requete_select_dm($requete);
-			if (count($resultat)==0) {
-				$erreur = 'Identifiants invalides !';
-				return null;
-			}
-			else {
-				$requete='SELECT privilege FROM users_permissions WHERE username =\''.$user.'\' AND role = \'EdgeCreator\'';
-				$resultat = $this->requete_select_dm($requete);
-				if (count($resultat)==0) {
-					return 'Affichage';
-				}
-				return $resultat[0]['privilege'];
-			}
-		}
+            $requete='SELECT username FROM users WHERE username =\''.$user.'\' AND password = \''.$pass.'\'';
+            $resultat = $this->requete_select_dm($requete);
+            if (count($resultat)==0) {
+                $erreur = 'Identifiants invalides !';
+                return false;
+            }
+            return true;
+        }
+    }
+
+    private function get_privilege_from_username($user) {
+        $requete='SELECT privilege FROM users_permissions WHERE username =\''.$user.'\' AND role = \'EdgeCreator\'';
+        $resultat = $this->requete_select_dm($requete);
+        if (count($resultat)==0) {
+            return 'Affichage';
+        }
+        return $resultat[0]['privilege'];
 	}
 	
 	function username_to_id($username) {
@@ -467,15 +471,15 @@ class Modele_tranche extends CI_Model {
 	}
 	
 	function get_pays() {
-		return DmClient::get_service_results(DmClient::$dm_server, 'GET', '/coa/list/countries', []);
+		return DmClient::get_service_results_ec(DmClient::$dm_server, 'GET', '/coa/list/countries', []);
 	}
 	
 	function get_magazines($pays) {
-        return DmClient::get_service_results(DmClient::$dm_server, 'GET', '/coa/list/publications', [$pays]);
+        return DmClient::get_service_results_ec(DmClient::$dm_server, 'GET', '/coa/list/publications', [$pays]);
 	}
 
 	function get_numeros($publicationcode) {
-        return DmClient::get_service_results(DmClient::$dm_server, 'GET', '/coa/list/issues', [$publicationcode]);
+        return DmClient::get_service_results_ec(DmClient::$dm_server, 'GET', '/coa/list/issues', [$publicationcode]);
 	}
 
 	function get_valeurs_options($pays,$magazine,$numeros= []) {
@@ -1150,21 +1154,21 @@ class Modele_tranche extends CI_Model {
 				$liste['Vertical']='Vertical';
 			 break;
 			case 'Utilisateurs':
-				list($pays,$magazine,$numero)=explode('_',$arg);
-				$requete_contributeurs_tranche='SELECT photographes, createurs FROM tranches_pretes WHERE publicationcode=\''.$pays.'/'.$magazine.'\' AND issuenumber=\''.$numero.'\'';
-				$resultat_contributeurs_tranche=$this->requete_select_dm($requete_contributeurs_tranche);
-				$photographes=explode(';',$resultat_contributeurs_tranche[0]['photographes']);
-				$createurs=explode(';',$resultat_contributeurs_tranche[0]['createurs']);
-				
-				$requete_utilisateurs='SELECT username FROM users ORDER BY username';
-				$resultats_utilisateurs=$this->requete_select_dm($requete_utilisateurs);
-				foreach($resultats_utilisateurs as $resultat_utilisateur) {
-					$username = $resultat_utilisateur['username'];
-					$est_photographe = in_array($username,$photographes);
-					$est_designer = in_array($username,$createurs);
-					
-					$liste[$username]=($est_photographe ? 'p':'').($est_designer ? 'd':'');
-				}
+                $id_modele = $this->session->userdata('id_modele');
+                $model = DmClient::get_service_results_ec(DmClient::$dm_server, 'GET', "/edgecreator/v2/model/$id_modele");
+
+                $photographes=explode(';',$model->photographes);
+                $createurs=explode(';',$model->createurs);
+
+                $requete_utilisateurs='SELECT username FROM users ORDER BY username';
+                $resultats_utilisateurs=$this->requete_select_dm($requete_utilisateurs);
+                foreach($resultats_utilisateurs as $resultat_utilisateur) {
+                    $username = $resultat_utilisateur['username'];
+                    $est_photographe = in_array($username,$photographes);
+                    $est_createur = in_array($username,$createurs);
+
+                    $liste[$username]=($est_photographe ? 'photographe':'').($est_createur ? 'createur':'');
+                }
 			 break;
 			case 'Fonctions':				
 				foreach(self::$noms_fonctions as $nom) {

@@ -59,7 +59,7 @@ class Myfonts extends CI_Model {
 				return;
 			}
 			else {
-                DmClient::get_service_results(DmClient::$dm_server, 'DELETE', '/edgecreator/myfontspreview/'.$id_image, [], 'edgecreator');
+                DmClient::get_service_results_ec(DmClient::$dm_server, 'DELETE', '/edgecreator/myfontspreview/' . $id_image, []);
 			}
 		}
 		$this->p=new Post(
@@ -81,14 +81,14 @@ class Myfonts extends CI_Model {
 				$this->chemin_image='http:'.$this->chemin_image;
 			}
 
-            $resultat = DmClient::get_service_results(DmClient::$dm_server, 'PUT', '/edgecreator/myfontspreview', [
+            $resultat = DmClient::get_service_results_ec(DmClient::$dm_server, 'PUT', '/edgecreator/myfontspreview', [
                 'font' => $this->font,
                 'fgColor' => $this->color,
                 'bgColor' => $this->color_bg,
                 'width' => $this->width,
                 'text' => $texte_clean,
                 'precision' => $this->precision,
-            ], 'edgecreator');
+            ]);
 
             $im=imagecreatefromgif($this->chemin_image);
             imagegif($im, Modele_tranche::getCheminImages().'/images_myfonts/'.$resultat->previewid.'.gif');

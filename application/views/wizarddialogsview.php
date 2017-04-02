@@ -812,10 +812,10 @@
 <div id="wizard-confirmation-validation-modele-contributeurs" class="wizard" title="Validation d'un modèle EdgeCreator - Contributeurs">
 	<p>
 		Veuillez sélectionner les photographes (utilisateurs qui ont photographié la tranche)
-	    et les designers (utilisateurs qui ont recréé la tranche via EdgeCreator) :
+	    et les créateurs (utilisateurs qui ont recréé la tranche via EdgeCreator) :
 	    <form id="form_save_png">
 	    	<span id="photographes">Photographes</span>
-	    	<span id="designers" style="margin-left:30px">Designers</span>
+	    	<span id="createurs" style="margin-left:30px">Créateurs</span>
 			<input type="hidden" checked="checked" name="choix" value="to-wizard-confirmation-validation-modele-ok" id="to-wizard-confirmation-validation-modele-ok" />
 	    </form>
 	    
@@ -824,7 +824,7 @@
 
 <div id="wizard-confirmation-validation-modele-ok" class="wizard" title="modèle envoyé">
 	<p>
-	Le modèle d'image aété envoyé pour validation.
+	Le modèle d'image a été envoyé pour validation.
 	</p>
 </div>
 

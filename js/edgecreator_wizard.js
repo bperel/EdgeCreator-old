@@ -318,10 +318,11 @@ function launch_wizard(id, p) {
 				if (wizard_check(id)) {
 				   	var form=$('#'+id+' form').serializeObject();
 				   	var photographes=typeof(form.photographes) === "string" ? form.photographes : form.photographes.join(',') .replace(/ /g, "+");
-				   	var designers=	 typeof(form.designers)	=== "string" ? form.designers 	: form.designers.join(',') .replace(/ /g, "+");
-					var nom_image=$('.image_etape.finale .image_preview').attr('src').match(/[.0-9]+$/g)[0];
+				   	var createurs=	 typeof(form.createurs)	=== "string" ? form.createurs 	: form.createurs.join(',') .replace(/ /g, "+");
+					var nom_image=$('#wizard-confirmation-validation-modele .image_preview.save')
+                        .attr('src').match(/[.0-9]+$/g)[0];
 					$.ajax({
-						url: urls['valider_modele']+['index',nom_image,designers,photographes].join('/'),
+						url: urls['valider_modele']+['index',nom_image,createurs,photographes].join('/'),
 						type: 'post',
 						success:function() {
 							jqueryui_alert_from_d($('#wizard-confirmation-validation-modele-ok'), function() {
@@ -577,7 +578,7 @@ function wizard_check(wizard_id) {
 				break;
 				case 'wizard-confirmation-validation-modele-contributeurs':
 					if (! form.serializeObject().photographes
-					 || ! form.serializeObject().designers) {
+					 || ! form.serializeObject().createurs) {
 						erreur='Au moins un photographe et un designer doivent &ecirc;tre sp&eacute;cifi&eacute;s.';
 					}
 				break;
@@ -1099,7 +1100,7 @@ function wizard_init(wizard_id) {
 
 		case 'wizard-confirmation-validation-modele-contributeurs':
 			$.ajax({
-				url: urls['listerg']+['index','Utilisateurs',[pays,magazine,numero_chargement].join('_')].join('/'),
+				url: urls['listerg']+['index','Utilisateurs',[].join('_')].join('/'),
 				type: 'post',
 				dataType:'json',
 				success:function(data) {
@@ -1115,8 +1116,8 @@ function wizard_init(wizard_id) {
 			 				   name: $(span).attr('id'),
 			 				   type: 'checkbox'
 			 			   }).val(username);
-			 			   var coche=(type_contribution === 'photographes' &&  data[username].indexOf('p') !== -1)
-								  || (type_contribution === 'designers' 	  && (data[username].indexOf('d') !== -1
+			 			   var coche=(type_contribution === 'photographes' &&  data[username].indexOf('photographe') !== -1)
+								  || (type_contribution === 'createurs'    && (data[username].indexOf('createur') !== -1
 										  								   || utilisateur_courant===username));
 			 			   option.prop({'checked': coche, 'readOnly': coche});
 			 			   $(span).append(
@@ -1317,25 +1318,29 @@ function afficher_tranches_proches(pays, magazine, numeros, est_contexte_clonage
 
 		for (i in tranches_affichees) {
 			var numero_tranche_affichee = tranches_affichees[i];
+            var est_tranche_courante = numeros.indexOf(numero_tranche_affichee) !== -1;
+            var est_tranche_publiee  = data.tranches_pretes[numero_tranche_affichee] !== 'en_cours';
+
 			var td_tranche=$('<td>').data('numero',numero_tranche_affichee);
 			var td_numero= $('<td>').addClass('libelle_numero').data('numero',numero_tranche_affichee);
 			var td_radio = $('<td>');
 			ligne_tranches_affichees.append(td_tranche); // On ins�re ce <td> avant les autres pour qu'il soit trouv� par le chargeur d'image
-			if (numeros.indexOf(numero_tranche_affichee) !== -1) {
+
+			if (est_tranche_courante) {
 				td_numero.append($('<b>').html('n&deg;'+numero_tranche_affichee+'<br />(nouvelle tranche)'));
-				if (!est_contexte_clonage) { // Contexte validation de tranche
-					td_tranche.append($('.preview_etape.final img.image_preview').clone(true));
-				}
 			}
 			else {
 				td_numero.html('n&deg;'+numero_tranche_affichee);
-				td_radio.html($('<input>',{'type':'radio', 'name':'tranche_similaire','readonly':'readonly'}).val(numero_tranche_affichee));
-				var est_tranche_publiee = data.tranches_pretes[numero_tranche_affichee] !== 'en_cours';
-				reload_numero(numero_tranche_affichee, est_tranche_publiee);
+                if (est_contexte_clonage) {
+                    td_radio.html($('<input>',{'type':'radio', 'name':'tranche_similaire','readonly':'readonly'}).val(numero_tranche_affichee));
+                    ligne_tranche_selectionnee.append(td_radio);
+                }
 			}
-			if (est_contexte_clonage) {
-				ligne_tranche_selectionnee.append(td_radio);
+
+			if (!est_contexte_clonage) {
+                reload_numero(numero_tranche_affichee, est_tranche_publiee && !est_tranche_courante, !est_tranche_courante);
 			}
+
 			ligne_numeros_tranches_affichees1.append(td_numero);
 			ligne_numeros_tranches_affichees2.append(td_numero.clone(true));
 		}
