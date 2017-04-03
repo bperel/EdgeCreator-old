@@ -309,7 +309,11 @@
 					La tranche du numéro <span class="nouveau_numero"></span> est créée à partir du numéro <span class="numero_similaire"></span>...<br />
 					Ce processus peut durer plus d'une minute dans certains cas. Veuillez patienter tant que le clonage est en cours, ne fermez pas cette fenêtre.
 					<div class="loading">Clonage en cours...</div>
-					<div class="done cache">Clonage terminé. Vous pouvez passer à l'étape suivante.</div>
+                <div class="done cache">Clonage terminé.
+                    <div class="clonage_partiel cache">
+                        Certaines étapes n'ont pas été clonées en raison de paramètres d'étapes manquants.
+                    </div>
+                    Vous pouvez passer à l'étape suivante.</div>
 					<form>
 						<input type="hidden" checked="checked" name="choix" value="to-wizard-conception" id="to-wizard-conception2" />
 					</form>

@@ -294,18 +294,17 @@ class Modele_tranche_Wizard extends Modele_tranche {
         )->modelid;
 
         foreach($options[$numero] as $etape => $options_etape) {
-            echo "Clonage de l'étape $etape\n";
-            if (array_key_exists(null, $options_etape)) {
-                DmClient::get_service_results_ec(
-                    DmClient::$dm_server,
-                    'POST',
-                    "/edgecreator/v2/step/$id_modele/$etape", [
-                        'options' => $options_etape,
-                        'stepfunctionname' => $options_etape[null]->Nom_fonction
-                    ]
-                );
-            }
+            DmClient::get_service_results_ec(
+                DmClient::$dm_server,
+                'POST',
+                "/edgecreator/v2/step/$id_modele/$etape", [
+                    'options' => $options_etape['options'],
+                    'stepfunctionname' => $options_etape['nom_fonction']
+                ]
+            );
         }
+
+        $etapes_non_clonees = [];
 
 		// Suppression des étapes incomplètes = étapes dont le nombre d'options est différent de celui défini
 
@@ -328,8 +327,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 			foreach($etapes_et_options as $etape=>$options) {
 				$champs_obligatoires_manquants = array_diff($champs_obligatoires, $options);
 				if (count($champs_obligatoires_manquants) > 0) {
-					echo utf8_encode("\nEtape $etape : l'étape sera supprimée car les champs suivants ne sont pas renseignés : "
-									 .implode(', ', $champs_obligatoires_manquants)."\n");
+                    $etapes_non_clonees[(int) $etape] = $champs_obligatoires_manquants;
 
 					DmClient::get_service_results_ec(
                         DmClient::$dm_server,
@@ -339,6 +337,8 @@ class Modele_tranche_Wizard extends Modele_tranche {
 				}
 			}
 		}
+
+		return $etapes_non_clonees;
 	}
 
 	function get_tranches_non_pretes() {

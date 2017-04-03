@@ -518,8 +518,6 @@ class Modele_tranche extends CI_Model {
 		$options= [];
 		
 		foreach($resultats as $resultat) {
-			$option_nom=$resultat->Option_nom;
-			$option_valeur=$resultat->Option_valeur;
 			$est_ec_v2 = $resultat->EC_v2 == 1;
 			
 			foreach($numeros as $numero) {
@@ -528,19 +526,19 @@ class Modele_tranche extends CI_Model {
 						$numero,
 						$this->getIntervalleShort($this->getIntervalle($resultat->Numero_debut, $resultat->Numero_fin)))
                 ) {
-					$option = new stdClass();
-					$option->Ordre=$resultat->Ordre;
-					$option->Nom_fonction=$resultat->Nom_fonction;
-					$option->Option_nom=$option_nom;
-					$option->Option_valeur=$option_valeur;
 					
 					if (!array_key_exists($numero, $options)) {
 						$options[$numero]= [];
 					}
-					if (!array_key_exists($option->Ordre, $options[$numero])) {
-						$options[$numero][$option->Ordre]= [];
+					if (!array_key_exists($resultat->Ordre, $options[$numero])) {
+						$options[$numero][$resultat->Ordre]= [
+                            'nom_fonction' => $resultat->Nom_fonction,
+                            'options' => []
+                        ];
 					}
-					$options[$numero][$option->Ordre][$resultat->Option_nom]=$option;
+					else if (!is_null($resultat->Option_nom)) {
+					    $options[$numero][$resultat->Ordre]['options'][$resultat->Option_nom]=$resultat->Option_valeur;
+                    }
 				}
 			}
 		}

@@ -16,8 +16,6 @@ class Etendre extends EC_Controller {
 			self::$magazine=$magazine;
 			self::$numero=$numero;
 			self::$nouveau_numero=$nouveau_numero;
-			
-			
 
 			$this->load->helper('url');
 			
@@ -34,7 +32,14 @@ class Etendre extends EC_Controller {
 			
 			$numeros_dispos=$this->Modele_tranche->get_numeros_disponibles(self::$pays,self::$magazine);
 			$this->Modele_tranche->setNumerosDisponibles($numeros_dispos);
-			$this->Modele_tranche->etendre_numero($pays,$magazine,$numero,$nouveau_numero);
+			$etapes_non_clonees = $this->Modele_tranche->etendre_numero($pays,$magazine,$numero,$nouveau_numero);
+
+            $this->load->view('listergview', [
+                'liste'=>[
+                    'etapes_non_clonees' => (array) $etapes_non_clonees
+                ],
+                'format'=>'json'
+            ]);
 		}
 		catch (Exception $e) {
 	    	echo 'Exception re�ue : ',  $e->getMessage(), "\n";
