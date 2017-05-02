@@ -449,6 +449,10 @@ input.couleur.selected {
 	vertical-align: bottom;
 }
 
+.tranches_affichees_magazine table tr td span {
+	margin: auto;
+}
+
 #wizard-decouper-photo .rectangle_selection_tranche {
     position: absolute !important;
     width: 20px;

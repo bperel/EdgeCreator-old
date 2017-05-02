@@ -33,7 +33,7 @@ class Cloner extends EC_Controller {
 		$this->init_model();
 		$this->Modele_tranche->setUsername($this->session->userdata('user'));
 		
-		$numeros_clonables = $this->Modele_tranche->get_numeros_clonables($pays,$magazine,explode(',',$numeros));
+		$numeros_clonables = $this->Modele_tranche->get_valeurs_options($pays,$magazine,explode(',',$numeros));
 		
 		$this->load->view('listergview', [
 			'liste'=>$numeros_clonables,

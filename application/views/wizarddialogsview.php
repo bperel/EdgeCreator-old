@@ -293,6 +293,14 @@
 						Veuillez patienter...
 					</div>
 					<div class="tranches_affichees_magazine"></div>
+                    <span class="template qualite_tranche ok ui-state-default ui-corner-all" title=".ui-icon-circle-check">
+                        <span class="ui-icon ui-icon-circle-check"></span>
+                    </span>
+                    <span class="template qualite_tranche ui-state-default ui-corner-all">
+                        <span class="hidden qualite_tranche_icone qualite_tranche_ok ui-icon ui-icon-check"></span>
+                        <span class="hidden qualite_tranche_icone qualite_tranche_warning ui-icon ui-icon-alert"></span>
+                        <span class="hidden qualite_tranche_icone qualite_tranche_error ui-icon ui-icon-close"></span>
+                    </span>
 					<br />
 					<div class="buttonset">
 						<input type="radio" checked="checked" name="choix" value="to-wizard-clonage" id="to-wizard-clonage" />

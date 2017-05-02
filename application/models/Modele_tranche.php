@@ -487,33 +487,33 @@ class Modele_tranche extends CI_Model {
     }
 
 	function get_valeurs_options($pays,$magazine,$numeros= []) {
+        self::$pays = $pays;
+        self::$magazine = $magazine;
+
+        if (count($numeros) === 0) {
+            return [];
+        }
 		$numeros_esc= [];
 		foreach($numeros as $numero) {
 			$numeros_esc[]='\''.$numero.'\'';
 		}
 
-        $resultats = [];
-		if (count($numeros) !== 0) {
-			$requete_get_options=
-				 ' SELECT 1 AS EC_v2, '.implode(', ', Modele_tranche_Wizard::$content_fields).' '
-				.' FROM tranches_en_cours_modeles_vue '
-				.' WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\''
-				.' AND Numero IN ('.implode(',', $numeros_esc).') '
-				.' AND username=\''.self::$username.'\''
-				.' ORDER BY Ordre';
-            $resultats = DmClient::get_query_results_from_dm_server($requete_get_options, 'db_edgecreator');
-		}
+        $requete_get_options=
+             ' SELECT 1 AS EC_v2, '.implode(', ', Modele_tranche_Wizard::$content_fields).' '
+            .' FROM tranches_en_cours_modeles_vue '
+            .' WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\''
+            .' AND Active=0 AND Numero IN ('.implode(',', $numeros_esc).') '
+            .' ORDER BY Ordre';
+        $resultats = DmClient::get_query_results_from_dm_server($requete_get_options, 'db_edgecreator');
 
-        if (count($resultats) === 0) {
-            $requete_get_options =
-                ' SELECT 0 AS EC_v2, ' . implode(', ', self::$fields) . ',username '
-                . ' FROM edgecreator_modeles2 AS modeles '
-                . ' INNER JOIN edgecreator_valeurs AS valeurs ON modeles.ID = valeurs.ID_Option '
-                . ' INNER JOIN edgecreator_intervalles AS intervalles ON valeurs.ID = intervalles.ID_Valeur '
-                . ' WHERE Pays = \'' . $pays . '\' AND Magazine = \'' . $magazine . '\' '
-                . ' ORDER BY Ordre';
-            $resultats = DmClient::get_query_results_from_dm_server($requete_get_options, 'db_edgecreator');
-        }
+        $requete_get_options =
+            ' SELECT 0 AS EC_v2, ' . implode(', ', self::$fields) . ',username '
+            . ' FROM edgecreator_modeles2 AS modeles '
+            . ' INNER JOIN edgecreator_valeurs AS valeurs ON modeles.ID = valeurs.ID_Option '
+            . ' INNER JOIN edgecreator_intervalles AS intervalles ON valeurs.ID = intervalles.ID_Valeur '
+            . ' WHERE Pays = \'' . $pays . '\' AND Magazine = \'' . $magazine . '\' '
+            . ' ORDER BY Ordre';
+        $resultats = array_merge($resultats, DmClient::get_query_results_from_dm_server($requete_get_options, 'db_edgecreator'));
 
 		$options= [];
 		
@@ -526,32 +526,58 @@ class Modele_tranche extends CI_Model {
 						$numero,
 						$this->getIntervalleShort($this->getIntervalle($resultat->Numero_debut, $resultat->Numero_fin)))
                 ) {
-					
 					if (!array_key_exists($numero, $options)) {
-						$options[$numero]= [];
+						$options[$numero]= ['etapes' => []];
 					}
-					if (!array_key_exists($resultat->Ordre, $options[$numero])) {
-						$options[$numero][$resultat->Ordre]= [
+					if (!array_key_exists($resultat->Ordre, $options[$numero]['etapes'])) {
+						$options[$numero]['etapes'][$resultat->Ordre]= [
                             'nom_fonction' => $resultat->Nom_fonction,
                             'options' => []
                         ];
 					}
 					else if (!is_null($resultat->Option_nom)) {
-					    $options[$numero][$resultat->Ordre]['options'][$resultat->Option_nom]=$resultat->Option_valeur;
+					    $options[$numero]['etapes'][$resultat->Ordre]['options'][$resultat->Option_nom]=$resultat->Option_valeur;
                     }
 				}
 			}
 		}
+
+        foreach($options as &$options_numero) {
+            $options_numero['qualite'] = $this->get_qualite_tranche($options_numero['etapes']);
+        }
+
 		return $options;
 	}
-	
-	function get_numeros_clonables($pays,$magazine,$numeros= []) {
-		self::$pays = $pays;
-		self::$magazine = $magazine;
-		
-		$valeurs_options = $this->get_valeurs_options($pays, $magazine, $numeros);
-		return array_keys($valeurs_options);		
-	}
+
+    /**
+     * @param array $options_etapes
+     * @return string
+     */
+    private function get_qualite_tranche($options_etapes)
+    {
+        $qualite_etapes = [];
+
+        foreach($options_etapes as $etape => &$fonction_et_options) {
+            $nom_fonction = $fonction_et_options['nom_fonction'];
+            $noms_options = array_keys($fonction_et_options['options']);
+
+            $fonction_et_options['options_manquantes'] = array_diff(array_keys($nom_fonction::$valeurs_defaut), $noms_options);
+
+            $champs_obligatoires = array_diff(array_keys($nom_fonction::$champs), array_keys($nom_fonction::$valeurs_defaut));
+            $fonction_et_options['options_manquantes_sans_valeur_defaut'] = array_diff($champs_obligatoires, $noms_options);
+
+            $qualite_etapes[$etape] =
+                count($fonction_et_options['options_manquantes_sans_valeur_defaut']) > 0
+                    ? 'error'
+                    : (count($fonction_et_options['options_manquantes']) > 0
+                        ? 'warning' : 'ok');
+        }
+
+        return count(array_keys($qualite_etapes, 'error')) > 0
+            ? 'error'
+            : (count(array_keys($qualite_etapes, 'warning')) > 0
+                ? 'warning' : 'ok');
+    }
 	
 	function get_numeros_disponibles($pays,$magazine,$get_prets=false) {
 		self::$pays = $pays;
