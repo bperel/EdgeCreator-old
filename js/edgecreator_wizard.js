@@ -826,8 +826,6 @@ function wizard_init(wizard_id) {
 			break;
 
 		case 'wizard-conception':
-            id_modele = null;
-
 			if (get_option_wizard('wizard-1','choix_tranche_en_cours') !== undefined) {
 				id_modele=get_option_wizard('wizard-1','choix_tranche_en_cours').split(/_/g)[1];
 
@@ -856,7 +854,6 @@ function wizard_init(wizard_id) {
 					}
 
 					if (get_option_wizard('wizard-clonage','choix')=== undefined) { // S'il n'y a pas eu clonage, on ne connait pas les dimensions de la tranche
-
 						// Ajout du mod�le de tranche et de la fonction Dimensions avec les param�tres par d�faut
 						var dimension_x = get_option_wizard('wizard-dimensions','Dimension_x');
 						var dimension_y = get_option_wizard('wizard-dimensions','Dimension_y');
@@ -1402,6 +1399,7 @@ function cloner_numero(numero_a_cloner, nouveaux_numeros) {
         dataType:'json',
         type: 'post',
         success: function (data) {
+            id_modele = data.resultat_clonage.id_modele;
             if (typeof(data.erreur) !== 'undefined')
                 jqueryui_alert(data);
             else {
@@ -1412,7 +1410,7 @@ function cloner_numero(numero_a_cloner, nouveaux_numeros) {
                     wizard.parent().find('.ui-dialog-buttonpane button').button("option", "disabled", false);
                     wizard.find('.loading').addClass('cache');
                     wizard.find('.done').removeClass('cache');
-                    wizard.find('.clonage_partiel').toggleClass('cache', !Object.keys(data.etapes_non_clonees).length);
+                    wizard.find('.clonage_partiel').toggleClass('cache', !Object.keys(data.resultat_clonage.etapes_non_clonees).length);
                 }
             }
         },

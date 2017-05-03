@@ -304,8 +304,11 @@ class Modele_tranche_Wizard extends Modele_tranche {
             );
         }
 
-        // TODO return ID model and non-cloned steps
-		return null;
+        // TODO return model ID and non-cloned steps
+		return [
+            'id_modele' => $id_modele,
+            'etapes_non_clonees' => []
+        ];
 	}
 
 	function get_tranches_non_pretes() {

@@ -32,11 +32,11 @@ class Etendre extends EC_Controller {
 			
 			$numeros_dispos=$this->Modele_tranche->get_numeros_disponibles(self::$pays,self::$magazine);
 			$this->Modele_tranche->setNumerosDisponibles($numeros_dispos);
-			$etapes_non_clonees = $this->Modele_tranche->etendre_numero($pays,$magazine,$numero,$nouveau_numero);
+			$resultat_clonage = $this->Modele_tranche->etendre_numero($pays,$magazine,$numero,$nouveau_numero);
 
             $this->load->view('listergview', [
                 'liste'=>[
-                    'etapes_non_clonees' => (array) $etapes_non_clonees
+                    'resultat_clonage' => $resultat_clonage
                 ],
                 'format'=>'json'
             ]);
