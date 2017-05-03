@@ -1412,7 +1412,7 @@ function cloner_numero(numero_a_cloner, nouveaux_numeros) {
                     wizard.parent().find('.ui-dialog-buttonpane button').button("option", "disabled", false);
                     wizard.find('.loading').addClass('cache');
                     wizard.find('.done').removeClass('cache');
-                    wizard.find('.clonage_partiel').toggleClass('cache', Object.keys(data.etapes_non_clonees).length);
+                    wizard.find('.clonage_partiel').toggleClass('cache', !Object.keys(data.etapes_non_clonees).length);
                 }
             }
         },
