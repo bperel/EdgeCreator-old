@@ -609,10 +609,10 @@ class Modele_tranche extends CI_Model {
 				FROM tranches_en_cours_modeles modeles 
 				WHERE modeles.Active=0 AND modeles.Pays = '$pays' AND Magazine='$magazine' AND Numero IN ($liste_numeros)";
 
-            $resultats_requete_creations = $this->requete_select_dm($requete_creations);
+            $resultats_requete_creations = DmClient::get_query_results_from_dm_server($requete_creations, 'db_edgecreator');
 
             foreach ($resultats_requete_creations as $numero) {
-                $tranches_pretes[$numero['issuenumber']] = 'en_cours';
+                $tranches_pretes[$numero->issuenumber] = 'en_cours';
             }
 
 			$requete_get_pretes = "
