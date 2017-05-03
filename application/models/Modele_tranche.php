@@ -1586,21 +1586,21 @@ class TexteMyFonts extends Fonction_executable {
 		$width=imagesx($texte);
 		$height=imagesy($texte);
 		
-		if ($supprimer_espaces_blancs) {
-			$espace=imagecreatetruecolor(2*$height, $height);
-			imagefill($espace, 0, 0, imagecolorallocate($espace,$r, $g, $b));
-			for ($i=0;$i<$width;$i+=2*$height) {
-				$image_decoupee=imagecreatetruecolor(2*$height, $height);
-				imagecopyresampled($image_decoupee, $texte, 0, 0, $i, 0, 2*$height, $height, 2*$height, $height);
-				imagetruecolortopalette($image_decoupee, false, 255);
-				if (imagecolorstotal($image_decoupee) == 1) { // Image remplie uniformément => découpage
-					$texte2=imagecreatetruecolor($i, $height);
-					imagecopy($texte2, $texte, 0, 0, 0, 0, $i, $height);
-					$texte=$texte2;
-					break;
-				}
-			}
-		}
+//		if ($supprimer_espaces_blancs) {
+//			$espace=imagecreatetruecolor(2*$height, $height);
+//			imagefill($espace, 0, 0, imagecolorallocate($espace,$r, $g, $b));
+//          $image_decoupee=imagecreatetruecolor(2*$height, $height);
+//			for ($i=0;$i<$width;$i+=2*$height) {
+//				imagecopyresampled($image_decoupee, $texte, 0, 0, $i, 0, 2*$height, $height, 2*$height, $height);
+//				imagetruecolortopalette($image_decoupee, false, 255);
+//				if (imagecolorstotal($image_decoupee) == 1) { // Image remplie uniformément => découpage
+//					$texte2=imagecreatetruecolor($i, $height);
+//					imagecopy($texte2, $texte, 0, 0, 0, 0, $i, $height);
+//					$texte=$texte2;
+//					break;
+//				}
+//			}
+//		}
 		
 		$fond=imagecolorallocatealpha($texte, $r, $g, $b, 127);
 		imagefill($texte,0,0,$fond);
