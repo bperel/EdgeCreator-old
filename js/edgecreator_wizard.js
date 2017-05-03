@@ -1243,7 +1243,9 @@ function limiter_tranches_pretes_parmi_tranches_affichees(tranches_affichees, tr
 	return tranches_affichees;
 }
 
-function afficher_tranches(wizard_courant, tranches_affichees, numeros, tranches_pretes, est_contexte_clonage) {
+function afficher_tranches(wizard_courant, tranches_affichees, numeros, tranches_pretes, tranches_affichees_clonables) {
+	var est_contexte_clonage = tranches_affichees_clonables !== undefined;
+
     var tableau_tranches_affichees = $('<table>');
     var ligne_numeros_tranches_affichees1 = $('<tr>');
     var ligne_tranches_affichees = $('<tr>');
@@ -1260,39 +1262,38 @@ function afficher_tranches(wizard_courant, tranches_affichees, numeros, tranches
         .find('.tranches_affichees_magazine')
         .html($('<div>').addClass('buttonset').html(tableau_tranches_affichees));
 
-    for (var numero_tranche_affichee in tranches_affichees) {
-        var tranche_affichee = tranches_affichees[numero_tranche_affichee];
+    for (var i in tranches_affichees) {
+        var numero_tranche_affichee = tranches_affichees[i];
         var est_tranche_courante = numeros.indexOf(numero_tranche_affichee) !== -1;
         var est_tranche_publiee = tranches_pretes[numero_tranche_affichee] !== 'en_cours';
 
-        var td_tranche = $('<td>').data('numero', numero_tranche_affichee);
-        var td_numero = $('<td>').addClass('libelle_numero').data('numero', numero_tranche_affichee);
-        var td_qualite = $('<td>').addClass('qualite_tranche').data('qualite_tranche', tranche_affichee);
-        var td_radio = $('<td>');
-        ligne_tranches_affichees.append(td_tranche); // On ins�re ce <td> avant les autres pour qu'il soit trouv� par le chargeur d'image
+        ligne_tranches_affichees.append($('<td>').data('numero', numero_tranche_affichee)); // On ins�re ce <td> avant les autres pour qu'il soit trouv� par le chargeur d'image
 
-        if (est_tranche_courante) {
-            td_numero.append($('<b>').html('n&deg;' + numero_tranche_affichee + '<br />(nouvelle tranche)'));
-        }
-        else {
-            td_numero.html('n&deg;' + numero_tranche_affichee);
-            if (est_contexte_clonage) {
-                td_radio.html($('<input>', {
-                    'type': 'radio',
-                    'name': 'tranche_similaire',
-                    'readonly': 'readonly'
-                }).val(numero_tranche_affichee));
-                td_qualite.html(
-                	$('.qualite_tranche.template')
-						.clone(true)
-						.removeClass('template')
-						.find('.qualite_tranche_' + tranche_affichee.qualite)
-							.removeClass('hidden')
-				);
-            }
-        }
+        var td_numero = $('<td>').addClass('libelle_numero').data('numero', numero_tranche_affichee)
+            .html(
+            	$(est_tranche_courante ? '<b>' : '<span>').html('n&deg;' + numero_tranche_affichee)
+			);
 
         if (est_contexte_clonage) {
+            var td_qualite = $('<td>').addClass('qualite_tranche');
+            var td_radio = $('<td>');
+
+            if (!est_tranche_courante) {
+                td_qualite.html(
+					$('.qualite_tranche.template')
+						.clone(true)
+						.removeClass('template')
+						.find('.qualite_tranche_' + tranches_affichees_clonables[numero_tranche_affichee].qualite)
+						.removeClass('hidden')
+				);
+                td_radio.html(
+					$('<input>', {
+						'type': 'radio',
+						'name': 'tranche_similaire',
+						'readonly': 'readonly'
+					}).val(numero_tranche_affichee)
+				);
+			}
             ligne_tranche_selectionnee.append(td_radio);
             ligne_qualite_tranche.append(td_qualite);
         }
@@ -1381,13 +1382,13 @@ function afficher_tranches_proches(pays, magazine, numeros, est_contexte_clonage
                             tranches_affichees_clonables[tranche_affichee] = tranches_clonables[tranche_affichee];
                         }
                     }
-                    afficher_tranches(wizard_courant, tranches_affichees_clonables, numeros, data.tranches_pretes, est_contexte_clonage);
+                    afficher_tranches(wizard_courant, tranches_affichees, numeros, data.tranches_pretes, tranches_affichees_clonables);
                 }
 			});
 		}
 
         else {
-			afficher_tranches(wizard_courant, tranches_affichees, numeros, data.tranches_pretes, est_contexte_clonage);
+			afficher_tranches(wizard_courant, tranches_affichees, numeros, data.tranches_pretes);
         }
 	});
 }
