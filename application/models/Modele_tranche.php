@@ -535,7 +535,7 @@ class Modele_tranche extends CI_Model {
                             'options' => []
                         ];
 					}
-					else if (!is_null($resultat->Option_nom)) {
+					if (!is_null($resultat->Option_nom)) {
 					    $options[$numero]['etapes'][$resultat->Ordre]['options'][$resultat->Option_nom]=$resultat->Option_valeur;
                     }
 				}
