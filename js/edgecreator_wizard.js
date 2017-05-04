@@ -1261,6 +1261,10 @@ function afficher_tranches(wizard_courant, tranches_affichees, numeros, tranches
 
     for (var i in tranches_affichees) {
         var numero_tranche_affichee = tranches_affichees[i];
+        if (est_contexte_clonage && !tranches_affichees_clonables[numero_tranche_affichee]) {
+        	continue;
+		}
+
         var est_tranche_courante = numeros.indexOf(numero_tranche_affichee) !== -1;
         var est_tranche_publiee = tranches_pretes[numero_tranche_affichee] !== 'en_cours';
 

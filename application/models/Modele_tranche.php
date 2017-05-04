@@ -499,10 +499,10 @@ class Modele_tranche extends CI_Model {
 		}
 
         $requete_get_options=
-             ' SELECT 1 AS EC_v2, '.implode(', ', Modele_tranche_Wizard::$content_fields).' '
+             ' SELECT 1 AS EC_v2, Numero, '.implode(', ', Modele_tranche_Wizard::$content_fields).' '
             .' FROM tranches_en_cours_modeles_vue '
             .' WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\''
-            .' AND Active=0 AND Numero IN ('.implode(',', $numeros_esc).') '
+            .' AND Numero IN ('.implode(',', $numeros_esc).') '
             .' ORDER BY Ordre';
         $resultats = DmClient::get_query_results_from_dm_server($requete_get_options, 'db_edgecreator');
 
@@ -521,11 +521,11 @@ class Modele_tranche extends CI_Model {
 			$est_ec_v2 = $resultat->EC_v2 == 1;
 			
 			foreach($numeros as $numero) {
-				if ($est_ec_v2
-				 || est_dans_intervalle(
+				if (( $est_ec_v2 && $numero === $resultat->Numero)
+				 || (!$est_ec_v2 && est_dans_intervalle(
 						$numero,
 						$this->getIntervalleShort($this->getIntervalle($resultat->Numero_debut, $resultat->Numero_fin)))
-                ) {
+                    )) {
 					if (!array_key_exists($numero, $options)) {
 						$options[$numero]= ['etapes' => []];
 					}
