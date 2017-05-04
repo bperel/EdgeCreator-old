@@ -127,7 +127,7 @@ class Viewer_wizard extends EC_Controller {
                         $ordres[$num_ordre]=$this->Modele_tranche->get_fonction_ec_v2($num_ordre, $id_modele);
                         self::$etape_en_cours->num_etape=$num_ordre;
                         self::$etape_en_cours->nom_fonction=$ordres[$num_ordre]->Nom_fonction;
-                        $options2=$this->Modele_tranche->get_options_ec_v2($num_ordre, false);
+                        $options2=$this->Modele_tranche->get_options_ec_v2($num_ordre, false, null, null, $id_modele);
                         if ($num_ordre==-1)
                             $dimensions=$options2;
                         if ((self::$etapes_actives== ['all'] && ($num_etape_parametrage == $num_ordre || is_null($num_etape_parametrage)))

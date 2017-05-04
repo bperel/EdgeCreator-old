@@ -78,9 +78,12 @@ class Modele_tranche_Wizard extends Modele_tranche {
         $ordre,
         $inclure_infos_options = false,
         $nouvelle_etape = false,
-        $nom_option = null
+        $nom_option = null,
+        $id_modele = null
     ) {
-        $id_modele = $this->session->userdata('id_modele');
+        if (is_null($id_modele)) {
+            $id_modele = $this->session->userdata('id_modele');
+        }
 
         $requete='SELECT '.implode(', ', self::$content_fields).' '
             .'FROM tranches_en_cours_modeles_vue '
