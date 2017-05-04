@@ -63,8 +63,8 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		return $resultats;
 	}
 
-	function get_fonction_ec_v2($ordre) {
-        $id_modele = $this->session->userdata('id_modele');
+	function get_fonction_ec_v2($ordre, $id_modele = null) {
+        $id_modele = $id_modele ?? $this->session->userdata('id_modele');
 		$requete='SELECT '.implode(', ', self::$content_fields).' '
 				.'FROM tranches_en_cours_modeles_vue '
                 .'WHERE ID_Modele = \''.$id_modele.'\' AND Ordre='.$ordre.' '

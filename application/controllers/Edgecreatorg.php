@@ -28,6 +28,7 @@ class EdgeCreatorg extends Ec_Controller {
 		self::$pays=$pays;
 		self::$magazine=$magazine;
 		$this->load->helper('url');
+        $this->session->set_userdata('id_modele', null);
 		
 		$this->load->model($this->session->userdata('mode_expert') === true ? 'Modele_tranche' : 'Modele_tranche_Wizard','Modele_tranche');
 		
