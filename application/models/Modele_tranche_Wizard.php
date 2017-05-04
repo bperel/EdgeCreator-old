@@ -161,7 +161,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		$requete='SELECT ID FROM tranches_en_cours_modeles '
 				.'WHERE Pays=\''.$pays.'\' AND Magazine=\''.$magazine.'\' AND Numero=\''.$numero.'\'';
 		if (!is_null($username)) {
-			$requete.=' AND username=\''.$username.'\' AND Active=1';
+			$requete.=' AND username=\''.$username.'\'';
 		}
         $resultat = DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator')[0];
 		return $resultat->ID;
