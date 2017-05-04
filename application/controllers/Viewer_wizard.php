@@ -78,25 +78,7 @@ class Viewer_wizard extends EC_Controller {
 		self::$pays=$pays;
 		self::$magazine=$magazine;
 		self::$random_id=$random_ou_username;
-		
-		$this->Modele_tranche->setPays(self::$pays);
-		$this->Modele_tranche->setMagazine(self::$magazine);
-		$this->Modele_tranche->setRandomId($random_ou_username);
-		if (strpos($save,'integrate') !== false) {
-			$username_modele=substr($save,strlen('integrate_'));
-			$this->Modele_tranche->setUsername($username_modele);
-		}
-		else
-			$this->Modele_tranche->setUsername($this->session->userdata('user'));
-		self::$numero=$numero;
-		self::$parametrage=$parametrage;
-		self::$fond_noir=$fond_noir;
-		self::$etapes_actives=explode('-', $etapes_actives);
-		
-		$num_ordres=$this->Modele_tranche->get_ordres($pays,$magazine,$numero);
-		//print_r($ordres);
-		$dimensions= [];
-		self::$etape_en_cours=new stdClass();
+        self::$numero=$numero;
 		if ($externe === 'true') {
 			if (!self::$is_debug) {
 				header('Content-type: image/png');
@@ -111,6 +93,23 @@ class Viewer_wizard extends EC_Controller {
 			imagepng($image_externe_zoom_adapte);
 		}
 		else {
+            $this->Modele_tranche->setPays(self::$pays);
+            $this->Modele_tranche->setMagazine(self::$magazine);
+            $this->Modele_tranche->setRandomId($random_ou_username);
+            if (strpos($save,'integrate') !== false) {
+                $username_modele=substr($save,strlen('integrate_'));
+                $this->Modele_tranche->setUsername($username_modele);
+            }
+            else
+                $this->Modele_tranche->setUsername($this->session->userdata('user'));
+            self::$parametrage=$parametrage;
+            self::$fond_noir=$fond_noir;
+            self::$etapes_actives=explode('-', $etapes_actives);
+            self::$etape_en_cours=new stdClass();
+
+            $num_ordres=$this->Modele_tranche->get_ordres($pays,$magazine,$numero);
+            $dimensions= [];
+
 			$fond_noir_fait=false;
 			$options_preview= [];
 			try {
