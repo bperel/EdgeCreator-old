@@ -127,7 +127,7 @@ $(function() {
 			function() { // mousedrag
 			},
 			function() { // mouseup
-                affecter_couleur_input(input_farb, farb.color.replace(/#/g,''));
+				affecter_couleur_input(input_farb, farb.color.replace(/#/g,''));
 				callback_test_picked_color();
 			}
 		);
@@ -320,7 +320,7 @@ function launch_wizard(id, p) {
 				   	var photographes=typeof(form.photographes) === "string" ? form.photographes : form.photographes.join(',') .replace(/ /g, "+");
 				   	var createurs=	 typeof(form.createurs)	=== "string" ? form.createurs 	: form.createurs.join(',') .replace(/ /g, "+");
 					var nom_image=$('#wizard-confirmation-validation-modele .image_preview.save')
-                        .attr('src').match(/[.0-9]+$/g)[0];
+						.attr('src').match(/[.0-9]+$/g)[0];
 					$.ajax({
 						url: urls['valider_modele']+['index',nom_image,createurs,photographes].join('/'),
 						type: 'post',
@@ -495,7 +495,7 @@ function wizard_check(wizard_id) {
 							}
 						}
 						if (!erreur && wizard_id === 'wizard-modifier'
-					     && wizard.find('[name="wizard_numero"]').find('option:selected').is('.en_cours')) {
+						 && wizard.find('[name="wizard_numero"]').find('option:selected').is('.en_cours')) {
 							erreur='La tranche de ce num&eacute;ro est d&eacute;j&agrave; en cours de conception.';
 						}
 
@@ -748,13 +748,13 @@ function wizard_init(wizard_id) {
 				}
 				else {
 					var publicationcode=get_option_wizard('wizard-creer-hors-collection', 'wizard_magazine');
-                    pays = publicationcode.split('/')[0];
-                    magazine = publicationcode.split('/')[1];
+					pays = publicationcode.split('/')[0];
+					magazine = publicationcode.split('/')[1];
 					numeros_multiples=get_option_wizard('wizard-creer-hors-collection', 'wizard_numero');
 					if (typeof numeros_multiples !== 'object') {
-                        numeros_multiples = [numeros_multiples];
-                    }
-                    numero=numeros_multiples[0];
+						numeros_multiples = [numeros_multiples];
+					}
+					numero=numeros_multiples[0];
 				}
 			}
 			selecteur_cellules_preview='#'+wizard_id+' .tranches_affichees_magazine td';
@@ -765,9 +765,9 @@ function wizard_init(wizard_id) {
 		case 'wizard-clonage':
 			wizard.parent().find('.ui-dialog-buttonpane button').button("option", "disabled", true);
 			var numero_a_cloner = get_option_wizard('wizard-proposition-clonage', 'tranche_similaire');
-            wizard.find('.numero_similaire').html(numero_a_cloner);
-            cloner_numero(numero_a_cloner, numeros_multiples.slice(0));
-        break;
+			wizard.find('.numero_similaire').html(numero_a_cloner);
+			cloner_numero(numero_a_cloner, numeros_multiples.slice(0));
+		break;
 
 		case 'wizard-clonage-silencieux':
 			wizard.parent().find('.ui-dialog-buttonpane button').button("option", "disabled", true);
@@ -797,20 +797,23 @@ function wizard_init(wizard_id) {
 		case 'wizard-images':
 			$('#pasDePhoto').prop({checked: false});
 			wizard.find('.accordion').accordion({
-				activate: function( event, ui ) {
-          var toWizardResize = $('#to-wizard-resize');
+				activate: function (event, ui) {
+					var toWizardResize = $('#to-wizard-resize');
 
-          toWizardResize.addClass('cache');
+					toWizardResize.addClass('cache');
 					switch ($(ui.newHeader).attr('id')) {
 						case 'gallery':
 							var type_gallerie = wizard.hasClass('photo_principale') ? 'Photos' : 'Source';
 							lister_images_gallerie(type_gallerie);
-						break;
+							break;
 						case 'section_photo':
 							toWizardResize.removeClass('cache');
-							var nom_fichier_photo = $('#photo_tranche img').attr('src').match(/\/([^\/]+$)/)[1];
-							afficher_galerie('Photos', [nom_fichier_photo], wizard.find('.selectionner_photo_tranche'));
-						break;
+							var source_photo_tranche = $('#photo_tranche img').attr('src');
+							if (source_photo_tranche) {
+								var nom_fichier_photo = source_photo_tranche.match(/\/([^\/]+$)/)[1];
+								afficher_galerie('Photos', [nom_fichier_photo], wizard.find('.selectionner_photo_tranche'));
+							}
+							break;
 					}
 				}
 			});
@@ -840,7 +843,7 @@ function wizard_init(wizard_id) {
 			else { // Nouvelle tranche => param�trage des dimensions, etc.
 				if (get_option_wizard('wizard-creer-collection','choix_tranche') !== undefined
 				 || get_option_wizard('wizard-creer-hors-collection','wizard_pays') !== undefined) {
-          			var tranche_collection = get_option_wizard('wizard-creer-collection','choix_tranche');
+		  			var tranche_collection = get_option_wizard('wizard-creer-collection','choix_tranche');
 					if (tranche_collection !== undefined) {
 						var tranche=tranche_collection.match(REGEX_NUMERO);
 						pays=tranche[1];
@@ -879,7 +882,7 @@ function wizard_init(wizard_id) {
 					magazine=tranche.Magazine;
 					numero=tranche.Numero;
 					id_modele=tranche.ID;
-                    nom_photo_principale=tranche.NomPhotoPrincipale;
+					nom_photo_principale=tranche.NomPhotoPrincipale;
 
 					$('#nom_complet_tranche_en_cours')
 						.html($('<img>').attr({src:'images/flags/'+pays+'.png'}))
@@ -998,7 +1001,7 @@ function wizard_init(wizard_id) {
 											$(this).d().find('.ui-dialog-titlebar').css({'padding':'.3em .6em;','text-align':'center'})
 																						.html('Tranche<br />finale');
 
-                                            afficher_photo_tranche();
+											afficher_photo_tranche();
 										}
 									});
 
@@ -1013,9 +1016,9 @@ function wizard_init(wizard_id) {
 
 									$('.ajout_etape').click(function() {
 										if (modification_etape) {
-                                            verifier_changements_etapes_sauves(modification_etape,'wizard-confirmation-annulation', function() {
-                                                launch_wizard('wizard-ajout-etape');
-                                            });
+											verifier_changements_etapes_sauves(modification_etape,'wizard-confirmation-annulation', function() {
+												launch_wizard('wizard-ajout-etape');
+											});
 										}
 										else {
 											etape_ajout=$(this).data().etape;
@@ -1028,16 +1031,16 @@ function wizard_init(wizard_id) {
 										var dialogue=$(this).d();
 										if (!dialogue.hasClass('cloneable')) {
 											if (modification_etape) {
-                                                if (dialogue.data('etape') !== modification_etape.data('etape')) {
-                                                    verifier_changements_etapes_sauves(modification_etape,'wizard-confirmation-annulation', function() {
-                                                        ouvrir_dialogue_preview(dialogue);
-                                                    });
-                                                }
+												if (dialogue.data('etape') !== modification_etape.data('etape')) {
+													verifier_changements_etapes_sauves(modification_etape,'wizard-confirmation-annulation', function() {
+														ouvrir_dialogue_preview(dialogue);
+													});
+												}
 											}
 											else {
-                                                if (dialogue.find('.image_preview').length > 0) {
-                                                    ouvrir_dialogue_preview(dialogue);
-                                                }
+												if (dialogue.find('.image_preview').length > 0) {
+													ouvrir_dialogue_preview(dialogue);
+												}
 											}
 										}
 									});
@@ -1115,7 +1118,7 @@ function wizard_init(wizard_id) {
 			 				   type: 'checkbox'
 			 			   }).val(username);
 			 			   var coche=(type_contribution === 'photographes' &&  data[username].indexOf('photographe') !== -1)
-								  || (type_contribution === 'createurs'    && (data[username].indexOf('createur') !== -1
+								  || (type_contribution === 'createurs'	&& (data[username].indexOf('createur') !== -1
 										  								   || utilisateur_courant===username));
 			 			   option.prop({'checked': coche, 'readOnly': coche});
 			 			   $(span).append(
@@ -1158,20 +1161,20 @@ function afficher_liste_magazines(wizard_id, id_element_liste, data) {
 
 		var noms_sections = ['tranches_non_affectees', 'tranches_affectees'];
 
-        wizard.find('.prepublier, .depublier').button().click(function() {
-            var btn = $(this);
-            var data = btn.siblings('.libelle_tranche_en_cours').data();
-            var prepublier_ou_depublier = btn.hasClass('prepublier');
-            if (prepublier_ou_depublier) {
-                charger_image('etape', urls['viewer_wizard'] + ['index', data.Pays, data.Magazine, data.Numero, '1.5', 'all', '_', 'save', 'false', 'false'].join('/'), null, function (image) {
-                    var nom_image_temp=image.attr('src').match(/[.0-9]+$/g)[0];
-                    prepublier_depublier(true, btn, data, nom_image_temp);
-                });
-            }
-            else {
-                prepublier_depublier(false, btn, data);
-            }
-        });
+		wizard.find('.prepublier, .depublier').button().click(function() {
+			var btn = $(this);
+			var data = btn.siblings('.libelle_tranche_en_cours').data();
+			var prepublier_ou_depublier = btn.hasClass('prepublier');
+			if (prepublier_ou_depublier) {
+				charger_image('etape', urls['viewer_wizard'] + ['index', data.Pays, data.Magazine, data.Numero, '1.5', 'all', '_', 'save', 'false', 'false'].join('/'), null, function (image) {
+					var nom_image_temp=image.attr('src').match(/[.0-9]+$/g)[0];
+					prepublier_depublier(true, btn, data, nom_image_temp);
+				});
+			}
+			else {
+				prepublier_depublier(false, btn, data);
+			}
+		});
 
 		$.each(tranches, function(i, tranche_en_cours) {
 			var element_type_tranche;
@@ -1190,7 +1193,7 @@ function afficher_liste_magazines(wizard_id, id_element_liste, data) {
 			bouton_tranche_en_cours.find('label.libelle_tranche_en_cours')
 				.attr({'for':id_tranche})
 				.css({'background-image': 'url("images/flags/'+tranche_en_cours.Pays+'.png")'})
-                .data(tranche_en_cours)
+				.data(tranche_en_cours)
 				.html(tranche_en_cours.str_userfriendly)
 				.click(function() {
 					wizard.find('[name="est_nouvelle_conception_tranche"]').val($(this).closest('[name="tranches_non_affectees"]').length > 0);
@@ -1243,51 +1246,51 @@ function limiter_tranches_pretes_parmi_tranches_affichees(tranches_affichees, tr
 function afficher_tranches(wizard_courant, tranches_affichees, numeros, tranches_pretes, tranches_affichees_clonables) {
 	var est_contexte_clonage = tranches_affichees_clonables !== undefined;
 
-    var tableau_tranches_affichees = $('<table>');
-    var ligne_numeros_tranches_affichees1 = $('<tr>');
-    var ligne_tranches_affichees = $('<tr>');
-    var ligne_tranche_selectionnee = $('<tr>');
-    var ligne_qualite_tranche = $('<tr>');
-    var ligne_numeros_tranches_affichees2 = $('<tr>');
-    tableau_tranches_affichees
-        .append(ligne_numeros_tranches_affichees1)
-        .append(ligne_tranches_affichees)
-        .append(ligne_tranche_selectionnee)
-        .append(ligne_qualite_tranche)
-        .append(ligne_numeros_tranches_affichees2);
-    wizard_courant
-        .find('.tranches_affichees_magazine')
-        .html($('<div>').addClass('buttonset').html(tableau_tranches_affichees));
+	var tableau_tranches_affichees = $('<table>');
+	var ligne_numeros_tranches_affichees1 = $('<tr>');
+	var ligne_tranches_affichees = $('<tr>');
+	var ligne_tranche_selectionnee = $('<tr>');
+	var ligne_qualite_tranche = $('<tr>');
+	var ligne_numeros_tranches_affichees2 = $('<tr>');
+	tableau_tranches_affichees
+		.append(ligne_numeros_tranches_affichees1)
+		.append(ligne_tranches_affichees)
+		.append(ligne_tranche_selectionnee)
+		.append(ligne_qualite_tranche)
+		.append(ligne_numeros_tranches_affichees2);
+	wizard_courant
+		.find('.tranches_affichees_magazine')
+		.html($('<div>').addClass('buttonset').html(tableau_tranches_affichees));
 
-    for (var i in tranches_affichees) {
-        var numero_tranche_affichee = tranches_affichees[i];
-        if (est_contexte_clonage && !tranches_affichees_clonables[numero_tranche_affichee]) {
-        	continue;
+	for (var i in tranches_affichees) {
+		var numero_tranche_affichee = tranches_affichees[i];
+		if (est_contexte_clonage && !tranches_affichees_clonables[numero_tranche_affichee]) {
+			continue;
 		}
 
-        var est_tranche_courante = numeros.indexOf(numero_tranche_affichee) !== -1;
-        var est_tranche_publiee = tranches_pretes[numero_tranche_affichee] !== 'en_cours';
+		var est_tranche_courante = numeros.indexOf(numero_tranche_affichee) !== -1;
+		var est_tranche_publiee = tranches_pretes[numero_tranche_affichee] !== 'en_cours';
 
-        ligne_tranches_affichees.append($('<td>').data('numero', numero_tranche_affichee)); // On ins�re ce <td> avant les autres pour qu'il soit trouv� par le chargeur d'image
+		ligne_tranches_affichees.append($('<td>').data('numero', numero_tranche_affichee)); // On ins�re ce <td> avant les autres pour qu'il soit trouv� par le chargeur d'image
 
-        var td_numero = $('<td>').addClass('libelle_numero').data('numero', numero_tranche_affichee)
-            .html(
-            	$(est_tranche_courante ? '<b>' : '<span>').html('n&deg;' + numero_tranche_affichee)
+		var td_numero = $('<td>').addClass('libelle_numero').data('numero', numero_tranche_affichee)
+			.html(
+				$(est_tranche_courante ? '<b>' : '<span>').html('n&deg;' + numero_tranche_affichee)
 			);
 
-        if (est_contexte_clonage) {
-            var td_qualite = $('<td>').addClass('qualite_tranche');
-            var td_radio = $('<td>');
+		if (est_contexte_clonage) {
+			var td_qualite = $('<td>').addClass('qualite_tranche');
+			var td_radio = $('<td>');
 
-            if (!est_tranche_courante) {
-                td_qualite.html(
+			if (!est_tranche_courante) {
+				td_qualite.html(
 					$('.qualite_tranche.template')
 						.clone(true)
 						.removeClass('template')
 						.find('.qualite_tranche_' + tranches_affichees_clonables[numero_tranche_affichee].qualite)
 						.removeClass('hidden')
 				);
-                td_radio.html(
+				td_radio.html(
 					$('<input>', {
 						'type': 'radio',
 						'name': 'tranche_similaire',
@@ -1295,36 +1298,36 @@ function afficher_tranches(wizard_courant, tranches_affichees, numeros, tranches
 					}).val(numero_tranche_affichee)
 				);
 			}
-            ligne_tranche_selectionnee.append(td_radio);
-            ligne_qualite_tranche.append(td_qualite);
-        }
-        if (!(est_contexte_clonage && est_tranche_courante)) {
-            reload_numero(numero_tranche_affichee, est_tranche_publiee && !est_tranche_courante, !est_tranche_courante);
-        }
+			ligne_tranche_selectionnee.append(td_radio);
+			ligne_qualite_tranche.append(td_qualite);
+		}
+		if (!(est_contexte_clonage && est_tranche_courante)) {
+			reload_numero(numero_tranche_affichee, est_tranche_publiee && !est_tranche_courante, !est_tranche_courante);
+		}
 
-        ligne_numeros_tranches_affichees1.append(td_numero);
-        ligne_numeros_tranches_affichees2.append(td_numero.clone(true));
-    }
+		ligne_numeros_tranches_affichees1.append(td_numero);
+		ligne_numeros_tranches_affichees2.append(td_numero.clone(true));
+	}
 
-    if (est_contexte_clonage) {
-        wizard_courant.find('.image_preview').click(function () {
-            wizard_courant.find('.image_preview').removeClass('selected');
-            $(this).addClass('selected');
-            wizard_courant.find('input[type="radio"][value="' + $(this).data('numero') + '"]').prop('checked', true);
-        });
-    }
-    else { // Contexte validation de tranche
-        var toggle_cacher_libelles = wizard_courant.find('[name="cacher_libelles_magazines"]');
-        if (!$._data(toggle_cacher_libelles[0], "events")) {
-            toggle_cacher_libelles.click(function () {
-                wizard_courant.find('.libelle_numero').toggle();
-            });
-        }
-    }
-    wizard_courant.find('.chargement').addClass('cache');
-    wizard_courant.find('.tranches_affichees_magazine, .buttonset').removeClass('cache');
+	if (est_contexte_clonage) {
+		wizard_courant.find('.image_preview').click(function () {
+			wizard_courant.find('.image_preview').removeClass('selected');
+			$(this).addClass('selected');
+			wizard_courant.find('input[type="radio"][value="' + $(this).data('numero') + '"]').prop('checked', true);
+		});
+	}
+	else { // Contexte validation de tranche
+		var toggle_cacher_libelles = wizard_courant.find('[name="cacher_libelles_magazines"]');
+		if (!$._data(toggle_cacher_libelles[0], "events")) {
+			toggle_cacher_libelles.click(function () {
+				wizard_courant.find('.libelle_numero').toggle();
+			});
+		}
+	}
+	wizard_courant.find('.chargement').addClass('cache');
+	wizard_courant.find('.tranches_affichees_magazine, .buttonset').removeClass('cache');
 
-    selecteur_cellules_preview = '.wizard.preview_etape div.image_etape';
+	selecteur_cellules_preview = '.wizard.preview_etape div.image_etape';
 }
 
 function afficher_tranches_proches(pays, magazine, numeros, est_contexte_clonage) {
@@ -1374,54 +1377,54 @@ function afficher_tranches_proches(pays, magazine, numeros, est_contexte_clonage
 			var tranches_clonables = $.ajax({
 				url: urls['cloner']+['est_clonable',pays,magazine,tranches_affichees.join(',')].join('/'),
 				type: 'post',
-                dataType:'json',
-                success: function (tranches_clonables) {
-                    var tranches_affichees_clonables = [];
-                    for (var i in tranches_affichees) {
-                        var tranche_affichee = tranches_affichees[i];
-                        if (tranches_clonables[tranche_affichee] !== undefined || numeros.indexOf(tranche_affichee) !== -1) {
-                            tranches_affichees_clonables[tranche_affichee] = tranches_clonables[tranche_affichee];
-                        }
-                    }
-                    afficher_tranches(wizard_courant, tranches_affichees, numeros, data.tranches_pretes, tranches_affichees_clonables);
-                }
+				dataType:'json',
+				success: function (tranches_clonables) {
+					var tranches_affichees_clonables = [];
+					for (var i in tranches_affichees) {
+						var tranche_affichee = tranches_affichees[i];
+						if (tranches_clonables[tranche_affichee] !== undefined || numeros.indexOf(tranche_affichee) !== -1) {
+							tranches_affichees_clonables[tranche_affichee] = tranches_clonables[tranche_affichee];
+						}
+					}
+					afficher_tranches(wizard_courant, tranches_affichees, numeros, data.tranches_pretes, tranches_affichees_clonables);
+				}
 			});
 		}
 
-        else {
+		else {
 			afficher_tranches(wizard_courant, tranches_affichees, numeros, data.tranches_pretes);
-        }
+		}
 	});
 }
 
 function cloner_numero(numero_a_cloner, nouveaux_numeros) {
-    var wizard = $('#wizard-clonage');
-    var nouveau_numero = nouveaux_numeros.shift();
-    wizard.find('.nouveau_numero').html(nouveau_numero);
-    $.ajax({
-        url: urls['etendre'] + ['index', pays, magazine, numero_a_cloner, nouveau_numero].join('/'),
-        dataType:'json',
-        type: 'post',
-        success: function (data) {
-            id_modele = data.resultat_clonage.id_modele;
-            if (typeof(data.erreur) !== 'undefined')
-                jqueryui_alert(data);
-            else {
-                if (nouveaux_numeros.length) {
-                    cloner_numero(numero_a_cloner, nouveaux_numeros);
-                }
-                else {
-                    wizard.parent().find('.ui-dialog-buttonpane button').button("option", "disabled", false);
-                    wizard.find('.loading').addClass('cache');
-                    wizard.find('.done').removeClass('cache');
-                    wizard.find('.clonage_partiel').toggleClass('cache', !Object.keys(data.resultat_clonage.etapes_non_clonees).length);
-                }
-            }
-        },
-        error: function (data) {
-            jqueryui_alert('Erreur : ' + data);
-        }
-    });
+	var wizard = $('#wizard-clonage');
+	var nouveau_numero = nouveaux_numeros.shift();
+	wizard.find('.nouveau_numero').html(nouveau_numero);
+	$.ajax({
+		url: urls['etendre'] + ['index', pays, magazine, numero_a_cloner, nouveau_numero].join('/'),
+		dataType:'json',
+		type: 'post',
+		success: function (data) {
+			id_modele = data.resultat_clonage.id_modele;
+			if (typeof(data.erreur) !== 'undefined')
+				jqueryui_alert(data);
+			else {
+				if (nouveaux_numeros.length) {
+					cloner_numero(numero_a_cloner, nouveaux_numeros);
+				}
+				else {
+					wizard.parent().find('.ui-dialog-buttonpane button').button("option", "disabled", false);
+					wizard.find('.loading').addClass('cache');
+					wizard.find('.done').removeClass('cache');
+					wizard.find('.clonage_partiel').toggleClass('cache', !Object.keys(data.resultat_clonage.etapes_non_clonees).length);
+				}
+			}
+		},
+		error: function (data) {
+			jqueryui_alert('Erreur : ' + data);
+		}
+	});
 }
 
 function traiter_tranches_en_cours(data) {
@@ -1626,9 +1629,9 @@ function placer_dialogues_preview() {
 			var positions = i===dialogues.length-1 ? ['avant','apres']:['apres'];
 		}
 		$.each(positions,function(j,pos) {
-      var ajoutEtapeTemplate = $('.ajout_etape.template');
+	  var ajoutEtapeTemplate = $('.ajout_etape.template');
 
-      var pos_gauche=elDialogue.offset().left
+	  var pos_gauche=elDialogue.offset().left
 				+ (pos==='avant' || estDialogueConception
 					?(-ajoutEtapeTemplate.width()-2)
 					:(+ajoutEtapeTemplate.width()+elDialogue.width())
@@ -1665,20 +1668,20 @@ function recuperer_et_alimenter_options_preview(num_etape) {
 }
 
 function positionner_agrafe(elAgrafes, image, posRelativeY1, posRelativeY2, hauteur) {
-    var pos_x_debut = image.position().left + image.width() / 2 - .25 * zoom;
-    var largeur = zoom;
-    var pos_y_agrafe1 = image.position().top + posRelativeY1;
-    var pos_y_agrafe2 = image.position().top + posRelativeY2;
+	var pos_x_debut = image.position().left + image.width() / 2 - .25 * zoom;
+	var largeur = zoom;
+	var pos_y_agrafe1 = image.position().top + posRelativeY1;
+	var pos_y_agrafe2 = image.position().top + posRelativeY2;
 
-    elAgrafes.filter('.premiere').css({'top': pos_y_agrafe1 + 'px'});
-    elAgrafes.filter('.deuxieme').css({'top': pos_y_agrafe2 + 'px'});
-    elAgrafes
-        .css({
-            left: pos_x_debut + 'px',
-            width:    largeur + 'px',
-            height:   hauteur + 'px'
-        })
-        .removeClass('cache');
+	elAgrafes.filter('.premiere').css({'top': pos_y_agrafe1 + 'px'});
+	elAgrafes.filter('.deuxieme').css({'top': pos_y_agrafe2 + 'px'});
+	elAgrafes
+		.css({
+			left: pos_x_debut + 'px',
+			width:	largeur + 'px',
+			height:   hauteur + 'px'
+		})
+		.removeClass('cache');
 }
 
 
@@ -1710,15 +1713,15 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 		case 'Agrafer':
 			var agrafes = form_userfriendly.find('.agrafe');
 
-            positionner_agrafe(
-                agrafes,
+			positionner_agrafe(
+				agrafes,
 				image,
 				parseFloat(templatedToVal(valeurs['Y1']))*zoom,
 				parseFloat(templatedToVal(valeurs['Y2']))*zoom,
 				parseFloat(templatedToVal(valeurs['Taille_agrafe']))*zoom
 			);
 
-            agrafes
+			agrafes
 				.draggable({
 					axis: 'y',
 					stop:function(event) {
@@ -1771,7 +1774,7 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 		break;
 
 		case 'DegradeTrancheAgrafee':
-            positionner_agrafe(form_userfriendly.find('.agrafe'), image, 0.2*image.height(), 0.8*image.height(), 0.05*image.height());
+			positionner_agrafe(form_userfriendly.find('.agrafe'), image, 0.2*image.height(), 0.8*image.height(), 0.05*image.height());
 
 			var rectangle1 = form_userfriendly.find('.premier.rectangle_degrade');
 			var rectangle2 = form_userfriendly.find('.deuxieme.rectangle_degrade');
@@ -1798,12 +1801,12 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 				.css({
 					left:(image.position().left-largeur_croix+1+parseFloat(valeurs['Pos_x'])*zoom)+'px',
 					top :(image.position().top -largeur_croix+1+parseFloat(valeurs['Pos_y'])*zoom)+'px'})
-                .removeClass('cache')
+				.removeClass('cache')
 				.draggable({
 					containment:limites_drag,
-		            stop:function() {
-		                tester_options_preview(['Pos_x', 'Pos_y']);
-		            }});
+					stop:function() {
+						tester_options_preview(['Pos_x', 'Pos_y']);
+					}});
 		break;
 		case 'Arc_cercle':
 
@@ -1949,9 +1952,9 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 			});
 
 			var tester_et_charger_preview_myfonts = function() {
-                var nom_option=$(this).attr('name').replace(REGEX_OPTION,'$1');
-                tester_options_preview([nom_option]);
-            };
+				var nom_option=$(this).attr('name').replace(REGEX_OPTION,'$1');
+				tester_options_preview([nom_option]);
+			};
 
 			form_userfriendly.find('input[name="option-Chaine"],input[name="option-URL"],input[name="option-Largeur"]')
 				.blur(tester_et_charger_preview_myfonts);
@@ -2034,9 +2037,9 @@ function dessiner(element, type, form_options, callback) {
 	}
 
 	element.css({left:(parseFloat(form_options.valeur('Pos_x_centre').val())*zoom
-					 - parseFloat(form_options.valeur('Largeur').val())	    *zoom/2)+'px',
+					 - parseFloat(form_options.valeur('Largeur').val())		*zoom/2)+'px',
 				 top :(parseFloat(form_options.valeur('Pos_y_centre').val())*zoom
-					 - parseFloat(form_options.valeur('Hauteur').val())	    *zoom/2)+'px'});
+					 - parseFloat(form_options.valeur('Hauteur').val())		*zoom/2)+'px'});
 
 	$.each($(options),function(i,nom_option) {
 		if (nom_option === 'Pos_x_centre')
@@ -2874,8 +2877,8 @@ function wizard_charger_liste_numeros(publicationcode_sel) {
 	var wizard_numero=$('#'+id_wizard_courant+' [name="wizard_numero"]');
 	wizard_numero.html($('<option>').text('Chargement...'));
 
-    pays = publicationcode_sel.split('/')[0];
-    magazine = publicationcode_sel.split('/')[1];
+	pays = publicationcode_sel.split('/')[0];
+	magazine = publicationcode_sel.split('/')[1];
 
 	charger_liste_numeros(pays, magazine,function(data) {
 		numeros_dispos=data.numeros_dispos;
@@ -3134,15 +3137,15 @@ function afficher_galerie(type_images, data, container) {
 }
 
 function prepublier_depublier(prepublier, btn, data, nom_image_temp) {
-    $.ajax({
-        url: urls['prepublier'] + ['index', prepublier, nom_image_temp].join('/'),
-        type: 'post',
-        success: function () {
-            if (prepublier) {
-                btn.siblings('.depublier').removeClass('cache');
-            }
-        }
-    });
+	$.ajax({
+		url: urls['prepublier'] + ['index', prepublier, nom_image_temp].join('/'),
+		type: 'post',
+		success: function () {
+			if (prepublier) {
+				btn.siblings('.depublier').removeClass('cache');
+			}
+		}
+	});
 }
 
 function surveiller_selection_jrac($viewport) {
@@ -3196,9 +3199,9 @@ function templatedToVal(templatedString) {
 }
 
 function afficher_erreur_image_inexistante() {
-    var src = $(this).attr('src');
-    var nom_image = src.substring(src.lastIndexOf('/') + 1, src.length);
-    jqueryui_alert('L\'image ' + nom_image + ' n\'existe pas');
+	var src = $(this).attr('src');
+	var nom_image = src.substring(src.lastIndexOf('/') + 1, src.length);
+	jqueryui_alert('L\'image ' + nom_image + ' n\'existe pas');
 }
 
 function jqueryui_clear_message(id) {
