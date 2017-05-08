@@ -1951,7 +1951,6 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 			var tester_et_charger_preview_myfonts = function() {
                 var nom_option=$(this).attr('name').replace(REGEX_OPTION,'$1');
                 tester_options_preview([nom_option]);
-                load_myfonts_preview(true,true,true);
             };
 
 			form_userfriendly.find('input[name="option-Chaine"],input[name="option-URL"],input[name="option-Largeur"]')
@@ -2557,7 +2556,7 @@ function tester_options_preview(noms_options, element) {
 		}
 		form_options.valeur(nom_option).val(val);
 
-		if (nom_fonction === 'MyFonts' && ['Chaine','URL','Largeur','Demi_hauteur','Rotation'].indexOf(nom_option) !== -1) {
+		if (nom_fonction === 'TexteMyFonts' && ['Chaine','URL','Largeur','Demi_hauteur','Rotation'].indexOf(nom_option) !== -1) {
 			var generer_preview_proprietes = nom_option === 'Chaine'  || nom_option === 'URL',
 				generer_preview_finition = nom_option === 'Largeur' || nom_option === 'Demi_hauteur';
 			generer_et_positionner_preview_myfonts(generer_preview_proprietes,
