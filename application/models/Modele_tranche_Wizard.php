@@ -200,9 +200,17 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		
 		$nouvelle_fonction=new $nom_fonction(false, null, true);
 		$numero_etape=$inclure_avant ? $etape : $etape+1;
-		foreach($nouvelle_fonction->options as $nom=>$valeur) {
-			$this->insert_to_modele($id_modele, $numero_etape, $nom_fonction, $nom, $valeur);
-		}
+
+        DmClient::get_service_results_ec(
+            DmClient::$dm_server,
+            'POST',
+            "/edgecreator/v2/step/$id_modele/$numero_etape",
+            [
+                'stepfunctionname' => $nom_fonction,
+                'options' => $nouvelle_fonction->options
+            ]
+        );
+
 		$infos->numero_etape=$numero_etape;
 		return $infos;
 	}
