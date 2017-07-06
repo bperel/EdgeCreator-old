@@ -7,7 +7,7 @@ services:
      - "8002:80"
     volumes:
      - .:/var/www/html/EdgeCreator
-     - ../edges:/var/www/html/DucksManager/edges
+     - /var/www/html/DucksManager/edges:/var/www/html/DucksManager/edges
 networks:
   default:
     external:

@@ -1,6 +1,6 @@
 <?php
 function get_nom_fichier($nom, $pays, $magazine, $numero, $est_photo_tranche) {
-    $dossier = getcwd().'/../edges/'
+    $dossier = getcwd().'/../DucksManager/edges/'
               .(is_null($pays) ? 'tranches_multiples' : ($pays.'/'.( $est_photo_tranche ? 'photos' : 'elements' )))
               .'/';
     @mkdir($dossier,0777,true);
