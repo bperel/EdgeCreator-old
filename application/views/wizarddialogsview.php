@@ -249,7 +249,7 @@
 						x 
 						<input type="text" id="Nouvelle_dimension_y" name="Dimension_y" maxlength="3" size="2"> mm
 						<div class="buttonset cache">
-							<input type="radio" checked="checked" name="choix" value="to-wizard-images" id="to-wizard-images" />
+							<input type="radio" checked="checked" name="choix" value="do-in-wizard-enregistrer" id="do-in-wizard-enregistrer" />
 						</div>
 					</form>
 				</p>

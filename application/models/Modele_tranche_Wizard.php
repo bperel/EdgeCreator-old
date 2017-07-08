@@ -175,18 +175,24 @@ class Modele_tranche_Wizard extends Modele_tranche {
 	}
 	
 	function creer_modele($pays, $magazine, $numero) {
-		$requete='INSERT INTO tranches_en_cours_modeles (Pays, Magazine, Numero, username, Active) '
-				.'VALUES (\''.$pays.'\',\''.$magazine.'\',\''.$numero.'\',\''.self::$username.'\', 1)';
-        DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator');
-		echo $requete."\n";
+        DmClient::get_service_results_ec(
+            DmClient::$dm_server,
+            'PUT',
+            "/edgecreator/v2/model/$pays/$magazine/$numero"
+        );
 	}
 	
 	function get_photo_principale() {
         $id_modele = $this->session->userdata('id_modele');
-		$requete="SELECT NomPhotoPrincipale FROM tranches_en_cours_modeles
-                  WHERE ID=".$id_modele;
-        $resultat = DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator')[0];
-		return $resultat->NomPhotoPrincipale;
+        if (is_null($id_modele)) {
+            return null;
+        }
+        else {
+            $requete="SELECT NomPhotoPrincipale FROM tranches_en_cours_modeles
+                      WHERE ID=".$id_modele;
+            $resultat = DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator')[0];
+            return $resultat->NomPhotoPrincipale;
+        }
 	}
 
 	function insert_etape($pos_relative, $etape, $nom_fonction) {
@@ -228,12 +234,14 @@ class Modele_tranche_Wizard extends Modele_tranche {
 	
 	function update_photo_principale($nom_photo_principale) {
         $id_modele = $this->session->userdata('id_modele');
-		
-		$requete_maj='UPDATE tranches_en_cours_modeles '
-					.'SET NomPhotoPrincipale=\''.$nom_photo_principale.'\' '
-					.'WHERE ID='.$id_modele;
-        DmClient::get_query_results_from_dm_server($requete_maj, 'db_edgecreator');
-		echo $requete_maj."\n";
+
+        DmClient::get_service_results_ec(
+            DmClient::$dm_server,
+            'PUT',
+            "/edgecreator/model/v2/$id_modele/photo/main", [
+                'photoname' => $nom_photo_principale
+            ]
+        );
 	}
 
 	function cloner_etape_numero($pos, $etape_courante) {
