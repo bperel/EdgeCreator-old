@@ -583,8 +583,8 @@ function charger_image(type_chargement,src,num,callback) {
         switch(privilege) {
             case 'Admin':break;
             case 'Edition':
-                if (!confirm('Votre modele de tranche va etre envoye au webmaster pour validation. Continuer ?'))
-                    return;
+                // if (!confirm('Votre modele de tranche va etre envoye au webmaster pour validation. Continuer ?'))
+                //     return;
             break;
             default:
                 jqueryui_alert('Vous ne poss&eacute;dez pas les droits n&eacute;cessaires pour cette action');

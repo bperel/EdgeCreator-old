@@ -21,7 +21,9 @@ class Modele_tranche_Wizard extends Modele_tranche {
             return implode('/', [$resultat->Pays, $resultat->Magazine]);
         }, $resultats);
 
-        $noms_magazines = DmClient::get_service_results_ec(DmClient::$dm_server, 'GET', '/coa/list/publications', [implode(',', array_unique($liste_magazines))]);
+        if (count($liste_magazines) > 0) {
+            $noms_magazines = DmClient::get_service_results_ec(DmClient::$dm_server, 'GET', '/coa/list/publications', [implode(',', array_unique($liste_magazines))]);
+        }
 
         foreach($resultats as $resultat) {
             $publicationcode = implode('/', [$resultat->Pays, $resultat->Magazine]);
@@ -38,7 +40,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		if (!is_null($numero)) {
 			$requete.=' AND Numero=\''.$numero.'\'';
 		}
-		$requete.=' AND username = \''.($this->user_possede_modele() ? self::$username : 'brunoperel').'\''
+		$requete.=' AND username = \''.self::$username.'\''
 				 .' ORDER BY Ordre';
         $resultats = DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator');
 		foreach($resultats as $resultat) {
@@ -88,7 +90,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
         $requete='SELECT '.implode(', ', self::$content_fields).' '
             .'FROM tranches_en_cours_modeles_vue '
             .'WHERE ID_Modele = \''.$id_modele.'\' AND Ordre='.$ordre.' AND Option_nom IS NOT NULL '
-            .'AND username = \''.($this->user_possede_modele() ? self::$username : 'brunoperel').'\' ';
+            .'AND username = \''.self::$username.'\' ';
         if (!is_null($nom_option))
             $requete.='AND Option_nom = \''.$nom_option.'\' ';
         $requete.='ORDER BY Option_nom ASC';

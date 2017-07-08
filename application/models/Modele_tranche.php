@@ -156,7 +156,7 @@ class Modele_tranche extends CI_Model {
 				.'INNER JOIN edgecreator_valeurs ON edgecreator_modeles2.ID = edgecreator_valeurs.ID_Option '
 				.'INNER JOIN edgecreator_intervalles ON edgecreator_valeurs.ID = edgecreator_intervalles.ID_Valeur '
 				.'WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' '
-				.'AND username = \''.($this->user_possede_modele() ? self::$username : 'brunoperel').'\' ';
+				.'AND username = \''.self::$username.'\' ';
 		if (!is_null($ordre))
 			$requete.='AND Ordre='.$ordre.' ';
 		$requete.='ORDER BY Ordre';
@@ -174,7 +174,7 @@ class Modele_tranche extends CI_Model {
 				.'INNER JOIN edgecreator_valeurs ON edgecreator_modeles2.ID = edgecreator_valeurs.ID_Option '
 			    .'INNER JOIN edgecreator_intervalles ON edgecreator_valeurs.ID = edgecreator_intervalles.ID_Valeur '
 			    .'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' '
-				.'AND username LIKE \''.($this->user_possede_modele() ? self::$username : 'brunoperel').'\' '
+				.'AND username LIKE \''.self::$username.'\' '
 				.'ORDER BY Ordre';
         $resultats = DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator');
 		foreach($resultats as $resultat) {
@@ -201,7 +201,7 @@ class Modele_tranche extends CI_Model {
 				.'INNER JOIN edgecreator_valeurs ON edgecreator_modeles2.ID = edgecreator_valeurs.ID_Option '
 			    .'INNER JOIN edgecreator_intervalles ON edgecreator_valeurs.ID = edgecreator_intervalles.ID_Valeur '
 			    .'WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' AND Option_nom IS NULL '
-				.'AND username = \''.($this->user_possede_modele() ? self::$username : 'brunoperel').'\'';
+				.'AND username = \''.self::$username.'\'';
         $resultats = DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator');
 			
 		return $resultats[0]->cpt;
@@ -209,12 +209,11 @@ class Modele_tranche extends CI_Model {
 
 	function get_etapes_simple_magazine($pays,$magazine,$num_etape=null) {
 		$resultats_etapes= [];
-		$username=($this->user_possede_modele() ? self::$username : 'brunoperel');
 		$requete='SELECT DISTINCT Ordre, Nom_fonction, edgecreator_valeurs.ID AS ID_Valeur '
 				.'FROM edgecreator_modeles2 '
 				.'INNER JOIN edgecreator_valeurs ON edgecreator_modeles2.ID = edgecreator_valeurs.ID_Option '
 			    .'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Option_nom IS NULL '
-				.'AND EXISTS (SELECT 1 FROM edgecreator_intervalles WHERE edgecreator_intervalles.ID_Valeur = edgecreator_valeurs.ID AND username LIKE \''.$username.'\') ';
+				.'AND EXISTS (SELECT 1 FROM edgecreator_intervalles WHERE edgecreator_intervalles.ID_Valeur = edgecreator_valeurs.ID AND username LIKE \''.self::$username.'\') ';
 		if (!is_null($num_etape))
 			$requete.='AND Ordre='.$num_etape.' ';
 		$requete.=' GROUP BY Ordre'
@@ -244,7 +243,7 @@ class Modele_tranche extends CI_Model {
 		$requete='SELECT '.implode(', ', self::$fields).' '
 				.'FROM edgecreator_modeles_vue '
 				.'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Ordre='.$ordre.' AND Option_nom IS NULL '
-				.'AND username LIKE \''.($this->user_possede_modele() ? self::$username : 'brunoperel').'\'';
+				.'AND username LIKE \''.self::$username.'\'';
         $resultats = DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator');
 		if (count($resultats) == 0) {
 			return null;
@@ -283,7 +282,7 @@ class Modele_tranche extends CI_Model {
 				.'INNER JOIN edgecreator_valeurs ON edgecreator_modeles2.ID = edgecreator_valeurs.ID_Option '
 			    .'INNER JOIN edgecreator_intervalles ON edgecreator_valeurs.ID = edgecreator_intervalles.ID_Valeur '
 				.'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Ordre='.$ordre.' AND Option_nom IS NOT NULL '
-				.'AND username LIKE \''.($this->user_possede_modele() ? self::$username : 'brunoperel').'\' ';
+				.'AND username LIKE \''.self::$username.'\' ';
 		if (!is_null($nom_fonction))
 			$requete.='AND Nom_fonction LIKE \''.$nom_fonction.'\' ';
 		if (!is_null($nom_option))
@@ -367,7 +366,7 @@ class Modele_tranche extends CI_Model {
 				.'INNER JOIN edgecreator_valeurs ON edgecreator_modeles2.ID = edgecreator_valeurs.ID_Option '
 			    .'INNER JOIN edgecreator_intervalles ON edgecreator_valeurs.ID = edgecreator_intervalles.ID_Valeur '
 				.'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Option_nom IS NOT NULL '
-				.'AND username LIKE \''.($this->user_possede_modele() ? self::$username : 'brunoperel').'\'';
+				.'AND username LIKE \''.self::$username.'\'';
         return count(DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator')) === 0;
 	}
 
@@ -376,7 +375,7 @@ class Modele_tranche extends CI_Model {
 		$requete='SELECT Max(Ordre) AS max_ordre FROM edgecreator_modeles2 '
 				.'INNER JOIN edgecreator_valeurs ON edgecreator_modeles2.ID = edgecreator_valeurs.ID_Option '
 			    .'INNER JOIN edgecreator_intervalles ON edgecreator_valeurs.ID = edgecreator_intervalles.ID_Valeur '
-				.'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Ordre>='.$etape_debut.' AND username LIKE \''.($this->user_possede_modele() ? self::$username : 'brunoperel').'\' ';
+				.'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Ordre>='.$etape_debut.' AND username LIKE \''.self::$username.'\' ';
         $resultat = DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator')[0];
 		
 		if (!is_null($resultat)) {
@@ -387,7 +386,7 @@ class Modele_tranche extends CI_Model {
 						.'INNER JOIN edgecreator_valeurs ON edgecreator_modeles2.ID = edgecreator_valeurs.ID_Option '
 					    .'INNER JOIN edgecreator_intervalles ON edgecreator_valeurs.ID = edgecreator_intervalles.ID_Valeur '
 						.'SET Ordre='.($i+1).' '
-						.'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Ordre='.$i.' AND username LIKE \''.($this->user_possede_modele() ? self::$username : 'brunoperel').'\'';
+						.'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Ordre='.$i.' AND username LIKE \''.self::$username.'\'';
                 DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator');
 			}
 		}
