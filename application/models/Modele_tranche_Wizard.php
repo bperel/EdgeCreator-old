@@ -203,6 +203,9 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		if ($etape > -1) {
 		    $infos->decalages=$this->decaler_etapes_a_partir_de($id_modele,$etape, $inclure_avant);
         }
+        else {
+		    $infos->decalages = [];
+        }
 		
 		$nouvelle_fonction=new $nom_fonction(false, null, true);
 		$numero_etape=$inclure_avant ? $etape : $etape+1;

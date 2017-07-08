@@ -229,6 +229,8 @@ function launch_wizard(id, p) {
 			buttons={
 				'OK': function() {
 					var formData=$(this).find('form').serializeObject();
+					formData.etape = parseInt(formData.etape);
+
 					var panelOuvert = $('#wizard-ajout-etape .accordion').accordion('option','active');
 					switch(panelOuvert) {
 						case 0: // A partir de z�ro
@@ -772,7 +774,7 @@ function wizard_init(wizard_id) {
 					numero=numeros_multiples[0];
 				}
 			}
-			selecteur_cellules_preview='#'+wizard_id+' .tranches_affichees_magazine td';
+			selecteur_cellules_preview='#'+wizard_id+' .tranches_affichees_magazine td:not(.libelle_numero)';
 
 			afficher_tranches_proches(pays, magazine, numeros_multiples, true);
 		break;
@@ -871,7 +873,7 @@ function wizard_init(wizard_id) {
 						numero=tranche[3];
 					}
 
-					if (!dimensions.x) {
+					if (numero === undefined) {
 						// Ajout du mod�le de tranche et de la fonction Dimensions avec les param�tres par d�faut
 						var dimension_x = get_option_wizard('wizard-dimensions','Dimension_x');
 						var dimension_y = get_option_wizard('wizard-dimensions','Dimension_y');
@@ -932,7 +934,7 @@ function wizard_init(wizard_id) {
 		break;
 
 		case 'wizard-confirmation-validation-modele':
-			selecteur_cellules_preview='#'+wizard_id+' .tranches_affichees_magazine td';
+			selecteur_cellules_preview='#'+wizard_id+' .tranches_affichees_magazine td:not(.libelle_numero)';
 			afficher_tranches_proches(pays, magazine, [numero], false);
 		break;
 
@@ -1095,55 +1097,61 @@ function afficher_tranches(wizard_courant, tranches_affichees, numeros, tranches
 		.append(ligne_tranche_selectionnee)
 		.append(ligne_qualite_tranche)
 		.append(ligne_numeros_tranches_affichees2);
-	wizard_courant
-		.find('.tranches_affichees_magazine')
-		.html($('<div>').addClass('buttonset').html(tableau_tranches_affichees));
 
-	for (var i in tranches_affichees) {
-		var numero_tranche_affichee = tranches_affichees[i];
-		if (est_contexte_clonage && !tranches_affichees_clonables[numero_tranche_affichee]) {
-			continue;
-		}
+	var element_tranches_affichees = wizard_courant.find('.tranches_affichees_magazine');
 
-		var est_tranche_courante = numeros.indexOf(numero_tranche_affichee) !== -1;
-		var est_tranche_publiee = tranches_pretes[numero_tranche_affichee] !== 'en_cours';
-
-		ligne_tranches_affichees.append($('<td>').data('numero', numero_tranche_affichee)); // On ins�re ce <td> avant les autres pour qu'il soit trouv� par le chargeur d'image
-
-		var td_numero = $('<td>').addClass('libelle_numero').data('numero', numero_tranche_affichee)
-			.html(
-				$(est_tranche_courante ? '<b>' : '<span>').html('n&deg;' + numero_tranche_affichee)
-			);
-
-		if (est_contexte_clonage) {
-			var td_qualite = $('<td>').addClass('qualite_tranche');
-			var td_radio = $('<td>');
-
-			if (!est_tranche_courante) {
-				td_qualite.html(
-					$('.qualite_tranche.template')
-						.clone(true)
-						.removeClass('template')
-						.find('.qualite_tranche_' + tranches_affichees_clonables[numero_tranche_affichee].qualite)
-						.removeClass('hidden')
-				);
-				td_radio.html(
-					$('<input>', {
-						'type': 'radio',
-						'name': 'tranche_similaire',
-						'readonly': 'readonly'
-					}).val(numero_tranche_affichee)
-				);
+	if (element_tranches_affichees.find('.libelle_numero').length && numeros.length === 1) { // Tranches déjà affichées précédemment. On ne charge que la tranche courante
+		reload_numero(numeros[0], false, false);
+	}
+	else {
+		element_tranches_affichees.html($('<div>').addClass('buttonset').html(tableau_tranches_affichees));
+		for (var i in tranches_affichees) {
+			var numero_tranche_affichee = tranches_affichees[i];
+			if (est_contexte_clonage && !tranches_affichees_clonables[numero_tranche_affichee]) {
+				continue;
 			}
-			ligne_tranche_selectionnee.append(td_radio);
-			ligne_qualite_tranche.append(td_qualite);
-		}
-		if (!(est_contexte_clonage && est_tranche_courante)) {
-			reload_numero(numero_tranche_affichee, est_tranche_publiee && !est_tranche_courante, !est_tranche_courante);
+
+			var est_tranche_courante = numeros.indexOf(numero_tranche_affichee) !== -1;
+			var est_tranche_publiee = tranches_pretes[numero_tranche_affichee] !== 'en_cours';
+
+			ligne_tranches_affichees.append($('<td>').data('numero', numero_tranche_affichee)); // On ins�re ce <td> avant les autres pour qu'il soit trouv� par le chargeur d'image
+
+			var td_numero = $('<td>').addClass('libelle_numero').data('numero', numero_tranche_affichee)
+				.html(
+					$(est_tranche_courante ? '<b>' : '<span>').html('n&deg;' + numero_tranche_affichee)
+				);
+
+			if (est_contexte_clonage) {
+				var td_qualite = $('<td>').addClass('qualite_tranche');
+				var td_radio = $('<td>');
+
+				if (!est_tranche_courante) {
+					td_qualite.html(
+						$('.qualite_tranche.template')
+							.clone(true)
+							.removeClass('template')
+							.find('.qualite_tranche_' + tranches_affichees_clonables[numero_tranche_affichee].qualite)
+							.removeClass('hidden')
+					);
+					td_radio.html(
+						$('<input>', {
+							'type': 'radio',
+							'name': 'tranche_similaire',
+							'readonly': 'readonly'
+						}).val(numero_tranche_affichee)
+					);
+				}
+				ligne_tranche_selectionnee.append(td_radio);
+				ligne_qualite_tranche.append(td_qualite);
+			}
+			if (!(est_contexte_clonage && est_tranche_courante)) {
+				reload_numero(numero_tranche_affichee, est_tranche_publiee && !est_tranche_courante, !est_tranche_courante);
+			}
+
+			ligne_numeros_tranches_affichees1.append(td_numero);
+			ligne_numeros_tranches_affichees2.append(td_numero.clone(true));
 		}
 
-		ligne_numeros_tranches_affichees1.append(td_numero);
-		ligne_numeros_tranches_affichees2.append(td_numero.clone(true));
 	}
 
 	if (est_contexte_clonage) {
@@ -1200,18 +1208,12 @@ function afficher_tranches_proches(pays, magazine, numeros, est_contexte_clonage
 		}
 
 		// Pas de proposition de tranche
-		if (tranches_pretes.length === 0) {
-			if (est_contexte_clonage) {
-				wizard_do(wizard_courant,'goto_wizard-dimensions');
-			}
-			else {
-				wizard_do(wizard_courant,'goto_wizard-confirmation-validation-modele-contributeurs');
-			}
-			return;
+		if (tranches_pretes.length === 0 && est_contexte_clonage) {
+			wizard_do(wizard_courant,'goto_wizard-dimensions');
 		}
 
 		if (est_contexte_clonage) { // Filtrage des tranches qui sont pr�tes mais sans mod�le
-			var tranches_clonables = $.ajax({
+			$.ajax({
 				url: urls['cloner']+['est_clonable',pays,magazine,tranches_affichees.join(',')].join('/'),
 				type: 'post',
 				dataType:'json',
@@ -1282,7 +1284,6 @@ function charger_tranches_en_cours() {
 		url: urls['tranchesencours'] + ['load', id_modele || 'null', pays || 'null', magazine || 'null', numero || 'null'].join('/'),
 		type: 'post',
 		dataType: 'json',
-		async: false,
 		success: function (data) {
 			var tranche = traiter_tranches_en_cours(data)[0];
 			pays = tranche.Pays;
