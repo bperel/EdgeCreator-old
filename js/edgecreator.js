@@ -930,7 +930,6 @@ function formater_modifier_valeur(nom_option) {
             	$('#valeur_modifiee').append($('<input>').val('#ff0000'));
         	else
 	        	$('#valeur_modifiee').append($('<input>').val(premiere_valeur_sel));
-            $('#picker').farbtastic('#valeur_modifiee input');
         break;
         case 'liste': case 'fichier_ou_texte':
             var arg=nom_option=='Source' ? pays : '_';

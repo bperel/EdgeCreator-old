@@ -875,7 +875,7 @@
 	  	</ul>
 		<div id="picker_container">
 			Sélectionnez une couleur
-			<div id="picker"></div>
+            <input id="picker" type="color" />
 		</div>
 		<div id="couleurs_frequentes">
 			<input type="text" readonly="readonly" class="couleur_frequente template" />

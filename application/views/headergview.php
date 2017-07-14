@@ -13,7 +13,6 @@ header("Content-Type: text/html; charset=UTF-8"); ?>
 	<link rel="stylesheet" type="text/css" href="<?=base_url()?>css/edgecreator.css" />
 	<link rel="stylesheet" type="text/css" href="<?=base_url()?>css/edgecreator_wizard.css" />
 	<link rel="stylesheet" type="text/css" href="<?=base_url()?>css/edgecreator_gallery.css" />
-	<link rel="stylesheet" type="text/css" href="<?=base_url()?>css/farbtastic.css" />
 	<link rel="stylesheet" type="text/css" href="<?=base_url()?>css/jquery.jrac.css" />
 	<link rel="shortcut icon" href="<?=base_url()?>images/favicon.ico" />
 	
@@ -25,7 +24,6 @@ header("Content-Type: text/html; charset=UTF-8"); ?>
 	
 	<script type="text/javascript" src="<?=base_url()?>js/jquery.dataSelector.js" ></script>
 	<script type="text/javascript" src="<?=base_url()?>js/json2.js" ></script>
-	<script type="text/javascript" src="<?=base_url()?>js/farbtastic.js" ></script>
 	<script type="text/javascript" src="<?=base_url()?>js/edgecreatorlib.js" ></script>
 
 	<script type="text/javascript">

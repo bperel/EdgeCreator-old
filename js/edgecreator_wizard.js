@@ -66,8 +66,7 @@ var INTERVAL_CHECK_LOGGED_IN=5;
 	});
 })();
 
-var farb;
-var input_farb;
+var current_color_input;
 $(function() {
 	$('#selecteur_couleur').tabs({
 		activate: function(event, ui) {
@@ -82,7 +81,7 @@ $(function() {
 								url: urls['couleur_point_photo']+['index',frac[0],frac[1]].join('/'),
 								type: 'post',
 								success:function(data) {
-									$('#picker')[0].farbtastic.setColor('#'+data);
+									colorpicker.val('#'+data).trigger('change');
 									$('#selecteur_couleur').tabs( "option", "active", 0);
 								}
 							});
@@ -122,15 +121,12 @@ $(function() {
 		tester();
 	});
 
-	farb=$.farbtastic($('#picker'))
-		.linkTo(
-			function() { // mousedrag
-			},
-			function() { // mouseup
-				affecter_couleur_input(input_farb, farb.color.replace(/#/g,''));
-				callback_test_picked_color();
-			}
-		);
+	colorpicker=$('#picker')
+		.change(function() {
+			affecter_couleur_input(current_color_input, $(this).val().replace(/#/g,''));
+			callback_test_picked_color();
+		});
+
 	$('#fermer_selecteur_couleur')
 		.button()
 		.click(function() {
@@ -154,6 +150,7 @@ var id_wizard_courant=null;
 var id_wizard_precedent=null;
 var num_etape_courante=null;
 var nom_photo_principale=null;
+var colorpicker=null;
 
 var etape_ajout;
 var etape_ajout_pos;
@@ -2026,18 +2023,15 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 		var input=$(this);
 		input
 			.click(function() {
-				input_farb=$(this);
-				$('#conteneur_selecteur_couleur').removeClass('cache');
-				farb.setColor('#'+input_farb.val());
+				current_color_input = $(this);
+				colorpicker.val('#'+current_color_input.val()).trigger('change');
 
+				$('#conteneur_selecteur_couleur').removeClass('cache');
 				$('.couleur.selected').removeClass('selected');
-				$(this).addClass('selected');
+				current_color_input.addClass('selected');
 			})
 			.blur(function() {
 				$(this).removeClass('selected');
-			})
-			.keyup(function() {
-				farb.setColor('#'+$(this).val());
 			});
 
 		var nom_option=input.attr('name').replace(REGEX_OPTION,'$1');
@@ -2703,7 +2697,7 @@ function charger_couleurs_frequentes() {
 						.clone(true)
 						.removeClass('template')
 						.click(function() {
-							$('#picker')[0].farbtastic.setColor('#'+$(this).val());
+							colorpicker.val('#'+$(this).val()).trigger('change');
 							$('#selecteur_couleur').tabs( "option", "active", 0);
 						});
 				affecter_couleur_input(nouvel_element, couleur);
@@ -2723,24 +2717,24 @@ function affecter_couleur_input(input_couleur, couleur) {
 	input_couleur
 		.css({'background-color':'#'+couleur,
 			  'color':couleur_foncee ? '#ffffff' : '#000000'})
-		.val(couleur);
+		.val(couleur.toUpperCase());
 
 }
 
 
 function callback_test_picked_color() {
-	var nom_option=input_farb.attr('name').replace(REGEX_OPTION,'$1');
-	var nom_fonction=input_farb.closest('.ui-dialog').data('nom_fonction');
+	var nom_option=current_color_input.attr('name').replace(REGEX_OPTION,'$1');
+	var nom_fonction=current_color_input.closest('.ui-dialog').data('nom_fonction');
 
 	tester_options_preview([nom_option]);
-	var form_options=input_farb.d().find('[name="form_options"]');
-	var couleur = farb.color;
+	var form_options=current_color_input.d().find('[name="form_options"]');
+	var couleur = colorpicker.val();
 	switch (nom_fonction) {
 		case 'Remplir':
-			$('.preview_vide').css({'background-color': '#'+couleur});
+			$('.preview_vide').css({'background-color': couleur});
 		break;
 		case 'Degrade':
-			if (input_farb.attr('name').indexOf('Couleur_debut') !== -1)
+			if (current_color_input.attr('name').indexOf('Couleur_debut') !== -1)
 				coloriser_rectangle_degrade(form_options.d().find('.rectangle_degrade'),couleur,null,form_options.valeur('Sens').val());
 			else
 				coloriser_rectangle_degrade(form_options.d().find('.rectangle_degrade'),null,couleur,form_options.valeur('Sens').val());
