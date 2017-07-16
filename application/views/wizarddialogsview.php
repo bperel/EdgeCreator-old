@@ -158,7 +158,7 @@
         <p>
             <span class="chargement">Veuillez patienter...</span>
             <span class="cache fin_chargement">
-                Les modèles des tranches sélectionnées ontété initialisés.
+                Les modèles des tranches sélectionnées ont été initialisés.
                 <a href="javascript:location.reload()">Retour à l'accueil</a>
             </span>
         </p>
@@ -851,7 +851,7 @@
 <div id="wizard-erreur-generation-image" class="wizard" title="Erreur de génération d'image">
 	<p>
 		La génération de l'image pour l'étape <span name="etape"></span> a échoué. <br />
-		La génération des images des étapes suivantes aété annulée. <br /><br />
+		La génération des images des étapes suivantes a été annulée. <br /><br />
 		Merci de reporter ce problème au webmaster en indiquant le message d'erreur suivant : <br /><br />
 		<iframe></iframe>
 	</p>

@@ -92,7 +92,7 @@ $(function() {
 	});
 	$('#pas_de_photo_tranche').html($('#message-aucune-image-de-tranche .libelle').clone(true));
 
-	// D�placement des objets
+	// Déplacement des objets
 	$('body').on('keyup', function(e) {
 		// Don't scroll page
 		e.preventDefault();
@@ -199,7 +199,7 @@ function can_launch_wizard(id) {
 function launch_wizard(id, p) {
 	id_wizard_courant=id;
 
-	p = p || {}; // Param�tres de surcharge
+	p = p || {}; // Paramètres de surcharge
 	var buttons={},
 		dialogue = $('#'+id),
 		first 	 = dialogue.hasClass('first') 	  || (p.first 	  !== undefined	&& p.first),
@@ -230,7 +230,7 @@ function launch_wizard(id, p) {
 
 					var panelOuvert = $('#wizard-ajout-etape .accordion').accordion('option','active');
 					switch(panelOuvert) {
-						case 0: // A partir de z�ro
+						case 0: // A partir de zéro
 							$.ajax({
 								url: urls['insert_wizard']+['index',formData.pos,formData.etape,formData.nom_fonction].join('/'),
 								type: 'post',
@@ -502,7 +502,7 @@ function wizard_check(wizard_id) {
 								function(element) { return $(element).val(); }
 							);
 							if (numeros_invalides.length > 0) {
-								erreur='La tranche des num�ros suivants est d&eacute;j&agrave; disponible ou en cours de conception : <br />' + numeros_invalides.join('<br />');
+								erreur='La tranche des numéros suivants est d&eacute;j&agrave; disponible ou en cours de conception : <br />' + numeros_invalides.join('<br />');
 							}
 						}
 						if (!erreur && wizard_id === 'wizard-modifier'
@@ -553,7 +553,7 @@ function wizard_check(wizard_id) {
 					if ($('.rectangle_selection_tranche:not(.template)').filter(function() {
 						return $(this).find('.intitule_magazine').length === 0;
 					}).length > 0) {
-						erreur='Vous n\'avez pas sp�cifi� les num�ros de toutes les zones de la photo.';
+						erreur='Vous n\'avez pas spécifié les numéros de toutes les zones de la photo.';
 					}
 				break;
 				case 'wizard-modifier':
@@ -708,7 +708,7 @@ function wizard_init(wizard_id) {
 								maj_photo_principale(false);
 							}
 							else {
-								jqueryui_alert('Photo de tranche invalide : ' + nom_fichier_rogne, 'Cr�ation de mod�le');
+								jqueryui_alert('Photo de tranche invalide : ' + nom_fichier_rogne, 'Création de modéle');
 							}
 						}
 					);
@@ -839,7 +839,7 @@ function wizard_init(wizard_id) {
 			if (dimensions_connues) {
 				creer_modele_tranche(pays, magazine, numero, true, function () {
 					wizard_goto($('#' + id_wizard_courant), 'wizard-conception');
-				}); // Cr�ation du mod�le sans les dimensions (qui seront copi�es du mod�le non affect�)
+				}); // Création du modéle sans les dimensions (qui seront copiées du modéle non affecté)
 			}
 		break;
 
@@ -859,7 +859,7 @@ function wizard_init(wizard_id) {
 					numero = numero[0];
 				}
 			}
-			else { // Nouvelle tranche => param�trage des dimensions, etc.
+			else { // Nouvelle tranche => paramétrage des dimensions, etc.
 				if (get_option_wizard('wizard-creer-collection','choix_tranche') !== undefined
 				 || get_option_wizard('wizard-creer-hors-collection','wizard_pays') !== undefined) {
 		  			var tranche_collection = get_option_wizard('wizard-creer-collection','choix_tranche');
@@ -871,7 +871,7 @@ function wizard_init(wizard_id) {
 					}
 
 					if (numero === undefined) {
-						// Ajout du mod�le de tranche et de la fonction Dimensions avec les param�tres par d�faut
+						// Ajout du modéle de tranche et de la fonction Dimensions avec les paramétres par défaut
 						var dimension_x = get_option_wizard('wizard-dimensions','Dimension_x');
 						var dimension_y = get_option_wizard('wizard-dimensions','Dimension_y');
 						creer_modele_tranche(pays, magazine, numero, true, function () {
@@ -1111,7 +1111,7 @@ function afficher_tranches(wizard_courant, tranches_affichees, numeros, tranches
 			var est_tranche_courante = numeros.indexOf(numero_tranche_affichee) !== -1;
 			var est_tranche_publiee = tranches_pretes[numero_tranche_affichee] !== 'en_cours';
 
-			ligne_tranches_affichees.append($('<td>').data('numero', numero_tranche_affichee)); // On ins�re ce <td> avant les autres pour qu'il soit trouv� par le chargeur d'image
+			ligne_tranches_affichees.append($('<td>').data('numero', numero_tranche_affichee)); // On insére ce <td> avant les autres pour qu'il soit trouvé par le chargeur d'image
 
 			var td_numero = $('<td>').addClass('libelle_numero').data('numero', numero_tranche_affichee)
 				.html(
@@ -1190,7 +1190,7 @@ function afficher_tranches_proches(pays, magazine, numeros, est_contexte_clonage
 					numero_selectionne_trouve=true;
 				}
 				else if (est_tranche_prete) {
-					// On arr�te apr�s 5x2 tranches similaires + le nouveau num�ro
+					// On arréte aprés 5x2 tranches similaires + le nouveau numéro
 					if (!numero_selectionne_trouve || tranches_affichees.length < NB_MAX_TRANCHES_SIMILAIRES_PROPOSEES*2 + 1) {
 						tranches_pretes.push(numero_existant);
 						tranches_affichees.push(numero_existant);
@@ -1200,7 +1200,7 @@ function afficher_tranches_proches(pays, magazine, numeros, est_contexte_clonage
 		}
 
 		if (!numero_selectionne_trouve) {
-			// Entrer ici signifie qu'il n'y a pas de tranches pr�tes apr�s le num�ro s�lectionn�
+			// Entrer ici signifie qu'il n'y a pas de tranches prêtes après le numéro sélectionné
 			tranches_affichees = limiter_tranches_pretes_parmi_tranches_affichees(tranches_affichees, tranches_pretes, false);
 		}
 
@@ -1209,7 +1209,7 @@ function afficher_tranches_proches(pays, magazine, numeros, est_contexte_clonage
 			wizard_do(wizard_courant,'goto_wizard-dimensions');
 		}
 
-		if (est_contexte_clonage) { // Filtrage des tranches qui sont pr�tes mais sans mod�le
+		if (est_contexte_clonage) { // Filtrage des tranches qui sont prétes mais sans modèle
 			$.ajax({
 				url: urls['cloner']+['est_clonable',pays,magazine,tranches_affichees.join(',')].join('/'),
 				type: 'post',
@@ -1298,7 +1298,7 @@ function charger_tranches_en_cours() {
 			wizard_conception.dialog().dialog('option', 'position', ['right', 'top']);
 			wizard_conception.parent().css({'left': (wizard_conception.parent().offset().left - LARGEUR_DIALOG_TRANCHE_FINALE - 20) + 'px'});
 
-			$.ajax({ // Num�ros d'�tapes
+			$.ajax({ // Numéros d'étapes
 				url: urls['parametrageg_wizard'] + ['index'].join('/'),
 				type: 'post',
 				dataType: 'json',
@@ -1309,7 +1309,7 @@ function charger_tranches_en_cours() {
 
 					charger_couleurs_frequentes();
 
-					$.ajax({ // D�tails des �tapes
+					$.ajax({ // Détails des étapes
 						url: urls['parametrageg_wizard'] + ['index', -1, 'null'].join('/'),
 						type: 'post',
 						dataType: 'json',
@@ -1537,7 +1537,7 @@ function ajouter_preview_etape(num_etape, nom_fonction) {
 
 function charger_previews(forcer_placement_dialogues) {
 	forcer_placement_dialogues = forcer_placement_dialogues || false;
-	chargements.push('final'); // On ajoute l'�tape finale
+	chargements.push('final'); // On ajoute l'étape finale
 
 	numero_chargement=numero;
 	chargement_courant=0;
@@ -1608,7 +1608,7 @@ function fermer_dialogue_preview(dialogue) {
 
 function placer_dialogues_preview() {
 	var dialogues=$('.dialog-preview-etape').add($('#wizard-conception').d());
-	dialogues.sort(function(dialogue1,dialogue2) { // Tri�s par num�ro d'�tape, de droite � gauche
+	dialogues.sort(function(dialogue1,dialogue2) { // Triés par numéro d'étape, de droite à gauche
 		return $(dialogue2).data('etape') === 'finale' ? 1 : $(dialogue2).data('etape') - $(dialogue1).data('etape');
 	});
 	var min_marge_gauche=0;
@@ -1635,10 +1635,10 @@ function placer_dialogues_preview() {
 	$('.ajout_etape:not(.template)').remove();
 
 	dialogues=$('.dialog-preview-etape:not(.finale)').d();
-	if (dialogues.length === 0) { // Aucune �tape n'existe. On cr�� avec le dialogue de conception pour r�f�rence
+	if (dialogues.length === 0) { // Aucune étape n'existe. On crée avec le dialogue de conception pour référence
 		dialogues=$('#wizard-conception').d();
 	}
-	dialogues.sort(function(dialogue1,dialogue2) { // Tri�s par offset gauche, de droite � gauche
+	dialogues.sort(function(dialogue1,dialogue2) { // Triés par offset gauche, de droite à gauche
 		return $(dialogue2).offset().left - $(dialogue1).offset().left;
 	});
 	$.each(dialogues,function(i,dialogue) {
@@ -1646,7 +1646,7 @@ function placer_dialogues_preview() {
 		var estDialogueConception = elDialogue.data('etape') === undefined;
 		if (estDialogueConception) { // Dialogue de conception
 			var etape = -1;
-			var positions = ['apres']; // L'�tape sera positionn�e apr�s l'�tape -1 (=dimensions de tranche)
+			var positions = ['apres']; // L'étape sera positionnée après l'étape -1 (=dimensions de tranche)
 		}
 		else {
 			var etape = parseInt(elDialogue.data('etape'));
@@ -2221,7 +2221,7 @@ function positionner_image(preview) {
 	}
 	else {
 		pos_y=image.position().top +parseFloat(valeurs['Decalage_y'])*zoom;
-		if (valeurs['Mesure_depuis_haut'] === 'Non') { // Le pos_y est mesur� entre le haut de la tranche et le bas du texte
+		if (valeurs['Mesure_depuis_haut'] === 'Non') { // Le pos_y est mesuré entre le haut de la tranche et le bas du texte
 			pos_y-=parseFloat(hauteur);
 		}
 	}
@@ -2296,11 +2296,11 @@ function coloriser_rectangles_degrades(c1) {
 
 function coloriser_rectangle_degrade(element,couleur1,couleur2, sens) {
 	sens = sens || 'Horizontal';
-	if (couleur1 === null) {// On garde la m�me couleur
+	if (couleur1 === null) {// On garde la même couleur
 		var regex=/, from\(((?:(?!\),).)+)/g;
 		couleur1 = element.css('background').match(regex)[0].replace(regex,'$1');
 	}
-	if (couleur2 === null) {// On garde la m�me couleur
+	if (couleur2 === null) {// On garde la même couleur
 		var regex = /, to\(((?:(?!\)\) ).)+)/g;
 		couleur2 = element.css('background').match(regex)[0].replace(regex,'$1');
 	}
@@ -2612,7 +2612,7 @@ function generer_et_positionner_preview_myfonts(gen_preview_proprietes, gen_prev
 
 		var pos_x=image.position().left+parseFloat(valeurs['Pos_x'])*zoom;
 		var pos_y=image.position().top +parseFloat(valeurs['Pos_y'])*zoom;
-		if (valeurs['Mesure_depuis_haut'] === 'Non') { // Le pos_y est mesur� entre le haut de la tranche et le bas du texte
+		if (valeurs['Mesure_depuis_haut'] === 'Non') { // Le pos_y est mesuré entre le haut de la tranche et le bas du texte
 			pos_y-=parseFloat(hauteur);
 		}
 
@@ -2684,7 +2684,7 @@ function reload_all_previews() {
 }
 
 function charger_couleurs_frequentes() {
-	$.ajax({ // Couleurs utilis�es dans l'ensemble des �tapes de la conception de tranche
+	$.ajax({ // Couleurs utilisées dans l'ensemble des étapes de la conception de tranche
 		url: urls['couleurs_frequentes']+['index'].join('/'),
 		type: 'post',
 		dataType:'json',
@@ -2941,7 +2941,7 @@ function creer_modele_tranche(pays, magazine, numero, with_user, callback) {
 		type: 'post',
 		success: function() {
 			if (dimensions.x) {
-				// Mise � jour de la fonction Dimensions avec les valeurs entr�es
+				// Mise ê jour de la fonction Dimensions avec les valeurs entrées
 				var parametrage_dimensions =  'Dimension_x='+dimensions.x +'&Dimension_y='+dimensions.y;
 				$.ajax({
 					url: urls['update_wizard']+['index',-1,parametrage_dimensions,with_user].join('/'),
@@ -3213,7 +3213,7 @@ function templatedToVal(templatedString) {
 						templatedString=templatedString.replace(regex, dimensions[axe]);
 				break;
 				case 'caracteres_speciaux':
-					templatedString=templatedString.replace(/°/,'�');
+					templatedString=templatedString.replace(/°/,'?');
 				break;
 
 			}
