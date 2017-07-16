@@ -1339,6 +1339,10 @@ class Fonction_executable extends Fonction {
 			$pays=self::$pays;
 		return Modele_tranche::getCheminImages() .'/'.$pays.'/photos';
 	}
+
+    static function getCheminPhotosTranchesMultiples() {
+		return Modele_tranche::getCheminImages() .'/tranches_multiples';
+	}
 	
 	static function getCheminElements($pays=null) {
 		if (is_null($pays))
@@ -1954,10 +1958,17 @@ class Dessiner_contour {
 }
 
 class Rogner {
-	function __construct($pays,$magazine,$numero_original,$numero,$nom,$destination,$x1,$x2,$y1,$y2) {
+	function __construct($pays,$magazine,$numero_original,$numero,$nom,$source,$destination,$x1,$x2,$y1,$y2) {
 		$extension='.jpg';
-		$nom_image_origine = Fonction_executable::getCheminPhotos($pays)
-							.'/'.$magazine.'.'.$numero_original.'.photo_'.$nom;
+
+		if ($source === 'photo_multiple') {
+            $nom_image_origine = Fonction_executable::getCheminPhotosTranchesMultiples()
+                                .'/photo.multiple_'.$nom.$extension;
+        }
+        else {
+            $nom_image_origine = Fonction_executable::getCheminPhotos($pays)
+                .'/'.$magazine.'.'.$numero_original.'.photo_'.$nom;
+        }
 		$nom_image_modifiee= ($destination === 'photos' ? Fonction_executable::getCheminPhotos($pays) : Fonction_executable::getCheminElements($pays))
 							.'/'.$magazine.'.'.$numero.'.photo_';
 		$i=1;
@@ -1965,9 +1976,8 @@ class Rogner {
 			$i++;
 		}
 		$nom_image_modifiee.=$i.$extension;
-		$nom_image_origine .=	$extension;
-		
-		echo "$nom_image_origine : Rognage vers $nom_image_modifiee : ($x1,$y1) -> ($x2,$y2)";
+
+//		echo "$nom_image_origine : Rognage vers $nom_image_modifiee : ($x1,$y1) -> ($x2,$y2)";
 		
 		$img = imagecreatefromjpeg($nom_image_origine);
 		$width=imagesx($img);
@@ -1979,6 +1989,8 @@ class Rogner {
 							($x2-$x1) * $width / 100 , ($y2-$y1) * $height / 100 , 
 							($x2-$x1) * $width / 100 , ($y2-$y1) * $height / 100);
 		imagejpeg($cropped_img,$nom_image_modifiee);
+
+		echo $nom_image_modifiee;
 		
 	}
 }

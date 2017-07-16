@@ -101,7 +101,7 @@
             Déplacez et redimensionnez les zones et positionnez une zone par tranche.<br />
             <a href="javascript:void(0)" id="ajouter_zone_photo_multiple">Ajouter une zone</a>
             <br />
-            <div id="zone_selection_tranches_multiples">
+            <div id="zone_selection_tranches_multiples" style="position: relative">
                 <img id="image_tranche_multiples"/>
                 <div class="rectangle_selection_tranche template">
                     <div class="edition_numero_tranche cache">
@@ -156,7 +156,12 @@
 
     <div id="wizard-confirmation-photo-multiple" class="wizard first deadend" title="Assistant DucksManager - Confirmation">
         <p>
-            <span class="chargement">Veuillez patienter...</span>
+            <div class="chargement">
+                Veuillez patienter...
+            </div>
+            <div id="photos_tranches_creees">
+                <div class="photo_tranche_creee template done"></div>
+            </div>
             <span class="cache fin_chargement">
                 Les modèles des tranches sélectionnées ont été initialisés.
                 <a href="javascript:location.reload()">Retour à l'accueil</a>
@@ -317,7 +322,7 @@
 					La tranche du numéro <span class="nouveau_numero"></span> est créée à partir du numéro <span class="numero_similaire"></span>...<br />
 					Ce processus peut durer plus d'une minute dans certains cas. Veuillez patienter tant que le clonage est en cours, ne fermez pas cette fenêtre.
 					<div class="loading">Clonage en cours...</div>
-                <div class="done cache">Clonage terminé.
+                    <div class="done cache">Clonage terminé.</div>
                     <div class="clonage_partiel cache">
                         Certaines étapes n'ont pas été clonées en raison de paramètres d'étapes manquants.
                     </div>
@@ -759,30 +764,30 @@
 </div>
 
 <div id="wizard-confirmation-supprimer" class="wizard" title="Supprimer l'étape ?">
-	<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>
+	<p><span class="ui-icon ui-icon-alert confirmation"></span>
 	Vous allez supprimer cette étape. Continuer ?</p>
 </div>
 
 <div id="wizard-confirmation-rechargement" class="wizard" title="Sauvegarder les changements ?">
-	<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>
+	<p><span class="ui-icon ui-icon-alert confirmation"></span>
 	Vous avez modifié l'étape ouverte sans valider ses modifications. 
 	Souhaitez-vous valider ces modifications ?</p>
 </div>
 
 <div id="wizard-confirmation-annulation" class="wizard" title="Sauvegarder les changements ?">
-	<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>
+	<p><span class="ui-icon ui-icon-alert confirmation"></span>
 	Vous avez modifié l'étape que vous souhaitez fermer. 
 	Souhaitez-vous sauvegarder ces modifications ?</p>
 </div>
 
 <div id="wizard-confirmation-suppression" class="wizard" title="Supprimer cette étape ?">
-	<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>
+	<p><span class="ui-icon ui-icon-alert confirmation"></span>
 	Cette étape va être supprimée. Continuer ?</p>
 	<span id="num_etape_a_supprimer" class="cache"></span>
 </div>
 
 <div id="wizard-confirmation-suppression-point" class="wizard" title="Supprimer ce point ?">
-	<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>
+	<p><span class="ui-icon ui-icon-alert confirmation"></span>
 	Ce point du polygone va être supprimé. Continuer ?</p>
 	<span id="nom_point_a_supprimer" class="cache"></span>
 </div>
