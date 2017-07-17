@@ -203,10 +203,10 @@ function launch_wizard(id, p) {
 	var buttons={},
 		dialogue = $('#'+id),
 		first 	 = dialogue.hasClass('first') 	  || (p.first 	  !== undefined	&& p.first),
-		deadend = dialogue.hasClass('deadend') 	  || (p.deadend   !== undefined	&& p.deadend),
-		modal	 = dialogue.hasClass('modal')	  || (p.modal 	  !== undefined	&& p.modal),
+		modal	 = dialogue.hasClass('modal')	      || (p.modal 	  !== undefined	&& p.modal),
 		closeable= dialogue.hasClass('closeable') || (p.closeable !== undefined	&& p.closeable),
-		extensible=dialogue.hasClass('extensible')|| (p.extensible!== undefined	&& p.extensible);
+		deadend = dialogue.hasClass('deadend'),
+		extensible=dialogue.hasClass('extensible');
 
 	$('#'+id+' .buttonset').buttonset();
 	$('#'+id+' .button').button();
@@ -291,9 +291,11 @@ function launch_wizard(id, p) {
 							$(this).dialog().dialog( "close" );
 						break;
 						case 'photos_texte':
-							wizard_goto($('#'+id), 'wizard-myfonts',
-										{height: $(window).height()-60, width: $(window).width()-40,
-										 modal:true, first: true});
+							wizard_goto($('#'+id), 'wizard-myfonts', {
+								height: $(window).height()-60,
+								width: $(window).width()-40,
+								first: true
+							});
 							$(this).dialog().dialog( "close" );
 
 						break;
@@ -983,11 +985,11 @@ function afficher_liste_magazines(wizard_id, id_element_liste, data) {
 			if (prepublier_ou_depublier) {
 				charger_image('etape', urls['viewer_wizard'] + ['index', data.Pays, data.Magazine, data.Numero, '1.5', 'all', '_', 'save', 'false', 'false'].join('/'), null, function (image) {
 					var nom_image_temp=image.attr('src').match(/[.0-9]+$/g)[0];
-					prepublier_depublier(true, btn, data, nom_image_temp);
+					prepublier_depublier(true, btn, nom_image_temp);
 				});
 			}
 			else {
-				prepublier_depublier(false, btn, data);
+				prepublier_depublier(false, btn);
 			}
 		});
 
@@ -1269,7 +1271,7 @@ function charger_tranches_en_cours() {
 			nom_photo_principale = tranche.NomPhotoPrincipale;
 
 			$('#nom_complet_tranche_en_cours')
-				.html($('<img>').attr({src: 'images/flags/' + pays + '.png'}))
+				.html($('<img>', {src: 'images/flags/' + pays + '.png'}))
 				.append(' ' + tranche.str_userfriendly);
 
 			$('#action_bar').removeClass('cache');
@@ -1944,7 +1946,11 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 				$('#wizard-images')
 					.addClass('autres_photos')
 					.removeClass('photo_principale photos_texte');
-				launch_wizard('wizard-images', {modal:true, first: true, width: 600});
+				launch_wizard('wizard-images', {
+					modal:true,
+					first: true,
+					width: 600
+				});
 			});
 
 		break;
@@ -1966,7 +1972,11 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 				$('#wizard-images')
 					.addClass('photos_texte')
 					.removeClass('photo_principale autres_photos');
-				launch_wizard('wizard-images', {modal:true, first: true, width: 600});
+				launch_wizard('wizard-images', {
+					modal:true,
+					first: true,
+					width: 600
+				});
 			});
 
 			checkboxes.push('Demi_hauteur');
@@ -2220,8 +2230,7 @@ function positionner_image(preview) {
 			'height':hauteur+'px'})
 		.removeClass('cache')
 		.html(
-			$('<img>')
-				.attr({'src':preview.attr('src')})
+			$('<img>', {'src':preview.attr('src')})
 				.error(afficher_erreur_image_inexistante)
 		)
 		.draggable({//containment:limites_drag
@@ -3037,7 +3046,11 @@ function init_action_bar() {
 					$('#wizard-images')
 						.addClass('photo_principale')
 						.removeClass('autres_photos photos_texte');
-					launch_wizard('wizard-images', {modal:true, first: true, width: 600});
+					launch_wizard('wizard-images', {
+						modal:true,
+						first: true,
+						width: 600
+					});
 				break;
 				case 'corbeille':
 					jqueryui_alert_from_d($('#wizard-confirmation-desactivation-modele'), function() {
@@ -3051,7 +3064,11 @@ function init_action_bar() {
 					});
 				break;
 				case 'valider':
-					launch_wizard('wizard-confirmation-validation-modele', {modal:true, first: true, closeable: true});
+					launch_wizard('wizard-confirmation-validation-modele', {
+						modal:true,
+						first: true,
+						closeable: true
+					});
 				break;
 			}
 
@@ -3185,7 +3202,7 @@ function afficher_galerie(type_images, data, container) {
 	}
 }
 
-function prepublier_depublier(prepublier, btn, data, nom_image_temp) {
+function prepublier_depublier(prepublier, btn, nom_image_temp) {
 	$.ajax({
 		url: urls['prepublier'] + ['index', prepublier, nom_image_temp].join('/'),
 		type: 'post',
