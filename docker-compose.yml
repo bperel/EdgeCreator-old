@@ -6,7 +6,7 @@ services:
     ports:
      - "8002:80"
     volumes:
-     - .:/var/www/html/EdgeCreator
+     - .:/var/www/html
      - /var/www/html/DucksManager/edges:/var/www/html/DucksManager/edges
 networks:
   default:
