@@ -59,7 +59,7 @@ var INTERVAL_CHECK_LOGGED_IN=5;
 			}
 			else {
 				if ($('#wizard-conception').is(":visible")) {
-					jqueryui_alert_from_d($('#wizard-session-expiree'),function() { location.reload(); });
+					jqueryui_alert_from_d($('#wizard-session-expiree'),function() { location.replace(base_url); });
 				}
 			}
 		}
@@ -320,7 +320,7 @@ function launch_wizard(id, p) {
 						type: 'post',
 						success:function() {
 							jqueryui_alert_from_d($('#wizard-confirmation-validation-modele-ok'), function() {
-								location.reload();
+								location.replace(base_url);
 							});
 						},
 						error:function() {
@@ -1247,7 +1247,7 @@ function cloner_numero(numero_a_cloner, nouveaux_numeros) {
 function traiter_tranches_en_cours(data) {
 	var tranches=[];
 	for (var i_tranche_en_cours in data.tranches) {
-		var tranche_en_cours=data[i_tranche_en_cours];
+		var tranche_en_cours=data.tranches[i_tranche_en_cours];
 		tranche_en_cours.str=tranche_en_cours.Pays+'_'+tranche_en_cours.Magazine+'_'+tranche_en_cours.Numero;
 		tranche_en_cours.str_userfriendly=tranche_en_cours.Magazine_complet+' n&deg;'+tranche_en_cours.Numero;
 		tranches.push(tranche_en_cours);
@@ -3040,7 +3040,7 @@ function init_action_bar() {
 			var nom=$(this).attr('name');
 			switch(nom) {
 				case 'home':
-					location.reload();
+					location.replace(base_url);
 				break;
 				case 'photo':
 					$('#wizard-images')
@@ -3058,7 +3058,7 @@ function init_action_bar() {
 							url: urls['desactiver_modele']+['index'].join('/'),
 							type: 'post',
 							success:function() {
-								location.reload();
+								location.replace(base_url);
 							}
 						});
 					});

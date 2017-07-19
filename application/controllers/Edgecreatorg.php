@@ -1,8 +1,5 @@
 <?php
 class EdgeCreatorg extends Ec_Controller {
-	static $pays;
-	static $magazine;
-	
 	function login() {
 		$this->load->model($this->session->userdata('mode_expert') === true ? 'Modele_tranche' : 'Modele_tranche_Wizard','Modele_tranche');
 		
@@ -23,10 +20,8 @@ class EdgeCreatorg extends Ec_Controller {
 		$this->session->unset_userdata('mode_expert');
 	}
 	
-	function index($pays=null,$magazine=null,$etape_ouverture=null,$numero_debut_filtre=null,$numero_fin_filtre=null)
+	function index()
 	{
-		self::$pays=$pays;
-		self::$magazine=$magazine;
 		$this->load->helper('url');
         $this->session->set_userdata('id_modele', null);
 		
@@ -45,11 +40,6 @@ class EdgeCreatorg extends Ec_Controller {
 				'privilege' => $privilege,
 				'erreur' => $erreur,
 				'title' => 'EdgeCreator',
-				'pays' => self::$pays,
-				'magazine'=>self::$magazine,
-				'etape_ouverture'=>$etape_ouverture,
-				'numero_debut_filtre'=>$numero_debut_filtre,
-				'numero_fin_filtre'=>$numero_fin_filtre
         ];
 		$this->load->view('headergview',$data);
 		$this->load->view('wizarddialogsview',$data);

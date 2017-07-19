@@ -1034,7 +1034,8 @@ $(window).load(function() {
 
     if (wizard) {
         if (! username ) {
-            afficher_dialogue_accueil();
+            // afficher_dialogue_accueil();
+			jquery_connexion();
         }
         else {
             launch_wizard('wizard-1');
@@ -1808,7 +1809,7 @@ function jquery_connexion() {
                 if (data.indexOf("Erreur") == 0)
                     $( "#wizard-login-form" ).find('.erreurs').html(data);
                 else {
-                    location.reload();
+                    location.replace(base_url);
                 }
             }
         });
@@ -1821,7 +1822,7 @@ function logout() {
         url: base_url+'index.php/edgecreatorg/logout',
         type: 'post',
         success:function() {
-        	location.reload();
+        	location.replace(base_url);
         }
 	});
 }

@@ -27,24 +27,18 @@ header("Content-Type: text/html; charset=UTF-8"); ?>
 	<script type="text/javascript" src="<?=base_url()?>js/edgecreatorlib.js" ></script>
 
 	<script type="text/javascript">
-		var pays='<?=$pays?>';
-		var magazine='<?=$magazine?>';
-		var etape_ouverture='<?=is_null($etape_ouverture) || empty($etape_ouverture) ? '_' : $etape_ouverture?>';
+		var pays;
+		var magazine;
 		var privilege='<?=$privilege?>';
 		var username = '<?=$user?>';
 		var mode_expert = <?=$mode_expert===true?'true':'false'?>;
-		
-		var plage=<?php
-		if (is_null($numero_debut_filtre)) {
-			?>['null','null'];<?php
-		}
-		else {
-			?>['<?=$numero_debut_filtre?>','<?=$numero_fin_filtre?>'];<?php
-		}?>
-		
-		var numero_fin_filtre='<?=$numero_fin_filtre?>';
+
 		var base_url='<?=base_url()?>';
 		var dm_base_url='<?=base_url()?>../DucksManager';
+
+		if (window.location.href.match(/user=/)) {
+			location.replace(base_url);
+		}
 
 		var urls=[];
 		<?php

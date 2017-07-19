@@ -43,11 +43,14 @@ class Modele_tranche extends CI_Model {
 	function get_privilege() {
 		$privilege=null;
 		$_POST['mode_expert']=isset($_POST['mode_expert']) && $_POST['mode_expert'] === 'true' ? true : false;
-		if (isset($_POST['user'])) {
+		if (isset($_REQUEST['user'])) {
 			self::$just_connected=true;
-			if ($this->user_connects($_POST['user'], $_POST['pass'])) {
-			    $privilege = $this->get_privilege_from_username($_POST['user']);
-				$this->creer_id_session($_POST['user'],sha1($_POST['pass']),$_POST['mode_expert']);
+			if ($this->user_connects($_REQUEST['user'], $_REQUEST['pass'], isset($_REQUEST['is_sha1']))) {
+			    $privilege = $this->get_privilege_from_username($_REQUEST['user']);
+				$this->creer_id_session($_REQUEST['user'],sha1($_REQUEST['pass']),$_POST['mode_expert']);
+            }
+            else {
+			    return null;
             }
 		}
 		else {
@@ -74,8 +77,10 @@ class Modele_tranche extends CI_Model {
         }
 	}
 	
-	function user_connects($user, $pass) {
-		$pass=sha1($pass);
+	function user_connects($user, $pass, $isSha1Pass = false) {
+		if (!$isSha1Pass) {
+		    $pass=sha1($pass);
+        }
 		global $erreur;
 		if (!$this->user_exists($user)) {
 			$erreur = 'Cet utilisateur n\'existe pas';

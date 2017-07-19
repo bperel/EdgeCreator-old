@@ -51,7 +51,7 @@
 		Vous êtes à présent connecté(e) sur EdgeCreator.
 	</p>
 	<p>
-		Commençons par le début... Que voulez-vous faire ?<br />
+		Que voulez-vous faire ?<br />
 		<form>
 			<div class="buttonset">
 				<input type="radio" name="choix" value="to-wizard-envoyer-photo" id="to-wizard-envoyer-photo" />
@@ -168,7 +168,7 @@
             </div>
             <span class="cache fin_chargement">
                 Les modèles des tranches sélectionnées ont été initialisés.
-                <a href="javascript:location.reload()">Retour à l'accueil</a>
+                <a href="javascript:location.replace(base_url)">Retour à l'accueil</a>
             </span>
         </p>
     </div>
