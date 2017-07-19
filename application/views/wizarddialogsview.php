@@ -58,23 +58,27 @@
 				<label class="toutes_bordures" for="to-wizard-envoyer-photo">Envoyer des photos de tranche</label><br />
 				
 				<div></div>
-				
-				<input type="radio" name="choix" value="to-wizard-creer" id="to-wizard-creer" />
-				<label class="toutes_bordures" for="to-wizard-creer">Créer une tranche de magazine</label><br />
-				<input type="radio" name="choix" value="to-wizard-modifier" id="to-wizard-modifier"/>
-				<label class="toutes_bordures" for="to-wizard-modifier">Modifier une tranche de magazine</label><br />
-				<input type="radio" name="choix" value="to-wizard-conception" id="to-wizard-conception"/>
+
+                <?php if (in_array($privilege, ['Edition', 'Admin'])) { ?>
+                    <input type="radio" name="choix" value="to-wizard-creer" id="to-wizard-creer" />
+                    <label class="toutes_bordures" for="to-wizard-creer">Créer une tranche de magazine</label><br />
+                    <input type="radio" name="choix" value="to-wizard-modifier" id="to-wizard-modifier"/>
+                    <label class="toutes_bordures" for="to-wizard-modifier">Modifier une tranche de magazine</label><br />
+                    <input type="radio" name="choix" value="to-wizard-conception" id="to-wizard-conception"/>
+                <?php } ?>
 			</div>
-			<ul id="tranches_en_cours" class="liste_numeros">
-                <div name="tranches_non_affectees">Tranches non affectées :</div>
-                <div name="tranches_affectees">Tranches en cours de conception par vous :</div>
-				<div class="groupe_tranches template">
-                    <input type="radio" id="numero_tranche_en_cours" name="choix_tranche_en_cours">
-                    <label for="numero_tranche_en_cours" class="toutes_bordures libelle_tranche_en_cours">Label</label>
-                    <button class="prepublier">Pré-publier</button>
-                    <button class="depublier cache">Dé-publier</button>
-				</div>
-			</ul>
+            <?php if (in_array($privilege, ['Edition', 'Admin'])) { ?>
+                <ul id="tranches_en_cours" class="liste_numeros">
+                    <div name="tranches_non_affectees">Tranches non affectées :</div>
+                    <div name="tranches_affectees">Tranches en cours de conception par vous :</div>
+                    <div class="groupe_tranches template">
+                        <input type="radio" id="numero_tranche_en_cours" name="choix_tranche_en_cours">
+                        <label for="numero_tranche_en_cours" class="toutes_bordures libelle_tranche_en_cours">Label</label>
+                        <button class="prepublier">Pré-publier</button>
+                        <button class="depublier cache">Dé-publier</button>
+                    </div>
+                </ul>
+            <?php } ?>
             <input type="hidden" name="est_nouvelle_conception_tranche" />
 		</form>
 	</p>

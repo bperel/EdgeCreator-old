@@ -13,10 +13,10 @@ class Helper extends EC_Controller {
 		$privilege=$this->Modele_tranche->get_privilege();
 		
 		//echo '<div style="display:none">'.$this->session->userdata('user').','.$this->session->userdata('pass').'</div>';
-		if ($privilege == 'Affichage') {
-			echo 'Vous n\'avez pas les permissions suffisantes pour r&eacute;aliser cette action !';
-			return;
-		}
+//		if ($privilege == 'Affichage') {
+//			echo 'Vous n\'avez pas les permissions suffisantes pour r&eacute;aliser cette action !';
+//			return;
+//		}
 		
 		ob_start();
 		include_once('helpers/'.$nom);

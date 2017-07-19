@@ -39,15 +39,12 @@
 	
 	<div id="status_user">
 		<?php
-		if ($privilege=='Affichage') {
+        if (isset($user)) {
+            ?><div>Connecté(e) en tant que <span id="utilisateur"><?=$user?></span></div>
+            <button class="small" id="deconnexion" onclick="logout()">Déconnexion</button><?php
+        }
+        else {
 			?>Non connecté(e)<?php
-		}
-		else {
-			?>Connecté(e) en tant que <span id="utilisateur"><?=$user?></span><?php
-		}
-		?><br /><?php
-		if ($user!=='demo') {
-			?><button class="small" id="deconnexion" onclick="logout()">Déconnexion</button><?php					
 		}
 		?>
 	</div>

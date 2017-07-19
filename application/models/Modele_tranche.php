@@ -58,8 +58,7 @@ class Modele_tranche extends CI_Model {
                                         $this->session->userdata('mode_expert'));
 			}
 			else {
-				$this->creer_id_session('demo',md5('demodemo'),false);
-				return $this->get_privilege();
+				return 'Affichage';
 			}
 		}
 		return $privilege;

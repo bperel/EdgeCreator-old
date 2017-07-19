@@ -1033,7 +1033,7 @@ $(window).load(function() {
     $('.tip').tooltip();
 
     if (wizard) {
-        if (username === 'demo') {
+        if (! username ) {
             afficher_dialogue_accueil();
         }
         else {
