@@ -154,6 +154,9 @@ class DmClient
         curl_close($ch);
 
         if (!empty($buffer) && $responseCode >= 200 && $responseCode < 300) {
+            if ($buffer === 'null') {
+                return null;
+            }
             $results = json_decode($buffer);
             if (is_array($results) || is_object($results)) {
                 return $results;

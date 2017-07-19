@@ -1246,7 +1246,7 @@ function cloner_numero(numero_a_cloner, nouveaux_numeros) {
 
 function traiter_tranches_en_cours(data) {
 	var tranches=[];
-	for (var i_tranche_en_cours in data) {
+	for (var i_tranche_en_cours in data.tranches) {
 		var tranche_en_cours=data[i_tranche_en_cours];
 		tranche_en_cours.str=tranche_en_cours.Pays+'_'+tranche_en_cours.Magazine+'_'+tranche_en_cours.Numero;
 		tranche_en_cours.str_userfriendly=tranche_en_cours.Magazine_complet+' n&deg;'+tranche_en_cours.Numero;
