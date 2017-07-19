@@ -5,6 +5,8 @@ class Upload_Wizard extends EC_Controller {
     var $contenu = '';
 	
 	function index() {
+        $this->init_model();
+
         $est_photo_tranche = (isset($_POST['photo_tranche']) && $_POST['photo_tranche'] == 1)
                           || (isset($_GET ['photo_tranche']) && $_GET ['photo_tranche'] == 1)
             ? 1
@@ -68,6 +70,22 @@ class Upload_Wizard extends EC_Controller {
                 $erreur = 'Echec de l\'envoi : ce fichier existe d&eacute;j&agrave; ! '
                     .'Demandez &agrave; un admin de supprimer le fichier existant ou renommez le v&ocirc;tre !';
             }
+
+            if ($est_photo_tranche) {
+                $limite_atteinte = $this->Modele_tranche->est_limite_photos_atteinte();
+
+                if ($limite_atteinte) {
+                    $erreur = 'Votre limite d\'envoi quotidienne a été atteinte';
+                }
+                else {
+                    $file_hash = sha1_file($_FILES['image']['tmp_name']);
+                    $photo_existante = $this->Modele_tranche->get_photo_existante($file_hash);
+                    if (!is_null($photo_existante)) {
+                        $erreur = 'Vous avez déjà envoyé cette photo';
+                    }
+                }
+            }
+
             if(!isset($erreur)) //S'il n'y a pas d'erreur, on upload
             {
                 //On formate le nom du fichier ici...
@@ -78,14 +96,10 @@ class Upload_Wizard extends EC_Controller {
                 if (@opendir($dossier) === false) {
                     mkdir($dossier,0777,true);
                 }
+
                 if(move_uploaded_file($_FILES['image']['tmp_name'], $dossier . $fichier)) {
                     if ($est_photo_tranche) {
-                        if ($extension == '.png') {
-                            $im=imagecreatefrompng($dossier . $fichier);
-                            unlink($dossier . $fichier);
-                            $fichier=str_replace('.png','.jpg',$fichier);
-                            imagejpeg($im, $dossier . $fichier);
-                        }
+                        $this->Modele_tranche->ajouter_photo_tranches_multiples($fichier, sha1_file($dossier . $fichier));
 
                         ob_start();
                         ?>

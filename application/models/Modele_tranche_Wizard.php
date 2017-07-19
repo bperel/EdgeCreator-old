@@ -384,6 +384,41 @@ class Modele_tranche_Wizard extends Modele_tranche {
         DmClient::get_query_results_from_dm_server($requete_prepublication, 'db_edgecreator');
     }
 
+    public function ajouter_photo_tranches_multiples($nomFichier, $hash)
+    {
+        $photos_jour = DmClient::get_service_results_ec(
+            DmClient::$dm_server,
+            'PUT',
+            '/edgecreator/multiple_edge_photo', [
+                'hash' => $hash,
+                'filename' => $nomFichier
+        ]);
+
+        return count($photos_jour) > 10;
+    }
+
+    public function est_limite_photos_atteinte()
+    {
+        $photos_jour = DmClient::get_service_results_ec(
+            DmClient::$dm_server,
+            'GET',
+            '/edgecreator/multiple_edge_photo/today'
+        );
+
+        return count($photos_jour) > 10;
+    }
+
+    public function get_photo_existante($hash)
+    {
+        $photos_existante = DmClient::get_service_results_ec(
+            DmClient::$dm_server,
+            'GET',
+            "/edgecreator/multiple_edge_photo/hash/$hash"
+        );
+
+        return $photos_existante;
+    }
+
     function copier_image_temp_vers_gen($nom_image) {
         $id_modele = $this->session->userdata('id_modele');
 
