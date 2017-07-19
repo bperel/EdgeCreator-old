@@ -1,6 +1,5 @@
 <html>
 	<head>
-		<script type="text/javascript" src="<?=base_url()?>js/prototype.js" ></script>
 		<script type="text/javascript" src="<?=base_url()?>js/edgecreatorlib.js" ></script>
 		
 		<script type="text/javascript">

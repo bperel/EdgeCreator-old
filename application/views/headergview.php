@@ -23,7 +23,6 @@ header("Content-Type: text/html; charset=UTF-8"); ?>
 	<script type="text/javascript" src="<?=base_url()?>vendor/jquery-ui/ui/minified/jquery-ui.min.js" ></script>
 	
 	<script type="text/javascript" src="<?=base_url()?>js/jquery.dataSelector.js" ></script>
-	<script type="text/javascript" src="<?=base_url()?>js/json2.js" ></script>
 	<script type="text/javascript" src="<?=base_url()?>js/edgecreatorlib.js" ></script>
 
 	<script type="text/javascript">

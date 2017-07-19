@@ -6,7 +6,6 @@
     "jquery-ui": "1.10.*",
     "jrac": "https://github.com/trepmag/jrac.git",
     "jquery.ba-resize": "https://github.com/cowboy/jquery-resize.git",
-    "jquery-serializeObject": "1.0.*",
-    "prototype": "https://github.com/sstephenson/prototype.git"
+    "jquery-serializeObject": "1.0.*"
   }
 }
