@@ -1,5 +1,5 @@
 <?php
-include_once(BASEPATH.'/../application/controllers/Viewer_wizard.php');
+include_once(APPPATH.'controllers/Viewer_wizard.php');
 
 class Viewer_myfonts extends EC_Controller {
     static $is_debug=false;

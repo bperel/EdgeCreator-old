@@ -1,5 +1,5 @@
 <?php
-include_once(BASEPATH.'/../application/helpers/dm_client.php');
+include_once(APPPATH.'helpers/dm_client.php');
 
 class EC_Controller extends CI_Controller {
 

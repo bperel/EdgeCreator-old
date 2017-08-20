@@ -29,7 +29,12 @@ class Modele_tranche extends CI_Model {
 
     public static function getCheminImages()
     {
-        return BASEPATH . '../../DucksManager/edges';
+        return BASEPATH . '../edges/';
+    }
+
+    public static function getCheminPolices()
+    {
+        return BASEPATH . 'fonts/';
     }
 
     function get_just_connected() {
@@ -1111,12 +1116,11 @@ class Modele_tranche extends CI_Model {
 		$liste= [];
 		switch($type) {
 			case 'Police':
-				$rep=BASEPATH.'fonts/';
-				$dir = opendir($rep);
+				$dir = opendir(Modele_tranche::getCheminPolices());
 				while ($f = readdir($dir)) {
 					if (strpos($f,'.ttf')===false)
 					continue;
-					if(is_file($rep.$f)) {
+					if(is_file(Modele_tranche::getCheminPolices().$f)) {
 						$nom=substr($f,0,strlen($f)-strlen('.ttf'));
 						$liste[$nom]=$nom;
 					}
@@ -1332,7 +1336,7 @@ class Fonction_executable extends Fonction {
 				$texte_erreur=$ligne;
 			imagettftext(Viewer_wizard::$image,z(3),90,
 						 ($i+1)*Viewer_wizard::$largeur/3,Viewer_wizard::$hauteur,
-						 $noir,BASEPATH.'fonts/Arial.ttf',$texte_erreur);
+						 $noir,Modele_tranche::getCheminPolices() . 'Arial.ttf',$texte_erreur);
 		}
 		Modele_tranche::rendu_image(false);
 		exit();
@@ -1341,17 +1345,17 @@ class Fonction_executable extends Fonction {
     static function getCheminPhotos($pays=null) {
 		if (is_null($pays))
 			$pays=self::$pays;
-		return Modele_tranche::getCheminImages() .'/'.$pays.'/photos';
+		return Modele_tranche::getCheminImages() . $pays.'/photos';
 	}
 
     static function getCheminPhotosTranchesMultiples() {
-		return Modele_tranche::getCheminImages() .'/tranches_multiples';
+		return Modele_tranche::getCheminImages() .'tranches_multiples';
 	}
 	
 	static function getCheminElements($pays=null) {
 		if (is_null($pays))
 			$pays=self::$pays;
-        return Modele_tranche::getCheminImages() .'/'.$pays.'/elements';
+        return Modele_tranche::getCheminImages() . $pays.'/elements';
 	}
 
 	static function toTemplatedString($str,$actif=true) {
@@ -1520,7 +1524,7 @@ class Image extends Fonction_executable {
 	}
 
 	static function get_chemin_relatif($source) {
-		return base_url().'../edges/'.self::$pays.'/elements/'.$source;
+		return Modele_tranche::getCheminImages() . self::$pays.'/elements/'.$source;
 	}
 	
 	function verifier_erreurs() {
@@ -1670,7 +1674,7 @@ class TexteTTF extends Fonction_executable {
 		
 		$centrage_auto_x=$this->options->Pos_x == -1;
 		$centrage_auto_y=$this->options->Pos_y == -1;
-		$p=calculateTextBox($this->options->Chaine, BASEPATH.'fonts/'.$this->options->Police.'.ttf', z($this->options->Taille), $this->options->Rotation);
+		$p=calculateTextBox($this->options->Chaine, Modele_tranche::getCheminPolices().$this->options->Police.'.ttf', z($this->options->Taille), $this->options->Rotation);
 		if ($centrage_auto_x || $centrage_auto_y) {
 			if ($centrage_auto_x)
 				$this->options->Pos_x=(Viewer_wizard::$largeur-$p['width']*$this->options->Compression_x)/z(2);
@@ -1693,8 +1697,8 @@ class TexteTTF extends Fonction_executable {
 
 			imagettftext($image2,z($this->options->Taille),$this->options->Rotation,
 						 $pos_x_tmp,$pos_y_tmp,
-						 $couleur_texte,BASEPATH.'fonts/'.$this->options->Police.'.ttf',$this->options->Chaine);
-			imagepng($image2, BASEPATH.'../../edges/tmp/ttfcomp.png');
+						 $couleur_texte,Modele_tranche::getCheminPolices().$this->options->Police.'.ttf',$this->options->Chaine);
+			imagepng($image2, Modele_tranche::getCheminImages() . 'tmp/ttfcomp.png');
 			
 			imagecopyresampled(Viewer_wizard::$image, $image2, z($this->options->Pos_x)*(Viewer_wizard::$largeur/$largeur_tmp), z($this->options->Pos_y)*(Viewer_wizard::$hauteur/$hauteur_tmp), 0,0, Viewer_wizard::$largeur*$this->options->Compression_x, Viewer_wizard::$hauteur*$this->options->Compression_y, $largeur_tmp, $hauteur_tmp);
 
@@ -1702,7 +1706,7 @@ class TexteTTF extends Fonction_executable {
 		else {
 			imagettftext(Viewer_wizard::$image,z($this->options->Taille),$this->options->Rotation,
 						 z($this->options->Pos_x),z($this->options->Pos_y),
-						 $couleur_texte,BASEPATH.'fonts/'.$this->options->Police.'.ttf',$this->options->Chaine);
+						 $couleur_texte,Modele_tranche::getCheminPolices().$this->options->Police.'.ttf',$this->options->Chaine);
 		}
 	}
 }

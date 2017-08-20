@@ -22,7 +22,7 @@ class DmClient
         self::$userData = $userdata;
         self::$dm_server = null;
         self::$dm_site = null;
-        $servers = parse_ini_file(BASEPATH.'../application/config/'.self::$servers_file, true);
+        $servers = parse_ini_file(APPPATH.'config/'.self::$servers_file, true);
 
         foreach ($servers as $name => $server) {
             $serverObject = json_decode(json_encode($server));

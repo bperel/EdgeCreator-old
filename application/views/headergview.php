@@ -33,7 +33,7 @@ header("Content-Type: text/html; charset=UTF-8"); ?>
 		var mode_expert = <?=$mode_expert===true?'true':'false'?>;
 
 		var base_url='<?=base_url()?>';
-		var dm_base_url='<?=base_url()?>../DucksManager';
+		var edges_url='<?=base_url()?>edges';
 
 		if (window.location.href.match(/user=/)) {
 			location.replace(base_url);
@@ -58,7 +58,7 @@ header("Content-Type: text/html; charset=UTF-8"); ?>
 </head>
 <body id="body" style="margin:0;padding:0">
 	<img class="ajout_etape tip2 template hidden"
-		 src="<?=base_url()?>/images/ajouter.png" title="Ajouter une étape ici"/>
+		 src="<?=base_url()?>images/ajouter.png" title="Ajouter une étape ici"/>
 	<?php
 	if (!empty($erreur)) {
 		echo $erreur;

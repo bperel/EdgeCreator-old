@@ -1,5 +1,5 @@
 <?php
-include_once(BASEPATH.'../application/models/Modele_tranche.php');
+include_once(APPPATH.'models/Modele_tranche.php');
 
 class Modele_tranche_Wizard extends Modele_tranche {
 	static $content_fields = ['Ordre', 'Nom_fonction', 'Option_nom', 'Option_valeur'];
