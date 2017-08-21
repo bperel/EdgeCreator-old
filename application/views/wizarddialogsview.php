@@ -39,7 +39,8 @@
 		<fieldset>
 			<label for="username">Pseudo: </label>
 			<input type="text" name="username" id="username" class="text ui-widget-content ui-corner-all" />
-			<label for="password">Mot de passe: </label>
+			<br />
+            <label for="password">Mot de passe: </label>
 			<input type="password" name="password" id="password" value="" class="text ui-widget-content ui-corner-all" />
 			<br />
 		</fieldset>
