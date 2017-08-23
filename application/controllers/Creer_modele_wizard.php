@@ -21,8 +21,8 @@ class Creer_Modele_Wizard extends EC_Controller {
 
             //Mise à jour de la photo principale si une photo a été spécifiée lors de l'envoi de photos
             $nom_photo_principale = $this->Modele_tranche->get_photo_principale();
-            $this->Modele_tranche->update_photo_principale($nom_photo_principale);
             $this->Modele_tranche->setUsername($this->session->userdata('user'));
+            $this->Modele_tranche->update_photo_principale($nom_photo_principale);
         }
 
 		$data = [

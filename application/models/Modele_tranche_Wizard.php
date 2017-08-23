@@ -239,12 +239,14 @@ class Modele_tranche_Wizard extends Modele_tranche {
 	
 	function update_photo_principale($nom_photo_principale) {
         $id_modele = $this->session->userdata('id_modele');
+        $username = $this->session->userdata('user');
 
         DmClient::get_service_results_ec(
             DmClient::$dm_server,
             'PUT',
             "/edgecreator/model/v2/$id_modele/photo/main", [
-                'photoname' => $nom_photo_principale
+                'photoname' => $nom_photo_principale,
+                'username' => $username
             ]
         );
 	}

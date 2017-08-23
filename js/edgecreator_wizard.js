@@ -2950,7 +2950,7 @@ function creer_prochain_modele_tranche(tranches_a_creer, i_tranche_a_creer, imag
 				var match_photo_principale = ('/' + nom_fichier_rogne).match(REGEX_FICHIER_PHOTO);
 				if (match_photo_principale) {
 					nom_photo_principale = match_photo_principale[1];
-					maj_photo_principale(false);
+					maj_photo_principale();
 				}
 				else {
 					jqueryui_alert('Photo de tranche invalide : ' + nom_fichier_rogne, 'Création de modéle');
@@ -3121,15 +3121,12 @@ function afficher_photo_tranche() {
 	}
 }
 
-function maj_photo_principale(with_user) {
+function maj_photo_principale() {
 	if (nom_photo_principale === null) {
 		return;
 	}
-	if (with_user !== false) {
-		with_user = true;
-	}
 	$.ajax({
-		url: urls['update_photo']+['index', nom_photo_principale, with_user].join('/'),
+		url: urls['update_photo']+['index', nom_photo_principale].join('/'),
 		type: 'post',
 		success:function() {
 			if ($('#wizard-conception').is(':visible')) {
