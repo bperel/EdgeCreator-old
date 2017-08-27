@@ -647,7 +647,14 @@ function wizard_init(wizard_id) {
 				dataType:'json',
 				type: 'post',
 				success:function(data) {
-					afficher_liste_magazines(wizard_id,'tranches_en_cours',data);
+					var tranches_editeur = data.tranches_en_cours.filter(function(tranche) {
+						return tranche.est_editeur === '1'
+					});
+					var tranches_photo_seulement = data.tranches_en_cours.filter(function(tranche) {
+						return tranche.est_editeur === '0'
+					});
+					wizard.afficher_liste_magazines(wizard.find('#tranches_en_cours'), 'groupe_tranches_en_cours', tranches_editeur, true);
+					wizard.afficher_liste_magazines(wizard.find('#tranches_en_attente'), 'groupe_tranches_en_attente', tranches_photo_seulement, false);
 				}
 			});
 			break;
@@ -720,7 +727,7 @@ function wizard_init(wizard_id) {
 					if (typeof(data.erreur) !=='undefined')
 						jqueryui_alert(data);
 					else {
-						afficher_liste_magazines(wizard_id, 'tranches_non_pretes', data.tranches_non_pretes);
+						wizard.afficher_liste_magazines(wizard.find('#tranches_non_pretes'), data.tranches_non_pretes, true);
 					}
 					chargement_listes=false;
 				},
@@ -970,27 +977,24 @@ function wizard_init(wizard_id) {
 	}
 }
 
-function afficher_liste_magazines(wizard_id, id_element_liste, data) {
-	var wizard = $('#'+wizard_id);
+$.fn.afficher_liste_magazines = function(elementListe, classe_template, data, peut_editer) {
+	var wizard = this;
 	var explication = wizard.find('.explication');
 	var chargement = wizard.find('.chargement');
+	var tranches = traiter_tranches(data);
 
 	explication.addClass('cache');
 	chargement.removeClass('cache');
-	var tranches = traiter_tranches_en_cours(data);
 	chargement.addClass('cache');
 
-	var elementListe = wizard.find('#' + id_element_liste);
 	if (tranches.length > 0) {
 		elementListe.removeClass('cache');
 		explication.removeClass('cache');
 		wizard.find('#to-wizard-conception').button('option','disabled',false);
 
-		var noms_sections = ['tranches_non_affectees', 'tranches_affectees'];
-
 		wizard.find('.prepublier, .depublier').button().click(function() {
 			var btn = $(this);
-			var data = btn.siblings('.libelle_tranche_en_cours').data();
+			var data = btn.siblings('.libelle_tranche').data();
 			var prepublier_ou_depublier = btn.hasClass('prepublier');
 			if (prepublier_ou_depublier) {
 				charger_image('etape', urls['viewer_wizard'] + ['index', data.Pays, data.Magazine, data.Numero, '1.5', 'all', '_', 'save', 'false', 'false'].join('/'), null, function (image) {
@@ -1004,47 +1008,45 @@ function afficher_liste_magazines(wizard_id, id_element_liste, data) {
 		});
 
 		$.each(tranches, function(i, tranche_en_cours) {
-			var element_type_tranche;
-			if (!tranche_en_cours.username) {
-				element_type_tranche = elementListe.find('[name="'+noms_sections[0]+'"]');
-			}
-			else {
-				element_type_tranche = elementListe.find('[name="'+noms_sections[1]+'"]');
-			}
 
-			var bouton_tranche_en_cours=elementListe.find('.template').clone(true).removeClass('template');
+			var bouton_tranche_en_cours=wizard.find('.template.' + classe_template).clone(true).removeClass('template');
 			var id_tranche=['tranche', tranche_en_cours.ID].join('_');
 			bouton_tranche_en_cours.find('input')
 				.attr({'id':id_tranche})
 				.val(id_tranche);
-			bouton_tranche_en_cours.find('label.libelle_tranche_en_cours')
+			bouton_tranche_en_cours.find('label.libelle_tranche')
 				.afficher_libelle_numero(id_tranche, tranche_en_cours)
 				.click(function() {
 					wizard.find('[name="est_nouvelle_conception_tranche"]').val($(this).closest('[name="tranches_non_affectees"]').length > 0);
 					wizard.find('#to-wizard-conception').click();
 				});
-			if (element_type_tranche.find('#'+id_tranche).length === 0) {
-				element_type_tranche.append(bouton_tranche_en_cours);
+			if (elementListe.find('#'+id_tranche).length === 0) {
+				elementListe.append(bouton_tranche_en_cours);
 			}
 		});
+
 		elementListe
 			.removeClass('cache')
-			.buttonset().menu();
+			.menu();
+
+		if (peut_editer) {
+			elementListe.buttonset();
+		}
+
 		wizard.find('#to-wizard-creer, #to-wizard-modifier').click(function() {
 			elementListe.find('.ui-state-active').removeClass('ui-state-active');
 		});
 
-		$.each(noms_sections, function() {
-			var section = elementListe.find('[name="'+this.toString()+'"]');
-			if (section.children('.groupe_tranches').length === 0) {
-				section.remove();
-			}
-		});
+		if (elementListe.children('.groupe_tranches').length === 0) {
+			elementListe.remove();
+		}
 	}
 	else {
 		wizard.find('.pas_de_numero').removeClass('cache');
 	}
-}
+
+	return this;
+};
 
 function limiter_tranches_pretes_parmi_tranches_affichees(tranches_affichees, tranches_pretes, gauche) {
 	var num_tranche = 0;
@@ -1251,15 +1253,15 @@ function cloner_numero(numero_a_cloner, nouveaux_numeros) {
 	});
 }
 
-function traiter_tranches_en_cours(data) {
-	var tranches=[];
-	for (var i_tranche_en_cours in data.tranches) {
-		var tranche_en_cours=data.tranches[i_tranche_en_cours];
+function traiter_tranches(tranches) {
+	var tranches_traitees=[];
+	for (var i_tranche_en_cours in tranches) {
+		var tranche_en_cours=tranches[i_tranche_en_cours];
 		tranche_en_cours.str=tranche_en_cours.Pays+'_'+tranche_en_cours.Magazine+'_'+tranche_en_cours.Numero;
 		tranche_en_cours.str_userfriendly=tranche_en_cours.Magazine_complet+' n&deg;'+tranche_en_cours.Numero;
-		tranches.push(tranche_en_cours);
+		tranches_traitees.push(tranche_en_cours);
 	}
-	return tranches;
+	return tranches_traitees;
 }
 
 function charger_tranches_en_cours() {
@@ -1270,7 +1272,7 @@ function charger_tranches_en_cours() {
 		type: 'post',
 		dataType: 'json',
 		success: function (data) {
-			var tranche = traiter_tranches_en_cours(data)[0];
+			var tranche = traiter_tranches(data)[0];
 			pays = tranche.Pays;
 			magazine = tranche.Magazine;
 			numero = tranche.Numero;

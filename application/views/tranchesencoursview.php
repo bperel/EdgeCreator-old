@@ -1,4 +1,4 @@
 <?php
-echo json_encode(['tranches' => $tranches]);
+echo json_encode(['tranches_en_cours' => $tranches_en_cours]);
 
 ?>

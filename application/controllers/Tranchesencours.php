@@ -20,7 +20,7 @@ class TranchesEnCours extends EC_Controller {
         }
 
 		$data = [
-			'tranches'=>$resultats
+			'tranches_en_cours'=>$resultats
         ];
 		$this->load->view('tranchesencoursview',$data);
 		

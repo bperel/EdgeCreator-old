@@ -37,12 +37,16 @@
 	<p class="erreurs"></p>
 	<form id="login-form" method="post">
 		<fieldset>
-			<label for="username">Pseudo: </label>
-			<input type="text" name="username" id="username" class="text ui-widget-content ui-corner-all" />
-			<br />
-            <label for="password">Mot de passe: </label>
-			<input type="password" name="password" id="password" value="" class="text ui-widget-content ui-corner-all" />
-			<br />
+            <div>
+                <label for="username">Pseudo: </label><br />
+                <label for="password">Mot de passe: </label>
+            </div>
+            <div>
+                <input type="text" name="username" id="username" class="text ui-widget-content ui-corner-all" />
+                <br />
+                <input type="password" name="password" id="password" value="" class="text ui-widget-content ui-corner-all" />
+                <br />
+            </div>
 		</fieldset>
 	</form>
 </div>
@@ -51,6 +55,12 @@
 	<p>
 		Vous êtes à présent connecté(e) sur EdgeCreator.
 	</p>
+    <ul id="tranches_en_attente" class="liste_numeros">
+        <div name="tranches_en_attente">Tranches en cours de conception :</div>
+        <div class="groupe_tranches groupe_tranches_en_attente template">
+            <label class="toutes_bordures libelle_tranche">Label</label>
+        </div>
+    </ul>
 	<p>
 		Que voulez-vous faire ?<br />
 		<form>
@@ -70,11 +80,10 @@
 			</div>
             <?php if (in_array($privilege, ['Edition', 'Admin'])) { ?>
                 <ul id="tranches_en_cours" class="liste_numeros">
-                    <div name="tranches_non_affectees">Tranches non affectées :</div>
                     <div name="tranches_affectees">Tranches en cours de conception par vous :</div>
-                    <div class="groupe_tranches template">
+                    <div class="groupe_tranches groupe_tranches_en_cours template">
                         <input type="radio" id="numero_tranche_en_cours" name="choix_tranche_en_cours">
-                        <label for="numero_tranche_en_cours" class="toutes_bordures libelle_tranche_en_cours">Label</label>
+                        <label for="numero_tranche_en_cours" class="toutes_bordures libelle_tranche">Label</label>
                         <button class="prepublier">Pré-publier</button>
                         <button class="depublier cache">Dé-publier</button>
                     </div>
@@ -199,7 +208,7 @@
                         <div name="tranches_non_affectees"></div>
 						<li class="template">
 							<input type="radio" id="numero_tranche_non_prete" name="choix_tranche">
-							<label for="numero_tranche_non_prete" class="libelle_tranche_en_cours">Label</label>
+							<label for="numero_tranche_non_prete" class="libelle_tranche">Label</label>
 						</li>
 					</ul>
 					<div class="buttonset cache">
