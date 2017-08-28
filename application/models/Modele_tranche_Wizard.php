@@ -6,9 +6,11 @@ class Modele_tranche_Wizard extends Modele_tranche {
 	static $numero;
 
     function get_tranches_en_cours($id_modele=null, $pays=null, $magazine=null, $numero=null) {
-		$requete='SELECT ID, Pays, Magazine, Numero, NomPhotoPrincipale, username '
-				.'FROM tranches_en_cours_modeles '
-				.'WHERE username=\''.self::$username.'\' AND Active=1';
+        $username = self::$username;
+		$requete="SELECT ID, Pays, Magazine, Numero, NomPhotoPrincipale, username, 
+                    (case when username = 'brunoperel' THEN '1' ELSE '0' end) AS est_editeur
+				  FROM tranches_en_cours_modeles
+				  WHERE (username='$username' OR photographes regexp '((^|,)$username(,|$))' ) AND Active=1";
 		if (!is_null($id_modele)) {
 			$requete.=' AND ID='.$id_modele;
 		}
@@ -177,10 +179,11 @@ class Modele_tranche_Wizard extends Modele_tranche {
 	}
 	
 	function creer_modele($pays, $magazine, $numero) {
+        $est_editeur = in_array($this->get_privilege(), ['Edition', 'Admin']) ? '1' : '0';
         DmClient::get_service_results_ec(
             DmClient::$dm_server,
             'PUT',
-            "/edgecreator/v2/model/$pays/$magazine/$numero"
+            "/edgecreator/v2/model/$pays/$magazine/$numero/$est_editeur"
         );
 	}
 	
@@ -316,7 +319,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
         $id_modele = DmClient::get_service_results_ec(
             DmClient::$dm_server,
             'PUT',
-            "/edgecreator/v2/model/$pays/$magazine/$nouveau_numero"
+            "/edgecreator/v2/model/$pays/$magazine/$nouveau_numero/1"
         )->modelid;
 
         foreach($options[$numero]['etapes'] as $etape => $options_etape) {
