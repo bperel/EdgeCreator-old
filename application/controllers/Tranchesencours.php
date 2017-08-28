@@ -13,14 +13,16 @@ class TranchesEnCours extends EC_Controller {
 			return;
 		}
 		$this->Modele_tranche->setUsername($this->session->userdata('user'));
-		$resultats = $this->Modele_tranche->get_tranches_en_cours($id_modele,$pays,$magazine,$numero);
+		$resultats_tranches_en_cours = $this->Modele_tranche->get_tranches_en_cours($id_modele,$pays,$magazine,$numero);
+		$resultats_tranches_en_attente = $this->Modele_tranche->get_tranches_en_attente();
 
 		if ($est_load_tranche_unique) {
-            $this->session->set_userdata('id_modele', $resultats[0]->ID);
+            $this->session->set_userdata('id_modele', $resultats_tranches_en_cours[0]->ID);
         }
 
 		$data = [
-			'tranches_en_cours'=>$resultats
+			'tranches_en_cours'=>$resultats_tranches_en_cours,
+			'tranches_en_attente'=>$resultats_tranches_en_attente
         ];
 		$this->load->view('tranchesencoursview',$data);
 		

@@ -7,8 +7,8 @@ class Modele_tranche_Wizard extends Modele_tranche {
 
     function get_tranches_en_cours($id_modele=null, $pays=null, $magazine=null, $numero=null) {
         $username = self::$username;
-		$requete="SELECT ID, Pays, Magazine, Numero, NomPhotoPrincipale, username, 
-                    (case when username = 'brunoperel' THEN '1' ELSE '0' end) AS est_editeur
+		$requete="SELECT ID AS id, Pays AS pays, Magazine AS magazine, Numero AS numero, NomPhotoPrincipale AS nomphotoprincipale, username, 
+                    (case when username = '$username' THEN '1' ELSE '0' end) AS est_editeur
 				  FROM tranches_en_cours_modeles
 				  WHERE (username='$username' OR photographes regexp '((^|,)$username(,|$))' ) AND Active=1";
 		if (!is_null($id_modele)) {
@@ -18,21 +18,33 @@ class Modele_tranche_Wizard extends Modele_tranche {
 			$requete.=' AND Pays=\''.$pays.'\' AND Magazine=\''.$magazine.'\' AND Numero=\''.$numero.'\'';
 		}
         $resultats = DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator');
-
-        $liste_magazines= array_map(function($resultat) {
-            return implode('/', [$resultat->Pays, $resultat->Magazine]);
-        }, $resultats);
-
-        if (count($liste_magazines) > 0) {
-            $noms_magazines = DmClient::get_service_results_ec(DmClient::$dm_server, 'GET', '/coa/list/publications', [implode(',', array_unique($liste_magazines))]);
-        }
-
-        foreach($resultats as $resultat) {
-            $publicationcode = implode('/', [$resultat->Pays, $resultat->Magazine]);
-            $resultat->Magazine_complet=$noms_magazines->{$publicationcode};
-        }
+		self::assigner_noms_magazines($resultats);
 		return $resultats;
 	}
+
+    function get_tranches_en_attente() {
+        $resultats = DmClient::get_service_results_ec(
+            DmClient::$dm_server, 'GET', "/edgecreator/v2/model/unassigned/all"
+        );
+        self::assigner_noms_magazines($resultats);
+
+        return $resultats;
+	}
+
+	static function assigner_noms_magazines(&$resultats) {
+        if (count($resultats) > 0) {
+            $liste_magazines= array_map(function($resultat) {
+                return implode('/', [$resultat->pays, $resultat->magazine]);
+            }, $resultats);
+
+            $noms_magazines = DmClient::get_service_results_ec(DmClient::$dm_server, 'GET', '/coa/list/publications', [implode(',', array_unique($liste_magazines))]);
+
+            foreach($resultats as $resultat) {
+                $publicationcode = implode('/', [$resultat->pays, $resultat->magazine]);
+                $resultat->magazine_complet=$noms_magazines->{$publicationcode};
+            }
+        }
+    }
 	
 	function get_ordres($pays,$magazine,$numero=null,$toutes_colonnes=false) {
 		$resultats_ordres= [];

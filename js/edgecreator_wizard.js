@@ -44,7 +44,7 @@ $.fn.remplirIntituleNumero = function(data) {
 $.fn.afficher_libelle_numero = function(id_tranche, tranche_en_cours) {
 	this
 		.attr({'for':id_tranche})
-		.css({'background-image': 'url("images/flags/'+tranche_en_cours.Pays+'.png")'})
+		.css({'background-image': 'url("images/flags/'+tranche_en_cours.pays+'.png")'})
 		.data(tranche_en_cours)
 		.html(tranche_en_cours.str_userfriendly);
 
@@ -653,8 +653,10 @@ function wizard_init(wizard_id) {
 					var tranches_photo_seulement = data.tranches_en_cours.filter(function(tranche) {
 						return tranche.est_editeur === '0'
 					});
-					wizard.afficher_liste_magazines(wizard.find('#tranches_en_cours'), 'groupe_tranches_en_cours', tranches_editeur, true);
+					var tranches_en_attente = data.tranches_en_attente;
 					wizard.afficher_liste_magazines(wizard.find('#tranches_en_attente'), 'groupe_tranches_en_attente', tranches_photo_seulement, false);
+					wizard.afficher_liste_magazines(wizard.find('#tranches_en_cours'), 'groupe_tranches_en_cours', tranches_editeur, true);
+					wizard.afficher_liste_magazines(wizard.find('#tranches_en_attente_pour_edition'), 'groupe_tranches_en_cours', tranches_en_attente, true);
 				}
 			});
 			break;
@@ -997,7 +999,7 @@ $.fn.afficher_liste_magazines = function(elementListe, classe_template, data, pe
 			var data = btn.siblings('.libelle_tranche').data();
 			var prepublier_ou_depublier = btn.hasClass('prepublier');
 			if (prepublier_ou_depublier) {
-				charger_image('etape', urls['viewer_wizard'] + ['index', data.Pays, data.Magazine, data.Numero, '1.5', 'all', '_', 'save', 'false', 'false'].join('/'), null, function (image) {
+				charger_image('etape', urls['viewer_wizard'] + ['index', data.pays, data.magazine, data.numero, '1.5', 'all', '_', 'save', 'false', 'false'].join('/'), null, function (image) {
 					var nom_image_temp=image.attr('src').match(/[.0-9]+$/g)[0];
 					prepublier_depublier(true, btn, nom_image_temp);
 				});
@@ -1010,7 +1012,7 @@ $.fn.afficher_liste_magazines = function(elementListe, classe_template, data, pe
 		$.each(tranches, function(i, tranche_en_cours) {
 
 			var bouton_tranche_en_cours=wizard.find('.template.' + classe_template).clone(true).removeClass('template');
-			var id_tranche=['tranche', tranche_en_cours.ID].join('_');
+			var id_tranche=['tranche', tranche_en_cours.id].join('_');
 			bouton_tranche_en_cours.find('input')
 				.attr({'id':id_tranche})
 				.val(id_tranche);
@@ -1257,8 +1259,8 @@ function traiter_tranches(tranches) {
 	var tranches_traitees=[];
 	for (var i_tranche_en_cours in tranches) {
 		var tranche_en_cours=tranches[i_tranche_en_cours];
-		tranche_en_cours.str=tranche_en_cours.Pays+'_'+tranche_en_cours.Magazine+'_'+tranche_en_cours.Numero;
-		tranche_en_cours.str_userfriendly=tranche_en_cours.Magazine_complet+' n&deg;'+tranche_en_cours.Numero;
+		tranche_en_cours.str=tranche_en_cours.pays+'_'+tranche_en_cours.magazine+'_'+tranche_en_cours.numero;
+		tranche_en_cours.str_userfriendly=tranche_en_cours.magazine_complet+' n&deg;'+tranche_en_cours.numero;
 		tranches_traitees.push(tranche_en_cours);
 	}
 	return tranches_traitees;
@@ -1273,11 +1275,11 @@ function charger_tranches_en_cours() {
 		dataType: 'json',
 		success: function (data) {
 			var tranche = traiter_tranches(data)[0];
-			pays = tranche.Pays;
-			magazine = tranche.Magazine;
-			numero = tranche.Numero;
-			id_modele = tranche.ID;
-			nom_photo_principale = tranche.NomPhotoPrincipale;
+			pays = tranche.pays;
+			magazine = tranche.magazine;
+			numero = tranche.numero;
+			id_modele = tranche.iD;
+			nom_photo_principale = tranche.nomphotoprincipale;
 
 			$('#nom_complet_tranche_en_cours')
 				.html($('<img>', {src: 'images/flags/' + pays + '.png'}))
