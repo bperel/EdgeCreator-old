@@ -609,14 +609,13 @@ class Modele_tranche extends CI_Model {
 
             $liste_numeros = implode(',', array_map(function ($numero) {
                 return "'" . $numero . "'";
-            }, $numeros));
+            }, $numeros_affiches));
 
             // TODO chunks
             $requete_creations = "
 				SELECT Numero AS issuenumber
 				FROM tranches_en_cours_modeles modeles 
 				WHERE modeles.Active=0 AND modeles.Pays = '$pays' AND Magazine='$magazine' AND Numero IN ($liste_numeros)";
-
             $resultats_requete_creations = DmClient::get_query_results_from_dm_server($requete_creations, 'db_edgecreator');
 
             foreach ($resultats_requete_creations as $numero) {
