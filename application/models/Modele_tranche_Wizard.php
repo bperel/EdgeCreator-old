@@ -71,8 +71,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 
 		$requete='SELECT '.implode(', ', self::$content_fields).' '
 				.'FROM tranches_en_cours_modeles_vue '
-			    .'WHERE ID_Modele = \''.$id_modele.'\' '
-				.'AND username = \''.self::$username.'\' ';
+			    .'WHERE ID_Modele = \''.$id_modele.'\' ';
 		$requete.=' GROUP BY Ordre'
 				 .' ORDER BY Ordre ';
         $resultats = DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator');
@@ -83,8 +82,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
         $id_modele = $id_modele ?? $this->session->userdata('id_modele');
 		$requete='SELECT '.implode(', ', self::$content_fields).' '
 				.'FROM tranches_en_cours_modeles_vue '
-                .'WHERE ID_Modele = \''.$id_modele.'\' AND Ordre='.$ordre.' '
-				.'AND username = \''.self::$username.'\'';
+                .'WHERE ID_Modele = \''.$id_modele.'\' AND Ordre='.$ordre;
 
         $premier_resultat = DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator')[0];
 		return count($premier_resultat) == 0 ? null : new Fonction($premier_resultat);
@@ -103,8 +101,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 
         $requete='SELECT '.implode(', ', self::$content_fields).' '
             .'FROM tranches_en_cours_modeles_vue '
-            .'WHERE ID_Modele = \''.$id_modele.'\' AND Ordre='.$ordre.' AND Option_nom IS NOT NULL '
-            .'AND username = \''.self::$username.'\' ';
+            .'WHERE ID_Modele = \''.$id_modele.'\' AND Ordre='.$ordre.' AND Option_nom IS NOT NULL ';
         if (!is_null($nom_option))
             $requete.='AND Option_nom = \''.$nom_option.'\' ';
         $requete.='ORDER BY Option_nom ASC';
@@ -141,8 +138,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 
 		$requete='SELECT Option_nom '
 				.'FROM tranches_en_cours_modeles_vue '
-				.'WHERE ID_Modele = \''.$id_modele.'\' AND Option_nom IS NOT NULL '
-				.'AND username = \''.self::$username.'\'';
+				.'WHERE ID_Modele = \''.$id_modele.'\' AND Option_nom IS NOT NULL';
         return count(DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator')) === 0;
 	}
 
