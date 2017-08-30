@@ -69,7 +69,7 @@
 
 
     <ul id="tranches_en_attente" class="liste_numeros">
-        <div>Tranches en cours de conception par un utilisateur éditeur :</div>
+        <div class="titre_liste_numeros">Tranches en cours de conception par un utilisateur éditeur :</div>
     </ul>
 	<p>
 		Que voulez-vous faire ?<br />
@@ -90,10 +90,10 @@
 			</div>
             <?php if (in_array($privilege, ['Edition', 'Admin'])) { ?>
                 <ul id="tranches_en_cours" class="liste_numeros">
-                    <div>Tranches en cours de conception par vous :</div>
+                    <div class="titre_liste_numeros">Tranches en cours de conception par vous :</div>
                 </ul>
                 <ul id="tranches_en_attente_pour_edition" class="liste_numeros">
-                    <div>Tranches en attente de conception :</div>
+                    <div class="titre_liste_numeros">Tranches en attente de conception :</div>
                 </ul>
             <?php } ?>
             <input type="hidden" name="est_nouvelle_conception_tranche" />
@@ -184,7 +184,7 @@
                 <div class="photo_tranche_creee template done"></div>
             </div>
             <span class="cache fin_chargement">
-                Les modèles des tranches sélectionnées ont été initialisés.
+                Les modèles des tranches sélectionnées ont été initialisés.<br />
                 <a href="javascript:location.replace(base_url)">Retour à l'accueil</a>
             </span>
         </p>

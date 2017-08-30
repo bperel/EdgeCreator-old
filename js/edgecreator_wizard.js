@@ -1038,13 +1038,9 @@ $.fn.afficher_liste_magazines = function(elementListe, classe_template, data, pe
 		wizard.find('#to-wizard-creer, #to-wizard-modifier').click(function() {
 			elementListe.find('.ui-state-active').removeClass('ui-state-active');
 		});
-
-		if (elementListe.children('.groupe_tranches').length === 0) {
-			elementListe.remove();
-		}
 	}
 	else {
-		wizard.find('.pas_de_numero').removeClass('cache');
+		elementListe.remove();
 	}
 
 	return this;
