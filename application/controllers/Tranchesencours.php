@@ -17,7 +17,7 @@ class TranchesEnCours extends EC_Controller {
 		$resultats_tranches_en_attente = $this->Modele_tranche->get_tranches_en_attente();
 
 		if ($est_load_tranche_unique) {
-            $this->session->set_userdata('id_modele', $resultats_tranches_en_cours[0]->ID);
+            $this->session->set_userdata('id_modele', $resultats_tranches_en_cours[0]->id);
         }
 
 		$data = [

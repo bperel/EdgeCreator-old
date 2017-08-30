@@ -1274,7 +1274,7 @@ function charger_tranches_en_cours() {
 		type: 'post',
 		dataType: 'json',
 		success: function (data) {
-			var tranche = traiter_tranches(data)[0];
+			var tranche = traiter_tranches(data.tranches_en_cours)[0];
 			pays = tranche.pays;
 			magazine = tranche.magazine;
 			numero = tranche.numero;
