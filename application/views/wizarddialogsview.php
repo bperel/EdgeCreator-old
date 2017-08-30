@@ -69,7 +69,7 @@
 
 
     <ul id="tranches_en_attente" class="liste_numeros">
-        <div class="titre_liste_numeros">Tranches en cours de conception par un utilisateur éditeur :</div>
+        <div class="titre_liste_numeros">Vos tranches en cours de conception par un utilisateur éditeur :</div>
     </ul>
 	<p>
 		Que voulez-vous faire ?<br />

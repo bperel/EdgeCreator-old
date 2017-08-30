@@ -41,12 +41,15 @@ $.fn.remplirIntituleNumero = function(data) {
 	return this;
 };
 
-$.fn.afficher_libelle_numero = function(id_tranche, tranche_en_cours) {
+$.fn.afficher_libelle_numero = function(id_tranche, tranche_en_cours, avec_reference_id_tranche) {
 	this
-		.attr({'for':id_tranche})
 		.css({'background-image': 'url("images/flags/'+tranche_en_cours.pays+'.png")'})
 		.data(tranche_en_cours)
 		.html(tranche_en_cours.str_userfriendly);
+
+	if (avec_reference_id_tranche) {
+		this.attr({'for':id_tranche});
+	}
 
 	return this;
 };
@@ -1017,7 +1020,7 @@ $.fn.afficher_liste_magazines = function(elementListe, classe_template, data, pe
 				.attr({'id':id_tranche})
 				.val(id_tranche);
 			bouton_tranche_en_cours.find('label.libelle_tranche')
-				.afficher_libelle_numero(id_tranche, tranche_en_cours)
+				.afficher_libelle_numero(id_tranche, tranche_en_cours, peut_editer)
 				.click(function() {
 					wizard.find('[name="est_nouvelle_conception_tranche"]').val($(this).closest('[name="tranches_non_affectees"]').length > 0);
 					wizard.find('#to-wizard-conception').click();

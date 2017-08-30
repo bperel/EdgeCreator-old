@@ -176,8 +176,7 @@ button#connexion, button#deconnexion {
 	text-align: right;
 }
 
-#wizard-1 #tranches_en_cours,
-#wizard-1 #tranches_en_attente {
+#wizard-1 .liste_numeros {
     position: static !important;
 	margin-top: 20px;
 	padding: 15px;
