@@ -860,7 +860,7 @@
 	</p>
 </div>
 
-<div id="wizard-confirmation-validation-modele-ok" class="wizard" title="modèle envoyé">
+<div id="wizard-confirmation-validation-modele-ok" class="wizard" title="Modèle envoyé">
 	<p>
 	Le modèle d'image a été envoyé pour validation.
 	</p>
