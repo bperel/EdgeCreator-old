@@ -360,13 +360,10 @@ class Modele_tranche_Wizard extends Modele_tranche {
 				." ORDER BY Pays, Magazine, Numero";
 
 		$resultats = $this->requete_select_dm($requete);
-		
-		$country_codes= [];
-		$publication_codes= [];
-		foreach($resultats as $resultat) {
-            $country_codes[]=$resultat['Pays'];
-			$publication_codes[]=$resultat['Pays'].'/'.$resultat['Magazine'];
-		}
+
+        $publication_codes = array_map(function($resultat) {
+		    return $resultat['Pays'].'/'.$resultat['Magazine'];
+        }, $resultats);
 
         $noms_magazines = DmClient::get_service_results_ec(
             DmClient::$dm_server,

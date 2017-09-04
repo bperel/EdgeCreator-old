@@ -461,9 +461,10 @@ class Modele_tranche extends CI_Model {
 			$groupes_numeros[$etapes_serialized][]=$numero;
 		}
 		foreach($groupes_numeros as $groupe) {
-			if (count($groupe) > 1) {
+            $nb_numeros = count($groupe);
+            if ($nb_numeros > 1) {
 				$numero_reference=$groupe[0];
-				for ($i=1;$i<count($groupe);$i++) {
+				for ($i=1; $i<$nb_numeros; $i++) {
 					$numero=$groupe[$i];
 					$requete='INSERT INTO tranches_doublons(Pays,Magazine,Numero,NumeroReference) '
 							.'VALUES (\''.$pays.'\',\''.$magazine.'\',\''.$numero.'\',\''.$numero_reference.'\')';
@@ -893,7 +894,7 @@ class Modele_tranche extends CI_Model {
 						<img id="<?=$id?>-image" src="<?=Image::get_chemin_relatif($valeur)?>" width="25" />&nbsp;
 						</td><td>
 						<select class="parametre liste image alt" id="<?=$id?>-"><?php
-						$options=get_liste($this->Nom_fonction,$option_nom);
+						$options=$this->get_liste($this->Nom_fonction,$option_nom);
 						foreach($options as $option) {
 							?><option value="<?=$option?>" <?=(($option==$valeur) ? 'selected="selected"' :'')?>><?=$option?></option><?php
 						}
@@ -912,7 +913,7 @@ class Modele_tranche extends CI_Model {
 				break;
 				case 'liste':
 					?><select class="parametre liste" id="<?=$id?>-"><?php
-					$options=get_liste($this->Nom_fonction,$option_nom);
+					$options=$this->get_liste($this->Nom_fonction,$option_nom);
 					foreach($options as $option) {
 						?><option value="<?=$option?>" <?=($option==$valeur ?'selected="selected"':'')?>><?=$option?></option><?php
 					}
@@ -1958,7 +1959,8 @@ class Dessiner_contour {
 			Fonction_executable::erreur('Pas d\'infos sur cette tranche');
 		else {
 			$noir=imagecolorallocate(Viewer_wizard::$image, 0, 0, 0);
-			for ($i=0;$i<z(0.15);$i++)
+            $maxOffset = z(0.15);
+            for ($i=0; $i<$maxOffset; $i++)
 				imagerectangle(Viewer_wizard::$image, $i, $i, z($dimensions->Dimension_x)-1-$i, z($dimensions->Dimension_y)-1-$i, $noir);
 		}
 	}
