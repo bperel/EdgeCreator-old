@@ -347,7 +347,7 @@
                     <div class="clonage_partiel cache">
                         Certaines étapes n'ont pas été clonées en raison de paramètres d'étapes manquants.
                     </div>
-                    Vous pouvez passer à l'étape suivante.</div>
+                    Vous pouvez passer à l'étape suivante.
 					<form>
 						<input type="hidden" checked="checked" name="choix" value="to-wizard-conception" id="to-wizard-conception2" />
 					</form>

@@ -650,16 +650,12 @@ function wizard_init(wizard_id) {
 				dataType:'json',
 				type: 'post',
 				success:function(data) {
-					var tranches_editeur = data.tranches_en_cours.filter(function(tranche) {
-						return tranche.est_editeur === '1'
-					});
-					var tranches_photo_seulement = data.tranches_en_cours.filter(function(tranche) {
-						return tranche.est_editeur === '0'
-					});
+					var tranches_editeur = data.tranches_en_cours;
 					var tranches_en_attente = data.tranches_en_attente;
-					wizard.afficher_liste_magazines(wizard.find('#tranches_en_attente'), 'groupe_tranches_en_attente', tranches_photo_seulement, false);
+					var tranches_en_attente_d_edition = data.tranches_en_attente_d_edition;
+					wizard.afficher_liste_magazines(wizard.find('#tranches_en_attente'), 'groupe_tranches_en_attente', tranches_en_attente, false);
 					wizard.afficher_liste_magazines(wizard.find('#tranches_en_cours'), 'groupe_tranches_en_cours', tranches_editeur, true);
-					wizard.afficher_liste_magazines(wizard.find('#tranches_en_attente_pour_edition'), 'groupe_tranches_en_cours', tranches_en_attente, true);
+					wizard.afficher_liste_magazines(wizard.find('#tranches_en_attente_pour_edition'), 'groupe_tranches_en_cours', tranches_en_attente_d_edition, true);
 				}
 			});
 			break;

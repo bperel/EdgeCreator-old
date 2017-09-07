@@ -49,7 +49,6 @@ class Upload_Wizard extends EC_Controller {
             $this->contenu .= get_message_retour($est_photo_tranche);
         }
         else {
-
             list($dossier,$fichier) = get_nom_fichier($_FILES['image']['name'], $pays, $magazine, $numero, $est_photo_tranche);
             $extension = strtolower(strrchr($_FILES['image']['name'], '.'));
 
@@ -112,7 +111,7 @@ class Upload_Wizard extends EC_Controller {
                                 window.parent.afficher_photo_tranche();
                             }
                         </script><?php
-                        $this->contenu.= ob_get_flush();
+                        $this->contenu.= ob_get_clean();
                     }
                     $this->contenu .= 'Envoi r&eacute;alis&eacute; avec succ&egrave;s !';
                     if (isset($pays)) {
@@ -129,7 +128,7 @@ class Upload_Wizard extends EC_Controller {
                                     return window.parent.$(this).text() === 'Suivant';
                                 }).button('option','disabled', false);
                         </script><?php
-                        $this->contenu.= ob_get_flush();
+                        $this->contenu.= ob_get_clean();
                     }
                 }
                 else {
