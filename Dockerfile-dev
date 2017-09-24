@@ -16,9 +16,9 @@ RUN docker-php-ext-configure gd \
 RUN docker-php-ext-install gd opcache
 
 RUN cd /usr/src && \
-    wget http://xdebug.org/files/xdebug-2.5.1.tgz && \
-    tar -xvzf xdebug-2.5.1.tgz && \
-    cd xdebug-2.5.1 && \
+    wget http://xdebug.org/files/xdebug-2.5.5.tgz && \
+    tar -xvzf xdebug-2.5.5.tgz && \
+    cd xdebug-2.5.5 && \
     phpize && \
     ./configure && \
     make && \
