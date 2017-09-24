@@ -1,0 +1,17 @@
+version: '2'
+services:
+  edgecreator:
+    container_name: edgecreator
+    build:
+      context: .
+      dockerfile: Dockerfile-dev
+    ports:
+     - "8001:80"
+    volumes:
+     - .:/var/www/html
+     - ../DucksManager/edges:/var/www/html/DucksManager/edges
+     - ./php.xdebug.ini:/usr/local/etc/php/php.ini
+networks:
+  default:
+    external:
+      name: dm_network
