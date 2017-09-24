@@ -3,6 +3,7 @@ services:
   web_dev:
     container_name: edgecreator_web_dev
     build: .
+    restart: always
     ports:
      - "8003:80"
      - "8446:443"

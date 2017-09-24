@@ -3,8 +3,10 @@ services:
   web:
     container_name: edgecreator_web
     build: .
+    restart: always
     ports:
      - "8002:80"
+     - "8445:443"
     volumes:
      - .:/var/www/html
      - /var/www/html/DucksManager/edges:/var/www/html/edges
