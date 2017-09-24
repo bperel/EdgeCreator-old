@@ -6,18 +6,26 @@ class Modele_tranche_Wizard extends Modele_tranche {
 	static $numero;
 
     function get_tranches_en_cours($id_modele=null, $pays=null, $magazine=null, $numero=null) {
-        $username = self::$username;
-		$requete="SELECT ID AS id, Pays AS pays, Magazine AS magazine, Numero AS numero, NomPhotoPrincipale AS nomphotoprincipale, username, 
-                  1 AS est_editeur
-				  FROM tranches_en_cours_modeles
-				  WHERE username='$username' AND Active=1";
-		if (!is_null($id_modele)) {
-			$requete.=' AND ID='.$id_modele;
+
+        if (!is_null($id_modele)) {
+            $resultats = DmClient::get_service_results_ec(
+                DmClient::$dm_server, 'GET', "/edgecreator/v2/model/$id_modele"
+            );
+            $resultats = [$resultats];
 		}
 		elseif (!is_null($pays)) {
-			$requete.=' AND Pays=\''.$pays.'\' AND Magazine=\''.$magazine.'\' AND Numero=\''.$numero.'\'';
+			$requete=' SELECT ID AS id, Pays AS pays, Magazine AS magazine, Numero AS numero, NomPhotoPrincipale AS nomphotoprincipale, username, 
+                  1 AS est_editeur
+				  FROM tranches_en_cours_modeles
+				  WHERE username=\'$username\' AND Active=1
+				    AND Pays=\''.$pays.'\' AND Magazine=\''.$magazine.'\' AND Numero=\''.$numero.'\'';
+            $resultats = DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator');
 		}
-        $resultats = DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator');
+		else {
+            $resultats = DmClient::get_service_results_ec(
+                DmClient::$dm_server, 'GET', "/edgecreator/v2/model"
+            );
+        }
 		self::assigner_noms_magazines($resultats);
 		return $resultats;
 	}
@@ -210,10 +218,8 @@ class Modele_tranche_Wizard extends Modele_tranche {
             return null;
         }
         else {
-            $requete="SELECT NomPhotoPrincipale FROM tranches_en_cours_modeles
-                      WHERE ID=".$id_modele;
-            $resultat = DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator')[0];
-            return $resultat->NomPhotoPrincipale;
+            $resultat = DmClient::get_service_results_ec(DmClient::$dm_server, 'GET', "/edgecreator/model/v2/$id_modele/photo/main");
+            return $resultat->nomfichier;
         }
 	}
 

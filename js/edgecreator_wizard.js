@@ -1273,7 +1273,7 @@ function charger_tranches_en_cours() {
 			pays = tranche.pays;
 			magazine = tranche.magazine;
 			numero = tranche.numero;
-			id_modele = tranche.iD;
+			id_modele = tranche.id;
 			nom_photo_principale = tranche.nomphotoprincipale;
 
 			$('#nom_complet_tranche_en_cours')
