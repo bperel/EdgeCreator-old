@@ -13,14 +13,6 @@ class Modele_tranche_Wizard extends Modele_tranche {
             );
             $resultats = [$resultats];
 		}
-		elseif (!is_null($pays)) {
-			$requete=' SELECT ID AS id, Pays AS pays, Magazine AS magazine, Numero AS numero, NomPhotoPrincipale AS nomphotoprincipale, username, 
-                  1 AS est_editeur
-				  FROM tranches_en_cours_modeles
-				  WHERE username=\'$username\' AND Active=1
-				    AND Pays=\''.$pays.'\' AND Magazine=\''.$magazine.'\' AND Numero=\''.$numero.'\'';
-            $resultats = DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator');
-		}
 		else {
             $resultats = DmClient::get_service_results_ec(
                 DmClient::$dm_server, 'GET', "/edgecreator/v2/model"
@@ -205,11 +197,12 @@ class Modele_tranche_Wizard extends Modele_tranche {
 	
 	function creer_modele($pays, $magazine, $numero) {
         $est_editeur = in_array($this->get_privilege(), ['Edition', 'Admin']) ? '1' : '0';
-        DmClient::get_service_results_ec(
+        $resultat = DmClient::get_service_results_ec(
             DmClient::$dm_server,
             'PUT',
             "/edgecreator/v2/model/$pays/$magazine/$numero/$est_editeur"
         );
+        return $resultat->modelid;
 	}
 	
 	function get_photo_principale() {

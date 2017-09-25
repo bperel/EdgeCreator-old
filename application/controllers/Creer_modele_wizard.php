@@ -8,12 +8,11 @@ class Creer_Modele_Wizard extends EC_Controller {
 		    $this->Modele_tranche->setUsername($this->session->userdata('user'));
         }
 
-		$this->Modele_tranche->creer_modele($pays,$magazine,$numero);
-        $this->session->set_userdata('id_modele', $this->Modele_tranche->get_id_modele($pays,$magazine,$numero));
+		$id_modele = $this->Modele_tranche->creer_modele($pays,$magazine,$numero);
+        $this->session->set_userdata('id_modele', $id_modele);
 		$infos_insertion=$this->Modele_tranche->insert_etape(null, -1, 'Dimensions');
 
         $options = $this->Modele_tranche->get_options_ec_v2( -1, false, false, null);
-        print_r($options);
         if (count($options) > 0) {
             // Copie des dimensions si elles ont été renseignées lors d'un envoi de photos
             $this->Modele_tranche->update_etape(-1,

@@ -1265,7 +1265,7 @@ function charger_tranches_en_cours() {
 	var wizard_conception = $('#wizard-conception');
 
 	$.ajax({
-		url: urls['tranchesencours'] + ['load', id_modele || 'null', pays || 'null', magazine || 'null', numero || 'null'].join('/'),
+		url: urls['tranchesencours'] + ['load', id_modele].join('/'),
 		type: 'post',
 		dataType: 'json',
 		success: function (data) {
@@ -2979,9 +2979,10 @@ function creer_modele_tranche(pays, magazine, numero, with_user, callback) {
 	$.ajax({
 		url: urls['creer_modele_wizard']+['index',pays,magazine,numero,with_user].join('/'),
 		type: 'post',
-		success: function() {
+		success: function(data) {
+			id_modele = data.id_modele;
 			if (dimensions.x) {
-				// Mise ê jour de la fonction Dimensions avec les valeurs entrées
+				// Mise à jour de la fonction Dimensions avec les valeurs entrées
 				var parametrage_dimensions =  'Dimension_x='+dimensions.x +'&Dimension_y='+dimensions.y;
 				$.ajax({
 					url: urls['update_wizard']+['index',-1,parametrage_dimensions,with_user].join('/'),
