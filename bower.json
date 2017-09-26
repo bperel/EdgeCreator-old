@@ -2,10 +2,10 @@
   "name": "EdgeCreator",
   "version": "1.0.0",
   "dependencies": {
-    "jquery": "1.10.*",
-    "jquery-ui": "1.10.*",
-    "jrac": "https://github.com/trepmag/jrac.git",
-    "jquery.ba-resize": "https://github.com/cowboy/jquery-resize.git",
-    "jquery-serializeObject": "1.0.*"
+    "jquery": "1.10.2",
+    "jquery-ui": "1.10.4",
+    "jrac": "https://github.com/trepmag/jrac.git#1267b25ad3c6cef748509bdd4e638a09314363ad",
+    "jquery.ba-resize": "https://github.com/cowboy/jquery-resize.git#21ae0ec06d751a408165a1714963173c2db6adfa",
+    "jquery-serializeObject": "1.0.0"
   }
 }

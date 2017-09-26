@@ -7,12 +7,12 @@ deployment_commit_id=$1
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-for f in application css helpers images js scripts system vendor .htaccess bower.json deployment_commit_id.txt
+for f in ${to_restore[@]}
 do
   rm -rf "${webdir}/$f"
 done
 
-for f in application css helpers images js scripts system vendor .htaccess bower.json deployment_commit_id.txt
+for f in ${to_restore[@]}
 do
   if [ -d "${webdir}_old/$f" ] || [ -f "${webdir}_old/$f" ]; then
     cp -rp "${webdir}_old/$f" "${webdir}"

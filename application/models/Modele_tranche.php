@@ -29,7 +29,7 @@ class Modele_tranche extends CI_Model {
 
     public static function getCheminImages()
     {
-        return BASEPATH . '../edges/';
+        return BASEPATH . '../../edges/';
     }
 
     public static function getCheminPolices()

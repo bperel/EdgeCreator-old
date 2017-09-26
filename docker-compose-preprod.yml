@@ -8,8 +8,7 @@ services:
      - "8003:80"
      - "8446:443"
     volumes:
-     - .:/var/www/html
-     - /var/www/html/DucksManager/edges:/var/www/html/edges
+     - /var/www/html/DucksManager/edges:/var/www/edges
 networks:
   default:
     external:

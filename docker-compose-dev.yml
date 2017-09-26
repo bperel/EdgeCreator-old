@@ -9,7 +9,7 @@ services:
      - "8001:80"
     volumes:
      - .:/var/www/html
-     - ../DucksManager/edges:/var/www/html/edges
+     - ../DucksManager/edges:/var/www/edges
      - ./php.xdebug.ini:/usr/local/etc/php/php.ini
 networks:
   default:

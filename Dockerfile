@@ -12,7 +12,8 @@ RUN a2enmod rewrite
 
 RUN apt-get update && apt-get install -y \
       git wget unzip \
-      libpng-dev libfreetype6-dev libmcrypt-dev libpng12-dev libjpeg-dev libpng-dev
+      libpng-dev libfreetype6-dev libmcrypt-dev libpng12-dev libjpeg-dev libpng-dev \
+      npm #For Bower
 
 RUN docker-php-ext-configure gd \
   --enable-gd-native-ttf \
@@ -22,8 +23,9 @@ RUN docker-php-ext-configure gd \
 
 RUN docker-php-ext-install gd opcache
 
-RUN mkdir -p /var/www/html/DucksManager/edges && \
-    chown -R www-data:www-data /var/www/html/DucksManager/edges && \
-    chmod a+w -R /var/www/html/DucksManager/edges && \
-    mkdir -p /var/www/html/_sessions && \
-    chmod a+w -R /var/www/html/_sessions
+RUN ln -s /usr/bin/nodejs /usr/bin/node && \
+    npm install --global bower
+
+RUN mkdir -p /var/www/edges && \
+    chown -R www-data:www-data /var/www/edges && \
+    chmod a+w -R /var/www/edges
