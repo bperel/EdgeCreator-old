@@ -4,6 +4,10 @@ class TranchesEnCours extends EC_Controller {
 	function load($id_modele=null) {
 		$id_modele=$id_modele==='null' ? null : $id_modele;
 
+        if (!is_null($id_modele)) {
+            $this->session->set_userdata('id_modele', $id_modele);
+        }
+
 		$this->load->model($this->session->userdata('mode_expert') === true ? 'Modele_tranche' : 'Modele_tranche_Wizard','Modele_tranche');
 		
 		$this->Modele_tranche->setUsername($this->session->userdata('user'));
