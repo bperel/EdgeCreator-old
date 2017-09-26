@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-. common.sh
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+. ${DIR}/common.sh
 
 deploy() {
   docker exec ${container_name} /bin/bash ${webdir}/scripts/deploy/backup-app.sh && \

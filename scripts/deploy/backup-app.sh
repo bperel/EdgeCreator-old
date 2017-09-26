@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-. common.sh
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+. ${DIR}/common.sh
 
 mkdir -p ${webdir}_old && rm -rf ${webdir}_old/*
 

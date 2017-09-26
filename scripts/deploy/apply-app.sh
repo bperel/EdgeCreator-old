@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
-webdir=/var/www/html
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+. ${DIR}/common.sh
+
 deployment_commit_id=$1
 
 cd ${webdir}
