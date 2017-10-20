@@ -8,10 +8,9 @@ class EdgeCreatorg extends Ec_Controller {
 		global $erreur;$erreur='';
 		
 		$privilege=$this->Modele_tranche->get_privilege();
-		if (is_null($privilege))
-			echo 'Erreur - '.$erreur;
-		else
+		if (!is_null($privilege)) {
 			echo $privilege;
+        }
 	}
 	
 	function logout() {
@@ -28,17 +27,12 @@ class EdgeCreatorg extends Ec_Controller {
 		$this->load->model($this->session->userdata('mode_expert') === true ? 'Modele_tranche' : 'Modele_tranche_Wizard','Modele_tranche');
 		
 		$privilege=$this->Modele_tranche->get_privilege();
-		
-		global $erreur;
-		$erreur = '';
-		
-		
+
 		$data = [
 				'user'=>$this->session->userdata('user'),
 				'mode_expert'=>$this->session->userdata('mode_expert'),
 				'just_connected'=>$this->Modele_tranche->get_just_connected(),
 				'privilege' => $privilege,
-				'erreur' => $erreur,
 				'title' => 'EdgeCreator',
         ];
 		$this->load->view('headergview',$data);

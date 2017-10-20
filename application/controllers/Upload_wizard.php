@@ -45,6 +45,7 @@ class Upload_Wizard extends EC_Controller {
         }
 
         if (isset($erreur)) {
+            ErrorHandler::error_log($erreur);
             $this->contenu .= $erreur;
             $this->contenu .= get_message_retour($est_photo_tranche);
         }
@@ -137,6 +138,7 @@ class Upload_Wizard extends EC_Controller {
                 }
             }
             else {
+                ErrorHandler::error_log($erreur);
                 $this->contenu .= $erreur;
                 $this->contenu .= get_message_retour($est_photo_tranche);
             }

@@ -1,5 +1,6 @@
 <?php
 include_once(APPPATH.'helpers/dm_client.php');
+include_once(APPPATH.'helpers/error_handler.php');
 
 class EC_Controller extends CI_Controller {
 

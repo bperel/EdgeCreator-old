@@ -46,15 +46,19 @@ class Modele_tranche extends CI_Model {
 	}
 	
 	function get_privilege() {
+	    global $erreur;
 		$privilege=null;
 		$_POST['mode_expert']=isset($_POST['mode_expert']) && $_POST['mode_expert'] === 'true' ? true : false;
-		if (isset($_REQUEST['user'])) {
+		if (isset($_REQUEST['user']) && isset($_REQUEST['pass'])) {
 			self::$just_connected=true;
 			if ($this->user_connects($_REQUEST['user'], $_REQUEST['pass'], isset($_REQUEST['is_sha1']))) {
 			    $privilege = $this->get_privilege_from_username($_REQUEST['user']);
 				$this->creer_id_session($_REQUEST['user'],sha1($_REQUEST['pass']),$_POST['mode_expert']);
             }
             else {
+                if (!empty($erreur)) {
+                    ErrorHandler::error_log($erreur);
+                }
 			    return null;
             }
 		}
@@ -1339,6 +1343,7 @@ class Fonction_executable extends Fonction {
 						 $noir,Modele_tranche::getCheminPolices() . 'Arial.ttf',$texte_erreur);
 		}
 		Modele_tranche::rendu_image(false);
+        ErrorHandler::error_log($erreur);
 		exit();
 	}
 
