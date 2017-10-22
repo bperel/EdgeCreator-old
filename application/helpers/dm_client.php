@@ -153,8 +153,6 @@ class DmClient
         $responseCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
 
-        ErrorHandler::error_log_and_exception('Call to service '.$method.' '.$server->web_root . $path. ' failed', "Response code = $responseCode, response buffer = $buffer");
-
         if (!empty($buffer) && $responseCode >= 200 && $responseCode < 300) {
             if ($buffer === 'null') {
                 return null;
@@ -164,6 +162,8 @@ class DmClient
                 return $results;
             }
         }
+
+        ErrorHandler::error_log_and_exception('Call to service '.$method.' '.$server->web_root . $path. ' failed', "Response code = $responseCode, response buffer = $buffer");
         return null;
     }
 
