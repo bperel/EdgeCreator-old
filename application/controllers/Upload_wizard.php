@@ -17,6 +17,8 @@ class Upload_Wizard extends EC_Controller {
             exit;
         }
 
+        $multiple = isset($_POST['multiple']) && $_POST['multiple'] === '1';
+
         $pays     = isset($_POST['pays'])     ? $_POST['pays']     : null;
         $magazine = isset($_POST['magazine']) ? $_POST['magazine'] : null;
         $numero   = isset($_POST['numero'])   ? $_POST['numero']   : null;
@@ -50,7 +52,7 @@ class Upload_Wizard extends EC_Controller {
             $this->contenu .= get_message_retour($est_photo_tranche);
         }
         else {
-            list($dossier,$fichier) = get_nom_fichier($_FILES['image']['name'], $pays, $magazine, $numero, $est_photo_tranche);
+            list($dossier,$fichier) = get_nom_fichier($_FILES['image']['name'], $multiple, $est_photo_tranche, $pays, $magazine, $numero);
             $extension = strtolower(strrchr($_FILES['image']['name'], '.'));
 
             $taille_maxi = $_POST['MAX_FILE_SIZE'];
@@ -115,22 +117,20 @@ class Upload_Wizard extends EC_Controller {
                         $this->contenu.= ob_get_clean();
                     }
                     $this->contenu .= 'Envoi r&eacute;alis&eacute; avec succ&egrave;s !';
-                    if (isset($pays)) {
+                    if (!$multiple) {
                         $this->contenu .= get_message_retour($est_photo_tranche);
                     }
-                    else {
-                        ob_start();
-                        ?>
-                        <script type="text/javascript">
-                            window.parent.nom_photo_tranches_multiples = '<?=$fichier?>';
-                            window.parent.$('.ui-dialog:visible')
-                                .find('button')
-                                .filter(function() {
-                                    return window.parent.$(this).text() === 'Suivant';
-                                }).button('option','disabled', false);
-                        </script><?php
-                        $this->contenu.= ob_get_clean();
-                    }
+
+                    ob_start();
+                    ?><script type="text/javascript">
+                        window.parent.nom_photo_tranches_multiples = '<?=$fichier?>';
+                        window.parent.$('.ui-dialog:visible')
+                            .find('button')
+                            .filter(function() {
+                                return window.parent.$(this).text() === 'Suivant';
+                            }).button('option','disabled', false);
+                    </script><?php
+                    $this->contenu.= ob_get_clean();
                 }
                 else {
                     $this->contenu .= 'Echec de l\'envoi !'.$dossier . $fichier;

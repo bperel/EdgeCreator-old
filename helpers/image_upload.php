@@ -22,6 +22,7 @@ $est_photo_tranche=(isset($_GET ['photo_tranche']) && $_GET ['photo_tranche'] ==
                 <input type="hidden" id="magazine" name="magazine" value=""/>
                 <input type="hidden" id="numero" name="numero" value=""/>
             <?php } ?>
+            <input type="hidden" id="multiple" name="multiple" value="<?= isset($_GET['multiple']) ? 1 : 0 ?>"/>
             <input type="hidden" id="photo_tranche" name="photo_tranche" value="<?= $est_photo_tranche ? 1 : 0 ?>"/>
             <input type="file" name="image" style="width: 260px"/><br/>
             <input type="submit" value="Envoyer"/>

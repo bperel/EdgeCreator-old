@@ -1,7 +1,7 @@
 <?php
-function get_nom_fichier($nom, $pays, $magazine, $numero, $est_photo_tranche) {
+function get_nom_fichier($nom, $multiple, $est_photo_tranche, $pays, $magazine, $numero) {
     $dossier = getcwd().'/../edges/'
-              .(is_null($pays) ? 'tranches_multiples' : ($pays.'/'.( $est_photo_tranche ? 'photos' : 'elements' )))
+              .($multiple ? 'tranches_multiples' : ($pays.'/'.( $est_photo_tranche ? 'photos' : 'elements' )))
               .'/';
     @mkdir($dossier,0777,true);
 
@@ -14,25 +14,23 @@ function get_nom_fichier($nom, $pays, $magazine, $numero, $est_photo_tranche) {
         }
     }
     else {
-        $extension_cible='.jpg';
         if ($est_photo_tranche) {
-            if (isset($pays)) {
-                $fichier=$magazine.'.'.$numero.'.photo';
-            }
-            else {
+            if ($multiple) {
                 $fichier='photo.multiple';
             }
-            $fichier=get_prochain_nom_fichier_dispo($dossier, $fichier, $extension_cible);
+            else {
+                $fichier=$magazine.'.'.$numero.'.photo';
+            }
         }
-        else { // Photo d'�l�ment
+        else { // Photo d'élément
             if (isset($magazine)) {
                 $fichier = basename($magazine.'.'.$nom);
             }
             else {
                 $fichier = basename($nom);
             }
-            $fichier=get_prochain_nom_fichier_dispo($dossier, $fichier, $extension_cible);
         }
+        $fichier=get_prochain_nom_fichier_dispo($dossier, $fichier, '.jpg');
     }
     $fichier=str_replace(' ','_',$fichier);
     return [$dossier,$fichier];
@@ -43,7 +41,6 @@ function get_prochain_nom_fichier_dispo($dossier, $fichier, $extension_cible) {
     while (file_exists($dossier.$fichier.'_'.$i.$extension_cible)) {
         $i++;
     }
-    $fichier.='_'.$i;
-    $fichier.=$extension_cible;
+    $fichier.='_'.$i.$extension_cible;
     return $fichier;
 }
