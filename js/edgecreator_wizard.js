@@ -993,21 +993,6 @@ $.fn.afficher_liste_magazines = function(elementListe, classe_template, data, pe
 		explication.removeClass('cache');
 		wizard.find('#to-wizard-conception').button('option','disabled',false);
 
-		wizard.find('.prepublier, .depublier').button().click(function() {
-			var btn = $(this);
-			var data = btn.siblings('.libelle_tranche').data();
-			var prepublier_ou_depublier = btn.hasClass('prepublier');
-			if (prepublier_ou_depublier) {
-				charger_image('etape', urls['viewer_wizard'] + ['index', data.pays, data.magazine, data.numero, '1.5', 'all', '_', 'save', 'false', 'false'].join('/'), null, function (image) {
-					var nom_image_temp=image.attr('src').match(/[.0-9]+$/g)[0];
-					prepublier_depublier(true, btn, nom_image_temp);
-				});
-			}
-			else {
-				prepublier_depublier(false, btn);
-			}
-		});
-
 		$.each(tranches, function(i, tranche_en_cours) {
 
 			var bouton_tranche_en_cours=wizard.find('.template.' + classe_template).clone(true).removeClass('template');
@@ -3204,18 +3189,6 @@ function afficher_galerie(type_images, data, container) {
 		ul.removeClass('cache');
 		container.find('.chargement_images').addClass('cache');
 	}
-}
-
-function prepublier_depublier(prepublier, btn, nom_image_temp) {
-	$.ajax({
-		url: urls['prepublier'] + ['index', prepublier, nom_image_temp].join('/'),
-		type: 'post',
-		success: function () {
-			if (prepublier) {
-				btn.siblings('.depublier').removeClass('cache');
-			}
-		}
-	});
 }
 
 function surveiller_selection_jrac($viewport) {

@@ -391,15 +391,6 @@ class Modele_tranche_Wizard extends Modele_tranche {
         DmClient::get_service_results_ec(DmClient::$dm_server, 'POST', "/edgecreator/model/v2/$id_modele/deactivate");
 	}
 
-    function prepublier_modele( $prepublier_ou_depublier) {
-        $id_modele = $this->session->userdata('id_modele');
-
-        $requete_prepublication=' UPDATE tranches_en_cours_modeles '
-            .' SET PretePourPublication='.($prepublier_ou_depublier ? '1' : '0')
-            .' WHERE ID='.$id_modele;
-        DmClient::get_query_results_from_dm_server($requete_prepublication, 'db_edgecreator');
-    }
-
     public function ajouter_photo_tranches_multiples($nomFichier, $hash)
     {
         $photos_jour = DmClient::get_service_results_ec(

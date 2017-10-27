@@ -63,8 +63,6 @@
     <div class="template groupe_tranches groupe_tranches_en_cours">
         <input type="radio" id="numero_tranche_en_cours" name="choix_tranche_en_cours">
         <label for="numero_tranche_en_cours" class="toutes_bordures libelle_tranche">Label</label>
-        <button class="prepublier">Pré-publier</button>
-        <button class="depublier cache">Dé-publier</button>
     </div>
 
 

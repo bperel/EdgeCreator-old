@@ -213,13 +213,6 @@ label.libelle_tranche {
 	background-position: 10px !important;
 }
 
-#tranches_en_cours button.prepublier,
-#tranches_en_cours button.depublier {
-	margin: 0 5px 0 10px;
-    padding-left: 0;
-    float: right;
-}
-
 #wizard-proposition-clonage table td {
 	text-align: center;
 }
