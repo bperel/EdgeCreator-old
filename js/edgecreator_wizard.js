@@ -757,7 +757,6 @@ function wizard_init(wizard_id) {
 					pays=	 tranche[1];
 					magazine=tranche[2];
 					numero=	 tranche[3];
-					numeros_multiples = [numero];
 				}
 				else {
 					var publicationcode=get_option_wizard('wizard-creer-hors-collection', 'wizard_magazine');
@@ -770,6 +769,10 @@ function wizard_init(wizard_id) {
 					numero=numeros_multiples[0];
 				}
 			}
+			if (!(numeros_multiples && numeros_multiples.length)) {
+				numeros_multiples = [numero];
+			}
+
 			selecteur_cellules_preview='#'+wizard_id+' .tranches_affichees_magazine td:not(.libelle_numero)';
 
 			afficher_tranches_proches(pays, magazine, numeros_multiples, true);
@@ -833,12 +836,17 @@ function wizard_init(wizard_id) {
 		break;
 
 		case 'wizard-dimensions':
-			var dimensions_connues= get_option_wizard('wizard-1','choix') === 'to-wizard-conception';
+			if (dimensions.x) {
+				wizard_goto($('#' + id_wizard_courant), 'wizard-conception');
+			}
+			else {
+				var dimensions_connues= get_option_wizard('wizard-1','choix') === 'to-wizard-conception';
 
-			if (dimensions_connues) {
-				creer_modele_tranche(pays, magazine, numero, true, function () {
-					wizard_goto($('#' + id_wizard_courant), 'wizard-conception');
-				}); // Création du modéle sans les dimensions (qui seront copiées du modéle non affecté)
+				if (dimensions_connues) {
+					creer_modele_tranche(pays, magazine, numero, true, function () {
+						wizard_goto($('#' + id_wizard_courant), 'wizard-conception');
+					}); // Création du modéle sans les dimensions (qui seront copiées du modéle non affecté)
+				}
 			}
 		break;
 
@@ -1248,6 +1256,8 @@ function traiter_tranches(tranches) {
 
 function charger_tranches_en_cours() {
 	var wizard_conception = $('#wizard-conception');
+
+	$('.wizard.preview_etape:not(.initial)').remove();
 
 	$.ajax({
 		url: urls['tranchesencours'] + ['load', id_modele].join('/'),
@@ -3054,6 +3064,9 @@ function init_action_bar() {
 							}
 						});
 					});
+				break;
+				case 'clone':
+					wizard_goto($('#'+id_wizard_courant), 'wizard-proposition-clonage');
 				break;
 				case 'valider':
 					launch_wizard('wizard-confirmation-validation-modele', {

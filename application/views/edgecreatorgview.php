@@ -28,6 +28,8 @@
 			 title="Revenir à l'écran d'accueil de EdgeCreator" />
 		<img class="action tip" name="photo"
 			 title="Insérer/Sélectionner une photo de tranche" />
+		<img class="action tip" name="clone"
+			 title="Cloner depuis un autre modèle de tranche" />
 		<img class="action tip" name="corbeille"
 			 title="Supprimer cette conception de tranche" />
 		<img class="action tip" name="valider"
