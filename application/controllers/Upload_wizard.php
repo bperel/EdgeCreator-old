@@ -155,7 +155,7 @@ function get_message_retour($est_photo_tranche, $multiple) {
     return
         '<br /><a href="'
             .preg_replace('#\?.*$#', '', $_SERVER['HTTP_REFERER'])
-            .http_build_str(array_merge(
+            .http_build_query(array_merge(
                 ['photo_tranche' => $est_photo_tranche],
                 $multiple ? ['multiple' => '1'] : []
             ))
