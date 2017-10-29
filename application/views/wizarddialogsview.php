@@ -386,7 +386,7 @@
 			</p>
 		</div>
 		
-		<div class="wizard preview_etape initial">
+		<div class="wizard preview_etape template">
 			
 		</div>
 		

@@ -895,7 +895,7 @@ function wizard_init(wizard_id) {
 
 		break;
 		case 'wizard-ajout-etape':
-			var etape_existe = $('.wizard.preview_etape:not(.initial):not(.final)').length > 0;
+			var etape_existe = $('.wizard.preview_etape:not(.template):not(.final)').length > 0;
 			var accordeon = wizard.find('.accordion');
 			accordeon.accordion({
 				active: etape_existe ? 1 : 0
@@ -951,7 +951,6 @@ function wizard_init(wizard_id) {
 				   var utilisateur_courant=$('#utilisateur').html();
 
 			 	   $.each(wizard.find('span'),function(i,span) {
-			 		   var div=$('<div>');
 			 		   var type_contribution=$(span).attr('id');
 			 		   for (var username in data) {
 			 			   var id = $(span).attr('id')+'_'+username;
@@ -1257,7 +1256,7 @@ function traiter_tranches(tranches) {
 function charger_tranches_en_cours() {
 	var wizard_conception = $('#wizard-conception');
 
-	$('.wizard.preview_etape:not(.initial)').remove();
+	$('.wizard.preview_etape:not(.template)').remove();
 
 	$.ajax({
 		url: urls['tranchesencours'] + ['load', id_modele].join('/'),
@@ -1368,7 +1367,7 @@ function charger_tranches_en_cours() {
 								}
 							}
 
-							var wizard_etape_finale = $('.wizard.preview_etape.initial').clone(true);
+							var wizard_etape_finale = $('.wizard.preview_etape.template').clone(true);
 							var div_preview = $('<div>').data('etape', 'final').addClass('image_etape finale');
 							wizard_etape_finale.html(div_preview).append($('<span>', {'id': 'photo_tranche'}));
 
@@ -1381,8 +1380,8 @@ function charger_tranches_en_cours() {
 								position: ['right', 'top'],
 								closeOnEscape: false,
 								modal: false,
-								open: function (ui) {
-									$(this).removeClass('initial').addClass('final');
+								open: function () {
+									$(this).removeClass('template').addClass('final');
 									$(this).data('etape', 'finale');
 									$(this).d().addClass('dialog-preview-etape finale')
 										.data('etape', 'finale');
@@ -1445,7 +1444,7 @@ function charger_tranches_en_cours() {
 }
 
 function ajouter_preview_etape(num_etape, nom_fonction) {
-	var wizard_etape = $('.wizard.preview_etape.initial').clone(true);
+	var wizard_etape = $('.wizard.preview_etape.template').clone(true);
 	var div_preview=$('<div>').data('etape',num_etape+'').addClass('image_etape');
 	var div_preview_vide=$('<div>')
 		.addClass('preview_vide cache')
@@ -1464,8 +1463,8 @@ function ajouter_preview_etape(num_etape, nom_fonction) {
 		position: [posX,0],
 		closeOnEscape: false,
 		modal: false,
-		open:function(ui) {
-			$(this).removeClass('initial');
+		open:function() {
+			$(this).removeClass('template');
 			$(this).data('etape',num_etape);
 			$(this).d().addClass('dialog-preview-etape')
 					   .data('etape',num_etape)
@@ -1490,7 +1489,7 @@ function ajouter_preview_etape(num_etape, nom_fonction) {
 							type: 'post',
 							success:function() {
 								$('#wizard-confirmation-suppression').dialog().dialog( "close" );
-								$('.dialog-preview-etape,.wizard.preview_etape:not(.initial)').getElementsWithData('etape',etape).remove();
+								$('.dialog-preview-etape,.wizard.preview_etape:not(.template)').getElementsWithData('etape',etape).remove();
 								chargements[0]='final';
 								charger_previews(true);
 							}
@@ -1532,7 +1531,7 @@ function charger_previews(forcer_placement_dialogues) {
 
 function largeur_max_preview_etape_ouverte() {
 	var largeur_autres=0;
-	$.each($('.wizard.preview_etape:not(.initial),#wizard-conception'), function() {
+	$.each($('.wizard.preview_etape:not(.template),#wizard-conception'), function() {
 		largeur_autres+=$(this).dialog().dialog('option','width')+LARGEUR_INTER_ETAPES;
 	});
 	return $(window).width()-largeur_autres;
