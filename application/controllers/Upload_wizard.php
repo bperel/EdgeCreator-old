@@ -49,7 +49,7 @@ class Upload_Wizard extends EC_Controller {
         if (isset($erreur)) {
             ErrorHandler::error_log($erreur);
             $this->contenu .= $erreur;
-            $this->contenu .= get_message_retour($est_photo_tranche);
+            $this->contenu .= get_message_retour($est_photo_tranche, $multiple);
         }
         else {
             list($dossier,$fichier) = get_nom_fichier($_FILES['image']['name'], $multiple, $est_photo_tranche, $pays, $magazine, $numero);
@@ -118,7 +118,7 @@ class Upload_Wizard extends EC_Controller {
                     }
                     $this->contenu .= 'Envoi r&eacute;alis&eacute; avec succ&egrave;s !';
                     if (!$multiple) {
-                        $this->contenu .= get_message_retour($est_photo_tranche);
+                        $this->contenu .= get_message_retour($est_photo_tranche, $multiple);
                     }
 
                     ob_start();
@@ -134,13 +134,13 @@ class Upload_Wizard extends EC_Controller {
                 }
                 else {
                     $this->contenu .= 'Echec de l\'envoi !'.$dossier . $fichier;
-                    $this->contenu .= get_message_retour($est_photo_tranche);
+                    $this->contenu .= get_message_retour($est_photo_tranche, $multiple);
                 }
             }
             else {
                 ErrorHandler::error_log($erreur);
                 $this->contenu .= $erreur;
-                $this->contenu .= get_message_retour($est_photo_tranche);
+                $this->contenu .= get_message_retour($est_photo_tranche, $multiple);
             }
         }
         $this->load->view('helperview', ['contenu'=>$this->contenu]);
@@ -151,6 +151,13 @@ function get_message_fichier_trop_gros() {
     return 'Le fichier est trop gros (taille maximale : '.$_POST['MAX_FILE_SIZE'].' octets';
 }
 
-function get_message_retour($est_photo_tranche) {
-    return '<br /><a href="'.preg_replace('#\?.*$#', '', $_SERVER['HTTP_REFERER']).'?photo_tranche='.$est_photo_tranche.'">Autre envoi</a>';
+function get_message_retour($est_photo_tranche, $multiple) {
+    return
+        '<br /><a href="'
+            .preg_replace('#\?.*$#', '', $_SERVER['HTTP_REFERER'])
+            .http_build_str(array_merge(
+                ['photo_tranche' => $est_photo_tranche],
+                $multiple ? ['multiple' => '1'] : []
+            ))
+        .'">Autre envoi</a>';
 }
