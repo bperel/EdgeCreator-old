@@ -544,7 +544,7 @@ class Modele_tranche extends CI_Model {
 					}
 					if (!array_key_exists($resultat->Ordre, $options[$numero]['etapes'])) {
 						$options[$numero]['etapes'][$resultat->Ordre]= [
-                            'nom_fonction' => $resultat->Nom_fonction,
+                            'stepfunctionname' => $resultat->Nom_fonction,
                             'options' => []
                         ];
 					}
@@ -571,7 +571,7 @@ class Modele_tranche extends CI_Model {
         $qualite_etapes = [];
 
         foreach($options_etapes as $etape => &$fonction_et_options) {
-            $nom_fonction = $fonction_et_options['nom_fonction'];
+            $nom_fonction = $fonction_et_options['stepfunctionname'];
             $noms_options = array_keys($fonction_et_options['options']);
 
             $fonction_et_options['options_manquantes'] = array_diff(array_keys($nom_fonction::$valeurs_defaut), $noms_options);

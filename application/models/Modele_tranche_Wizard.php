@@ -332,20 +332,11 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		else {
             $id_modele = DmClient::get_service_results_ec(
                 DmClient::$dm_server,
-                'PUT',
-                "/edgecreator/v2/model/$pays/$magazine/$nouveau_numero/1"
+                'POST',
+                "/edgecreator/v2/model/clone/to/$pays/$magazine/$nouveau_numero", [
+                    'steps' => $options[$numero]['etapes']
+                ]
             )->modelid;
-
-            foreach($options[$numero]['etapes'] as $etape => $options_etape) {
-                DmClient::get_service_results_ec(
-                    DmClient::$dm_server,
-                    'POST',
-                    "/edgecreator/v2/step/$id_modele/$etape", [
-                        'options' => $options_etape['options'],
-                        'stepfunctionname' => $options_etape['nom_fonction']
-                    ]
-                );
-            }
 
             // TODO return model ID and non-cloned steps
             return [
