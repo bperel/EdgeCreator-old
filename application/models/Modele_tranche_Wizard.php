@@ -464,7 +464,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
         $resultat_nom_photo = DmClient::get_query_results_from_dm_server($requete_nom_photo, 'db_edgecreator')[0];
 		
 		$chemin_photos = Fonction_executable::getCheminPhotos($resultat_nom_photo->Pays);
-		$chemin_photo_tranche = $chemin_photos.'/'.$resultat_nom_photo->NomPhotoPrincipale;
+		$chemin_photo_tranche = $chemin_photos.'/'.$resultat_nom_photo->NomFichier;
 		$image = imagecreatefromjpeg($chemin_photo_tranche);
 		list($width, $height) = getimagesize($chemin_photo_tranche);
 		

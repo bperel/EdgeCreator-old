@@ -1268,7 +1268,6 @@ function charger_tranches_en_cours() {
 			magazine = tranche.magazine;
 			numero = tranche.numero;
 			id_modele = tranche.id;
-			nom_photo_principale = tranche.nomphotoprincipale;
 
 			$('#nom_complet_tranche_en_cours')
 				.html($('<img>', {src: 'images/flags/' + pays + '.png'}))
