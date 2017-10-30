@@ -453,9 +453,14 @@ class Modele_tranche_Wizard extends Modele_tranche {
 	
 	function get_couleur_point_photo($frac_x,$frac_y) {
         $id_modele = $this->session->userdata('id_modele');
-		$requete_nom_photo = ' SELECT NomPhotoPrincipale, Pays'
-							.' FROM tranches_en_cours_modeles'
-							.' WHERE ID='.$id_modele;
+		$requete_nom_photo = "
+		    SELECT images.NomFichier, modeles.Pays
+            FROM tranches_en_cours_modeles modeles
+            INNER JOIN tranches_en_cours_modeles_images modeles_images on modeles.ID = modeles_images.ID_Modele
+            INNER JOIN images_tranches images ON modeles_images.ID_Image = images.ID
+            WHERE modeles.ID=$id_modele
+		";
+
         $resultat_nom_photo = DmClient::get_query_results_from_dm_server($requete_nom_photo, 'db_edgecreator')[0];
 		
 		$chemin_photos = Fonction_executable::getCheminPhotos($resultat_nom_photo->Pays);
