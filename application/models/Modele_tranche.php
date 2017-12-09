@@ -180,7 +180,7 @@ class Modele_tranche extends CI_Model {
 		return $resultats_o;
 	}
 
-	function get_ordres($pays,$magazine,$numero=null) {
+	function get_etapes($pays, $magazine, $numero=null) {
 		$resultats_ordres= [];
 		$requete='SELECT DISTINCT Ordre, Numero_debut, Numero_fin '
 				.'FROM edgecreator_modeles2 '

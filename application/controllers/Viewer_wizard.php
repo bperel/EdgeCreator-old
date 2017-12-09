@@ -18,7 +18,16 @@ class Viewer_wizard extends EC_Controller {
 
     static $zoom_save = 1.5;
 	
-	function index($pays=null,$magazine=null,$numero=null,$zoom=1,$etapes_actives='1',$parametrage='',$save='false',$fond_noir=false,$externe=false,$random_ou_username=null,$debug=false) {
+	function etape($zoom,$etapes_actives,$parametrage,$save,$fond_noir,$externe,$random_ou_username=null,$debug=false) {
+        $id_modele = $this->session->userdata('id_modele');
+        $pays = $this->session->userdata('pays');
+        $magazine = $this->session->userdata('magazine');
+        $numero = $this->session->userdata('numero');
+
+        $this->index($id_modele, $pays, $magazine, $numero, $zoom, $etapes_actives, $parametrage, $save, $fond_noir, $externe, $random_ou_username, $debug);
+    }
+
+	function index($id_modele,$pays,$magazine,$numero,$zoom,$etapes_actives,$parametrage,$save,$fond_noir,$externe,$random_ou_username=null,$debug=false) {
 		if ($etapes_actives=='final')
 			$etapes_actives='all';
 		if ($etapes_actives=='all') {
@@ -41,9 +50,7 @@ class Viewer_wizard extends EC_Controller {
 		$this->load->helper('url');
 		
 		$this->init_model();
-		
-		$privilege=$this->Modele_tranche->get_privilege();
-		
+
 		if (is_null($pays) || is_null($magazine)) {
 			$this->load->view('errorview', ['Erreur'=>'Nombre d\'arguments insuffisant']);
 			exit();
@@ -107,15 +114,17 @@ class Viewer_wizard extends EC_Controller {
             self::$etapes_actives=explode('-', $etapes_actives);
             self::$etape_en_cours=new stdClass();
 
-            $id_modele = $this->Modele_tranche->get_id_modele($pays,$magazine,$numero);
-            $num_ordres=$this->Modele_tranche->get_ordres($pays,$magazine,$numero);
+            if (empty($id_modele)) {
+                $id_modele = $this->Modele_tranche->get_id_modele($pays,$magazine,$numero);
+            }
+            $etapes=$this->Modele_tranche->get_etapes($pays,$magazine,$numero);
             $dimensions= [];
 
 			$fond_noir_fait=false;
 			$options_preview= [];
 			try {
-                foreach($num_ordres as $num_ordre) {
-                    if ($num_ordre>-1 && $fond_noir && !$fond_noir_fait) {
+                foreach($etapes as $num_etape=>$nom_fonction) {
+                    if ($num_etape>-1 && $fond_noir && !$fond_noir_fait) {
                         $options=new stdClass();
                         $options->Pos_x=$options->Pos_y=0;
                         $options->Couleur='000000';
@@ -123,14 +132,13 @@ class Viewer_wizard extends EC_Controller {
                         $fond_noir_fait=true;
                     }
 
-                    if ($num_ordre<0 || in_array($num_ordre,self::$etapes_actives) || self::$etapes_actives== ['all']) {
-                        $ordres[$num_ordre]=$this->Modele_tranche->get_fonction_ec_v2($num_ordre, $id_modele);
-                        self::$etape_en_cours->num_etape=$num_ordre;
-                        self::$etape_en_cours->nom_fonction=$ordres[$num_ordre]->Nom_fonction;
-                        $options2=$this->Modele_tranche->get_options_ec_v2($num_ordre, false, null, null, $id_modele);
-                        if ($num_ordre==-1)
+                    if ($num_etape<0 || in_array($num_etape,self::$etapes_actives) || self::$etapes_actives== ['all']) {
+                        self::$etape_en_cours->num_etape=$num_etape;
+                        self::$etape_en_cours->nom_fonction=$nom_fonction;
+                        $options2=$this->Modele_tranche->get_options_ec_v2($num_etape, false, null, null, $id_modele);
+                        if ($num_etape==-1)
                             $dimensions=$options2;
-                        if ((self::$etapes_actives== ['all'] && ($num_etape_parametrage == $num_ordre || is_null($num_etape_parametrage)))
+                        if ((self::$etapes_actives== ['all'] && ($num_etape_parametrage == $num_etape || is_null($num_etape_parametrage)))
                             || self::$etapes_actives!= ['all']
                         ) {
                             foreach(self::$parametrage as $parametre=>$valeur) {
@@ -138,13 +146,13 @@ class Viewer_wizard extends EC_Controller {
                             }
                         }
 
-                        $nom_classe = $ordres[$num_ordre]->Nom_fonction;
+                        $nom_classe = $nom_fonction;
                         if (!class_exists($nom_classe)) {
-                            echo 'Etape '.$num_ordre.' : La classe '.$nom_classe.' n\'existe pas';
+                            echo 'Etape '.$num_etape.' : La classe '.$nom_classe.' n\'existe pas';
                             exit;
                         }
                         new $nom_classe(clone $options2);
-                        $options_preview[$num_ordre]=$options2;
+                        $options_preview[$num_etape]=$options2;
                     }
                 }
 			}
@@ -154,18 +162,6 @@ class Viewer_wizard extends EC_Controller {
 			}
 
 			new Dessiner_contour($dimensions);
-			
-			
-			if (strpos($save,'integrate') !== false && $privilege == 'Admin' && self::$is_debug!==false) {
-				$data = [
-					'pays'=>$pays,
-					'magazine'=>$magazine,
-					'numero'=>$numero,
-					'options'=>$options_preview,
-					'username'=>$username_modele
-                ];
-				$this->load->view('integrateview',$data);
-			}
 			
 			$this->Modele_tranche->rendu_image($save === 'save');
 		}

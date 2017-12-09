@@ -10,6 +10,9 @@ class Creer_Modele_Wizard extends EC_Controller {
 
 		$id_modele = $this->Modele_tranche->creer_modele($pays,$magazine,$numero);
         $this->session->set_userdata('id_modele', $id_modele);
+        $this->session->set_userdata('pays', $pays);
+        $this->session->set_userdata('magazine', $magazine);
+        $this->session->set_userdata('numero', $numero);
 		$infos_insertion=$this->Modele_tranche->insert_etape(null, -1, 'Dimensions');
 
         $options = $this->Modele_tranche->get_options_ec_v2( -1, false, false, null);
@@ -20,7 +23,9 @@ class Creer_Modele_Wizard extends EC_Controller {
 
             //Mise à jour de la photo principale si une photo a été spécifiée lors de l'envoi de photos
             $nom_photo_principale = $this->Modele_tranche->get_photo_principale();
-            $this->Modele_tranche->update_photo_principale($nom_photo_principale);
+            if (!is_null($nom_photo_principale)) {
+                $this->Modele_tranche->update_photo_principale($nom_photo_principale);
+            }
         }
 
 		$data = [

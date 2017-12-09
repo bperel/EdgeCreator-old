@@ -5,7 +5,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 	static $content_fields = ['Ordre', 'Nom_fonction', 'Option_nom', 'Option_valeur'];
 	static $numero;
 
-    function get_tranches_en_cours($id_modele=null, $pays=null, $magazine=null, $numero=null) {
+    function get_tranches_en_cours($id_modele=null) {
 
         if (!is_null($id_modele)) {
             $resultats = DmClient::get_service_results_ec(
@@ -55,22 +55,21 @@ class Modele_tranche_Wizard extends Modele_tranche {
         }
     }
 	
-	function get_ordres($pays,$magazine,$numero=null,$toutes_colonnes=false) {
+	function get_etapes($pays, $magazine, $numero=null) {
 		$resultats_ordres= [];
-		$requete=' SELECT DISTINCT '.($toutes_colonnes?'*':'Ordre, Numero')
-				.' FROM tranches_en_cours_modeles_vue'
-			    .' WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\'';
+		$requete="
+          SELECT DISTINCT Numero, Ordre, Nom_fonction
+          FROM tranches_en_cours_modeles_vue
+          WHERE Pays = '$pays' AND Magazine = '$magazine'";
 		if (!is_null($numero)) {
-			$requete.=' AND Numero=\''.$numero.'\'';
+			$requete.=" AND Numero='$numero'";
 		}
-		$requete.=' AND username = \''.self::$username.'\''
-				 .' ORDER BY Ordre';
+		$requete.="
+		    AND username = '".self::$username."'
+		    ORDER BY Ordre";
         $resultats = DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator');
 		foreach($resultats as $resultat) {
-			$resultats_ordres[]=$toutes_colonnes?$resultat:$resultat->Ordre;
-		}
-		if (!$toutes_colonnes) {
-			$resultats_ordres=array_unique($resultats_ordres);
+			$resultats_ordres[$resultat->Ordre]=$resultat->Nom_fonction;
 		}
 		return $resultats_ordres;
 	}
@@ -212,7 +211,12 @@ class Modele_tranche_Wizard extends Modele_tranche {
         }
         else {
             $resultat = DmClient::get_service_results_ec(DmClient::$dm_server, 'GET', "/edgecreator/model/v2/$id_modele/photo/main");
-            return $resultat->nomfichier;
+            if (is_null($resultat)) {
+                return null;
+            }
+            else {
+                return $resultat->nomfichier;
+            }
         }
 	}
 
