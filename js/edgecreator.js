@@ -554,7 +554,7 @@ function charger_previews_numeros(numero, est_visu, est_externe) {
 	var zoom_utilise = est_visu ? zoom : 1.5;
 
 	$('#chargement').html('Chargement de la preview de la tranche');
-	charger_image('numero', urls['viewer_wizard'] + ['index', '', pays, magazine, numero, zoom_utilise, 'all', URLEncode(JSON.stringify(parametrage)), (est_visu ? 'false' : 'save'), 'false', est_externe].join('/'), numero);
+	charger_image('numero', urls['viewer_wizard'] + ['index', 0, pays, magazine, numero, zoom_utilise, 'all', URLEncode(JSON.stringify(parametrage)), (est_visu ? 'false' : 'save'), 'false', est_externe].join('/'), numero);
 }
 
 function charger_preview_etape(etapes_preview, est_visu, parametrage, callback) {
