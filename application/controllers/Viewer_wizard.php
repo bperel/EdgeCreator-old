@@ -117,7 +117,7 @@ class Viewer_wizard extends EC_Controller {
             if (empty($id_modele)) {
                 $id_modele = $this->Modele_tranche->get_id_modele($pays,$magazine,$numero);
             }
-            $etapes=$this->Modele_tranche->get_etapes($pays,$magazine,$numero);
+            $etapes=$this->Modele_tranche->get_etapes_by_id($id_modele);
             $dimensions= [];
 
 			$fond_noir_fait=false;

@@ -55,18 +55,13 @@ class Modele_tranche_Wizard extends Modele_tranche {
         }
     }
 	
-	function get_etapes($pays, $magazine, $numero=null) {
+	function get_etapes_by_id($id_modele) {
 		$resultats_ordres= [];
 		$requete="
-          SELECT DISTINCT Numero, Ordre, Nom_fonction
-          FROM tranches_en_cours_modeles_vue
-          WHERE Pays = '$pays' AND Magazine = '$magazine'";
-		if (!is_null($numero)) {
-			$requete.=" AND Numero='$numero'";
-		}
-		$requete.="
-		    AND username = '".self::$username."'
-		    ORDER BY Ordre";
+          SELECT DISTINCT Ordre, Nom_fonction
+          FROM tranches_en_cours_valeurs
+          WHERE ID_Modele = $id_modele
+          ORDER BY Ordre";
         $resultats = DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator');
 		foreach($resultats as $resultat) {
 			$resultats_ordres[$resultat->Ordre]=$resultat->Nom_fonction;
@@ -77,20 +72,22 @@ class Modele_tranche_Wizard extends Modele_tranche {
 	function get_etapes_simple() {
         $id_modele = $this->session->userdata('id_modele');
 
-		$requete='SELECT '.implode(', ', self::$content_fields).' '
-				.'FROM tranches_en_cours_modeles_vue '
-			    .'WHERE ID_Modele = \''.$id_modele.'\' ';
-		$requete.=' GROUP BY Ordre'
-				 .' ORDER BY Ordre ';
+		$requete="
+          SELECT Ordre, Nom_fonction, Option_nom, Option_valeur
+          FROM tranches_en_cours_valeurs
+          WHERE ID_Modele = $id_modele
+          GROUP BY Ordre
+          ORDER BY Ordre";
         $resultats = DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator');
 		return $resultats;
 	}
 
 	function get_fonction_ec_v2($ordre, $id_modele = null) {
         $id_modele = $id_modele ?? $this->session->userdata('id_modele');
-		$requete='SELECT '.implode(', ', self::$content_fields).' '
-				.'FROM tranches_en_cours_modeles_vue '
-                .'WHERE ID_Modele = \''.$id_modele.'\' AND Ordre='.$ordre;
+		$requete="
+          SELECT Ordre, Nom_fonction, Option_nom, Option_valeur
+          FROM tranches_en_cours_valeurs
+          WHERE ID_Modele = $id_modele AND Ordre=$ordre";
 
         $premier_resultat = DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator')[0];
 		return count($premier_resultat) == 0 ? null : new Fonction($premier_resultat);
@@ -107,12 +104,13 @@ class Modele_tranche_Wizard extends Modele_tranche {
             $id_modele = $this->session->userdata('id_modele');
         }
 
-        $requete='SELECT '.implode(', ', self::$content_fields).' '
-            .'FROM tranches_en_cours_modeles_vue '
-            .'WHERE ID_Modele = \''.$id_modele.'\' AND Ordre='.$ordre.' AND Option_nom IS NOT NULL ';
+        $requete="
+          SELECT Ordre, Nom_fonction, Option_nom, Option_valeur
+          FROM tranches_en_cours_valeurs
+          WHERE ID_Modele = $id_modele AND Ordre=$ordre AND Option_nom IS NOT NULL ";
         if (!is_null($nom_option))
-            $requete.='AND Option_nom = \''.$nom_option.'\' ';
-        $requete.='ORDER BY Option_nom ASC';
+            $requete.="AND Option_nom = '$nom_option' ";
+        $requete.="ORDER BY Option_nom ASC";
 
         $resultats = DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator');
         $resultats_options=new stdClass();
@@ -144,9 +142,10 @@ class Modele_tranche_Wizard extends Modele_tranche {
 	function has_no_option_ec_v2() {
         $id_modele = $this->session->userdata('id_modele');
 
-		$requete='SELECT Option_nom '
-				.'FROM tranches_en_cours_modeles_vue '
-				.'WHERE ID_Modele = \''.$id_modele.'\' AND Option_nom IS NOT NULL';
+		$requete="
+		  SELECT Option_nom
+		  FROM tranches_en_cours_valeurs
+		  WHERE ID_Modele = $id_modele AND Option_nom IS NOT NULL";
         return count(DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator')) === 0;
 	}
 
@@ -445,9 +444,10 @@ class Modele_tranche_Wizard extends Modele_tranche {
 	function get_couleurs_frequentes() {
         $id_modele = $this->session->userdata('id_modele');
 		$couleurs= [];
-		$requete= ' SELECT DISTINCT Option_valeur'
-				 .' FROM tranches_en_cours_modeles_vue'
-				 .' WHERE ID_Modele='.$id_modele.' AND Option_nom LIKE \'Couleur%\'';
+		$requete= "
+		  SELECT DISTINCT Option_valeur
+		  FROM tranches_en_cours_valeurs
+		  WHERE ID_Modele=$id_modele AND Option_nom LIKE 'Couleur%'";
         $resultats = DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator');
 		foreach($resultats as $resultat) {
 			$couleurs[]=$resultat->Option_valeur;

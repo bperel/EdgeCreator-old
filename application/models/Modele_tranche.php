@@ -12,7 +12,7 @@ class Modele_tranche extends CI_Model {
 	static $numero_fin;
 	static $numeros_dispos;
 	static $dropdown_numeros;
-	static $fields;
+	static $fields = ['Pays', 'Magazine', 'Ordre', 'Nom_fonction', 'Option_nom', 'Option_valeur', 'Numero_debut', 'Numero_fin'];
 	static $user_possede_modele=null;
 	static $utilisateurs = [];
 	static $noms_fonctions = [
@@ -511,12 +511,12 @@ class Modele_tranche extends CI_Model {
 			$numeros_esc[]='\''.$numero.'\'';
 		}
 
-        $requete_get_options=
-             ' SELECT 1 AS EC_v2, Numero, '.implode(', ', Modele_tranche_Wizard::$content_fields).' '
-            .' FROM tranches_en_cours_modeles_vue '
-            .' WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\''
-            .' AND Numero IN ('.implode(',', $numeros_esc).') '
-            .' ORDER BY Ordre';
+        $requete_get_options= "
+          SELECT 1 AS EC_v2, Numero, Ordre, Nom_fonction, Option_nom, Option_valeur
+          FROM tranches_en_cours_modeles_vue
+          WHERE Pays = '$pays' AND Magazine = '$magazine'
+          AND Numero IN (".implode(',', $numeros_esc).") 
+          ORDER BY Ordre";
         $resultats = DmClient::get_query_results_from_dm_server($requete_get_options, 'db_edgecreator');
 
         $requete_get_options =
@@ -1255,12 +1255,10 @@ class Modele_tranche extends CI_Model {
 	} 
 	
 }
-Modele_tranche::$fields= ['Pays', 'Magazine', 'Ordre', 'Nom_fonction', 'Option_nom', 'Option_valeur', 'Numero_debut', 'Numero_fin'];
-Fonction::$valeurs_defaut= ['Remplir'=> ['Pos_x'=>0,'Pos_y'=>0]];
 
 class Fonction extends Modele_tranche {
 	public $options;
-	static $valeurs_defaut= [];
+	static $valeurs_defaut= ['Remplir'=> ['Pos_x'=>0,'Pos_y'=>0]];
 }
 
 class Fonction_executable extends Fonction {
