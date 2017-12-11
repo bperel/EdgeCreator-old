@@ -182,7 +182,7 @@
                 <div class="photo_tranche_creee template done"></div>
             </div>
             <span class="cache fin_chargement">
-                Les modèles des tranches sélectionnées ont été initialisés.<br />
+                Les photos de tranches ont été envoyées. Un éditeur va maintenant se charger de créer un modèle pour la bibliothèque DucksManager. Merci pour votre contribution !<br />
                 <a href="javascript:location.replace(base_url)">Retour à l'accueil</a>
             </span>
         </p>
