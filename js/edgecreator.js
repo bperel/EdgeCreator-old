@@ -1075,6 +1075,7 @@ $(window).load(function () {
 		else {
 			init_action_bar();
 			if (privilege === 'Affichage') {
+				$('#wizard-envoyer-photo').addClass('first');
 				launch_wizard('wizard-envoyer-photo');
 			}
 			else {
