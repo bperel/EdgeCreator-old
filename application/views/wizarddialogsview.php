@@ -100,7 +100,7 @@
 </div>
 
 
-	<div id="wizard-envoyer-photo" class="wizard" title="Assistant DucksManager - Envoi de photo">
+	<div id="wizard-envoyer-photo" class="wizard" title="Assistant DucksManager EdgeCreator - Envoi de photo">
 		<p>
             <form>
                 <input type="hidden" name="choix" value="to-wizard-decouper-photo" id="to-wizard-decouper-photo" />
@@ -114,7 +114,7 @@
 	</div>
 
 
-    <div id="wizard-decouper-photo" class="wizard extensible" title="Assistant DucksManager - Envoi de photo">
+    <div id="wizard-decouper-photo" class="wizard extensible" title="Assistant DucksManager EdgeCreator - Envoi de photo">
         <p>
             Sélectionnez avec la souris les zones de la photo correspondant à chaque tranche.<br />
             Déplacez et redimensionnez les zones et positionnez une zone par tranche.<br />
@@ -144,7 +144,7 @@
         </p>
     </div>
 
-        <div id="wizard-selectionner-numero-photo-multiple" class="wizard first closeable" title="Assistant DucksManager - Choix de numéro">
+        <div id="wizard-selectionner-numero-photo-multiple" class="wizard first closeable" title="Assistant DucksManager EdgeCreator - Choix de numéro">
             <p>
                 Choisissez le numéro dont vous avez sélectionné la tranche.<br />
                 <form>
@@ -173,7 +173,7 @@
             </p>
         </div>
 
-    <div id="wizard-confirmation-photo-multiple" class="wizard first deadend" title="Assistant DucksManager - Confirmation">
+    <div id="wizard-confirmation-photo-multiple" class="wizard first deadend" title="Assistant DucksManager EdgeCreator - Confirmation">
         <p>
             <div class="chargement">
                 Veuillez patienter...
@@ -189,7 +189,7 @@
     </div>
 
 
-	<div id="wizard-creer" class="wizard" title="Assistant DucksManager - Création de tranche">
+	<div id="wizard-creer" class="wizard" title="Assistant DucksManager EdgeCreator - Création de tranche">
 		<p>
 			Possédez-vous déjà le numéro dont vous souhaitez créer la tranche 
 			dans votre collection DucksManager ?
@@ -204,7 +204,7 @@
 	
 
 
-		<div id="wizard-creer-collection" class="wizard" title="Assistant DucksManager - Choix de numéro">
+		<div id="wizard-creer-collection" class="wizard" title="Assistant DucksManager EdgeCreator - Choix de numéro">
 			<p>
 				<span class="explication cache">Sélectionnez le numéro dont vous souhaitez créer la tranche.</span>
 				<span class="chargement">Veuillez patienter...</span>
@@ -224,7 +224,7 @@
 			</p>
 		</div>
 			
-		<div id="wizard-creer-hors-collection" class="wizard" title="Assistant DucksManager - Choix de numéro">
+		<div id="wizard-creer-hors-collection" class="wizard" title="Assistant DucksManager EdgeCreator - Choix de numéro">
 			<p>
 				Choisissez le ou les numéro(s) que vous souhaitez modéliser.<br />
 				<form>
@@ -261,7 +261,7 @@
 			</p>
 		</div>
 	
-			<div id="wizard-dimensions" class="wizard first" title="Assistant DucksManager - Conception de la tranche">
+			<div id="wizard-dimensions" class="wizard first" title="Assistant DucksManager EdgeCreator - Conception de la tranche">
 				<p>
 					<form name="form_options">
 						<span id="nom_complet_numero"></span>
@@ -278,7 +278,7 @@
 					</form>
 				</p>
 			</div>	
-	<div id="wizard-modifier" class="wizard" title="Assistant DucksManager - Choix de numéro">
+	<div id="wizard-modifier" class="wizard" title="Assistant DucksManager EdgeCreator - Choix de numéro">
 		<p>
 			Choisissez le numéro dont vous souhaitez modifier la modélisation.<br />
 			<form>
@@ -307,7 +307,7 @@
 		</p>
 	</div>
 	
-		<div id="wizard-proposition-clonage" class="wizard" title="Assistant DucksManager - Création">
+		<div id="wizard-proposition-clonage" class="wizard" title="Assistant DucksManager EdgeCreator - Création">
 			<p>
 				Certaines tranches ont déjà été conçues pour le magazine sélectionné.
 				Si l'une des tranches si-dessous est identique à la vôtre, ou bien que seules quelques couleurs ou quelques textes sont différents, sélectionnez cette tranche. 
@@ -336,7 +336,7 @@
 			</p>
 		</div>
 		
-			<div id="wizard-clonage" class="wizard" title="Assistant DucksManager - Clonage">
+			<div id="wizard-clonage" class="wizard" title="Assistant DucksManager EdgeCreator - Clonage">
 				<p>
 					La tranche du numéro <span class="nouveau_numero"></span> est créée à partir du numéro <span class="numero_similaire"></span>...<br />
 					Ce processus peut durer plus d'une minute dans certains cas. Veuillez patienter tant que le clonage est en cours, ne fermez pas cette fenêtre.
@@ -352,7 +352,7 @@
 				</p>
 			</div>
 		
-			<div id="wizard-clonage-silencieux" class="wizard" title="Assistant DucksManager - Préparation de la tranche">
+			<div id="wizard-clonage-silencieux" class="wizard" title="Assistant DucksManager EdgeCreator - Préparation de la tranche">
 				<p>
 					<div class="loading">Veuillez patienter...</div>
 					<div class="done cache">La tranche est prête à être modifiée. Vous pouvez passer à l'étape suivante.</div>
@@ -363,7 +363,7 @@
 			</div>
 			
 			
-		<div id="wizard-conception" class="main first wizard deadend" title="Assistant DucksManager - Conception de la tranche">
+		<div id="wizard-conception" class="main first wizard deadend" title="Assistant DucksManager EdgeCreator - Conception de la tranche">
 			<p>
 				<div class="chargement">Chargement...</div>
 				<form class="cache" name="form_options">
@@ -651,7 +651,7 @@
 	</p>
 </div>
 
-<div id="wizard-images" class="wizard deadend photo_principale" title="Assistant DucksManager - Photos de la tranche">
+<div id="wizard-images" class="wizard deadend photo_principale" title="Assistant DucksManager EdgeCreator - Photos de la tranche">
 	<p>
 		<form name="form_options">
 			<span class="photo_principale">
