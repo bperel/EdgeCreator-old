@@ -1073,12 +1073,16 @@ $(window).load(function () {
 			jquery_connexion();
 		}
 		else {
-			launch_wizard('wizard-1');
 			init_action_bar();
+			if (privilege === 'Affichage') {
+				launch_wizard('wizard-envoyer-photo');
+			}
+			else {
+				launch_wizard('wizard-1');
+			}
 		}
 	}
 	else {
-
 		$('#tabs').tabs({
 			show: function (event, ui) {
 				onglet_sel = $(ui.tab).text();
