@@ -53,7 +53,7 @@ class Modele_tranche extends CI_Model {
 			self::$just_connected=true;
 			if ($this->user_connects($_REQUEST['user'], $_REQUEST['pass'], isset($_REQUEST['is_sha1']))) {
 			    $privilege = $this->get_privilege_from_username($_REQUEST['user']);
-				$this->creer_id_session($_REQUEST['user'],sha1($_REQUEST['pass']),$_POST['mode_expert']);
+				$this->creer_id_session($_REQUEST['user'],$_REQUEST['pass'],$_POST['mode_expert']);
             }
             else {
                 if (!empty($erreur)) {
@@ -86,7 +86,7 @@ class Modele_tranche extends CI_Model {
         }
 	}
 	
-	function user_connects($user, $pass, $isSha1Pass = false) {
+	function user_connects($user, &$pass, $isSha1Pass = false) {
 		if (!$isSha1Pass) {
 		    $pass=sha1($pass);
         }
