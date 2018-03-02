@@ -326,7 +326,9 @@ function launch_wizard(id, p) {
 				   	var form=$('#'+id+' form').serializeObject();
 				   	var photographes=typeof(form.photographes) === "string" ? form.photographes : form.photographes.join(',') .replace(/ /g, "+");
 				   	var createurs=	 typeof(form.createurs)	=== "string" ? form.createurs 	: form.createurs.join(',') .replace(/ /g, "+");
-					var nom_image=$('#wizard-confirmation-validation-modele .image_preview.save')
+					var nom_image=$('#wizard-confirmation-validation-modele .image_preview').filter(function () {
+						return $(this).data().numero === numero;
+					})
 						.attr('src').match(/[.0-9]+$/g)[0];
 					$.ajax({
 						url: urls['valider_modele']+['index',nom_image,createurs,photographes].join('/'),
