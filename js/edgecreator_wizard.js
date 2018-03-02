@@ -1077,7 +1077,7 @@ function afficher_tranches(wizard_courant, tranches_affichees, numeros, tranches
 	var element_tranches_affichees = wizard_courant.find('.tranches_affichees_magazine');
 
 	if (element_tranches_affichees.find('.libelle_numero').length && numeros.length === 1) { // Tranches déjà affichées précédemment. On ne charge que la tranche courante
-		reload_numero(numeros[0], false, false);
+		reload_numero(numeros[0], false, true);
 	}
 	else {
 		element_tranches_affichees.html($('<div>').addClass('buttonset').html(tableau_tranches_affichees));
