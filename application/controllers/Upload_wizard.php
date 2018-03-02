@@ -35,10 +35,10 @@ class Upload_Wizard extends EC_Controller {
                     $erreur = get_message_fichier_trop_gros();
                     break;
                 case UPLOAD_ERR_PARTIAL:
-                    $erreur = 'L\'envoi a �t� interrompu';
+                    $erreur = 'L\'envoi a été interrompu';
                     break;
                 case UPLOAD_ERR_NO_FILE:
-                    $erreur = 'Le fichier envoy� est vide';
+                    $erreur = 'Le fichier envoyé est vide';
                     break;
                 default:
                     $erreur = 'Erreur interne lors de l\'envoi : #'.$_FILES['image']['error'];
@@ -58,7 +58,7 @@ class Upload_Wizard extends EC_Controller {
             $taille_maxi = $_POST['MAX_FILE_SIZE'];
             $taille = filesize($_FILES['image']['tmp_name']);
             $extensions = $est_photo_tranche ? ['.jpg','.jpeg'] : ['.png'];
-            //D�but des v�rifications de s�curit�...
+            //Début des vérifications de sécurité...
             if(!in_array($extension, $extensions)) //Si l'extension n'est pas dans le tableau
             {
                 $erreur = 'Vous devez uploader un fichier de type '.implode(' ou ',$extensions);
