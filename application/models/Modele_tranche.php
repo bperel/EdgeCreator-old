@@ -51,27 +51,19 @@ class Modele_tranche extends CI_Model {
 		$_POST['mode_expert']=isset($_POST['mode_expert']) && $_POST['mode_expert'] === 'true' ? true : false;
 		if (isset($_REQUEST['user']) && isset($_REQUEST['pass'])) {
 			self::$just_connected=true;
-			if ($this->user_connects($_REQUEST['user'], $_REQUEST['pass'], isset($_REQUEST['is_sha1']))) {
-			    $privilege = $this->get_privilege_from_username($_REQUEST['user']);
-				$this->creer_id_session($_REQUEST['user'],$_REQUEST['pass'],$_POST['mode_expert']);
-            }
-            else {
+            $privilege = $this->get_privilege_from_username($_REQUEST['user'], $_REQUEST['pass'], isset($_REQUEST['is_sha1']));
+			if (is_null($privilege)) {
                 if (!empty($erreur)) {
                     ErrorHandler::error_log($erreur);
                 }
-			    return null;
+                return null;
+            }
+            else {
+				$this->creer_id_session($_REQUEST['user'], $_REQUEST['pass'], $privilege, $_POST['mode_expert']);
             }
 		}
 		else {
-			if (!is_null($this->session->userdata('user')) && !is_null($this->session->userdata('pass'))) {
-                $privilege = $this->get_privilege_from_username($this->session->userdata('user'));
-                $this->creer_id_session($this->session->userdata('user'),
-                                        $this->session->userdata('pass'),
-                                        $this->session->userdata('mode_expert'));
-			}
-			else {
-				return 'Affichage';
-			}
+            $privilege = $this->session->userdata('privilege') ?? 'Affichage';
 		}
 		return $privilege;
 	}
@@ -86,34 +78,24 @@ class Modele_tranche extends CI_Model {
         }
 	}
 	
-	function user_connects($user, &$pass, $isSha1Pass = false) {
+	function get_privilege_from_username($user, &$pass, $isSha1Pass = false) {
 		if (!$isSha1Pass) {
 		    $pass=sha1($pass);
         }
 		global $erreur;
-		if (!$this->user_exists($user)) {
-			$erreur = 'Cet utilisateur n\'existe pas';
-			return false;
-		}
-		else {
-            $requete='SELECT username FROM users WHERE username =\''.$user.'\' AND password = \''.$pass.'\'';
-            $resultat = $this->requete_select_dm($requete);
-            if (count($resultat)==0) {
-                $erreur = 'Identifiants invalides !';
-                return false;
-            }
-            return true;
-        }
-    }
-
-    private function get_privilege_from_username($user) {
-        $requete='SELECT privilege FROM users_permissions WHERE username =\''.$user.'\' AND role = \'EdgeCreator\'';
+        $requete="
+            SELECT 
+              users.username,
+              (SELECT privilege FROM users_permissions WHERE username = users.username AND users_permissions.role = 'EdgeCreator') AS privilege
+            FROM users
+            WHERE users.username ='$user' AND users.password = '$pass'";
         $resultat = $this->requete_select_dm($requete);
         if (count($resultat)==0) {
-            return 'Affichage';
+            $erreur = 'Identifiants invalides !';
+            return null;
         }
-        return $resultat[0]['privilege'];
-	}
+        return $resultat[0]['privilege'] ?? 'Affichage';
+    }
 	
 	function username_to_id($username) {
         if (count(self::$utilisateurs) == 0) {
@@ -130,9 +112,9 @@ class Modele_tranche extends CI_Model {
 	}
 	
 	
-	function creer_id_session($user,$pass,$mode_expert) {
+	function creer_id_session($user, $pass, $privilege, $mode_expert) {
 		
-		$this->session->set_userdata(['user' => $user, 'pass' => $pass, 'mode_expert'=>$mode_expert]);
+		$this->session->set_userdata(['user' => $user, 'pass' => $pass, 'privilege' => $privilege, 'mode_expert'=>$mode_expert]);
 	}
 	
 	function user_possede_modele($pays=null,$magazine=null,$username=null) {
