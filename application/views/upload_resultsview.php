@@ -3,7 +3,9 @@ if (isset($erreur)) {
     ?>Erreur : <?=$erreur?><?php
 }
 else {
-    ?>Envoi réalisé avec succès !<?php
+    ?>Envoi réalisé avec succès !
+    <div class="cache">Sélectionner l'image envoyée</div>
+    <?php
     if (isset($est_photo_tranche)) {?>
         <script type="text/javascript">
 			if (window.parent.$('wizard-photos')
@@ -17,12 +19,20 @@ else {
     }
     ?>
     <script type="text/javascript">
-        window.parent.nom_photo_tranches_multiples = '<?=$nomFichier?>';
-        window.parent.$('.ui-dialog:visible')
+        var nomFichier = '<?=$nomFichier?>';
+        window.parent.nom_photo_tranches_multiples = nomFichier;
+		window.parent.$('.ui-dialog:visible')
             .find('button')
             .filter(function() {
                 return window.parent.$(this).text() === 'Suivant';
             }).button('option','disabled', false);
+
+			var galleryPanel = window.parent.$(window.parent.$.find('.accordion:visible h3:eq(2)'));
+			galleryPanel.trigger('click');
+			setTimeout(function() {
+				var imageInGallery = window.parent.$(window.parent.$.find('.gallery img[title="' + nomFichier + '"]'));
+				imageInGallery.trigger('click');
+			}, 500);
     </script><?php
 }
 if (isset($proposer_autre_envoi)) {?>
