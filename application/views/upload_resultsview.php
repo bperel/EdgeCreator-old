@@ -4,7 +4,6 @@ if (isset($erreur)) {
 }
 else {
     ?>Envoi réalisé avec succès !
-    <div class="cache">Sélectionner l'image envoyée</div>
     <?php
     if (isset($est_photo_tranche)) {?>
         <script type="text/javascript">
