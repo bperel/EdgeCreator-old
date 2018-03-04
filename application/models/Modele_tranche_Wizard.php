@@ -478,5 +478,17 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		$b = $rgb & 0xFF;
 		return rgb2hex($r,$g,$b);
 	}
+
+    public function get_autres_modeles_utilisant_fichier($nomFichier)
+    {
+        $resultats = DmClient::get_service_results_ec(DmClient::$dm_server, 'GET', "/edgecreator/elements/images/$nomFichier");
+
+        $userdata = $this->session->userdata();
+        $resultats_sans_modele_courant = array_filter($resultats, function($resultat) use ($userdata) {
+            return !($resultat->Pays === $userdata['pays'] && $resultat->Magazine === $userdata['magazine'] && $resultat->Numero_debut === $userdata['numero'] && $resultat->Numero_fin === $userdata['numero']);
+        });
+
+        return $resultats_sans_modele_courant;
+    }
 }
 ?>

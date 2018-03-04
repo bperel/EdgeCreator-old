@@ -18,10 +18,13 @@ class Upload_Wizard extends EC_Controller {
         }
 
         $multiple = isset($_POST['multiple']) && $_POST['multiple'] === '1';
-
         $pays     = isset($_POST['pays'])     ? $_POST['pays']     : null;
         $magazine = isset($_POST['magazine']) ? $_POST['magazine'] : null;
         $numero   = isset($_POST['numero'])   ? $_POST['numero']   : null;
+
+        $upload_results = [
+            'est_photo_tranche' => $est_photo_tranche
+        ];
 
         $this->load->helper('noms_images');
 
@@ -48,8 +51,8 @@ class Upload_Wizard extends EC_Controller {
 
         if (isset($erreur)) {
             ErrorHandler::error_log($erreur);
-            $this->contenu .= $erreur;
-            $this->contenu .= get_message_retour($est_photo_tranche, $multiple);
+            $upload_results['erreur'] = $erreur;
+            $upload_results['proposer_autre_envoi'] = true;
         }
         else {
             list($dossier,$fichier) = get_nom_fichier($_FILES['image']['name'], $multiple, $est_photo_tranche, $pays, $magazine, $numero);
@@ -58,19 +61,20 @@ class Upload_Wizard extends EC_Controller {
             $taille_maxi = $_POST['MAX_FILE_SIZE'];
             $taille = filesize($_FILES['image']['tmp_name']);
             $extensions = $est_photo_tranche ? ['.jpg','.jpeg'] : ['.png'];
-            //Début des vérifications de sécurité...
-            if(!in_array($extension, $extensions)) //Si l'extension n'est pas dans le tableau
-            {
+            if (!in_array($extension, $extensions)) {
                 $erreur = 'Vous devez uploader un fichier de type '.implode(' ou ',$extensions);
             }
 
-            if($taille>$taille_maxi)
-            {
+            if($taille>$taille_maxi) {
                 $erreur = get_message_fichier_trop_gros();
             }
             if (file_exists($dossier . $fichier)) {
-                $erreur = 'Echec de l\'envoi : ce fichier existe d&eacute;j&agrave; ! '
-                    .'Demandez &agrave; un admin de supprimer le fichier existant ou renommez le v&ocirc;tre !';
+                $modeles_utisant_fichier = $this->Modele_tranche->get_autres_modeles_utilisant_fichier($fichier);
+                if (count($modeles_utisant_fichier) > 0) {
+                    $erreur = 'Echec de l\'envoi : ce fichier est peut-être utilisé par d\'autres modeles : <pre>'
+                        .print_r($modeles_utisant_fichier, true)
+                        .'</pre>';
+                }
             }
 
             if ($est_photo_tranche) {
@@ -88,11 +92,14 @@ class Upload_Wizard extends EC_Controller {
                 }
             }
 
-            if(!isset($erreur)) //S'il n'y a pas d'erreur, on upload
-            {
-                //On formate le nom du fichier ici...
+            if(isset($erreur)) {
+                ErrorHandler::error_log($erreur);
+                $upload_results['erreur'] = $erreur;
+                $upload_results['proposer_autre_envoi'] = true;
+            }
+            else {
                 $fichier = strtr($fichier,
-                    '����������������������������������������������������',
+                    'ÀÁÂÃÄÅÇÈÉÊËÌÍÎÏÒÓÔÕÖÙÚÛÜÝàáâãäåçèéêëìíîïðòóôõöùúûüýÿ',
                     'AAAAAACEEEEIIIIOOOOOUUUUYaaaaaaceeeeiiiioooooouuuuyy');
 
                 if (@opendir($dossier) === false) {
@@ -102,62 +109,29 @@ class Upload_Wizard extends EC_Controller {
                 if(move_uploaded_file($_FILES['image']['tmp_name'], $dossier . $fichier)) {
                     if ($est_photo_tranche) {
                         $this->Modele_tranche->ajouter_photo_tranches_multiples($fichier, sha1_file($dossier . $fichier));
-
-                        ob_start();
-                        ?>
-                        <script type="text/javascript">
-                            if (window.parent.$('wizard-photos')
-                             && window.parent.$('wizard-photos').parent().is(':visible')) {
-                                window.parent.lister_images_gallerie('Photos');
-                            }
-                            else {
-                                window.parent.afficher_photo_tranche();
-                            }
-                        </script><?php
-                        $this->contenu.= ob_get_clean();
                     }
-                    $this->contenu .= 'Envoi r&eacute;alis&eacute; avec succ&egrave;s !';
                     if (!$multiple) {
-                        $this->contenu .= get_message_retour($est_photo_tranche, $multiple);
+                        $upload_results['proposer_autre_envoi'] = true;
                     }
-
-                    ob_start();
-                    ?><script type="text/javascript">
-                        window.parent.nom_photo_tranches_multiples = '<?=$fichier?>';
-                        window.parent.$('.ui-dialog:visible')
-                            .find('button')
-                            .filter(function() {
-                                return window.parent.$(this).text() === 'Suivant';
-                            }).button('option','disabled', false);
-                    </script><?php
-                    $this->contenu.= ob_get_clean();
+                    $upload_results['nomFichier'] = $fichier;
                 }
                 else {
-                    $this->contenu .= 'Echec de l\'envoi !'.$dossier . $fichier;
-                    $this->contenu .= get_message_retour($est_photo_tranche, $multiple);
+                    ErrorHandler::error_log('Echec de la copie vers '.$dossier . $fichier);
+                    $upload_results['erreur'] = 'Erreur technique.';
+                    $upload_results['proposer_autre_envoi'] = true;
                 }
             }
-            else {
-                ErrorHandler::error_log($erreur);
-                $this->contenu .= $erreur;
-                $this->contenu .= get_message_retour($est_photo_tranche, $multiple);
-            }
         }
-        $this->load->view('helperview', ['contenu'=>$this->contenu]);
+        $upload_results['self_url'] =
+                preg_replace('#\?.*$#', '', $_SERVER['HTTP_REFERER'])
+                .'?'.http_build_query(array_merge(
+                    ['photo_tranche' => $est_photo_tranche],
+                    $multiple ? ['multiple' => '1'] : []
+                ));
+        $this->load->view('upload_resultsview', $upload_results);
     }
 }
 
 function get_message_fichier_trop_gros() {
     return 'Le fichier est trop gros (taille maximale : '.$_POST['MAX_FILE_SIZE'].' octets';
-}
-
-function get_message_retour($est_photo_tranche, $multiple) {
-    return
-        '<br /><a href="'
-            .preg_replace('#\?.*$#', '', $_SERVER['HTTP_REFERER'])
-            .'?'.http_build_query(array_merge(
-                ['photo_tranche' => $est_photo_tranche],
-                $multiple ? ['multiple' => '1'] : []
-            ))
-        .'">Autre envoi</a>';
 }
