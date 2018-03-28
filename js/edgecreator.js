@@ -542,7 +542,7 @@ function reload_etape(num_etape, recharger_finale) {
 function reload_numero(numero, est_externe, visu, callback) {
 	est_externe = est_externe || false;
 	visu = visu === undefined ? true : visu;
-	callback = callback || {};
+	callback = callback || function () {};
 
 	chargements = [];
 	chargements.push(numero);
@@ -554,7 +554,7 @@ function charger_previews_numeros(numero, est_visu, est_externe, callback) {
 	numero_chargement = numero;
 	var parametrage = {};
 	var zoom_utilise = est_visu ? zoom : 1.5;
-	callback = callback || {};
+	callback = callback || function () {};
 
 	$('#chargement').html('Chargement de la preview de la tranche');
 	charger_image('numero', urls['viewer_wizard'] + ['index', 0, pays, magazine, numero, zoom_utilise, 'all', URLEncode(JSON.stringify(parametrage)), (est_visu ? 'false' : 'save'), 'false', est_externe].join('/'), numero, callback);

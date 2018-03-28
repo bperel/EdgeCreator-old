@@ -1190,6 +1190,7 @@ function charger_tranches_proches(numeros, est_contexte_clonage, max_tranches_pr
 }
 
 function afficher_tranches_proches(tranches_affichees, tranches_pretes, numeros, est_contexte_clonage) {
+	var wizard_courant = $('#'+id_wizard_courant);
 	if (est_contexte_clonage) { // Filtrage des tranches qui sont prêtes mais sans modèle
 		// Pas de proposition de tranche
 		if (tranches_pretes.length === 0) {
