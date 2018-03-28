@@ -539,22 +539,25 @@ function reload_etape(num_etape, recharger_finale) {
 	charger_preview_etape(chargements[chargement_courant], true);
 }
 
-function reload_numero(numero, est_externe, visu) {
+function reload_numero(numero, est_externe, visu, callback) {
 	est_externe = est_externe || false;
 	visu = visu === undefined ? true : visu;
+	callback = callback || {};
+
 	chargements = [];
 	chargements.push(numero);
 	chargement_courant = 0;
-	charger_previews_numeros(chargements[chargement_courant], visu, est_externe);
+	charger_previews_numeros(chargements[chargement_courant], visu, est_externe, callback);
 }
 
-function charger_previews_numeros(numero, est_visu, est_externe) {
+function charger_previews_numeros(numero, est_visu, est_externe, callback) {
 	numero_chargement = numero;
 	var parametrage = {};
 	var zoom_utilise = est_visu ? zoom : 1.5;
+	callback = callback || {};
 
 	$('#chargement').html('Chargement de la preview de la tranche');
-	charger_image('numero', urls['viewer_wizard'] + ['index', 0, pays, magazine, numero, zoom_utilise, 'all', URLEncode(JSON.stringify(parametrage)), (est_visu ? 'false' : 'save'), 'false', est_externe].join('/'), numero);
+	charger_image('numero', urls['viewer_wizard'] + ['index', 0, pays, magazine, numero, zoom_utilise, 'all', URLEncode(JSON.stringify(parametrage)), (est_visu ? 'false' : 'save'), 'false', est_externe].join('/'), numero, callback);
 }
 
 function charger_preview_etape(etapes_preview, est_visu, parametrage, callback) {
@@ -583,8 +586,7 @@ var selecteur_cellules_preview = null;
 
 
 function charger_image(type_chargement, src, num, callback) {
-	callback = callback || function () {
-	};
+	callback = callback || function () {};
 	var est_visu = src.indexOf('/save') === -1;
 	var est_etape_ouverte = modification_etape && modification_etape.data('etape') == num;
 
@@ -634,12 +636,10 @@ function charger_image(type_chargement, src, num, callback) {
 
 					break;
 				case 'Edition':
-					if (type_chargement == 'etape')
+					if (type_chargement === 'etape')
 						jqueryui_alert('Votre proposition de mod&egrave;le a ete envoy&eacute;e au webmaster pour validation. Merci !');
 					else
 						jqueryui_alert('Vos propositions de mod&egrave;les ont ete envoy&eacute;es au webmaster pour validation. Merci !');
-					$('#ligne_' + numero_chargement).addClass('tranche_en_validation');
-
 					break;
 			}
 		}
@@ -661,16 +661,16 @@ function charger_image(type_chargement, src, num, callback) {
 function charger_image_suivante(image, callback, type_chargement, est_visu) {
 	chargement_courant++;
 
-	if ($(selecteur_cellules_preview).length == 2 && chargement_courant == 1)
+	if ($(selecteur_cellules_preview).length === 2 && chargement_courant === 1)
 		$(selecteur_cellules_preview).last().html(image.clone(false));
 
 	$('#chargement').html('');
 	$('#erreurs').html('');
 	if (chargement_courant < chargements.length) {
-		if (chargement_courant == 1)
+		if (chargement_courant === 1)
 			fixer_regles(true);
 
-		if (type_chargement == 'etape')
+		if (type_chargement === 'etape')
 			charger_preview_etape(chargements[chargement_courant], est_visu, undefined, callback);
 		else
 			charger_previews_numeros(chargements[chargement_courant], est_visu);

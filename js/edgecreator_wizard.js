@@ -171,7 +171,7 @@ var etape_ajout_pos;
 zoom=1.5;
 var nom_photo_tranches_multiples;
 
-var NB_MAX_TRANCHES_SIMILAIRES_PROPOSEES=10/2;
+var NB_MAX_TRANCHES_SIMILAIRES_PROPOSEES=10;
 var LARGEUR_DIALOG_TRANCHE_FINALE=65;
 var LARGEUR_INTER_ETAPES=40;
 var SEPARATION_CONCEPTION_ETAPES=40;
@@ -777,7 +777,7 @@ function wizard_init(wizard_id) {
 
 			selecteur_cellules_preview='#'+wizard_id+' .tranches_affichees_magazine td:not(.libelle_numero)';
 
-			afficher_tranches_proches(pays, magazine, numeros_multiples, true);
+			charger_tranches_proches(numeros_multiples, true, NB_MAX_TRANCHES_SIMILAIRES_PROPOSEES, afficher_tranches_proches);
 		break;
 
 		case 'wizard-clonage':
@@ -941,7 +941,7 @@ function wizard_init(wizard_id) {
 
 		case 'wizard-confirmation-validation-modele':
 			selecteur_cellules_preview='#'+wizard_id+' .tranches_affichees_magazine td:not(.libelle_numero)';
-			afficher_tranches_proches(pays, magazine, [numero], false);
+			charger_tranches_proches([numero], false, NB_MAX_TRANCHES_SIMILAIRES_PROPOSEES, afficher_tranches_proches);
 		break;
 
 		case 'wizard-confirmation-validation-modele-contributeurs':
@@ -1039,21 +1039,21 @@ $.fn.afficher_liste_magazines = function(elementListe, classe_template, data, pe
 	return this;
 };
 
-function limiter_tranches_pretes_parmi_tranches_affichees(tranches_affichees, tranches_pretes, gauche) {
+function limiter_tranches_pretes_parmi_tranches_affichees(tranches_affichees, tranches_pretes, limite, depuis_gauche) {
 	var num_tranche = 0;
 
-	if (gauche) { // On limite par la gauche du tableau
+	if (depuis_gauche) { // On limite par la gauche du tableau
 		tranches_affichees.reverse();
 	}
 
 	tranches_affichees = tranches_affichees.filter(function(tranche) {
 		if (tranches_pretes.indexOf(tranche) !== -1) {
-			return num_tranche++ < 5;
+			return num_tranche++ < limite;
 		}
 		return true;
 	});
 
-	if (gauche) {
+	if (depuis_gauche) {
 		tranches_affichees.reverse();
 	}
 
@@ -1153,26 +1153,24 @@ function afficher_tranches(wizard_courant, tranches_affichees, numeros, tranches
 	selecteur_cellules_preview = '.wizard.preview_etape div.image_etape';
 }
 
-function afficher_tranches_proches(pays, magazine, numeros, est_contexte_clonage) {
+function charger_tranches_proches(numeros, est_contexte_clonage, max_tranches_proches, callback) {
 	charger_liste_numeros(pays,magazine, function(data) {
-		var wizard_courant = $('#'+id_wizard_courant);
-
 		var numeros_existants=data.numeros_dispos;
 
 		var tranches_pretes=[];
 		var tranches_affichees = [];
-		var numero_selectionne_trouve=false;
+		var numero_courant_trouve=false;
 		for (var numero_existant in numeros_existants) {
 			if (numero_existant !== 'Aucun') {
 				var est_tranche_prete=data.tranches_pretes[numero_existant] !== undefined;
 				if (numeros.indexOf(numero_existant) !== -1) {
-					tranches_affichees = limiter_tranches_pretes_parmi_tranches_affichees(tranches_affichees, tranches_pretes, true);
+					tranches_affichees = limiter_tranches_pretes_parmi_tranches_affichees(tranches_affichees, tranches_pretes, max_tranches_proches/2, true);
 					tranches_affichees.push(numero_existant);
-					numero_selectionne_trouve=true;
+					numero_courant_trouve=true;
 				}
 				else if (est_tranche_prete) {
-					// On arréte aprés 5x2 tranches similaires + le nouveau numéro
-					if (!numero_selectionne_trouve || tranches_affichees.length < NB_MAX_TRANCHES_SIMILAIRES_PROPOSEES*2 + 1) {
+					// On arrête aprés "max_tranches_proches" tranches similaires + le nouveau numéro
+					if (!numero_courant_trouve || tranches_affichees.length < max_tranches_proches + 1) {
 						tranches_pretes.push(numero_existant);
 						tranches_affichees.push(numero_existant);
 					}
@@ -1180,38 +1178,42 @@ function afficher_tranches_proches(pays, magazine, numeros, est_contexte_clonage
 			}
 		}
 
-		if (!numero_selectionne_trouve) {
+		if (!numero_courant_trouve) {
 			// Entrer ici signifie qu'il n'y a pas de tranches prêtes après le numéro sélectionné
-			tranches_affichees = limiter_tranches_pretes_parmi_tranches_affichees(tranches_affichees, tranches_pretes, false);
+			tranches_affichees = limiter_tranches_pretes_parmi_tranches_affichees(tranches_affichees, tranches_pretes, max_tranches_proches/2, false);
 		}
 
-		// Pas de proposition de tranche
-		if (tranches_pretes.length === 0 && est_contexte_clonage) {
-			wizard_do(wizard_courant,'goto_wizard-dimensions');
-		}
-
-		if (est_contexte_clonage) { // Filtrage des tranches qui sont prétes mais sans modèle
-			$.ajax({
-				url: urls['cloner']+['est_clonable',pays,magazine,tranches_affichees.join(',')].join('/'),
-				type: 'post',
-				dataType:'json',
-				success: function (tranches_clonables) {
-					var tranches_affichees_clonables = [];
-					for (var i in tranches_affichees) {
-						var tranche_affichee = tranches_affichees[i];
-						if (tranches_clonables[tranche_affichee] !== undefined || numeros.indexOf(tranche_affichee) !== -1) {
-							tranches_affichees_clonables[tranche_affichee] = tranches_clonables[tranche_affichee];
-						}
-					}
-					afficher_tranches(wizard_courant, tranches_affichees, numeros, data.tranches_pretes, tranches_affichees_clonables);
-				}
-			});
-		}
-
-		else {
-			afficher_tranches(wizard_courant, tranches_affichees, numeros, data.tranches_pretes);
+		if (callback) {
+			callback(tranches_affichees, data.tranches_pretes, numeros, est_contexte_clonage);
 		}
 	});
+}
+
+function afficher_tranches_proches(tranches_affichees, tranches_pretes, numeros, est_contexte_clonage) {
+	if (est_contexte_clonage) { // Filtrage des tranches qui sont prêtes mais sans modèle
+		// Pas de proposition de tranche
+		if (tranches_pretes.length === 0) {
+			wizard_do(wizard_courant,'goto_wizard-dimensions');
+		}
+		$.ajax({
+			url: urls['cloner']+['est_clonable',pays,magazine,tranches_affichees.join(',')].join('/'),
+			type: 'post',
+			dataType:'json',
+			success: function (tranches_clonables) {
+				var tranches_affichees_clonables = [];
+				for (var i in tranches_affichees) {
+					var tranche_affichee = tranches_affichees[i];
+					if (tranches_clonables[tranche_affichee] !== undefined || numeros.indexOf(tranche_affichee) !== -1) {
+						tranches_affichees_clonables[tranche_affichee] = tranches_clonables[tranche_affichee];
+					}
+				}
+				afficher_tranches(wizard_courant, tranches_affichees, numeros, tranches_pretes, tranches_affichees_clonables);
+			}
+		});
+	}
+	else {
+		afficher_tranches(wizard_courant, tranches_affichees, numeros, tranches_pretes);
+	}
 }
 
 function cloner_numero(numero_a_cloner, nouveaux_numeros) {
@@ -1276,7 +1278,6 @@ function charger_tranches_en_cours() {
 				.append(' ' + tranche.str_userfriendly);
 
 			$('#action_bar').removeClass('cache');
-			selecteur_cellules_preview = '.wizard.preview_etape div.image_etape';
 			wizard_conception.dialog().dialog('option', 'position', ['right', 'top']);
 			wizard_conception.parent().css({'left': (wizard_conception.parent().offset().left - LARGEUR_DIALOG_TRANCHE_FINALE - 20) + 'px'});
 
@@ -1358,19 +1359,14 @@ function charger_tranches_en_cours() {
 							$('#wizard-conception .chargement').addClass('cache');
 							$('#wizard-conception form').removeClass('cache');
 
-							chargements = [];
-							for (var i = 0; i < etapes_valides.length; i++) {
-								var etape = etapes_valides[i];
-								var num_etape = etape.Ordre;
-								if (num_etape !== -1) {
-									var nom_fonction = etapes_valides[i].Nom_fonction;
-									ajouter_preview_etape(num_etape, nom_fonction);
-								}
-							}
-
 							var wizard_etape_finale = $('.wizard.preview_etape.template').clone(true);
-							var div_preview = $('<div>').data('etape', 'final').addClass('image_etape finale');
-							wizard_etape_finale.html(div_preview).append($('<span>', {'id': 'photo_tranche'}));
+							wizard_etape_finale
+								.append(
+									$('<span>', {'id': 'photo_tranche_precedente'}),
+									$('<div>').data('etape', 'final').addClass('image_etape finale'),
+									$('<span>', {'id': 'photo_tranche_suivante'}),
+									$('<span>', {'id': 'photo_tranche'})
+								);
 
 							wizard_etape_finale.dialog({
 								resizable: false,
@@ -1393,7 +1389,51 @@ function charger_tranches_en_cours() {
 									})
 										.html('Tranche<br />finale');
 
-									afficher_photo_tranche();
+									afficher_photo_tranche(function() {
+										charger_tranches_proches([numero], false, 2, function (tranches_proches, tranches_pretes) {
+											var numero_courant_trouve = false;
+											selecteur_cellules_preview = '#photo_tranche_precedente, #photo_tranche_suivante';
+											chargements = [];
+											for (var i in tranches_proches) {
+												var numero_proche = tranches_proches[i];
+												if (numero_proche === numero) {
+													numero_courant_trouve = true;
+												}
+												else {
+													var est_tranche_publiee = tranches_pretes[numero_proche] !== 'en_cours';
+													var id_tranche = numero_courant_trouve ? 'photo_tranche_suivante' : 'photo_tranche_precedente';
+													$('#' + id_tranche).data('numero', numero_proche);
+													chargements.push(numero_proche);
+												}
+											}
+											chargement_courant = 0;
+
+											function charger_tranche_proche_suivante(callback) {
+												charger_previews_numeros(chargements[chargement_courant], true, est_tranche_publiee, function() {
+													if (chargements.length > 0) {
+														charger_tranche_proche_suivante(callback);
+													}
+													else {
+														callback();
+													}
+												})
+											}
+
+											charger_tranche_proche_suivante(function() {
+												selecteur_cellules_preview = '.wizard.preview_etape div.image_etape';
+
+												chargements = [];
+												for (var i = 0; i < etapes_valides.length; i++) {
+													var etape = etapes_valides[i];
+													var num_etape = etape.Ordre;
+													if (num_etape !== -1) {
+														ajouter_preview_etape(num_etape, etapes_valides[i].Nom_fonction);
+													}
+												}
+												charger_previews();
+											});
+										});
+									});
 								}
 							});
 
@@ -1404,7 +1444,6 @@ function charger_tranches_en_cours() {
 									positionner_points_polygone(options);
 								}
 							});
-							charger_previews();
 
 							$('.ajout_etape').click(function () {
 								if (modification_etape) {
@@ -2645,25 +2684,26 @@ function reload_current_and_final_previews(callback) {
 }
 
 function reload_all_previews() {
-	afficher_photo_tranche();
-	$('.ui-draggable').draggable('destroy');
-	$('.ui-resizable').resizable('destroy');
-	selecteur_cellules_preview='.wizard.preview_etape div.image_etape';
-	chargements=[];
-	$.each($(selecteur_cellules_preview),function(i,element) {
-		chargements.push($(element).data('etape'));
-	});
-	chargements.sort();
+	afficher_photo_tranche(function() {
+		$('.ui-draggable').draggable('destroy');
+		$('.ui-resizable').resizable('destroy');
+		selecteur_cellules_preview='.wizard.preview_etape div.image_etape';
+		chargements=[];
+		$.each($(selecteur_cellules_preview),function(i,element) {
+			chargements.push($(element).data('etape'));
+		});
+		chargements.sort();
 
-	chargement_courant=0;
-	charger_preview_etape(chargements[0],true,undefined /*<-- Parametrage */,function(image) {
-		var dialogue=image.d();
-		var num_etape=dialogue.data('etape');
+		chargement_courant=0;
+		charger_preview_etape(chargements[0],true,undefined /*<-- Parametrage */,function(image) {
+			var dialogue=image.d();
+			var num_etape=dialogue.data('etape');
 
-		if (modification_etape) {
-			if (dialogue.data('etape') === modification_etape.data('etape'))
-				recuperer_et_alimenter_options_preview(num_etape);
-		}
+			if (modification_etape) {
+				if (dialogue.data('etape') === modification_etape.data('etape'))
+					recuperer_et_alimenter_options_preview(num_etape);
+			}
+		});
 	});
 }
 
@@ -3076,7 +3116,8 @@ function init_action_bar() {
 	});
 }
 
-function afficher_photo_tranche() {
+function afficher_photo_tranche(callback) {
+	callback = callback || {};
 	if (nom_photo_principale) {
 		var image = $('<img>').height(parseInt($('#Dimension_y').val()) * zoom);
 		$('#photo_tranche').html(image);
@@ -3092,12 +3133,14 @@ function afficher_photo_tranche() {
 			jqueryui_clear_message('aucune-image-de-tranche');
 			selecteur_depuis_photo.find('[name="description_selection_couleur"]').toggle(true);
 			selecteur_depuis_photo.find('[name="pas_de_photo_tranche"]').toggle(false);
+			callback();
 		});
 		image.error(function() {
 			$(this).css({'display':'none'});
 			jqueryui_message('warning','aucune-image-de-tranche');
 			selecteur_depuis_photo.find('[name="description_selection_couleur"]').toggle(false);
 			selecteur_depuis_photo.find('[name="pas_de_photo_tranche"]').toggle(true);
+			callback();
 		});
 	}
 	else {
@@ -3107,7 +3150,10 @@ function afficher_photo_tranche() {
 			success:function(nom_photo) {
 				if (nom_photo && nom_photo !== 'null') {
 					nom_photo_principale = nom_photo;
-					afficher_photo_tranche();
+					afficher_photo_tranche(callback);
+				}
+				else {
+					callback();
 				}
 			}
 		});

@@ -252,6 +252,10 @@ label.libelle_tranche {
 	margin-left: 3px;
 }
 
+.wizard.preview_etape #photo_tranche img {
+	outline: 3px solid green;
+}
+
 .wizard.preview_etape #photo_tranche img.cross {
 	cursor: crosshair;
 }
