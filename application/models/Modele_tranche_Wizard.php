@@ -1,5 +1,5 @@
 <?php
-include_once(APPPATH.'models/Modele_tranche.php');
+include_once APPPATH.'models/Modele_tranche.php';
 
 class Modele_tranche_Wizard extends Modele_tranche {
 	static $content_fields = ['Ordre', 'Nom_fonction', 'Option_nom', 'Option_valeur'];
@@ -90,7 +90,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
           WHERE ID_Modele = $id_modele AND Ordre=$ordre";
 
         $premier_resultat = DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator')[0];
-		return count($premier_resultat) == 0 ? null : new Fonction($premier_resultat);
+		return count($premier_resultat) === 0 ? null : new Fonction($premier_resultat);
 	}
 
     function get_options_ec_v2(
@@ -130,7 +130,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
                 $intervalles_option=[];
                 $intervalles_option['valeur']=$f->options->$nom_option;
                 $intervalles_option['type']=$champs[$nom_option];
-                $intervalles_option['description']=isset($descriptions[$nom_option]) ? $descriptions[$nom_option] : '';
+                $intervalles_option['description']= $descriptions[$nom_option] ?? '';
                 if (array_key_exists($nom_option, $valeurs_defaut))
                     $intervalles_option['valeur_defaut']=$valeurs_defaut[$nom_option];
                 $f->options->$nom_option=$intervalles_option;
@@ -208,16 +208,14 @@ class Modele_tranche_Wizard extends Modele_tranche {
         if (is_null($id_modele)) {
             return null;
         }
-        else {
-            $resultat = DmClient::get_service_results_ec(DmClient::$dm_server, 'GET', "/edgecreator/model/v2/$id_modele/photo/main");
-            if (is_null($resultat)) {
-                return null;
-            }
-            else {
-                return $resultat->nomfichier;
-            }
+
+        $resultat = DmClient::get_service_results_ec(DmClient::$dm_server, 'GET', "/edgecreator/model/v2/$id_modele/photo/main");
+        if (is_null($resultat)) {
+            return null;
         }
-	}
+
+        return $resultat->nomfichier;
+    }
 
 	function insert_etape($pos_relative, $etape, $nom_fonction) {
         $id_modele = $this->session->userdata('id_modele');
@@ -300,7 +298,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 	}
 
 	function delete_option($pays,$magazine,$etape,$nom_option) {
-		if ($nom_option=='Actif')
+		if ($nom_option === 'Actif')
 			$requete_suppr_option='DELETE modeles, valeurs, intervalles FROM edgecreator_modeles2 modeles '
 								  .'INNER JOIN edgecreator_valeurs AS valeurs ON modeles.ID = valeurs.ID_Option '
 							      .'INNER JOIN edgecreator_intervalles AS intervalles ON valeurs.ID = intervalles.ID_Valeur '
@@ -318,11 +316,6 @@ class Modele_tranche_Wizard extends Modele_tranche {
 	
 	function get_id_modele_tranche_en_cours_max() {
 		$requete='SELECT MAX(ID) AS Max FROM tranches_en_cours_modeles';
-        return DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator')[0]->Max;
-	}
-	
-	function get_id_valeur_max() {
-		$requete='SELECT MAX(ID) AS Max FROM edgecreator_valeurs';
         return DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator')[0]->Max;
 	}
 
@@ -347,6 +340,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
                 'etapes_non_clonees' => []
             ];
         }
+        return [];
 	}
 
 	function get_tranches_non_pretes() {
@@ -491,4 +485,3 @@ class Modele_tranche_Wizard extends Modele_tranche {
         return $resultats_sans_modele_courant;
     }
 }
-?>

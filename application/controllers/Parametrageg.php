@@ -12,9 +12,9 @@ class ParametrageG extends EC_Controller {
 		}
 		self::$pays=$pays;
 		self::$magazine=$magazine;
-		self::$etape=$etape=='null'?null:$etape;
-		$nom_fonction=$nom_fonction=='null' ? null : $nom_fonction;
-		$nom_option=$nom_option_sel=='null' ? null : $nom_option_sel;
+		self::$etape=$etape === 'null'?null:$etape;
+		$nom_fonction=$nom_fonction === 'null' ? null : $nom_fonction;
+		$nom_option=$nom_option_sel === 'null' ? null : $nom_option_sel;
 
 		$this->load->helper('url');
 		$this->load->helper('form');
@@ -27,9 +27,9 @@ class ParametrageG extends EC_Controller {
 		$this->Modele_tranche->setNumerosDisponibles($numeros_dispos);
 		$this->Modele_tranche->setPays(self::$pays);
 		$this->Modele_tranche->setMagazine(self::$magazine);
-		if (is_null(self::$etape)) { // Liste des �tapes
+		if (is_null(self::$etape)) { // Liste des étapes
 			$etapes=$this->Modele_tranche->get_etapes_simple_magazine(self::$pays,self::$magazine);
-			if (count($etapes) == 0) {
+			if (count($etapes) === 0) {
 				$fonction_dimension=new stdClass();
 				$fonction_dimension->Ordre=-1;
 				$fonction_dimension->Numero_debut=$fonction_dimension->Numero_fin=-1;
@@ -41,7 +41,7 @@ class ParametrageG extends EC_Controller {
 		else {
 			$fonction=$this->Modele_tranche->get_fonction(self::$pays,self::$magazine,self::$etape);
 			if (is_null($fonction)) {// Etape temporaire ou dimensions
-				if (self::$etape == -1) {
+				if (self::$etape === -1) {
 					$fonction=new stdClass();
 					$fonction->Nom_fonction='Dimensions';
 				}

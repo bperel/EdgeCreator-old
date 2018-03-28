@@ -54,14 +54,13 @@ class Myfonts extends CI_Model {
 		if ($image_existe && !isset($_GET['force_post'])) {
 			$id_image=$requete_image_existe_resultat[0]->ID;
 			$this->chemin_image=Modele_tranche::getCheminImages().'/images_myfonts/'.$id_image.'.gif';
-			if (false !== (@$im=imagecreatefromgif($this->chemin_image))) { // Image stock�e, pas besoin de la reg�n�rer
+			if (false !== (@$im=imagecreatefromgif($this->chemin_image))) { // Image stockée, pas besoin de la régénérer
 				$this->im=$im;
 				return;
 			}
-			else {
-                DmClient::get_service_results_ec(DmClient::$dm_server, 'DELETE', '/edgecreator/myfontspreview/' . $id_image, []);
-			}
-		}
+
+            DmClient::get_service_results_ec(DmClient::$dm_server, 'DELETE', '/edgecreator/myfontspreview/' . $id_image, []);
+        }
 		$this->p=new Post(
 			"http://new.myfonts.com/widgets/testdrive/testdrive-ajax.php",
 			$this->data,
@@ -114,8 +113,6 @@ class Post extends CI_Model {
         $this->url=$url.'?'.$data;
 		$this->content = DmClient::get_page($this->url);
 		
-		return;
-		
 		// For POST only
 		/*
 		// parse the given URL
@@ -161,4 +158,4 @@ class Post extends CI_Model {
 		*/
 	}
 }
-?>
+

@@ -18,9 +18,9 @@ class Upload_Wizard extends EC_Controller {
         }
 
         $multiple = isset($_POST['multiple']) && $_POST['multiple'] === '1';
-        $pays     = isset($_POST['pays'])     ? $_POST['pays']     : null;
-        $magazine = isset($_POST['magazine']) ? $_POST['magazine'] : null;
-        $numero   = isset($_POST['numero'])   ? $_POST['numero']   : null;
+        $pays     = $_POST['pays'] ?? null;
+        $magazine = $_POST['magazine'] ?? null;
+        $numero   = $_POST['numero'] ?? null;
 
         $upload_results = [
             'est_photo_tranche' => $est_photo_tranche

@@ -24,7 +24,7 @@
 			<div id="<?=$etape?>-<?=$fonction->Nom_fonction?>">
 				<?=$fonction?>
 				<table rules="all" style="margin-left:5px;border:1px solid black"><?php
-				$modele_options=(array)($fonction->options);
+				$modele_options=(array)$fonction->options;
 				ksort($modele_options); // Tri par nom d'option
 				$fonction->options=(object)$modele_options;
 				foreach($fonction->options as $option_nom=>$option_valeur) {
@@ -56,7 +56,7 @@
 			<input type="radio" id="etendre_numero" name="action"/>Etendre les propriétés du numéro <?=$numeros_extension1_select?> au numéro <?=$numeros_extension2_select?>
 			<br />
 	</span>
-	<?php $etape=(isset($etape))?($etape==-1?1:($etape+1)):-1;?>
+	<?php $etape= isset($etape) ?($etape==-1?1:($etape+1)):-1;?>
 	<a href="javascript:void(0)" onclick="executer_action(<?=$etape?>)">OK</a>
 </div>
 <div style="float: left;margin:10px;height:100%;overflow-y:auto">

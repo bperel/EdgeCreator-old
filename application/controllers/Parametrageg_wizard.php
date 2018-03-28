@@ -6,8 +6,8 @@ class ParametrageG_wizard extends EC_Controller {
 	static $etape;
 	
 	function index($etape=null, $nom_option_sel='null') {
-		self::$etape=$etape=='null'?null:$etape;
-		$nom_option=$nom_option_sel=='null' ? null : $nom_option_sel;
+		self::$etape=$etape === 'null' ? null : $etape;
+		$nom_option=$nom_option_sel === 'null' ? null : $nom_option_sel;
 
 		$this->load->helper('url');
 		$this->load->helper('form');
@@ -18,7 +18,7 @@ class ParametrageG_wizard extends EC_Controller {
 
 		if (is_null(self::$etape)) { // Liste des étapes
 			$etapes=$this->Modele_tranche->get_etapes_simple();
-			if (count($etapes) == 0) {
+			if (count($etapes) === 0) {
 				$fonction_dimension=new stdClass();
 				$fonction_dimension->Ordre=-1;
 				$fonction_dimension->Nom_fonction='Dimensions';
@@ -30,7 +30,7 @@ class ParametrageG_wizard extends EC_Controller {
 			$fonction=$this->Modele_tranche->get_fonction_ec_v2(self::$etape);
 			$options = new stdClass();
 			if (is_null($fonction)) {// Etape temporaire ou dimensions
-				if (self::$etape == -1) {
+				if (self::$etape === -1) {
 					$fonction=new stdClass();
 					$fonction->Nom_fonction='Dimensions';
 				}

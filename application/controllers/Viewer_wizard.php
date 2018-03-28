@@ -28,11 +28,11 @@ class Viewer_wizard extends EC_Controller {
     }
 
 	function index($id_modele,$pays,$magazine,$numero,$zoom,$etapes_actives,$parametrage,$save,$fond_noir,$externe,$random_ou_username=null,$debug=false) {
-		if ($etapes_actives=='final')
+		if ($etapes_actives === 'final')
 			$etapes_actives='all';
-		if ($etapes_actives=='all') {
-			preg_match('#^([0-9]+)\.#is',$parametrage,$matches_num_etape_parametrage);
-			if (count($matches_num_etape_parametrage) == 0)
+		if ($etapes_actives === 'all') {
+			preg_match('#^(\d+)\.#',$parametrage,$matches_num_etape_parametrage);
+			if (count($matches_num_etape_parametrage) === 0)
 				$num_etape_parametrage=null;
 			else {
 				$num_etape_parametrage=$matches_num_etape_parametrage[1];
@@ -40,7 +40,7 @@ class Viewer_wizard extends EC_Controller {
 			}
 		}
 		parse_str($parametrage,$parametrage);
-		$fond_noir = $fond_noir == 'true';
+		$fond_noir = $fond_noir === 'true';
 		if ($save==='save')
 			$zoom=self::$zoom_save;
 		self::$is_debug=$debug;
@@ -55,34 +55,34 @@ class Viewer_wizard extends EC_Controller {
 			$this->load->view('errorview', ['Erreur'=>'Nombre d\'arguments insuffisant']);
 			exit();
 		}
-		else {
-			 if (is_null($numero)) {
-				 header('Content-type: image/png');
-				 self::$image=imagecreatetruecolor(1, 1);
-				 imagepng(self::$image);
-				 exit();
-			 }
-			 elseif($numero=='Aucun') {
-				 $largeur=20;
-				 $hauteur=250;
-				 self::$image=imagecreatetruecolor(z($largeur), z($hauteur));
-				 $blanc=imagecolorallocate(self::$image, 255,255,255);
-				 imagefill(self::$image,0,0,$blanc);
-				 $noir=imagecolorallocate(self::$image, 0,0,0);
-				 imagettftext(self::$image,z(10),-90,
-							  z(5),z(5),
-							  $noir,BASEPATH.'fonts/Arial.TTF','Aucun numero selectionne');
-				 $dimensions=new stdClass();
-				 $dimensions->Dimension_x=$largeur;
-				 $dimensions->Dimension_y=$hauteur;
-				 new Dessiner_contour($dimensions);
-				 
-				 header('Content-type: image/png');
-				 imagepng(self::$image);
-				 exit();
-			 }
-		}
-		self::$pays=$pays;
+
+        if (is_null($numero)) {
+            header('Content-type: image/png');
+            self::$image=imagecreatetruecolor(1, 1);
+            imagepng(self::$image);
+            exit();
+        }
+
+        if ($numero === 'Aucun') {
+            $largeur=20;
+            $hauteur=250;
+            self::$image=imagecreatetruecolor(z($largeur), z($hauteur));
+            $blanc=imagecolorallocate(self::$image, 255,255,255);
+            imagefill(self::$image,0,0,$blanc);
+            $noir=imagecolorallocate(self::$image, 0,0,0);
+            imagettftext(self::$image,z(10),-90,
+                         z(5),z(5),
+                         $noir,BASEPATH.'fonts/Arial.TTF','Aucun numero selectionne');
+            $dimensions=new stdClass();
+            $dimensions->Dimension_x=$largeur;
+            $dimensions->Dimension_y=$hauteur;
+            new Dessiner_contour($dimensions);
+
+            header('Content-type: image/png');
+            imagepng(self::$image);
+            exit();
+        }
+        self::$pays=$pays;
 		self::$magazine=$magazine;
 		self::$random_id=$random_ou_username;
         self::$numero=$numero;
@@ -132,14 +132,14 @@ class Viewer_wizard extends EC_Controller {
                         $fond_noir_fait=true;
                     }
 
-                    if ($num_etape<0 || in_array($num_etape,self::$etapes_actives) || self::$etapes_actives== ['all']) {
+                    if ($num_etape<0 || in_array($num_etape,self::$etapes_actives) || self::$etapes_actives === ['all']) {
                         self::$etape_en_cours->num_etape=$num_etape;
                         self::$etape_en_cours->nom_fonction=$nom_fonction;
                         $options2=$this->Modele_tranche->get_options_ec_v2($num_etape, false, null, null, $id_modele);
-                        if ($num_etape==-1)
+                        if ($num_etape === -1)
                             $dimensions=$options2;
-                        if ((self::$etapes_actives== ['all'] && ($num_etape_parametrage == $num_etape || is_null($num_etape_parametrage)))
-                            || self::$etapes_actives!= ['all']
+                        if ((self::$etapes_actives === ['all'] && ($num_etape_parametrage == $num_etape || is_null($num_etape_parametrage)))
+                            || self::$etapes_actives !== ['all']
                         ) {
                             foreach(self::$parametrage as $parametre=>$valeur) {
                                 $options2->$parametre=$valeur;
@@ -157,7 +157,7 @@ class Viewer_wizard extends EC_Controller {
                 }
 			}
 			catch(Exception $e) {
-		    	echo 'Exception re�ue : ',  $e->getMessage(), "\n";
+		    	echo 'Exception reçue : ',  $e->getMessage(), "\n";
 		    	echo '<pre>';print_r($e->getTrace());echo '</pre>';
 			}
 

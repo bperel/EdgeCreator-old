@@ -2,15 +2,15 @@
 class Numerosdispos extends EC_Controller {
 	
 	function index($pays=null,$magazine=null,$get_tranches_non_pretes=false) {
-		if ($pays == 'null') $pays = null;
-		if ($magazine == 'null') $magazine = null;
+		if ($pays === 'null') $pays = null;
+		if ($magazine === 'null') $magazine = null;
 		$get_tranches_non_pretes = $get_tranches_non_pretes === 'true';
 		
 		$this->init_model();
 		
 		$this->Modele_tranche->setUsername($this->session->userdata('user'));
 		
-		if ($pays == null) {
+		if (is_null($pays)) {
 			if ($get_tranches_non_pretes) {
 				$data= ['mode'=>'get_tranches_non_pretes'];
 				$data['tranches_non_pretes']=$this->Modele_tranche->get_tranches_non_pretes();
@@ -21,7 +21,7 @@ class Numerosdispos extends EC_Controller {
 				$data['pays']=$pays;
 			}			
 		}
-		else if ($magazine == null) {
+		else if (is_null($magazine)) {
 			$data= ['mode'=>'get_magazines'];
 			$magazines=$this->Modele_tranche->get_magazines($pays);
 			$data['magazines']=$magazines;

@@ -22,7 +22,7 @@ class Etendre extends EC_Controller {
 			$this->init_model();
 
 			$privilege=$this->Modele_tranche->get_privilege();
-			if ($privilege == 'Affichage') {
+			if ($privilege === 'Affichage') {
 				$this->load->view('errorview', ['Erreur'=>'droits insuffisants']);
 				return;
 			}
@@ -42,7 +42,7 @@ class Etendre extends EC_Controller {
             ]);
 		}
 		catch (Exception $e) {
-	    	echo 'Exception re�ue : ',  $e->getMessage(), "\n";
+	    	echo 'Exception reçue : ',  $e->getMessage(), "\n";
 	    	echo '<pre>';print_r($e->getTrace());echo '</pre>';
 		}
 	}

@@ -13,7 +13,7 @@ class Modele_tranche extends CI_Model {
 	static $numeros_dispos;
 	static $dropdown_numeros;
 	static $fields = ['Pays', 'Magazine', 'Ordre', 'Nom_fonction', 'Option_nom', 'Option_valeur', 'Numero_debut', 'Numero_fin'];
-	static $user_possede_modele=null;
+	static $user_possede_modele;
 	static $utilisateurs = [];
 	static $noms_fonctions = [
         'Agrafer','Arc_cercle','Degrade','DegradeTrancheAgrafee', 'Image','Polygone','Rectangle','Remplir','TexteMyFonts'
@@ -48,8 +48,8 @@ class Modele_tranche extends CI_Model {
 	function get_privilege() {
 	    global $erreur;
 		$privilege=null;
-		$_POST['mode_expert']=isset($_POST['mode_expert']) && $_POST['mode_expert'] === 'true' ? true : false;
-		if (isset($_REQUEST['user']) && isset($_REQUEST['pass'])) {
+		$_POST['mode_expert']= isset($_POST['mode_expert']) && $_POST['mode_expert'] === 'true';
+		if (isset($_REQUEST['user'], $_REQUEST['pass'])) {
 			self::$just_connected=true;
             $privilege = $this->get_privilege_from_username($_REQUEST['user'], $_REQUEST['pass'], isset($_REQUEST['is_sha1']));
 			if (is_null($privilege)) {
@@ -58,10 +58,9 @@ class Modele_tranche extends CI_Model {
                 }
                 return null;
             }
-            else {
-				$this->creer_id_session($_REQUEST['user'], $_REQUEST['pass'], $privilege, $_POST['mode_expert']);
-            }
-		}
+
+            $this->creer_id_session($_REQUEST['user'], $_REQUEST['pass'], $privilege, $_POST['mode_expert']);
+        }
 		else {
             $privilege = $this->session->userdata('privilege') ?? 'Affichage';
 		}
@@ -90,7 +89,7 @@ class Modele_tranche extends CI_Model {
             FROM users
             WHERE users.username ='$user' AND users.password = '$pass'";
         $resultat = $this->requete_select_dm($requete);
-        if (count($resultat)==0) {
+        if (count($resultat) === 0) {
             $erreur = 'Identifiants invalides !';
             return null;
         }
@@ -98,15 +97,15 @@ class Modele_tranche extends CI_Model {
     }
 	
 	function username_to_id($username) {
-        if (count(self::$utilisateurs) == 0) {
-            self::setUtilisateurs();
+        if (count(self::$utilisateurs) === 0) {
+            $this->setUtilisateurs();
         }
         return array_search($username, self::$utilisateurs);
 	}
 
 	function user_exists($user) {
-        if (count(self::$utilisateurs) == 0) {
-            self::setUtilisateurs();
+        if (count(self::$utilisateurs) === 0) {
+            $this->setUtilisateurs();
         }
         return in_array($user, self::$utilisateurs);
 	}
@@ -240,7 +239,7 @@ class Modele_tranche extends CI_Model {
 				.'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Ordre='.$ordre.' AND Option_nom IS NULL '
 				.'AND username LIKE \''.self::$username.'\'';
         $resultats = DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator');
-		if (count($resultats) == 0) {
+		if (count($resultats) === 0) {
 			return null;
 		}
 		$numeros_debut= [];
@@ -326,7 +325,7 @@ class Modele_tranche extends CI_Model {
 				if (!is_array($intervalles_option))
 					$intervalles_option= [null=>$intervalles_option];
 				$intervalles_option['type']=$champs[$nom_option];
-				$intervalles_option['description']=isset($descriptions[$nom_option]) ? $descriptions[$nom_option] : '';
+				$intervalles_option['description']= $descriptions[$nom_option] ?? '';
 				if (array_key_exists($nom_option, $valeurs_defaut))
 					$intervalles_option['valeur_defaut']=$valeurs_defaut[$nom_option];
 				$f->options->$nom_option=$intervalles_option;
@@ -347,7 +346,7 @@ class Modele_tranche extends CI_Model {
 		foreach($f->options as $nom_option=>$val) {
 			$intervalles_option=$f->options->$nom_option;
 			$intervalles_option['type']=$champs[$nom_option];
-			$intervalles_option['description']=isset($descriptions[$nom_option]) ? $descriptions[$nom_option] : '';
+			$intervalles_option['description']= $descriptions[$nom_option] ?? '';
 			if (array_key_exists($nom_option, $valeurs_defaut))
 				$intervalles_option['valeur_defaut']=$valeurs_defaut[$nom_option];
 			$f->options->$nom_option=$intervalles_option;
@@ -414,7 +413,7 @@ class Modele_tranche extends CI_Model {
 					Viewer_wizard::$numero=$numero;
 					if (!isset($dimensions[$numero]))
 						$dimensions[$numero]= [];
-					if (isset($dimensions[$numero]['x']) && isset($dimensions[$numero]['y'])) {
+					if (isset($dimensions[$numero]['x'], $dimensions[$numero]['y'])) {
 						Viewer_wizard::$largeur=$dimensions[$numero]['x'];
 						Viewer_wizard::$hauteur=$dimensions[$numero]['y'];
 					}
@@ -428,9 +427,9 @@ class Modele_tranche extends CI_Model {
 						$valeur_calculee=Fonction_executable::toTemplatedString($valeur,true);
 						if ($valeur_calculee !== true)
 							$valeur=$valeur_calculee;
-						if ($option->Option_nom == 'Dimension_x')
+						if ($option->Option_nom === 'Dimension_x')
 							$dimensions[$numero]['x']=$valeur;
-						if ($option->Option_nom == 'Dimension_y')
+						if ($option->Option_nom === 'Dimension_y')
 							$dimensions[$numero]['y']=$valeur;
 						$numeros_disponibles[$numero][$etape][is_null($option->Option_nom)?'null':$option->Option_nom]=utf8_encode($valeur);
 					}
@@ -478,7 +477,7 @@ class Modele_tranche extends CI_Model {
 	}
 
     static function get_numero_clean($numero) {
-        return str_replace('+','',str_replace(' ','',$numero));
+        return str_replace([' ', '+'], '', $numero);
     }
 
 	function get_valeurs_options($pays,$magazine,$numeros= []) {
@@ -579,11 +578,11 @@ class Modele_tranche extends CI_Model {
 		self::$magazine = $magazine;
 
         $id_user=$this->username_to_id(self::$username);
-        if (count(self::$utilisateurs) == 0) {
-            self::setUtilisateurs();
+        if (count(self::$utilisateurs) === 0) {
+            $this->setUtilisateurs();
         }
 
-        $numeros = self::get_numeros($pays.'/'.$magazine);
+        $numeros = $this->get_numeros($pays.'/'.$magazine);
 
         $numeros_affiches= ['Aucun'=>'Aucun'];
         foreach($numeros as $numero) {
@@ -626,10 +625,9 @@ class Modele_tranche extends CI_Model {
 
 			return [$numeros_affiches, $tranches_pretes];
         }
-        else {
-            return $numeros_affiches;
-		}
-	}
+
+        return $numeros_affiches;
+    }
 	
 	function valeur_existe($id_valeur) {
 		$requete='SELECT ID FROM edgecreator_valeurs WHERE ID='.$id_valeur;
@@ -711,7 +709,7 @@ class Modele_tranche extends CI_Model {
 	}
 
 	function delete_option($pays,$magazine,$etape,$nom_option) {
-		if ($nom_option=='Actif')
+		if ($nom_option === 'Actif')
 			$requete_suppr_option='DELETE modeles, valeurs, intervalles FROM edgecreator_modeles2 modeles '
 								  .'INNER JOIN edgecreator_valeurs AS valeurs ON modeles.ID = valeurs.ID_Option '
 							      .'INNER JOIN edgecreator_intervalles AS intervalles ON valeurs.ID = intervalles.ID_Valeur '
@@ -728,7 +726,7 @@ class Modele_tranche extends CI_Model {
 	}
 
 	function insert_valeur_option($pays,$magazine,$etape,$nom_fonction,$option_nom,$valeur,$numero_debut,$numero_fin,$id_valeur=null) {
-		if ($option_nom=='Actif') {
+		if ($option_nom === 'Actif') {
 			$this->insert($pays, $magazine, $etape, $nom_fonction, null, null, $numero_debut, $numero_fin, $id_valeur);
 			
 		}
@@ -755,39 +753,37 @@ class Modele_tranche extends CI_Model {
 			$option_nom=is_null($resultat->Option_nom) ? 'NULL' : ('\''.$resultat->Option_nom.'\'');
 			$option_valeur=is_null($resultat->Option_valeur) ? 'NULL' : ('\''.$resultat->Option_valeur.'\'');
 			$intervalle=$this->getIntervalleShort($this->getIntervalle($resultat->Numero_debut, $resultat->Numero_fin));
-			if (est_dans_intervalle($numero,$intervalle)) {
-				if (!est_dans_intervalle($nouveau_numero,$intervalle)) {
-					$intervalle=$this->ajouterNumeroAIntervalle($intervalle, $nouveau_numero);
-					
-					$condition_option_nom=is_null($resultat->Option_nom) ? 'IS NULL' : '= '.$option_nom;
-					$condition_option_valeur=is_null($resultat->Option_nom) ? 'IS NULL' : '= '.$option_valeur;
-					$requete_id_valeur='SELECT edgecreator_modeles_vue.ID_Valeur AS ID '
-									  .'FROM edgecreator_modeles_vue '
-									  .'WHERE Pays = \''.$resultat->Pays.'\' AND Magazine = \''.$resultat->Magazine.'\' '
-									  .'AND Ordre = \''.$resultat->Ordre.'\' AND Nom_fonction = \''.$resultat->Nom_fonction.'\' '
-									  .'AND Option_nom '.$condition_option_nom.' AND Option_valeur '.$condition_option_valeur.' '
-									  .'AND Numero_debut = \''.$resultat->Numero_debut.'\' AND Numero_fin = \''.$resultat->Numero_fin.'\' '
-									  .'AND username = \''.$resultat->username.'\'';
-					echo $requete_id_valeur."\n";
-                    $id_valeur = DmClient::get_query_results_from_dm_server($requete_id_valeur, 'db_edgecreator')[0]->ID;
-					
-					
-					$req_suppression_existantes='DELETE FROM edgecreator_intervalles '
-											   .'WHERE ID_Valeur='.$id_valeur.' AND Numero_debut = \''.$resultat->Numero_debut.'\' AND Numero_fin = \''.$resultat->Numero_fin.'\' '
-											   .'AND username = \''.$resultat->username.'\'';
-					echo $req_suppression_existantes."\n";
-                    DmClient::get_query_results_from_dm_server($req_suppression_existantes, 'db_edgecreator');
-											
-					$intervalles=explode(';',$intervalle);
-					foreach($intervalles as $intervalle) {
-						list($numero_debut,$numero_fin)=explode('~',$intervalle);
-						$req_ajout_nouvel_intervalle='INSERT INTO edgecreator_intervalles (ID_Valeur,Numero_debut,Numero_fin,username) '
-										    .'VALUES ('.$id_valeur.',\''.$numero_debut.'\',\''.$numero_fin.'\',\''.$resultat->username.'\')';
-						echo $req_ajout_nouvel_intervalle."\n";
-                        DmClient::get_query_results_from_dm_server($req_ajout_nouvel_intervalle, 'db_edgecreator');
-					}
-				}
-			}
+			if (est_dans_intervalle($numero, $intervalle) && !est_dans_intervalle($nouveau_numero, $intervalle)) {
+                $intervalle=$this->ajouterNumeroAIntervalle($intervalle, $nouveau_numero);
+
+                $condition_option_nom=is_null($resultat->Option_nom) ? 'IS NULL' : '= '.$option_nom;
+                $condition_option_valeur=is_null($resultat->Option_nom) ? 'IS NULL' : '= '.$option_valeur;
+                $requete_id_valeur='SELECT edgecreator_modeles_vue.ID_Valeur AS ID '
+                                  .'FROM edgecreator_modeles_vue '
+                                  .'WHERE Pays = \''.$resultat->Pays.'\' AND Magazine = \''.$resultat->Magazine.'\' '
+                                  .'AND Ordre = \''.$resultat->Ordre.'\' AND Nom_fonction = \''.$resultat->Nom_fonction.'\' '
+                                  .'AND Option_nom '.$condition_option_nom.' AND Option_valeur '.$condition_option_valeur.' '
+                                  .'AND Numero_debut = \''.$resultat->Numero_debut.'\' AND Numero_fin = \''.$resultat->Numero_fin.'\' '
+                                  .'AND username = \''.$resultat->username.'\'';
+                echo $requete_id_valeur."\n";
+$id_valeur = DmClient::get_query_results_from_dm_server($requete_id_valeur, 'db_edgecreator')[0]->ID;
+
+
+                $req_suppression_existantes='DELETE FROM edgecreator_intervalles '
+                                           .'WHERE ID_Valeur='.$id_valeur.' AND Numero_debut = \''.$resultat->Numero_debut.'\' AND Numero_fin = \''.$resultat->Numero_fin.'\' '
+                                           .'AND username = \''.$resultat->username.'\'';
+                echo $req_suppression_existantes."\n";
+DmClient::get_query_results_from_dm_server($req_suppression_existantes, 'db_edgecreator');
+
+                $intervalles=explode(';',$intervalle);
+                foreach($intervalles as $intervalle) {
+                    list($numero_debut,$numero_fin)=explode('~',$intervalle);
+                    $req_ajout_nouvel_intervalle='INSERT INTO edgecreator_intervalles (ID_Valeur,Numero_debut,Numero_fin,username) '
+                                        .'VALUES ('.$id_valeur.',\''.$numero_debut.'\',\''.$numero_fin.'\',\''.$resultat->username.'\')';
+                    echo $req_ajout_nouvel_intervalle."\n";
+DmClient::get_query_results_from_dm_server($req_ajout_nouvel_intervalle, 'db_edgecreator');
+                }
+            }
 		}
 	}
 
@@ -831,7 +827,7 @@ class Modele_tranche extends CI_Model {
 					$texte.=($contient_template?'':'<img src="'.Image::get_chemin_relatif($valeur).'" width="25" />').'&nbsp;'.$valeur;
 				break;
 				default:
-					if ($option_nom=='Chaine')
+					if ($option_nom === 'Chaine')
 						$texte.= '<div class="valeur">';
 					$texte.=str_replace(' ','&nbsp;',  urldecode($valeur));
 					switch($option_nom) {
@@ -839,7 +835,7 @@ class Modele_tranche extends CI_Model {
 							$texte.='&nbsp;mm';
 						break;
 					}
-					if ($option_nom=='Chaine')
+					if ($option_nom === 'Chaine')
 						$texte.= '</div>';
 				break;
 			}
@@ -876,13 +872,13 @@ class Modele_tranche extends CI_Model {
 				break;
 				case 'fichier_ou_texte':
 					?><span id="<?=$id?>-alt-affichage1" class="<?=($contient_template?'cache':'montre')?>">
-						<table cellspacing="0"><tr><td style="width:29px;padding-right:0px">
+						<table cellspacing="0"><tr><td style="width:29px;padding-right:0">
 						<img id="<?=$id?>-image" src="<?=Image::get_chemin_relatif($valeur)?>" width="25" />&nbsp;
 						</td><td>
 						<select class="parametre liste image alt" id="<?=$id?>-"><?php
 						$options=$this->get_liste($this->Nom_fonction,$option_nom);
 						foreach($options as $option) {
-							?><option value="<?=$option?>" <?=(($option==$valeur) ? 'selected="selected"' :'')?>><?=$option?></option><?php
+							?><option value="<?=$option?>" <?=(($option == $valeur) ? 'selected="selected"' :'')?>><?=$option?></option><?php
 						}
 						?></select>
 						</td></tr></table>
@@ -901,7 +897,7 @@ class Modele_tranche extends CI_Model {
 					?><select class="parametre liste" id="<?=$id?>-"><?php
 					$options=$this->get_liste($this->Nom_fonction,$option_nom);
 					foreach($options as $option) {
-						?><option value="<?=$option?>" <?=($option==$valeur ?'selected="selected"':'')?>><?=$option?></option><?php
+						?><option value="<?=$option?>" <?=($option == $valeur ?'selected="selected"':'')?>><?=$option?></option><?php
 					}
 					?></select><?php
 				break;
@@ -915,8 +911,7 @@ class Modele_tranche extends CI_Model {
 			</tr></table></div><?php
 		}?>
 		<a href="javascript:void(0)" onclick="par_defaut('<?=$option_nom?>')">Renseigner la valeur par d&eacute;faut...</a><?php
-		$texte=ob_get_clean();
-		return $texte;
+        return ob_get_clean();
 	}
 
 	function  __toString() {
@@ -924,12 +919,11 @@ class Modele_tranche extends CI_Model {
 		if (!isset($this->Option_nom) || is_null($this->Option_nom)) {
 			return $this->Nom_fonction.' ('.$texte_intervalle.')';
 		}
-		else {
-			return '<tr><td>'.$this->Option_nom.'</td>'
-					  .'<td>'.$this->getValeur().'</td>'
-					  .'<td>'.$texte_intervalle.'</td></tr>';
-		}
-	}
+
+        return '<tr><td>'.$this->Option_nom.'</td>'
+                  .'<td>'.$this->getValeur().'</td>'
+                  .'<td>'.$texte_intervalle.'</td></tr>';
+    }
 
 	function ajouterNumeroAIntervalle($intervalle,$numero,$forcer_ajout=false) {
 		$intervalles=explode(';',$intervalle);
@@ -990,10 +984,10 @@ class Modele_tranche extends CI_Model {
 	function getIntervalleShort($intervalle) {
 		if (strpos($intervalle, 'Tous')!==false)
 			return 'Tous~Tous';
-		return str_replace('Num&eacute;ros ', '', str_replace('Num&eacute;ro ', '', str_replace(' &agrave; ', '~', $intervalle)));
+		return str_replace([' &agrave; ', 'Num&eacute;ro ', 'Num&eacute;ros '], array('~', '', ''), $intervalle);
 	}
 
-	function getIntervalle($numero_debut,$numero_fin) {
+    function getIntervalle($numero_debut,$numero_fin) {
 		$intervalles='';
 		$numeros_debut=explode(';',$numero_debut);
 		$numeros_fin=explode(';',$numero_fin);
@@ -1102,11 +1096,11 @@ class Modele_tranche extends CI_Model {
 		$liste= [];
 		switch($type) {
 			case 'Police':
-				$dir = opendir(Modele_tranche::getCheminPolices());
+				$dir = opendir(self::getCheminPolices());
 				while ($f = readdir($dir)) {
 					if (strpos($f,'.ttf')===false)
 					continue;
-					if(is_file(Modele_tranche::getCheminPolices().$f)) {
+					if(is_file(self::getCheminPolices().$f)) {
 						$nom=substr($f,0,strlen($f)-strlen('.ttf'));
 						$liste[$nom]=$nom;
 					}
@@ -1226,7 +1220,7 @@ class Modele_tranche extends CI_Model {
 		imagepng(Viewer_wizard::$image);
 
 		if ($save) {
-            $dossier_image=Modele_tranche::getCheminImages().'/'.Viewer_wizard::$pays.'/tmp/';
+            $dossier_image= self::getCheminImages().'/'.Viewer_wizard::$pays.'/tmp/';
             @rmdir($dossier_image);
             @mkdir($dossier_image);
             $nom_image=$dossier_image.Viewer_wizard::$random_id.'.png';
@@ -1314,7 +1308,7 @@ class Fonction_executable extends Fonction {
 		$noir=imagecolorallocate(Viewer_wizard::$image,0,0,0);
 		$lignes_erreur=explode(';', $erreur);
 		foreach($lignes_erreur as $i=>$ligne) {
-			if ($i==0)
+			if ($i === 0)
 				$texte_erreur='Erreur etape '.Viewer_wizard::$etape_en_cours->num_etape.' (Fonction '.Viewer_wizard::$etape_en_cours->nom_fonction.') : '.$ligne;
 			else
 				$texte_erreur=$ligne;
@@ -1351,7 +1345,7 @@ class Fonction_executable extends Fonction {
 				   'hauteur'=>'#\[Hauteur\]#is',
 				   'caracteres_speciaux'=>'#\Â°#is'
         ];
-		if ($str== [])
+		if ($str === [])
 			$str='';
 		foreach($tab as $nom=>$regex) {
 			if (0 !== preg_match($regex, $str, $matches)) {
@@ -1416,9 +1410,9 @@ class Dimensions extends Fonction_executable {
 	
 	function verifier_erreurs() {
 		if ($this->options->Dimension_x < 0 || $this->options->Dimension_y < 0 ) {
-			self::erreur('Dimensions nÃ©gatives');
+			self::erreur('Dimensions négatives');
 		}
-		if ($this->options->Dimension_x == [] || $this->options->Dimension_y == []) {
+		if ($this->options->Dimension_x === [] || $this->options->Dimension_y === []) {
 			self::erreur('Dimensions nulles');
 		}
 	}
@@ -1481,7 +1475,7 @@ class Image extends Fonction_executable {
 		
 		$src = $this->options->Source;
 		$extension_image=strtolower(substr($src, strrpos($src, '.')+1,strlen($src)-strrpos($src, '.')-1));
-		$chemin_reel=Image::get_chemin_reel($this->options->Source);
+		$chemin_reel= self::get_chemin_reel($this->options->Source);
 		switch ($extension_image) {
 			case 'jpg':
 				$sous_image=imagecreatefromjpeg($chemin_reel);
@@ -1494,7 +1488,7 @@ class Image extends Fonction_executable {
 		}
 		list($width,$height)= [imagesx($sous_image),imagesy($sous_image)];
 		$hauteur_sous_image=Viewer_wizard::$largeur*($height/$width);
-		if ($this->options->Position=='bas') {
+		if ($this->options->Position === 'bas') {
 			$this->options->Decalage_y=Viewer_wizard::$hauteur-$hauteur_sous_image-z($this->options->Decalage_y);
 		}
 		else
@@ -1516,7 +1510,7 @@ class Image extends Fonction_executable {
 		if (empty($this->options->Source)) {
 			self::erreur('Le fichier n\'a pas été défini');
 		}
-		$chemin_reel=Image::get_chemin_reel($this->options->Source);
+		$chemin_reel= self::get_chemin_reel($this->options->Source);
 		if (!is_file($chemin_reel)) {
 			self::erreur('Le fichier '.$this->options->Source.' n\'existe pas');
 		}
@@ -1550,7 +1544,7 @@ class TexteMyFonts extends Fonction_executable {
 			return;
 
 		$this->options->Chaine=self::toTemplatedString($this->options->Chaine);
-		if ($this->options->Chaine==' ')
+		if ($this->options->Chaine === ' ')
 			return;
 		$this->options->URL=str_replace('.','/',$this->options->URL);
 		$this->verifier_erreurs();
@@ -1562,15 +1556,16 @@ class TexteMyFonts extends Fonction_executable {
 
 		$ci =& get_instance();
 		$ci->load->model('Myfonts');
-		$post=new Myfonts($this->options->URL,
-						  $this->options->Couleur_texte,
-						  $this->options->Couleur_fond,
-						  $this->options->Largeur,
-						  $this->options->Chaine.'                                    .',
-						  intval((Viewer_wizard::$largeur/1.5)/0.35) // Précision
-						 );
+		$post=new Myfonts(
+            $this->options->URL,
+            $this->options->Couleur_texte,
+            $this->options->Couleur_fond,
+            $this->options->Largeur,
+            $this->options->Chaine.'                                    .',
+            (int)(Viewer_wizard::$largeur / 1.5) / 0.35 // Précision
+        );
 		$texte=$post->im;
-		if ($this->options->Demi_hauteur == 'Oui') {
+		if ($this->options->Demi_hauteur === 'Oui') {
 			$width=imagesx($texte);
 			$height=imagesy($texte);
 			$texte2=imagecreatetruecolor ($width, $height/2);
@@ -1578,9 +1573,9 @@ class TexteMyFonts extends Fonction_executable {
 			imagecopyresampled($texte2, $texte, 0, 0, 0, 0, $width, $height/2, $width, $height/2);
 			$texte=$texte2;
 		}
-		
-		$width=imagesx($texte);
-		$height=imagesy($texte);
+
+//		$width=imagesx($texte);
+//		$height=imagesy($texte);
 		
 //		if ($supprimer_espaces_blancs) {
 //			$espace=imagecreatetruecolor(2*$height, $height);
@@ -1613,7 +1608,7 @@ class TexteMyFonts extends Fonction_executable {
 			$height=imagesy($texte);
 			$nouvelle_largeur=Viewer_wizard::$largeur*$this->options->Compression_x;
 			$nouvelle_hauteur=Viewer_wizard::$largeur*($height/$width)*$this->options->Compression_y;
-			if ($this->options->Mesure_depuis_haut=='Non')
+			if ($this->options->Mesure_depuis_haut === 'Non')
 				$this->options->Pos_y-=$nouvelle_hauteur/z(1);
 			imagecopyresampled (Viewer_wizard::$image, $texte, z($this->options->Pos_x), z($this->options->Pos_y), 0, 0, $nouvelle_largeur, $nouvelle_hauteur, $width, $height);
 		}
@@ -1623,9 +1618,9 @@ class TexteMyFonts extends Fonction_executable {
 	}
 	
 	function verifier_erreurs() {
-		if (is_array($this->options->Couleur_fond) && count($this->options->Couleur_fond) ==0)
+		if (is_array($this->options->Couleur_fond) && count($this->options->Couleur_fond) === 0)
 			self::erreur('Couleur de fond indéfinie');
-		if (is_array($this->options->Couleur_texte) && count($this->options->Couleur_texte) ==0)
+		if (is_array($this->options->Couleur_texte) && count($this->options->Couleur_texte) === 0)
 			self::erreur('Couleur de texte indéfinie');
 	}
 }
@@ -1727,7 +1722,7 @@ class Polygone extends Fonction_executable {
 		$args[]=count($this->options->X);
 		list($r,$g,$b)=$this->getRGB($this->options->Couleur);
 		$args[]=imagecolorallocate(Viewer_wizard::$image, $r,$g,$b);
-		call_user_func_array('imagefilledpolygon', $args);
+		imagefilledpolygon(...$args);
 
 	}
 }
@@ -1786,38 +1781,34 @@ class Degrade extends Fonction_executable {
 		list($r2,$g2,$b2)=$this->getRGB($this->options->Couleur_fin);
 		$couleur1= [$r1,$g1,$b1];
 		$couleur2= [$r2,$g2,$b2];
-		if ($this->options->Sens == 'Horizontal') {
+		if ($this->options->Sens === 'Horizontal') {
 			if ($this->options->Pos_x_debut < $this->options->Pos_x_fin) {
 				$couleurs_inter=self::getMidColors($couleur1, $couleur2, abs($this->options->Pos_x_debut-$this->options->Pos_x_fin));
-				foreach($couleurs_inter as $i=>$couleur) {
-					list($rouge_inter,$vert_inter,$bleu_inter)=$couleur;
+				foreach($couleurs_inter as $i => list($rouge_inter,$vert_inter,$bleu_inter)) {
 					$couleur_allouee=imagecolorallocate(Viewer_wizard::$image, $rouge_inter,$vert_inter,$bleu_inter);
-					imageline(Viewer_wizard::$image, ($this->options->Pos_x_debut)+$i, $this->options->Pos_y_debut, ($this->options->Pos_x_debut)+$i, $this->options->Pos_y_fin, $couleur_allouee);
+					imageline(Viewer_wizard::$image, $this->options->Pos_x_debut +$i, $this->options->Pos_y_debut, $this->options->Pos_x_debut +$i, $this->options->Pos_y_fin, $couleur_allouee);
 				}
 			}
 			else {
 				$couleurs_inter=self::getMidColors($couleur1, $couleur2, abs($this->options->Pos_y_debut-$this->options->Pos_y_fin));
-				foreach($couleurs_inter as $i=>$couleur) {
-					list($rouge_inter,$vert_inter,$bleu_inter)=$couleur;
+				foreach($couleurs_inter as $i => list($rouge_inter,$vert_inter,$bleu_inter)) {
 					$couleur_allouee=imagecolorallocate(Viewer_wizard::$image, $rouge_inter,$vert_inter,$bleu_inter);
-					imageline(Viewer_wizard::$image, ($this->options->Pos_x_debut)-$i, $this->options->Pos_y_debut, ($this->options->Pos_y_fin)-$i, $this->options->Pos_y_debut, $couleur_allouee);
+					imageline(Viewer_wizard::$image, $this->options->Pos_x_debut -$i, $this->options->Pos_y_debut, $this->options->Pos_y_fin -$i, $this->options->Pos_y_debut, $couleur_allouee);
 				}
 			}
 		}
 		else {
 			$couleurs_inter=self::getMidColors($couleur1, $couleur2, abs($this->options->Pos_y_debut-$this->options->Pos_y_fin));
 			if ($this->options->Pos_y_debut < $this->options->Pos_y_fin) {
-				foreach($couleurs_inter as $i=>$couleur) {
-					list($rouge_inter,$vert_inter,$bleu_inter)=$couleur;
+				foreach($couleurs_inter as $i => list($rouge_inter,$vert_inter,$bleu_inter)) {
 					$couleur_allouee=imagecolorallocate(Viewer_wizard::$image, $rouge_inter,$vert_inter,$bleu_inter);
-					imageline(Viewer_wizard::$image, $this->options->Pos_x_debut, ($this->options->Pos_y_debut)+$i, $this->options->Pos_x_fin, ($this->options->Pos_y_debut)+$i, $couleur_allouee);
+					imageline(Viewer_wizard::$image, $this->options->Pos_x_debut, $this->options->Pos_y_debut +$i, $this->options->Pos_x_fin, $this->options->Pos_y_debut +$i, $couleur_allouee);
 				}
 			}
 			else {
-				foreach($couleurs_inter as $i=>$couleur) {
-					list($rouge_inter,$vert_inter,$bleu_inter)=$couleur;
+				foreach($couleurs_inter as $i => list($rouge_inter,$vert_inter,$bleu_inter)) {
 					$couleur_allouee=imagecolorallocate(Viewer_wizard::$image, $rouge_inter,$vert_inter,$bleu_inter);
-					imageline(Viewer_wizard::$image, $this->options->Pos_x_debut, ($this->options->Pos_y_fin)-$i, $this->options->Pos_x_fin, ($this->options->Pos_y_fin)-$i, $couleur_allouee);
+					imageline(Viewer_wizard::$image, $this->options->Pos_x_debut, $this->options->Pos_y_fin -$i, $this->options->Pos_x_fin, $this->options->Pos_y_fin -$i, $couleur_allouee);
 				}
 			}
 		}
@@ -1858,8 +1849,7 @@ class DegradeTrancheAgrafee extends Fonction_executable {
 		$milieu=round(Viewer_wizard::$largeur/2);
 		$couleurs_inter=Degrade::getMidColors($couleur1, $couleur2, $milieu);
 		imageline(Viewer_wizard::$image, $milieu, 0, $milieu, Viewer_wizard::$hauteur, imagecolorallocate(Viewer_wizard::$image, $r1,$g1,$b1));
-		foreach($couleurs_inter as $i=>$couleur) {
-			list($rouge_inter,$vert_inter,$bleu_inter)=$couleur;
+		foreach($couleurs_inter as $i => list($rouge_inter,$vert_inter,$bleu_inter)) {
 			$couleur_allouee=imagecolorallocate(Viewer_wizard::$image, $rouge_inter,$vert_inter,$bleu_inter);
 			imageline(Viewer_wizard::$image, $milieu+$i, 0, $milieu+$i, Viewer_wizard::$hauteur, $couleur_allouee);
 			imageline(Viewer_wizard::$image, $milieu-$i, 0, $milieu-$i, Viewer_wizard::$hauteur, $couleur_allouee);
@@ -1896,7 +1886,7 @@ class Rectangle extends Fonction_executable {
 
 		list($r,$g,$b)=$this->getRGB($this->options->Couleur);
 		$couleur=imagecolorallocate(Viewer_wizard::$image, $r, $g, $b);
-		if ($this->options->Rempli=='Oui')
+		if ($this->options->Rempli === 'Oui')
 			imagefilledrectangle(Viewer_wizard::$image, $this->options->Pos_x_debut, $this->options->Pos_y_debut, $this->options->Pos_x_fin, $this->options->Pos_y_fin, $couleur);
 		else
 			imagerectangle(Viewer_wizard::$image, $this->options->Pos_x_debut, $this->options->Pos_y_debut, $this->options->Pos_x_fin, $this->options->Pos_y_fin, $couleur);
@@ -1931,7 +1921,7 @@ class Arc_cercle extends Fonction_executable {
 
 		list($r,$g,$b)=$this->getRGB($this->options->Couleur);
 		$couleur=imagecolorallocate(Viewer_wizard::$image, $r, $g, $b);
-		if ($this->options->Rempli=='Oui')
+		if ($this->options->Rempli === 'Oui')
 			imagefilledarc(Viewer_wizard::$image, $this->options->Pos_x_centre, $this->options->Pos_y_centre, $this->options->Largeur, $this->options->Hauteur, $this->options->Angle_debut, $this->options->Angle_fin, $couleur,IMG_ARC_PIE);
 		else
 			imagearc(Viewer_wizard::$image, $this->options->Pos_x_centre, $this->options->Pos_y_centre, $this->options->Largeur, $this->options->Hauteur, $this->options->Angle_debut, $this->options->Angle_fin, $couleur);
@@ -1991,13 +1981,13 @@ class Rogner {
 
 
 function z($valeur) {
-	return (isset(Viewer_wizard::$zoom) ? Viewer_wizard::$zoom : 1.5)*$valeur;
+	return (Viewer_wizard::$zoom ?? 1.5)*$valeur;
 }
 
 function est_dans_intervalle($numero,$intervalle) {
 	if (is_null($numero))
 		return true;
-	if ($intervalle=='Tous')
+	if ($intervalle === 'Tous')
 		return true;
 	if ($numero==$intervalle)
 		return true;
@@ -2067,7 +2057,7 @@ function hex2rgb($color){
 	}
 	$rgb = [];
 	for ($x=0;$x<3;$x++){
-		$rgb[$x] = hexdec(substr($color,(2*$x),2));
+		$rgb[$x] = hexdec(substr($color, 2*$x,2));
 	}
 	return $rgb;
 }
@@ -2076,15 +2066,15 @@ function getNumerosDebutFinShort($intervalle=null) {
 	if (is_null($intervalle))
 		return [Modele_tranche::$numero_debut,Modele_tranche::$numero_fin];
 	$numero_debut_fin=explode('~',$intervalle);
-	if (count($numero_debut_fin)==2)
+	if (count($numero_debut_fin) === 2)
 		return explode('~',$intervalle);
 	else
 		return [$intervalle,$intervalle];
 }
 
 function decomposer_numero ($numero) {
-	if ($numero=='Tous') return ['Tous','Tous'];
-	$regex_partie_numerique='#([A-Z]*)([0-9]*)#is';
+	if ($numero === 'Tous') return ['Tous','Tous'];
+	$regex_partie_numerique='#([A-Z]*)(\d*)#i';
 	preg_match($regex_partie_numerique, $numero,$resultat_numero_debut);
 	return [$resultat_numero_debut[1],$resultat_numero_debut[2]];
 }
@@ -2096,8 +2086,8 @@ function trier_intervalles($intervalle1,$intervalle2) {
 		$intervalle1=$intervalle1[0];
 		$intervalle2=$intervalle2[0];
 	}
-	list($numero_debut1,$numero_fin1)=getNumerosDebutFinShort($intervalle1);
-	list($numero_debut2,$numero_fin2)=getNumerosDebutFinShort($intervalle2);
+	list($numero_debut1,)=getNumerosDebutFinShort($intervalle1);
+	list($numero_debut2,)=getNumerosDebutFinShort($intervalle2);
 	list($partie_litterale_debut1,$partie_numerale_debut1)=decomposer_numero($numero_debut1);
 	list($partie_litterale_debut2,$partie_numerale_debut2)=decomposer_numero($numero_debut2);
 	if (($partie_litterale_debut1 < $partie_litterale_debut2) || ($partie_litterale_debut1 == $partie_litterale_debut2) && ($partie_numerale_debut1 < $partie_numerale_debut2))

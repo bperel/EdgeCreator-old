@@ -5,10 +5,10 @@ class DmClient
     static $servers_file='servers.ini';
 
     /** @var $dm_server stdClass */
-    static $dm_server = null;
+    static $dm_server;
 
     /** @var $dm_site stdClass */
-    static $dm_site = null;
+    static $dm_site;
 
     static $chunkable_services = [
         '/coa/list/countries' => 50,
@@ -46,7 +46,7 @@ class DmClient
      * @return mixed|null
      */
     public static function get_query_results_from_dm_site($query) {
-        $output = self::get_secured_page(self::$dm_site, 'sql.php?db=' . DmClient::$dm_site->db_name . '&req=' . urlencode($query));
+        $output = self::get_secured_page(self::$dm_site, 'sql.php?db=' . self::$dm_site->db_name . '&req=' . urlencode($query));
         $unserialized = @unserialize($output);
         if (is_array($unserialized)) {
             list($champs,$resultats) = $unserialized;
@@ -62,8 +62,9 @@ class DmClient
 
     /**
      * @param string $query
-     * @param $db
+     * @param        $db
      * @return mixed|null
+     * @throws Exception
      */
     public static function get_query_results_from_dm_server($query, $db)
     {
@@ -84,9 +85,8 @@ class DmClient
             fclose($handle);
             return $buffer;
         }
-        else {
-            return null;
-        }
+
+        return null;
     }
 
     private static function get_secured_page(stdClass $dmServer, $url) {
@@ -96,10 +96,11 @@ class DmClient
 
     /**
      * @param stdClass $server
-     * @param string $method
-     * @param string $path
-     * @param array $parameters
+     * @param string   $method
+     * @param string   $path
+     * @param array    $parameters
      * @return array|null|stdClass
+     * @throws Exception
      */
     public static function get_service_results_ec($server, $method, $path, $parameters = []) {
         return self::get_service_results($server, $method, $path, $parameters, 'edgecreator');
@@ -120,17 +121,16 @@ class DmClient
         $ch = curl_init();
         $url = 'http://'.$server->ip . '/' . $server->web_root . $path;
 
-        switch ($method) {
-            case 'GET':
-                if (count($parameters) > 0) {
-                    if (!$do_not_chunk && count($parameters) === 1 && isset(self::$chunkable_services[$path])) {
-                        return self::get_chunkable_service_results($server, $method, $path, $parameters, $role);
-                    }
-                    $url .= '/' . implode('/', $parameters);
+        if ($method === 'GET') {
+            if (count($parameters) > 0) {
+                if (!$do_not_chunk && count($parameters) === 1 && isset(self::$chunkable_services[$path])) {
+                    return self::get_chunkable_service_results($server, $method, $path, $parameters, $role);
                 }
-            break;
-            default:
-                curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($parameters));
+                $url .= '/' . implode('/', $parameters);
+            }
+        }
+        else {
+            curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($parameters));
         }
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
@@ -170,11 +170,12 @@ class DmClient
 
     /**
      * @param stdClass $server
-     * @param string $method
-     * @param string $path
-     * @param array $parameters
-     * @param string $role
+     * @param string   $method
+     * @param string   $path
+     * @param array    $parameters
+     * @param string   $role
      * @return array|null|stdClass
+     * @throws Exception
      */
     private static function get_chunkable_service_results($server, $method, $path, $parameters, $role)
     {

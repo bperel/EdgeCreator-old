@@ -10,7 +10,7 @@ class ModifierG extends EC_Controller {
 	function index($pays=null,$magazine=null,$etape=null,$numeros,$nom_option,$nouvelle_valeur, $nom_nouvelle_fonction=null, $est_etape_temporaire=false) {
 		try {
 			$est_etape_temporaire=$est_etape_temporaire === 'true';
-			$nouvelle_valeur=$nouvelle_valeur=='null' ? null : str_replace('[pt]','.',urldecode($nouvelle_valeur));
+			$nouvelle_valeur=$nouvelle_valeur === 'null' ? null : str_replace('[pt]','.',urldecode($nouvelle_valeur));
 			if (in_array(null, [$pays,$magazine,$etape])) {
 				$this->load->view('errorview', ['Erreur'=>'Nombre d\'arguments insuffisant']);
 				exit();
@@ -30,7 +30,7 @@ class ModifierG extends EC_Controller {
 			$data= [];
 			
 			$privilege=$this->Modele_tranche->get_privilege();
-			if ($privilege == 'Affichage') {
+			if ($privilege === 'Affichage') {
 				$this->load->view('errorview', ['Erreur'=>'droits insuffisants']);
 				return;
 			}
@@ -52,7 +52,7 @@ class ModifierG extends EC_Controller {
 				$options=$this->Modele_tranche->get_options(self::$pays, self::$magazine, self::$etape,
                     $fonction->Nom_fonction);
 	
-				if ($nom_option == 'Actif') {
+				if ($nom_option === 'Actif') {
 					$intervalles= [];
 					$numeros_debut=explode(';',$fonction->Numero_debut);
 					$numeros_fin=explode(';',$fonction->Numero_fin);
@@ -78,7 +78,7 @@ class ModifierG extends EC_Controller {
 				foreach($valeurs_preexistantes as $intervalles=>$valeur) {
 					$liste_intervalles=explode(';',$intervalles);
 					foreach($numeros_dispos as $numero_dispo) {
-						if ($numero_dispo == 'Aucun')
+						if ($numero_dispo === 'Aucun')
 							continue;
 						foreach($liste_intervalles as $i=>$intervalle) {
 							if (est_dans_intervalle($numero_dispo,$intervalle))
@@ -96,7 +96,7 @@ class ModifierG extends EC_Controller {
 	
 			
 			foreach($numeros as $numero) {
-				if ($nom_option == 'Actif' && (is_null(self::$nouvelle_valeur) || empty(self::$nouvelle_valeur))) {
+				if ($nom_option === 'Actif' && (is_null(self::$nouvelle_valeur) || empty(self::$nouvelle_valeur))) {
 					if (array_key_exists($numero, $valeurs))
 						unset ($valeurs[$numero]);
 				}
@@ -150,7 +150,7 @@ class ModifierG extends EC_Controller {
 			$this->load->view('parametragegview',$data);
 		}
 		catch(Exception $e) {
-	    	echo 'Exception re�ue : ',  $e->getMessage(), "\n";
+	    	echo 'Exception reçue : ',  $e->getMessage(), "\n";
 	    	echo '<pre>';print_r($e->getTrace());echo '</pre>';
 		}
 	}

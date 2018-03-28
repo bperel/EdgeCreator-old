@@ -19,4 +19,3 @@ switch($mode) {
 	break;
 }
 echo json_encode($envoi);
-?>

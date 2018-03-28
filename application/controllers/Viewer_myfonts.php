@@ -1,5 +1,5 @@
 <?php
-include_once(APPPATH.'controllers/Viewer_wizard.php');
+include_once APPPATH.'controllers/Viewer_wizard.php';
 
 class Viewer_myfonts extends EC_Controller {
     static $is_debug=false;
@@ -17,9 +17,9 @@ class Viewer_myfonts extends EC_Controller {
 		$options->Largeur=$largeur;
 		$options->Chaine=$chaine;
 		$options->Demi_hauteur=$demi_hauteur;
-		$options->Rotation=$rotation=='null' ? null : $rotation;
+		$options->Rotation=$rotation === 'null' ? null : $rotation;
 		
-		Viewer_wizard::$largeur = intval($largeur_tranche*1.5);
+		Viewer_wizard::$largeur = (int)$largeur_tranche * 1.5;
 		
 		new TexteMyFonts($options,true,false,true,true,false);
 		

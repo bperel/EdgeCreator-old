@@ -443,7 +443,7 @@ function fixer_regles(creer) {
 		return;
 	}
 
-	// La r�gle fait 300mm de hauteur
+	// La règle fait 300mm de hauteur
 	var etendue = 300 * zoom;
 
 	$('.regles').remove();
@@ -612,7 +612,7 @@ function charger_image(type_chargement, src, num, callback) {
 	}
 	if (type_chargement == 'etape' && num !== null) {
 		var etapes_corresp = $(selecteur_cellules_preview).getElementsWithData('etape', num);
-		if (etapes_corresp.length == 0) {// Num�ro d'�tape non trouv�
+		if (etapes_corresp.length == 0) {// Numéro d'étape non trouvé
 			jqueryui_alert("Num&eacute;ro d'&eacute;tape non trouv&eacute; lors du chargement de la preview : " + num, "Erreur");
 			charger_image_suivante(null, callback, type_chargement, est_visu);
 		}
@@ -649,7 +649,7 @@ function charger_image(type_chargement, src, num, callback) {
 
 	image.error(function () {
 		var num_etape = chargements[chargement_courant];
-		if (num_etape != 'all') { // Si erreur sur l'�tape finale c'est qu'il y a eu erreur sur une �tape interm�diaire ; on ne l'affiche pas de nouveau
+		if (num_etape != 'all') { // Si erreur sur l'étape finale c'est qu'il y a eu erreur sur une étape intermédiaire ; on ne l'affiche pas de nouveau
 			$('#wizard-erreur-generation-image').find('[name="etape"]').text(num_etape);
 			$('#wizard-erreur-generation-image').find('iframe').attr({src: $(this).attr('src') + '/debug'});
 			jqueryui_alert_from_d($('#wizard-erreur-generation-image'));
