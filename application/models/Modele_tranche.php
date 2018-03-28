@@ -466,7 +466,7 @@ class Modele_tranche extends CI_Model {
 	}
 	
 	function get_pays() {
-		return DmClient::get_service_results_ec(DmClient::$dm_server, 'GET', '/coa/list/countries', []);
+		return DmClient::get_service_results_ec(DmClient::$dm_server, 'GET', '/coa/list/countries/fr', []);
 	}
 	
 	function get_magazines($pays) {
