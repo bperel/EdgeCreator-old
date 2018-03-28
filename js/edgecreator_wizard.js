@@ -1401,7 +1401,6 @@ function charger_tranches_en_cours() {
 													numero_courant_trouve = true;
 												}
 												else {
-													var est_tranche_publiee = tranches_pretes[numero_proche] !== 'en_cours';
 													var id_tranche = numero_courant_trouve ? 'photo_tranche_suivante' : 'photo_tranche_precedente';
 													$('#' + id_tranche).data('numero', numero_proche);
 													chargements.push(numero_proche);
@@ -1410,6 +1409,7 @@ function charger_tranches_en_cours() {
 											chargement_courant = 0;
 
 											function charger_tranche_proche_suivante(callback) {
+												var est_tranche_publiee = tranches_pretes[chargements[chargement_courant]] !== 'en_cours';
 												charger_previews_numeros(chargements[chargement_courant], true, est_tranche_publiee, function() {
 													if (chargements.length > 0) {
 														charger_tranche_proche_suivante(callback);
