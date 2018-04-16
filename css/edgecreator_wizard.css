@@ -140,8 +140,16 @@ button#connexion, button#deconnexion {
 }
 
 .ui-dialog {
-	top: 70px !important;
-	z-index: 99;
+    margin: 70px 15px 15px !important;
+}
+
+#dialog-wizard-conception, .dialog-preview-etape, .ajout_etape {
+	position: static;
+	float: right;
+}
+
+.ajout_etape {
+	cursor: pointer;
 }
 
 .ui-widget-overlay + .ui-dialog {
@@ -427,13 +435,7 @@ label.libelle_tranche {
 	float: left;
 }
 
-.ajout_etape {
-	cursor: pointer;
-	position: fixed;
-	z-index: 99;
-}
-
-div.small.buttonset .ui-button-text, button.small .ui-button-text {
+div.small.controlgroup .ui-button-text, button.small .ui-button-text {
 	padding: 0 10px 0 10px !important;
 	font-size: 0.9em !important;
 }

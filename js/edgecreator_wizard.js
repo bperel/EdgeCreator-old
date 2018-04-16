@@ -174,8 +174,6 @@ var nom_photo_tranches_multiples;
 var NB_MAX_TRANCHES_SIMILAIRES_PROPOSEES=10;
 var LARGEUR_DIALOG_TRANCHE_FINALE=65;
 var LARGEUR_INTER_ETAPES=40;
-var SEPARATION_CONCEPTION_ETAPES=40;
-var MARGE_DROITE_TRANCHE_FINALE=10;
 
 var COTE_CARRE_DEPLACEMENT=10;
 
@@ -385,6 +383,7 @@ function launch_wizard(id, p) {
 		draggable: dialogue.hasClass('draggable'),
 		open:function() {
 			var dialog=$(this).d();
+			dialog.attr({id: 'dialog-' + $(this).attr('id')});
 			if ($(this).hasClass('main'))
 				dialog.addClass('main');
 
@@ -1273,7 +1272,6 @@ function charger_tranches_en_cours() {
 
 			$('#action_bar').removeClass('cache');
 			wizard_conception.dialog().dialog('option', 'position', ['right', 'top']);
-			wizard_conception.parent().css({left: (wizard_conception.parent().offset().left - LARGEUR_DIALOG_TRANCHE_FINALE - 20) + 'px'});
 
 			$.ajax({ // Numéros d'étapes
 				url: urls['parametrageg_wizard'] + ['index'].join('/'),
@@ -1362,6 +1360,7 @@ function charger_tranches_en_cours() {
 									$('<span>', {id: 'photo_tranche'})
 								);
 
+
 							wizard_etape_finale.dialog({
 								resizable: false,
 								draggable: false,
@@ -1371,6 +1370,9 @@ function charger_tranches_en_cours() {
 								position: ['right', 'top'],
 								closeOnEscape: false,
 								modal: false,
+								create: function() {
+									$('#entete_page').after($(this).d().detach());
+								},
 								open: function () {
 									$(this).removeClass('template').addClass('final');
 									$(this).data('etape', 'finale');
@@ -1629,26 +1631,6 @@ function placer_dialogues_preview() {
 	dialogues.sort(function(dialogue1,dialogue2) { // Triés par numéro d'étape, de droite à gauche
 		return $(dialogue2).data('etape') === 'finale' ? 1 : $(dialogue2).data('etape') - $(dialogue1).data('etape');
 	});
-	var min_marge_gauche=0;
-	$.each(dialogues,function(i,dialogue) {
-		var largeur=$(dialogue).width();
-		if (i === 0) {
-			$(dialogue).css({left:$(window).width()-largeur-MARGE_DROITE_TRANCHE_FINALE});
-		}
-		else {
-			var dialogue_suivant=$(dialogues[i-1]);
-			var marge_gauche=dialogue_suivant.offset().left-largeur
-							-(i===2 ? SEPARATION_CONCEPTION_ETAPES : LARGEUR_INTER_ETAPES);
-			$(dialogue).css({left:marge_gauche+'px'});
-			min_marge_gauche=Math.min(marge_gauche,min_marge_gauche);
-		}
-	});
-
-	if (min_marge_gauche < 0) {
-		$.each(dialogues,function(i,dialogue) {
-			$(dialogue).css({left:parseInt($(dialogue).css('left'))-min_marge_gauche+'px'});
-		});
-	}
 
 	$('.ajout_etape:not(.template)').remove();
 
@@ -1656,9 +1638,8 @@ function placer_dialogues_preview() {
 	if (dialogues.length === 0) { // Aucune étape n'existe. On crée avec le dialogue de conception pour référence
 		dialogues=$('#wizard-conception').d();
 	}
-	dialogues.sort(function(dialogue1,dialogue2) { // Triés par offset gauche, de droite à gauche
-		return $(dialogue2).offset().left - $(dialogue1).offset().left;
-	});
+	var ajoutEtapeTemplate = $('.ajout_etape.template');
+
 	$.each(dialogues,function(i,dialogue) {
 		var elDialogue = $(dialogue);
 		var estDialogueConception = elDialogue.data('etape') === undefined;
@@ -1667,27 +1648,22 @@ function placer_dialogues_preview() {
 			var positions = ['apres']; // L'étape sera positionnée après l'étape -1 (=dimensions de tranche)
 		}
 		else {
+			elDialogue.addClass('etape');
 			var etape = parseInt(elDialogue.data('etape'));
 			var positions = i===dialogues.length-1 ? ['avant','apres']:['apres'];
 		}
 		$.each(positions,function(j,pos) {
-			var ajoutEtapeTemplate = $('.ajout_etape.template');
-
-			var pos_gauche=elDialogue.offset().left
-				+ (pos==='avant' || estDialogueConception
-					?(-ajoutEtapeTemplate.width()-2)
-					:(+ajoutEtapeTemplate.width()+elDialogue.width())
-				);
 			var ajout_etape=ajoutEtapeTemplate.clone(true).removeClass('template hidden')
-			   .css({
-				   left: pos_gauche+'px',
-				   top: elDialogue.offset().top+'px'
-			   })
 			   .data({
 				   etape: etape,
 				   pos: pos
                });
-			$('body').prepend(ajout_etape);
+			if (pos === 'avant') {
+				$(elDialogue).before(ajout_etape);
+			}
+			else {
+				$(elDialogue).after(ajout_etape);
+			}
 		});
 	});
 	$('.tip2').tooltip();
