@@ -1841,13 +1841,21 @@ function jquery_connexion() {
 	$("#wizard-login-form").dialog({
 		width: 500,
 		modal: false,
-		buttons: [
-			{
-				text: "Connexion",
-				type: "submit",
-				form: "login-form" // <-- Make the association
+		open: function() {
+			$("#login-form").keypress(function(e) {
+				if (e.keyCode === $.ui.keyCode.ENTER) {
+					$('#login-form').submit();
+				}
+			});
+		},
+		buttons: [{
+			text: "Connexion",
+			type: "submit",
+			form: "login-form",
+			click: function() {
+				$('#login-form').submit();
 			}
-		]
+		}]
 	});
 
 	$('#login-form').submit(function () {
