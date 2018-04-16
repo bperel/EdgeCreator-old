@@ -72,7 +72,7 @@
 	<p>
 		Que voulez-vous faire ?<br />
 		<form>
-			<div class="buttonset">
+			<div class="controlgroup">
 				<input type="radio" name="choix" value="to-wizard-envoyer-photo" id="to-wizard-envoyer-photo" />
 				<label class="toutes_bordures" for="to-wizard-envoyer-photo">Envoyer des photos de tranche</label><br />
 				
@@ -84,15 +84,16 @@
                     <input disabled type="radio" name="choix" value="to-wizard-modifier" id="to-wizard-modifier"/>
                     <label class="toutes_bordures" for="to-wizard-modifier">Modifier une tranche de magazine</label><br />
                     <input type="radio" name="choix" value="to-wizard-conception" id="to-wizard-conception"/>
+                    <label class="toutes_bordures" for="to-wizard-conception">Concevoir une tranche de magazine</label><br />
                 <?php } ?>
 			</div>
             <?php if (in_array($privilege, ['Edition', 'Admin'])) { ?>
-                <ul id="tranches_en_cours" class="liste_numeros">
+                <div id="tranches_en_cours" class="liste_numeros">
                     <div class="titre_liste_numeros">Tranches en cours de conception par vous :</div>
-                </ul>
-                <ul id="tranches_en_attente_pour_edition" class="liste_numeros">
+                </div>
+                <div id="tranches_en_attente_pour_edition" class="liste_numeros">
                     <div class="titre_liste_numeros">Tranches en attente de conception :</div>
-                </ul>
+                </div>
             <?php } ?>
             <input type="hidden" name="est_nouvelle_conception_tranche" />
 		</form>
@@ -194,7 +195,7 @@
 			Possédez-vous déjà le numéro dont vous souhaitez créer la tranche 
 			dans votre collection DucksManager ?
 			<form>
-				<div class="buttonset">
+				<div class="controlgroup">
 					<input type="radio" name="choix" value="to-wizard-creer-collection" id="to-wizard-creer-collection" /><label for="to-wizard-creer-collection">Oui</label>
 					<input type="radio" name="choix" checked="checked" value="to-wizard-creer-hors-collection" id="to-wizard-creer-hors-collection" /><label for="to-wizard-creer-hors-collection">Non</label>
 				</div>
@@ -209,14 +210,14 @@
 				<span class="explication cache">Sélectionnez le numéro dont vous souhaitez créer la tranche.</span>
 				<span class="chargement">Veuillez patienter...</span>
 				<form>
-					<ul id="tranches_non_pretes" class="liste_numeros cache">
+					<div id="tranches_non_pretes" class="liste_numeros cache">
                         <div name="tranches_non_affectees"></div>
-						<li class="template">
+						<div class="template">
 							<input type="radio" id="numero_tranche_non_prete" name="choix_tranche">
 							<label for="numero_tranche_non_prete" class="libelle_tranche">Label</label>
-						</li>
-					</ul>
-					<div class="buttonset cache">
+						</div>
+					</div>
+					<div class="controlgroup cache">
 						<input type="radio" checked="checked" name="choix" value="to-wizard-proposition-clonage" id="to-wizard-proposition-clonage" /><label for="to-wizard-proposition-clonage">J'ai trouvé mon numéro</label>
 					</div>
 				</form>
@@ -253,7 +254,7 @@
 							et choisissez "Modifier une tranche de magazine".
 						</div>
 					</fieldset>
-					<div class="buttonset">
+					<div class="controlgroup">
 						<input type="radio" checked="checked" name="choix" value="to-wizard-proposition-clonage" id="to-wizard-proposition-clonage" /><label for="to-wizard-proposition-clonage">J'ai trouvé mes numéros</label>
 						<input type="radio" name="choix" value="to-wizard-numero-inconnu" id="to-wizard-numero-inconnu" /><label for="to-wizard-numero-inconnu">Un numéro n'est pas dans la liste</label>
 					</div>
@@ -272,7 +273,7 @@
 						<input type="text" id="Nouvelle_dimension_x" name="Dimension_x" maxlength="3" size="2"> mm 
 						x 
 						<input type="text" id="Nouvelle_dimension_y" name="Dimension_y" maxlength="3" size="2"> mm
-						<div class="buttonset cache">
+						<div class="controlgroup cache">
 							<input type="radio" checked="checked" name="choix" value="do-in-wizard-enregistrer" id="do-in-wizard-enregistrer" />
 						</div>
 					</form>
@@ -299,7 +300,7 @@
 					Si vous souhaitez en créer une nouvelle, repassez à l'écran précédent
 					et choisissez "créer une tranche de magazine".
 				</fieldset>
-				<div class="buttonset cache">
+				<div class="controlgroup cache">
 					<input type="radio" checked="checked" name="choix" value="to-wizard-clonage-silencieux" id="to-wizard-clonage-silencieux" />
                     <label for="to-wizard-clonage-silencieux">J'ai trouvé mon numéro</label>
 				</div>
@@ -326,7 +327,7 @@
                         <span class="hidden qualite_tranche_icone qualite_tranche_error ui-icon ui-icon-close"></span>
                     </span>
 					<br />
-					<div class="buttonset">
+					<div class="controlgroup">
 						<input type="radio" checked="checked" name="choix" value="to-wizard-clonage" id="to-wizard-clonage" />
                         <label for="to-wizard-clonage">J'ai trouvé une tranche similaire</label>
 						<input type="radio" name="choix" value="to-wizard-dimensions" id="to-wizard-dimensions1" />
@@ -415,7 +416,7 @@
 				
 				&gt; Indiquez le sens du dégradé.<br />
 				<div style="font-size:16px">
-					<div class="small buttonset">
+					<div class="small controlgroup">
 						<input type="radio" name="option-Sens" value="Horizontal" id="Horizontal" /><label for="Horizontal">Gauche vers droite</label>
 						<input type="radio" name="option-Sens" value="Vertical" id="Vertical" /><label for="Vertical">Haut vers bas</label>
 					</div>
@@ -455,7 +456,7 @@
 				&gt; Sélectionnez une couleur pour modifier la couleur de remplissage ou de contour.<br />
 			</p>
 			<form id="options_etape">
-				<div class="buttonset">
+				<div class="controlgroup">
 					<input type="radio" name="option-drag-resize" value="deplacement" id="Arc_deplacement" /><label for="Arc_deplacement">Déplacement</label>
 					<input type="radio" name="option-drag-resize" value="redimensionnement"  id="Arc_redimensionnement"/><label for="Arc_redimensionnement">Redimensionnement</label><br /><br />
 				</div>
@@ -475,7 +476,7 @@
 				&gt; Indiquez la couleur de remplissage du polygone.<br />
 			</p>
 			<form id="options_etape">
-				<div class="buttonset">
+				<div class="controlgroup">
 					<input type="radio" name="option-action" value="ajout" id="Point_ajout" /><label for="Point_ajout">Ajout de point</label>
 					<input type="radio" name="option-action" value="deplacement" id="Point_deplacement" /><label for="Point_deplacement">Déplacement de point</label>
 					<input type="radio" name="option-action" value="suppression" id="Point_suppression" /><label for="Point_suppression">Suppression de point</label>
@@ -738,7 +739,7 @@
                 <label for="pasDePhoto">Pas de photo</label>
             </div>
 			<input type="hidden" id="numeroPhotoPrincipale" name="numeroPhotoPrincipale" value=""/>
-			<div class="buttonset cache">
+			<div class="controlgroup cache">
 				<input type="radio" checked="checked" name="choix" value="to-wizard-conception" id="to-wizard-conception" />
 			</div>
 		</form>
@@ -755,7 +756,7 @@
 	<div class="error crop_inconsistent cache">Une partie de votre sélection est située en dehors de l'image.</div>
 	<form>
 		<input type="hidden" name="destination" />
-		<div class="buttonset">
+		<div class="controlgroup">
 			<input type="hidden" checked="checked" name="choix" value="do-in-wizard-enregistrer" id="do-in-wizard-enregistrer" />
 			<input type="hidden" checked="checked" name="onClose" value="to-wizard-images" id="to-wizard-images" />
 		</div>

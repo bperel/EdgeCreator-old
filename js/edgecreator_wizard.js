@@ -221,9 +221,9 @@ function launch_wizard(id, p) {
 		deadend = dialogue.hasClass('deadend'),
 		extensible=dialogue.hasClass('extensible');
 
-	$('#'+id+' .buttonset').buttonset();
+	$('#'+id+' .controlgroup').controlgroup();
 	$('#'+id+' .button').button();
-	$('#wizard-1 .buttonset .disabled').button("option", "disabled", true);
+	$('#wizard-1 .controlgroup .disabled').button("option", "disabled", true);
 
 	if (!first) {
 		buttons["Precedent"]=function() {
@@ -752,7 +752,7 @@ function wizard_init(wizard_id) {
 			if (get_option_wizard('wizard-proposition-clonage', 'tranche_similaire') !== undefined)
 				break;
 			wizard.find('.chargement').removeClass('cache');
-			wizard.find('.tranches_affichees_magazine, .buttonset').addClass('cache');
+			wizard.find('.tranches_affichees_magazine, .controlgroup').addClass('cache');
 			if (numero === undefined) {
 				if (get_option_wizard('wizard-creer-collection','choix_tranche')!== undefined) {
 					var tranche=get_option_wizard('wizard-creer-collection','choix_tranche').split(/_/g);
@@ -987,27 +987,25 @@ function wizard_init(wizard_id) {
 	}
 }
 
-$.fn.afficher_liste_magazines = function(elementListe, classe_template, data, peut_editer) {
+$.fn.afficher_liste_magazines = function(element_wrapper, classe_template, data, peut_editer) {
 	var wizard = this;
 	var explication = wizard.find('.explication');
 	var chargement = wizard.find('.chargement');
 	var tranches = traiter_tranches(data);
 
 	explication.addClass('cache');
-	chargement.removeClass('cache');
 	chargement.addClass('cache');
 
 	if (tranches.length > 0) {
-		elementListe.removeClass('cache');
+		element_wrapper.removeClass('cache');
 		explication.removeClass('cache');
 		wizard.find('#to-wizard-conception').button('option','disabled',false);
 
 		$.each(tranches, function(i, tranche_en_cours) {
-
 			var bouton_tranche_en_cours=wizard.find('.template.' + classe_template).clone(true).removeClass('template');
 			var id_tranche=['tranche', tranche_en_cours.id].join('_');
 			bouton_tranche_en_cours.find('input')
-				.attr({id:id_tranche})
+				.attr({id: id_tranche})
 				.val(id_tranche);
 			bouton_tranche_en_cours.find('label.libelle_tranche')
 				.afficher_libelle_numero(id_tranche, tranche_en_cours, peut_editer)
@@ -1015,25 +1013,23 @@ $.fn.afficher_liste_magazines = function(elementListe, classe_template, data, pe
 					wizard.find('[name="est_nouvelle_conception_tranche"]').val($(this).closest('[name="tranches_non_affectees"]').length > 0);
 					wizard.find('#to-wizard-conception').click();
 				});
-			if (elementListe.find('#'+id_tranche).length === 0) {
-				elementListe.append(bouton_tranche_en_cours);
+			if (element_wrapper.find('#'+id_tranche).length === 0) {
+				element_wrapper.append(bouton_tranche_en_cours);
 			}
 		});
 
-		elementListe
-			.removeClass('cache')
-			.menu();
+		element_wrapper.removeClass('cache');
 
 		if (peut_editer) {
-			elementListe.buttonset();
+			element_wrapper.controlgroup();
 		}
 
 		wizard.find('#to-wizard-creer, #to-wizard-modifier').click(function() {
-			elementListe.find('.ui-state-active').removeClass('ui-state-active');
+			element_wrapper.find('.ui-state-active').removeClass('ui-state-active');
 		});
 	}
 	else {
-		elementListe.remove();
+		element_wrapper.remove();
 	}
 
 	return this;
@@ -1082,7 +1078,7 @@ function afficher_tranches(wizard_courant, tranches_affichees, numeros, tranches
 		reload_numero(numeros[0], false, true);
 	}
 	else {
-		element_tranches_affichees.html($('<div>').addClass('buttonset').html(tableau_tranches_affichees));
+		element_tranches_affichees.html($('<div>').addClass('controlgroup').html(tableau_tranches_affichees));
 		$.each(tranches_affichees, function(i, tranche_affichee) {
 			var numero_tranche_affichee = tranche_affichee;
 			if (est_contexte_clonage && !tranches_affichees_clonables[numero_tranche_affichee]) {
@@ -1147,7 +1143,7 @@ function afficher_tranches(wizard_courant, tranches_affichees, numeros, tranches
 		}
 	}
 	wizard_courant.find('.chargement').addClass('cache');
-	wizard_courant.find('.tranches_affichees_magazine, .buttonset').removeClass('cache');
+	wizard_courant.find('.tranches_affichees_magazine, .controlgroup').removeClass('cache');
 
 	selecteur_cellules_preview = '.wizard.preview_etape div.image_etape';
 }
@@ -1609,7 +1605,7 @@ function ouvrir_dialogue_preview(dialogue) {
 		}
 	});
 	section_preview_etape.find('button').button();
-	section_preview_etape.find('.buttonset').buttonset();
+	section_preview_etape.find('.controlgroup').controlgroup();
 	recuperer_et_alimenter_options_preview(num_etape);
 }
 

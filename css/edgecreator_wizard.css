@@ -31,6 +31,10 @@ iframe {
     border-radius: 8px;
 }
 
+.toutes_bordures .ui-checkboxradio-icon {
+	display: none;
+}
+
 .bordure_gauche {
     border-top-left-radius: 8px;
     border-bottom-left-radius: 8px;
@@ -208,7 +212,7 @@ button#connexion, button#deconnexion {
 }
 
 label.libelle_tranche {
-	padding-left: 32px;
+	padding-left: 32px !important;
 	background-repeat: no-repeat !important;
 	background-position: 10px !important;
 }

@@ -20,9 +20,8 @@ header("Content-Type: text/html; charset=UTF-8"); ?>
 	<script type="text/javascript" src="<?=base_url()?>vendor/jquery-serializeObject/jquery.serializeObject.js" ></script>
 	<script type="text/javascript" src="<?=base_url()?>vendor/jquery.ba-resize/jquery.ba-resize.min.js" ></script>
 	<script type="text/javascript" src="<?=base_url()?>vendor/jrac/jrac/jquery.jrac.js" ></script>
-	<script type="text/javascript" src="<?=base_url()?>vendor/jquery-ui/ui/minified/jquery-ui.min.js" ></script>
+	<script type="text/javascript" src="<?=base_url()?>vendor/jquery-ui/jquery-ui.js" ></script>
 	
-	<script type="text/javascript" src="<?=base_url()?>js/jquery.dataSelector.js" ></script>
 	<script type="text/javascript" src="<?=base_url()?>js/edgecreatorlib.js" ></script>
 
 	<script type="text/javascript">
