@@ -18,6 +18,11 @@ iframe {
 	clear: both;
 }
 
+.ui-tooltip {
+	box-shadow: none;
+	margin-top: -8px;
+}
+
 .ui-accordion .ui-accordion-content {
     padding: 1em;
 }
@@ -102,8 +107,8 @@ button#connexion, button#deconnexion {
 }
 
 #selecteur_couleur {
-	min-height: 300px;
-	width: 550px;
+	min-height: 150px;
+	width: 650px;
 	display: inline-block;
 	text-align: left;
 }
