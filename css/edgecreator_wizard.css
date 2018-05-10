@@ -160,6 +160,10 @@ button#connexion, button#deconnexion {
 	overflow: visible;
 }
 
+.ui-button .ui-checkboxradio-icon {
+	display: none;
+}
+
 .wizard .done {
 	background:url('../images/ok.png') no-repeat left center;
 	padding-left: 30px;
