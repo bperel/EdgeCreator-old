@@ -1412,19 +1412,21 @@ function charger_tranches_en_cours() {
 												})
 											}
 
-											charger_tranche_proche_suivante(function() {
-												selecteur_cellules_preview = '.wizard.preview_etape div.image_etape';
+											if (chargements.length) {
+												charger_tranche_proche_suivante(function() {
+													selecteur_cellules_preview = '.wizard.preview_etape div.image_etape';
 
-												chargements = [];
-												for (var i = 0; i < etapes_valides.length; i++) {
-													var etape = etapes_valides[i];
-													var num_etape = etape.Ordre;
-													if (num_etape !== -1) {
-														ajouter_preview_etape(num_etape, etape.Nom_fonction);
+													chargements = [];
+													for (var i = 0; i < etapes_valides.length; i++) {
+														var etape = etapes_valides[i];
+														var num_etape = etape.Ordre;
+														if (num_etape !== -1) {
+															ajouter_preview_etape(num_etape, etape.Nom_fonction);
+														}
 													}
-												}
-												charger_previews();
-											});
+													charger_previews();
+												});
+											}
 										});
 									});
 								}
