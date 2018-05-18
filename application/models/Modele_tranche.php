@@ -1226,9 +1226,41 @@ DmClient::get_query_results_from_dm_server($req_ajout_nouvel_intervalle, 'db_edg
             $nom_image=$dossier_image.Viewer_wizard::$random_id.'.png';
             imagepng(Viewer_wizard::$image,$nom_image);
         }
+    }
 
-		exit();
-	} 
+    static function save_image($pays, $magazine, $numero, $image) {
+        $dossier_image = self::getCheminImages().'/'.$pays.'/gen';
+        @rmdir($dossier_image);
+        @mkdir($dossier_image);
+
+        $chemin_image = $dossier_image.'/'.$magazine.'.'.$numero.'.png';
+        if (!is_file($chemin_image)) {
+            imagepng($image,$chemin_image);
+        }
+
+        header('Content-type: image/png');
+        imagepng($image);
+    }
+
+    function defaut($pays, $magazine, $numero, $zoom, $largeur, $hauteur) {
+        $image=imagecreatetruecolor($largeur,$hauteur);
+        $blanc=imagecolorallocate($image,255,255,255);
+        $noir = imagecolorallocate($image, 0, 0, 0);
+        imagefilledrectangle($image, 0, 0, $largeur-2, $hauteur-2, $blanc);
+        imagettftext($image,$largeur/2,90,$largeur*7/10,$hauteur-$largeur*4/5,
+            $noir,Modele_tranche::getCheminPolices() . 'Arial.ttf',$pays.'/'.$magazine.' '.$numero);
+
+        $noir=imagecolorallocate($image, 0, 0, 0);
+        for ($i=0; $i<.15* $zoom; $i++) {
+            imagerectangle($image, $i, $i, $largeur - 1 - $i, $hauteur - 1 - $i, $noir);
+        }
+        $gris_250=imagecolorallocate($image, 250,250,250);
+        if (function_exists('imageantialias')) {
+            imageantialias($image, true);
+        }
+        imagefilledrectangle($image, $largeur/4,$largeur/4, $largeur*3/4,$largeur*3/4,$gris_250);
+        return $image;
+    }
 	
 }
 
