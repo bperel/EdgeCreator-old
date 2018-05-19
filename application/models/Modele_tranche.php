@@ -1229,11 +1229,16 @@ DmClient::get_query_results_from_dm_server($req_ajout_nouvel_intervalle, 'db_edg
     }
 
     static function save_image($pays, $magazine, $numero, $image) {
-        $dossier_image = self::getCheminImages().'/'.$pays.'/gen';
-        @rmdir($dossier_image);
-        @mkdir($dossier_image);
+        $dossier_pays = self::getCheminImages().'/'.$pays;
+        $dossier_gen = $dossier_pays.'/gen';
+        if (!is_dir($dossier_pays)) {
+            @mkdir($dossier_pays);
+        }
+        if (!is_dir($dossier_gen)) {
+            @mkdir($dossier_gen);
+        }
 
-        $chemin_image = $dossier_image.'/'.$magazine.'.'.$numero.'.png';
+        $chemin_image = $dossier_gen.'/'.$magazine.'.'.$numero.'.png';
         if (!is_file($chemin_image)) {
             imagepng($image,$chemin_image);
         }
