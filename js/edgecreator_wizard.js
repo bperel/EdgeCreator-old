@@ -1398,34 +1398,15 @@ function charger_tranches_en_cours() {
 													chargements.push(numero_proche);
 												}
 											});
-											chargement_courant = 0;
-
-											function charger_tranche_proche_suivante(callback) {
-												var est_tranche_publiee = tranches_pretes[chargements[chargement_courant]] !== 'en_cours';
-												charger_previews_numeros(chargements[chargement_courant], true, est_tranche_publiee, function() {
-													if (chargements.length > 0) {
-														charger_tranche_proche_suivante(callback);
-													}
-													else {
-														callback();
-													}
-												})
-											}
 
 											if (chargements.length) {
-												charger_tranche_proche_suivante(function() {
-													selecteur_cellules_preview = '.wizard.preview_etape div.image_etape';
-
-													chargements = [];
-													for (var i = 0; i < etapes_valides.length; i++) {
-														var etape = etapes_valides[i];
-														var num_etape = etape.Ordre;
-														if (num_etape !== -1) {
-															ajouter_preview_etape(num_etape, etape.Nom_fonction);
-														}
-													}
-													charger_previews();
+												chargement_courant = 0;
+												charger_tranche_proche_suivante(tranches_pretes, function() {
+													ajouter_et_charger_previews();
 												});
+											}
+											else {
+												ajouter_et_charger_previews();
 											}
 										});
 									});
@@ -1553,6 +1534,28 @@ function ajouter_preview_etape(num_etape, nom_fonction) {
 		placer_dialogues_preview();
 	});
 	chargements.push(num_etape+'');
+}
+
+function charger_tranche_proche_suivante(tranches_pretes, callback) {
+	var est_tranche_publiee = tranches_pretes[chargements[chargement_courant]] !== 'en_cours';
+	charger_previews_numeros(chargements[chargement_courant], true, est_tranche_publiee, function() {
+		if (chargements.length > 0) {
+			charger_tranche_proche_suivante(tranches_pretes, callback);
+		}
+		else {
+			callback();
+		}
+	})
+}
+
+function ajouter_et_charger_previews() {
+	selecteur_cellules_preview = '.wizard.preview_etape div.image_etape';
+
+	chargements = [];
+	jQuery.each(etapes_valides, function(i, etape) {
+		ajouter_preview_etape(etape.Ordre, etape.Nom_fonction);
+	});
+	charger_previews();
 }
 
 function charger_previews(forcer_placement_dialogues) {
