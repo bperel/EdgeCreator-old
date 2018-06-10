@@ -274,7 +274,8 @@
 						x 
 						<input type="text" id="Nouvelle_dimension_y" name="Dimension_y" maxlength="3" size="2"> mm
 						<div class="controlgroup cache">
-							<input type="radio" checked="checked" name="choix" value="do-in-wizard-enregistrer" id="do-in-wizard-enregistrer" />
+							<input type="radio" checked="checked" name="choix" id="do-in-wizard-enregistrer" value="do-in-wizard-enregistrer" />
+                            <label for="do-in-wizard-enregistrer">Enregistrer</label>
 						</div>
 					</form>
 				</p>
