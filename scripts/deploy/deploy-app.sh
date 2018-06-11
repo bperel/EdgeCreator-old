@@ -18,7 +18,7 @@ deploy() {
   done && \
   docker exec ${container_name} /bin/bash -c "cd ${webdir}_new && bower --allow-root install" && \
   docker exec ${container_name} /bin/bash -c "cp -r ${webdir}/_sessions ${webdir}_new" && \
-  docker exec ${container_name} /bin/bash -c "rm -rf ${webdir} && mv ${webdir}_new ${webdir}" && \
+  docker exec ${container_name} /bin/bash -c "rm -rf ${webdir} && mv ${webdir}_new ${webdir} && chmod 777 -R ${webdir}/_sessions" && \
   docker exec ${container_name} /bin/bash ${webdir}/scripts/deploy/apply-app.sh `git rev-parse HEAD` && \
   docker exec ${container_name} mkdir -m 777 -p ${webdir}/_sessions
 }
