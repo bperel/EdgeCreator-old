@@ -423,6 +423,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
         $src_image =  self::getCheminImages().'/' . $model->pays . '/tmp/' . $nom_image . '.png';
         $dest_image = self::getCheminImages().'/' . $model->pays . '/gen/' . $model->magazine . '.' . $model->numero . '.png';
         @mkdir(self::getCheminImages().'/' . $model->pays . '/tmp');
+        @unlink($dest_image);
         echo "Copy of $src_image to $dest_image";
         return copy($src_image, $dest_image);
     }
