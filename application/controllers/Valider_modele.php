@@ -9,7 +9,8 @@ class Valider_Modele extends EC_Controller {
         $username=$this->session->userdata('user');
 		$this->Modele_tranche->setUsername($username);
 
-        $this->Modele_tranche->copier_image_temp_vers_gen($nom_image);
-        $this->Modele_tranche->marquer_modele_comme_pret_publication($createurs,$photographes);
+        if ($this->Modele_tranche->copier_image_temp_vers_gen($nom_image)) {
+            $this->Modele_tranche->marquer_modele_comme_pret_publication($createurs,$photographes);
+        }
 	}
 }
