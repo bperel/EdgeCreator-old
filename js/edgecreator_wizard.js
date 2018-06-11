@@ -3129,7 +3129,7 @@ function init_action_bar() {
 }
 
 function afficher_photo_tranche(callback) {
-	callback = callback || {};
+	callback = callback || function() {};
 	if (nom_photo_principale) {
 		var image = $('<img>').height(parseInt($('#Dimension_y').val()) * zoom);
 		$('#photo_tranche').html(image);
