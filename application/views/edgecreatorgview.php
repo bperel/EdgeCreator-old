@@ -23,7 +23,7 @@
 			</div>
 		<?php }
 	} ?>
-	<div id="action_bar" class="cache">Modélisation de la tranche du numéro <span id="nom_complet_tranche_en_cours"></span><br />
+	<div id="action_bar" class="cache"><span id="nom_complet_tranche_en_cours"></span><br />
 		<img class="action tip" name="home" 
 			 title="Revenir à l'écran d'accueil de EdgeCreator" />
 		<img class="action tip" name="photo"
