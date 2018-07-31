@@ -1,3 +1,4 @@
 application/config/servers*ini
 _sessions/ci_session*
+node_modules
 vendor
