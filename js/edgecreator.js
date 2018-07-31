@@ -1,13 +1,3 @@
-var wizard = false;
-
-jQuery.fn.pluck = function (key) {
-	var plucked = [];
-	this.each(function () {
-		plucked.push(this[key]);
-	});
-	return plucked;
-};
-
 jQuery.fn.getElementsWithData = function (key, val) {
 	var data = [];
 	this.each(function (i, element) {
@@ -25,12 +15,15 @@ jQuery.fn.getData = function (key) {
 	return data;
 };
 
+var pays;
+var magazine;
+var numero;
+
 var first_cell = null;
 var zoom = 2;
 var numeros_dispos;
 var selecteur_cellules = '#table_numeros tr:not(.ligne_entete)>td:not(.intitule_numero):not(.cloner)';
 var colonne_ouverte = false;
-var valeurs_possibles_zoom = [1, 1.5, 2, 4, 6, 8];
 
 function element_to_numero(elements) {
 	var numeros = [];
@@ -107,7 +100,7 @@ function reload_observers_etapes() {
 			if (confirm(message)) {
 				$('#chargement').html('Suppression de l\'&eacute;tape ' + num_etape_a_supprimer + '...');
 				$.ajax({
-					url: urls['supprimerg'] + ['index', pays, magazine, num_etape_a_supprimer].join('/'),
+					url: urls.supprimerg + ['index', pays, magazine, num_etape_a_supprimer].join('/'),
 					type: 'post',
 					success: function (data) {
 						if (typeof(data.erreur) != 'undefined')
@@ -240,15 +233,6 @@ function reload_observers_tranches() {
 		});
 }
 
-function reload_observers_filtres() {
-	$('#filtre_numeros button').click(function () {
-		plage[0] = $('#filtre_debut').val();
-		plage[1] = $('#filtre_fin').val();
-
-		charger_liste_numeros(magazine);
-	});
-}
-
 function inserer_elements_coord() {
 	$('#chargement').html('X = ')
 		.append($('<span>', {id: 'X'}))
@@ -259,7 +243,6 @@ function inserer_elements_coord() {
 
 var chargements = [];
 var chargement_courant;
-var numero_chargement;
 
 function preview_numero(element) {
 	supprimer_regles(true);
@@ -331,7 +314,6 @@ function preview_numero(element) {
 			$('#contenu_' + onglet_sel.toLowerCase()).children('.previews:first').html(table);
 
 			chargements = [];
-			numero_chargement = numero;
 			$.each($('.num_etape_preview'), function (index, td_num_etape) {
 				if ($(td_num_etape).hasClass('final')) {
 					num_etape = [];
@@ -409,7 +391,6 @@ function preview_numero(element) {
 
 				$('#contenu_' + onglet_sel.toLowerCase()).children('.previews:first').html(table);
 
-				numero_chargement = null;
 				chargements = [];
 				$.each($('.numero_preview'), function (index, td_numero) {
 					var numero = $(td_numero).data('numero');
@@ -489,7 +470,7 @@ function fixer_regles(creer) {
 			start: function () {
 				drag_regle = true;
 			},
-			drag: function (event, ui) {
+			drag: function () {
 			},
 			stop: function () {
 				// Recherche de la tranche la plus proche
@@ -522,11 +503,6 @@ function supprimer_regles() {
 	$('.regles.' + onglet_sel).remove();
 }
 
-function cacher_regles_sauf_onglet_courant() {
-	$('.regles').addClass('cache');
-	$('.regles.' + onglet_sel).removeClass('cache');
-}
-
 function reload_etape(num_etape, recharger_finale) {
 	if ($(selecteur_cellules_preview).length == 2)
 		recharger_finale = false;
@@ -551,13 +527,12 @@ function reload_numero(numero, est_externe, visu, callback) {
 }
 
 function charger_previews_numeros(numero, est_visu, est_externe, callback) {
-	numero_chargement = numero;
 	var parametrage = {};
 	var zoom_utilise = est_visu ? zoom : 1.5;
 	callback = callback || function () {};
 
 	$('#chargement').html('Chargement de la preview de la tranche');
-	charger_image('numero', urls['viewer_wizard'] + ['index', 0, pays, magazine, numero, zoom_utilise, 'all', URLEncode(JSON.stringify(parametrage)), (est_visu ? 'false' : 'save'), 'false', est_externe].join('/'), numero, callback);
+	charger_image('numero', urls.viewer_wizard + ['index', 0, pays, magazine, numero, zoom_utilise, 'all', URLEncode(JSON.stringify(parametrage)), (est_visu ? 'false' : 'save'), 'false', est_externe].join('/'), numero, callback);
 }
 
 function charger_preview_etape(etapes_preview, est_visu, parametrage, callback) {
@@ -579,7 +554,7 @@ function charger_preview_etape(etapes_preview, est_visu, parametrage, callback) 
 		if (typeof(etapes_preview) == 'string')
 			etapes_preview = etapes_preview.split(/,/g);
 	}
-	charger_image('etape', urls['viewer_wizard'] + ['etape', zoom_utilise, etapes_preview.join("-"), parametrage, (est_visu ? 'false' : 'save'), fond_noir, 'false'].join('/'), etapes_preview.join("-"), callback);
+	charger_image('etape', urls.viewer_wizard + ['etape', zoom_utilise, etapes_preview.join("-"), parametrage, (est_visu ? 'false' : 'save'), fond_noir, 'false'].join('/'), etapes_preview.join("-"), callback);
 }
 
 var selecteur_cellules_preview = null;
@@ -601,8 +576,6 @@ function charger_image(type_chargement, src, num, callback) {
 			case 'Admin':
 				break;
 			case 'Edition':
-				// if (!confirm('Votre modele de tranche va etre envoye au webmaster pour validation. Continuer ?'))
-				//     return;
 				break;
 			default:
 				jqueryui_alert('Vous ne poss&eacute;dez pas les droits n&eacute;cessaires pour cette action');
@@ -798,7 +771,7 @@ function valider_modifier_valeur() {
 	var nouvelle_valeur = get_nouvelle_valeur(nom_option).replace(/\\.','g/, '[pt]').replace(/\#/g, '');
 	var est_nouvelle_fonction = etape_temporaire_to_definitive() ? 'true' : 'false';
 	$.ajax({
-		url: urls['modifierg'] + ['index', pays, magazine, etape_en_cours, numeros.join('~'), nom_option, nouvelle_valeur, nom_nouvelle_fonction == null ? 'Dimensions' : nom_nouvelle_fonction, est_nouvelle_fonction].join('/'),
+		url: urls.modifierg + ['index', pays, magazine, etape_en_cours, numeros.join('~'), nom_option, nouvelle_valeur, nom_nouvelle_fonction == null ? 'Dimensions' : nom_nouvelle_fonction, est_nouvelle_fonction].join('/'),
 		type: 'post',
 		success: function (data) {
 			if (typeof(data.erreur) != 'undefined') {
@@ -965,7 +938,7 @@ function formater_modifier_valeur(nom_option) {
 		case 'fichier_ou_texte':
 			var arg = nom_option == 'Source' ? pays : '_';
 			$.ajax({
-				url: urls['listerg'] + ['index', nom_option, arg].join('/'),
+				url: urls.listerg + ['index', nom_option, arg].join('/'),
 				data: 'select=true',
 				dataType: 'json',
 				type: 'post',
@@ -1040,7 +1013,6 @@ function get_nouvelle_valeur(nom_option) {
 	}
 }
 
-var valeurs_defaut_options;
 var etapes_valides = [];
 var etape_en_cours = null;
 
@@ -1061,207 +1033,11 @@ var num_etape_avant_nouvelle = null;
 
 var onglet_sel = 'builder';
 
-var pays_sel = null;
-
-$(window).load(function () {
-	$('#connexion,#deconnexion').button();
-	$('.tip').tooltip();
-
-	if (wizard) {
-		if (!username) {
-			// afficher_dialogue_accueil();
-			jquery_connexion();
-		}
-		else {
-			init_action_bar();
-			if (privilege === 'Affichage') {
-				$('#wizard-envoyer-photo').addClass('first');
-				launch_wizard('wizard-envoyer-photo');
-			}
-			else {
-				launch_wizard('wizard-1');
-			}
-		}
-	}
-	else {
-		$('#tabs').tabs({
-			show: function (event, ui) {
-				onglet_sel = $(ui.tab).text();
-				cacher_regles_sauf_onglet_courant();
-				fixer_regles(true);
-				var type_chargement = onglet_sel == 'Builder' ? 'etape' : 'numero';
-				selecteur_cellules_preview = '#contenu_' + onglet_sel.toLowerCase() + ' .ligne_previews .image_' + type_chargement;
-
-				if (onglet_sel == 'Builder')
-					var titre_image_view = 'Voir la composition de cette tranche';
-				else
-					titre_image_view = 'Selectionner le premier numero a previsualiser';
-				changer_titres_images_view(titre_image_view);
-			}
-		});
-
-		$('#viewer').resizable({
-			handles: 'e',
-			minWidth: 200,
-			stop: function () {
-				$('#corps').css({'marginLeft': ($(this).width() - 200) + 'px'});
-			}
-		});
-
-		$('#liste_pays').change(function () {
-			var element = $(this);
-			var nouveau_pays = element.val();
-			charger_liste_magazines(nouveau_pays);
-		});
-
-		$('#liste_magazines').change(function () {
-			charger_liste_numeros($(this).val());
-		});
-
-		reload_observers_filtres();
-
-		$('#chargement').html('Chargement des pays...');
-
-		$.ajax({
-			url: urls['numerosdispos'] + ['index'].join('/'),
-			dataType: 'json',
-			type: 'post',
-			success: function (data) {
-				if (privilege != 'Affichage') {
-					var toggle_iframe_upload = $('<span>', {id: 'toggle_iframe_upload'}).html('^');
-					var lien_upload = $('<a>', {href: 'javascript:void(0)'})
-						.css({'float': 'right'})
-						.html('Envoyer une image &agrave; EdgeCreator&nbsp;')
-						.append(toggle_iframe_upload);
-					lien_upload.click(function () {
-						if ($('#iframe_upload').length > 0) {
-							$('#iframe_upload').remove();
-							$('#toggle_iframe_upload').html('^');
-						}
-						else {
-							var iframe_upload = $('<iframe>', {
-								id: 'iframe_upload',
-								src: base_url + 'index.php/helper/index/image_upload.php'
-							});
-							$('#upload_fichier').html(iframe_upload);
-							$('#toggle_iframe_upload').html('v');
-						}
-					});
-					$('#upload_fichier').append(lien_upload).append($('<br>'));
-				}
-				for (var i in data.pays) {
-					$('#liste_pays')
-						.append($('<option>').val(i)
-							.html(data.pays[i]));
-				}
-				pays_sel = pays == '' || typeof($('#liste_pays').children('[value="' + pays + '"]:first')) == 'undefined' ? 'fr' : pays;
-				$('#liste_pays').prop('selectedIndex', $('#liste_pays').children('[value="' + pays_sel + '"]:first').index());
-
-				charger_liste_magazines(pays_sel);
-			}
-		});
-
-		if (pays != "" && magazine != "")
-			charger_liste_numeros(magazine);
-
-		$('#viewer_inner').scroll(function () {
-			adapter_scroll_reperes();
-			fixer_regles(false);
-		});
-	}
-
-	$('#zoom_slider').slider({
-		value: 1 /* Valeur n°1 du tableau, donc = 1.5*/,
-		min: 0,
-		max: valeurs_possibles_zoom.length - 1,
-		step: 1,
-		change: function (event, ui) {
-			zoom = valeurs_possibles_zoom[ui.value];
-			$('#zoom_value').html(zoom);
-			if (onglet_sel == 'Builder') {
-				if ($('#numero_preview').data('numero') != null)
-					preview_numero($('#ligne_' + $('#numero_preview').data('numero')).children('.intitule_numero:first'));
-			}
-			else {
-				var premier_numero = get_onglet_courant().find('.numero_preview').first().html();
-				var dernier_numero = get_onglet_courant().find('.numero_preview').last().html();
-
-				var numero = premier_numero;
-				var chargements = [];
-				do {
-					chargements.push(numero);
-					var ligne = $('#ligne_' + numero).next();
-					numero = ligne.data('numero');
-				} while (numero != dernier_numero || typeof(numero) == 'undefined');
-
-				chargement_courant = 0;
-				charger_previews_numeros(chargements[chargement_courant], true);
-			}
-		},
-		slide: function (event, ui) {
-			$('#zoom_value').html(valeurs_possibles_zoom[ui.value]);
-		}
-	});
-
-	if (privilege == 'Admin' || privilege == 'Edition') {
-		$('#save_png').click(function () {
-			if (typeof (numero_chargement) != 'undefined') {
-				afficher_dialogue_contributeurs();
-			}
-		});
-		$('#save_pngs').click(function () {
-			numero_chargement = null;
-			chargements = [];
-			$.each($('.numero_preview'), function (i, td_numero) {
-				var numero = $(td_numero).data('numero');
-				chargements.push(numero.toString());
-			});
-			chargement_courant = 0;
-			charger_previews_numeros(chargements[chargement_courant], false);
-		});
-	}
-	if (privilege != 'Affichage') {
-		$('#toggle_helpers').click(function () {
-			$('#toggle_helpers').html(
-				($('#infos').hasClass('cache') ? 'Cacher' : 'Montrer')
-				+ ' l\'assistant');
-			$('#infos').toggleClass('cache');
-		});
-	}
-});
-
-function afficher_dialogue_contributeurs(callback) {
-	callback && callback();
-}
-
-function charger_liste_magazines(pays_sel) {
-	$('#chargement').html('Chargement des magazines...');
-	pays = pays_sel;
-	$('#liste_magazines').children().remove();
-	$.ajax({
-		url: urls['numerosdispos'] + ['index', pays].join('/'),
-		type: 'post',
-		dataType: 'json',
-		success: function (data) {
-			for (var i in data.magazines) {
-				$('#liste_magazines')
-					.append($('<option>').val(i)
-						.html(data.magazines[i]));
-			}
-			if (typeof(magazine) != 'undefined' && magazine != null)
-				$('#liste_magazines').prop('selectedIndex', $('#liste_magazines').children('[value="' + magazine + '"]').first().index());
-
-			$('#chargement').html('');
-		}
-	});
-}
-
-
 function charger_liste_numeros(magazine_sel) {
 	magazine = magazine_sel;
 	$('#chargement').html('Chargement de la liste des num&eacute;ros...');
 	$.ajax({
-		url: urls['numerosdispos'] + ['index', pays, magazine].join('/'),
+		url: urls.numerosdispos + ['index', pays, magazine].join('/'),
 		type: 'post',
 		dataType: 'json',
 		success: function (data) {
@@ -1379,7 +1155,7 @@ function charger_liste_numeros(magazine_sel) {
 			table.append($('.ligne_noms_options:first').clone(true))
 				.append($('.ligne_etapes:first').clone(true));
 			$.ajax({
-					url: urls['parametrageg'] + ['index', pays, magazine, 'null'].join('/'),
+					url: urls.parametrageg + ['index', pays, magazine, 'null'].join('/'),
 					type: 'post',
 					dataType: 'json',
 					success: function (data) {
@@ -1518,7 +1294,7 @@ function cloner_numero() {
 	else {
 		$('#chargement').html('Clonage en cours...');
 		$.ajax({
-			url: urls['etendre'] + ['index', pays, magazine, numero_a_cloner, numero].join('/'),
+			url: urls.etendre + ['index', pays, magazine, numero_a_cloner, numero].join('/'),
 			type: 'post',
 			success: function (data) {
 				if (typeof(data.erreur) != 'undefined')
@@ -1571,7 +1347,7 @@ function charger_etape(num_etape, nom_option_sel, recharger) {
 		$('#chargement').html('Chargement des param&egrave;tres de l\'&eacute;tape ' + num_etape + '...');
 
 	$.ajax({
-		url: urls['parametrageg'] + ['index', pays, magazine, num_etape,
+		url: urls.parametrageg + ['index', pays, magazine, num_etape,
 			typeof(nom_option_sel) == 'undefined' ? 'null' : nom_option_sel
 		].join('/'),
 		type: 'post',
@@ -1603,7 +1379,6 @@ function charger_etape(num_etape, nom_option_sel, recharger) {
 				var i = 0;
 				var contenu;
 				types_options = [];
-				valeurs_defaut_options = [];
 				for (var option_nom in data) {
 					types_options[option_nom] = data[option_nom]['type'];
 
@@ -1767,14 +1542,6 @@ function get_onglet_courant() {
 	return $('#contenu_' + onglet_sel.toLowerCase());
 }
 
-function remplacer_caracteres_whatthefont() {
-	var nom_police = $('#url_police').value.replace(/(?:http:\/\/)?(?:new\.)?myfonts.com\/fonts\/(.*)\//g, '$1')
-		.replace(/\//g, '.');
-	$('#nom_police').html('Notez le nom de la police correspondant &agrave; votre texte :')
-		.append($('<br>'))
-		.append($('<b>').html(nom_police));
-}
-
 function jqueryui_alert_from_d(element, close_callback) {
 	close_callback = close_callback || function () {
 	};
@@ -1800,78 +1567,6 @@ function jqueryui_alert(texte, titre, close_callback) {
 			}
 		},
 		close: close_callback
-	});
-}
-
-function afficher_dialogue_accueil() {
-	$("#wizard-accueil").dialog({
-		width: 850,
-		modal: false,
-		resizable: false,
-		buttons: {
-			"Suivant": function () {
-				$(this).dialog("close");
-				$("#wizard-accueil2").dialog({
-					width: 500,
-					modal: false,
-					resizable: false,
-					buttons: {
-						"Suivant": function () {
-							$(this).dialog("close");
-							$("#wizard-accueil3").dialog({
-								width: 500,
-								modal: false,
-								resizable: false,
-								buttons: {
-									"Suivant": function () {
-										$(this).dialog("close");
-										jquery_connexion();
-									}
-								}
-							});
-						}
-					}
-				});
-			}
-		}
-	});
-}
-
-function jquery_connexion() {
-	$("#wizard-login-form").dialog({
-		width: 500,
-		modal: false,
-		open: function() {
-			$("#login-form").keypress(function(e) {
-				if (e.keyCode === $.ui.keyCode.ENTER) {
-					$('#login-form').submit();
-				}
-			});
-		},
-		buttons: [{
-			text: "Connexion",
-			type: "submit",
-			form: "login-form",
-			click: function() {
-				$('#login-form').submit();
-			}
-		}]
-	});
-
-	$('#login-form').submit(function () {
-		$.ajax({
-			url: base_url + 'index.php/edgecreatorg/login',
-			type: 'post',
-			data: 'user=' + $('#username').val() + '&pass=' + $('#password').val() + "&mode_expert=" + $('#mode_expert').prop('checked'),
-			success: function (data) {
-				if (data.indexOf("Erreur") == 0)
-					$("#wizard-login-form").find('.erreurs').html(data);
-				else {
-					location.replace(base_url);
-				}
-			}
-		});
-		return false;
 	});
 }
 

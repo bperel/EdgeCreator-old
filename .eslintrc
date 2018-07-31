@@ -1,0 +1,16 @@
+{
+  "extends": "jquery",
+  "env": {
+    "browser": true,
+    "jquery": true
+  },
+  "rules": {
+    "space-in-parens": "off",
+    "quotes": "off",
+    "camelcase": "off",
+    "computed-property-spacing": "off",
+    "array-bracket-spacing": "off",
+    "space-infix-ops": "off",
+    "curly": "off"
+  }
+}
