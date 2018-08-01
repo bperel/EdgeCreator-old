@@ -27,7 +27,6 @@ header("Content-Type: text/html; charset=UTF-8"); ?>
 	<script type="text/javascript">
 		var privilege='<?=$privilege?>';
 		var username = '<?=$user?>';
-		var mode_expert = <?=$mode_expert===true?'true':'false'?>;
 
 		var base_url='<?=base_url()?>';
 		var edges_url='https://edges.ducksmanager.net/edges';
