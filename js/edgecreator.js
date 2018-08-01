@@ -25,6 +25,10 @@ var numeros_dispos;
 var chargements = [];
 var chargement_courant;
 
+var selecteur_cellules_preview = null;
+
+var etapes_valides = [];
+
 function reload_numero(numero, est_externe, visu, callback) {
 	est_externe = est_externe || false;
 	visu = visu === undefined ? true : visu;
@@ -66,8 +70,6 @@ function charger_preview_etape(etapes_preview, est_visu, parametrage, callback) 
 	}
 	charger_image('etape', urls.viewer_wizard + ['etape', zoom_utilise, etapes_preview.join("-"), parametrage, (est_visu ? 'false' : 'save'), fond_noir, 'false'].join('/'), etapes_preview.join("-"), callback);
 }
-
-var selecteur_cellules_preview = null;
 
 function charger_image(type_chargement, src, num, callback) {
 	callback = callback || function () {};
@@ -151,143 +153,6 @@ function charger_image_suivante(image, callback, type_chargement, est_visu) {
 		if (type_chargement == 'numero')
 			$('#numero_preview_debut').data('numero', null);
 	}
-}
-
-var types_options = [];
-types_options['Actif'] = 'actif';
-
-var etapes_valides = [];
-
-var nb_lignes = null;
-
-var image_ajouter = $('<img>', {
-	title: 'Ajouter une etape',
-	src: base_url + 'images/ajouter.png'
-})
-	.addClass('ajouter_etape');
-var image_supprimer = $('<img>', {
-	title: 'Supprimer l\'etape',
-	src: base_url + 'images/supprimer.png'
-})
-	.addClass('supprimer_etape');
-
-var num_etape_avant_nouvelle = null;
-
-function charger_etape_ligne(etape, tr, est_nouvelle) {
-	est_nouvelle = typeof(est_nouvelle) != 'undefined';
-	var est_ligne_header = tr.children('th').length > 0;
-	var balise_cellule = est_ligne_header ? 'th' : 'td';
-	var num_etape = etape.Ordre;
-	var cellule = null;
-	if (num_etape == -1) { // cellule deja existante
-		cellule = tr.children(balise_cellule + ':nth-child(' + 3 + ')');
-	}
-	else {
-		var num_etape_precedente = parseInt(num_etape - .5);
-		cellule = $('<' + balise_cellule + '>');
-		if (num_etape != parseInt(num_etape)) {// Nouvelle etape
-			tr.children(balise_cellule + ':nth-child(' + ($('[name="entete_etape_' + num_etape_precedente + '"]').first().prevAll().length + 1) + ')')
-				.after(cellule);
-		}
-		else
-			tr.append(cellule);
-	}
-	cellule.data('etape', num_etape);
-	switch (tr.prevAll().length) {
-		case 0:
-		case nb_lignes - 1:// Ligne des etapes
-			var nom_fonction = etape.Nom_fonction;
-
-			if (privilege != 'Affichage')
-				cellule.html(image_supprimer.clone(true));
-
-			cellule.addClass('lien_etape' + (est_nouvelle ? ' nouvelle' : ''))
-				.attr({'name': 'entete_etape_' + num_etape})
-				.data('etape', num_etape)
-				.append($('<span>').addClass('numero_etape')
-					.attr({'title': 'Cliquez pour developper l\'etape ' + num_etape})
-					.html(num_etape == -1
-						? 'Dimensions'
-						: (est_nouvelle ? 'Nouvelle &eacute;tape' : 'Etape ' + num_etape)))
-				.append($('<br>'))
-				.append($('<img>', {
-					'height': 18, 'src': base_url + 'images/fonctions/' + nom_fonction + '.png',
-					'title': nom_fonction, 'alt': nom_fonction
-				}).addClass('logo_option'));
-
-			if (privilege != 'Affichage')
-				cellule.append(image_ajouter.clone(true));
-
-			break;
-		case 1:
-		case nb_lignes - 2 :// Ligne des options, vide
-			cellule.addClass('etape_active')
-				.append($('<a>', {'href': 'javascript:void(0)'}));
-			break;
-		default:
-			if (est_dans_intervalle(tr.data('numero'), etape.Numero_debut + '~' + etape.Numero_fin))
-				cellule.addClass('num_checked');
-			break;
-	}
-}
-
-function charger_helper(nom_helper, nom_div, nom_fonction) {
-	if (nom_fonction != null)
-		$('#liste_possibilites_fonctions').prop('selectedIndex', $('#liste_possibilites_fonctions [title="' + nom_fonction + '"]').index());
-
-	if (!$(nom_div))
-		$('#helpers').append($('<div>', {'id': nom_div}));
-
-	$.ajax({
-		url: base_url + 'index.php/helper/index/' + nom_helper + '.html',
-		type: 'post',
-		data: 'nom_helper=' + nom_helper,
-		failure: function () {
-			jqueryui_alert('Page de helper introuvable : ' + nom_helper + '.html');
-		},
-		success: function (data) {
-			var texte = data;
-			var suivant_existe = texte.indexOf('...') != -1;
-			var nom_fonction_fin = texte.match(/!([^!]+)!/g);
-			var est_dernier = nom_fonction_fin != null;
-			texte = texte.replace(/\\.\\.\\./g, '')
-				.replace(/!([^!]+)!/g, '');
-			var numero_helper = nom_helper.substring(nom_helper.length - 1, nom_helper.length);
-			if (numero_helper > 1) {
-				var lien_precedent = $('<a>');
-				$(nom_div).html('')
-					.append($('<br>'))
-					.append(lien_precedent);
-				lien_precedent.click(function () {
-					var nom_helper_suivant = nom_helper.substring(0, nom_helper.length - 1) + (parseInt(numero_helper) - 1);
-					charger_helper(nom_helper_suivant, nom_div, false, nom_fonction);
-				});
-			}
-			else
-				$(nom_div).html('');
-
-			$(nom_div).append(texte)
-				.data('numero_helper', numero_helper);
-			if (suivant_existe) {
-				var lien_suivant = $('<a>').html('Suivant &gt;&gt;');
-				$(nom_div).append(lien_suivant);
-				lien_suivant.click(function () {
-					var nom_helper_suivant = nom_helper.substring(0, nom_helper.length - 1) + (parseInt(numero_helper) + 1);
-					charger_helper(nom_helper_suivant, nom_div, nom_fonction);
-				});
-			}
-			if (est_dernier) {
-				var nouvelle_etape = {};
-				nouvelle_etape['Nom_fonction'] = nom_fonction_fin[0].replace(/!/g, '');
-				nouvelle_etape['Numero_debut'] = '';
-				nouvelle_etape['Numero_fin'] = '';
-				nouvelle_etape['Ordre'] = parseInt(num_etape_avant_nouvelle) + .5;
-				$.each($('#table_numeros').find('tr'), function (i, tr) {
-					charger_etape_ligne(nouvelle_etape, $(tr), true);
-				});
-			}
-		}
-	});
 }
 
 function jqueryui_alert_from_d(element, close_callback) {
