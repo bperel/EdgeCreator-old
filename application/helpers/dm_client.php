@@ -119,7 +119,7 @@ class DmClient
     private static function get_service_results($server, $method, $path, $parameters = [], $role = 'rawsql', $do_not_chunk = false)
     {
         $ch = curl_init();
-        $url = 'http://'.$server->ip . '/' . $server->web_root . $path;
+        $url = 'http://'.$server->ip . $server->web_root . $path;
 
         if ($method === 'GET') {
             if (count($parameters) > 0) {

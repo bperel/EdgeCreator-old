@@ -5,7 +5,7 @@ RUN a2enmod rewrite
 
 RUN apt-get update && apt-get install -y \
       git wget unzip \
-      libpng-dev libfreetype6-dev libmcrypt-dev libpng12-dev libjpeg-dev libpng-dev
+      libpng-dev libfreetype6-dev libmcrypt-dev libjpeg-dev libpng-dev
 
 RUN docker-php-ext-configure gd \
   --enable-gd-native-ttf \
