@@ -11,9 +11,10 @@ RUN ln -s /etc/apache2/sites-available/edgecreator.conf /etc/apache2/sites-enabl
 RUN a2enmod rewrite
 
 RUN apt-get update && apt-get install -y \
-      git wget unzip \
-      libpng-dev libfreetype6-dev libmcrypt-dev libpng12-dev libjpeg-dev libpng-dev \
-      npm #For Bower
+      git wget unzip curl gnupg \
+      libpng-dev libfreetype6-dev libmcrypt-dev libjpeg-dev libpng-dev
+
+RUN curl -sL https://deb.nodesource.com/setup_6.x | bash - && apt-get install -y nodejs
 
 RUN docker-php-ext-configure gd \
   --enable-gd-native-ttf \
@@ -23,8 +24,7 @@ RUN docker-php-ext-configure gd \
 
 RUN docker-php-ext-install gd opcache
 
-RUN ln -s /usr/bin/nodejs /usr/bin/node && \
-    npm install --global bower
+RUN npm install --global bower
 
 RUN mkdir -p /var/www/edges && \
     chown -R www-data:www-data /var/www/edges && \
