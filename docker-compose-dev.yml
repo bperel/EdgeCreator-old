@@ -14,4 +14,4 @@ services:
 networks:
   default:
     external:
-      name: dm_network
+      name: dmserver_front-network
