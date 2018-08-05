@@ -13,13 +13,11 @@ header("Content-Type: text/html; charset=UTF-8"); ?>
 	<link rel="stylesheet" type="text/css" href="<?=base_url()?>css/edgecreator.css" />
 	<link rel="stylesheet" type="text/css" href="<?=base_url()?>css/edgecreator_wizard.css" />
 	<link rel="stylesheet" type="text/css" href="<?=base_url()?>css/edgecreator_gallery.css" />
-	<link rel="stylesheet" type="text/css" href="<?=base_url()?>vendor/jrac/jrac/style.jrac.css" />
 	<link rel="shortcut icon" href="<?=base_url()?>images/favicon.ico" />
 
 	<script type="text/javascript" src="<?=base_url()?>node_modules/jquery/dist/jquery.js" ></script>
 	<script type="text/javascript" src="<?=base_url()?>vendor/jquery-serializeObject/jquery.serializeObject.js" ></script>
 	<script type="text/javascript" src="<?=base_url()?>vendor/jquery.ba-resize/jquery.ba-resize.min.js" ></script>
-	<script type="text/javascript" src="<?=base_url()?>vendor/jrac/jrac/jquery.jrac.js" ></script>
 	<script type="text/javascript" src="<?=base_url()?>node_modules/jquery-ui-dist/jquery-ui.min.js" ></script>
 
 	<script type="text/javascript" src="<?=base_url()?>js/edgecreatorlib.js" ></script>

@@ -692,19 +692,6 @@
 					</span>
 				</div>
 				
-				<h3 id="section_photo" class="autres_photos photos_texte">
-					<a href="#">
-						<span class="autres_photos photos_texte">A partir de la photo de tranche</span>
-					</a>
-				</h3>
-				<div name="section_photo" class="selectionner_photo_tranche autres_photos photos_texte">
-					<ul class="gallery cache">
-						<li class="template">
-							<img />
-						</li>
-					</ul>
-				</div>
-				
 				<h3 id="gallery">
 					<a href="#">
 						<span class="photo_principale">Sélectionner une photo existante</span>
@@ -726,10 +713,6 @@
 					</ul>
 				</div>
 			</div>
-			<button id="to-wizard-resize" class="cache" value="to-wizard-resize">
-				<span class="photo_principale">Rogner la photo sélectionnée</span>
-				<span class="autres_photos photos_texte">Rogner l'image sélectionnée</span>
-			</button>
 			<br />
 			<span class="photo_principale">Sélectionnez une photo pour poursuivre.</span>
 			<span class="autres_photos photos_texte">Sélectionnez une image pour poursuivre.</span>
@@ -745,23 +728,6 @@
 			</div>
 		</form>
 	</p>
-</div>
-
-<div id="wizard-resize" class="wizard first closeable" title="Retouche d'image">
-	<p>
-		Rognez l'image.
-        <b>Pour de meilleurs résultats sur votre modèle, nous vous conseillons d'éditer l'image rognée sur votre ordinateur<br />
-        afin par exemple de rendre transparent son arrière plan.</b>
-	</p>
-	<img /><br />
-	<div class="error crop_inconsistent cache">Une partie de votre sélection est située en dehors de l'image.</div>
-	<form>
-		<input type="hidden" name="destination" />
-		<div class="controlgroup">
-			<input type="hidden" checked="checked" name="choix" value="do-in-wizard-enregistrer" id="do-in-wizard-enregistrer" />
-			<input type="hidden" checked="checked" name="onClose" value="to-wizard-images" id="to-wizard-images" />
-		</div>
-	</form>
 </div>
 
 <div id="wizard-myfonts" class="wizard first closeable" title="Recherche d'une police de caractères">

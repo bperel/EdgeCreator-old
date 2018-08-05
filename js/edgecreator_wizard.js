@@ -448,33 +448,6 @@ function wizard_do(wizard_courant, action) {
 				}
 
 			break;
-			case 'wizard-resize':
-				switch(action) {
-					case 'enregistrer':
-						if (wizard_check('wizard-resize') !== undefined) {
-							var image = wizard_courant.find('.jrac_viewport img');
-							var source = 'photos';
-							var destination = wizard_courant.find('[name="destination"]').val();
-							var decoupage_nom = image.attr('src').match(REGEX_FICHIER_PHOTO);
-							if (!decoupage_nom) {
-								jqueryui_alert("Le nom de l'image est invalide : " + image.attr('src'), "Nom invalide");
-								return;
-							}
-
-							var numero_image = decoupage_nom[2];
-							var nom = decoupage_nom[3];
-							var jrac_crop = $('.jrac_crop');
-							var jrac_crop_position = jrac_crop.position();
-							var x1 = jrac_crop_position.left,
-								x2 = jrac_crop_position.left + jrac_crop.width(),
-								y1 = jrac_crop_position.top,
-								y2 = jrac_crop_position.top  + jrac_crop.height();
-							rogner_image(image, nom, source, destination, pays, magazine, numero, x1, x2, y1, y2, numero_image);
-						}
-					wizard_goto(wizard_courant,'wizard-images');
-					break;
-				}
-			break;
 			case 'wizard-selectionner-numero-photo-multiple':
 				switch(action) {
 					case 'affectation-numero-tranche':
@@ -596,11 +569,6 @@ function wizard_check(wizard_id) {
 					}
 				break;
 
-				case 'wizard-resize':
-					if (wizard.find('.error:not(.cache)').length > 0) {
-						erreur='Veuillez corriger les erreurs avant de continuer.';
-					}
-				break;
 				case 'wizard-confirmation-validation-modele-contributeurs':
 					if (! form.serializeObject().photographes
 					 || ! form.serializeObject().createurs) {
@@ -816,21 +784,10 @@ function wizard_init(wizard_id) {
 			$('#pasDePhoto').prop({checked: false});
 			wizard.find('.accordion').accordion({
 				activate: function (event, ui) {
-					var toWizardResize = $('#to-wizard-resize');
-
-					toWizardResize.addClass('cache');
 					switch ($(ui.newHeader).attr('id')) {
 						case 'gallery':
 							var type_gallerie = wizard.hasClass('photo_principale') ? 'Photos' : 'Source';
 							lister_images_gallerie(type_gallerie);
-							break;
-						case 'section_photo':
-							toWizardResize.removeClass('cache');
-							var source_photo_tranche = $('#photo_tranche img').attr('src');
-							if (source_photo_tranche) {
-								var nom_fichier_photo = source_photo_tranche.match(/\/([^\/]+$)/)[1];
-								afficher_galerie('Photos', [nom_fichier_photo], wizard.find('.selectionner_photo_tranche'));
-							}
 							break;
 					}
 				}
@@ -932,11 +889,6 @@ function wizard_init(wizard_id) {
 							.off('click');
 					});
 			});
-		break;
-		case 'wizard-resize':
-			wizard.find('img')
-			  .jrac({image_height:480})
-				.bind('jrac_events', surveiller_selection_jrac);
 		break;
 
 		case 'wizard-confirmation-validation-modele':
@@ -3237,15 +3189,10 @@ function afficher_galerie(type_images, data, container) {
 				var selected = !$(this).hasClass('selected');
 
 				container.find('ul.gallery li img').removeClass('selected');
-				container.find('#to-wizard-resize').toggleClass('cache', !selected);
 
 				if (selected) {
 					$(this).addClass('selected');
 					$('#wizard-images [name="selected"]').val($(this).attr('src'));
-
-					var destination_rognage = container.attr('name') === 'section_photo' ? 'elements' : 'photos';
-					$('#wizard-resize [name="destination"]').val(destination_rognage);
-					$('#wizard-resize img').attr({src:$(this).attr('src')});
 				}
 			});
 			if (type_images === 'Photos' && nom_photo_principale !== null) {
@@ -3255,14 +3202,6 @@ function afficher_galerie(type_images, data, container) {
 		ul.removeClass('cache');
 		container.find('.chargement_images').addClass('cache');
 	}
-}
-
-function surveiller_selection_jrac($viewport) {
-	var crop_inconsistent_element=$(this).d().find('.error.crop_inconsistent');
-	if ($viewport.observator.crop_consistent())
-		crop_inconsistent_element.addClass('cache');
-	else
-		crop_inconsistent_element.removeClass('cache');
 }
 
 function templatedToVal(templatedString) {
