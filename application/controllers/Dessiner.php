@@ -2,11 +2,11 @@
 include_once APPPATH.'controllers/Viewer_wizard.php';
 
 class Dessiner extends EC_Controller {
-	
+
 	function index() {
 		$arguments = func_get_args();
-		
-		$this->load->model($this->session->userdata('mode_expert') === true ? 'Modele_tranche' : 'Modele_tranche_Wizard','Modele_tranche');
+
+		$this->load->model('Modele_tranche_Wizard','Modele_tranche');
 		$nom_fonction = $arguments[0];
 		if (class_exists($nom_fonction)) {
 			Viewer_wizard::$zoom=$arguments[1];
@@ -26,7 +26,7 @@ class Dessiner extends EC_Controller {
 					$transp=imagecolorallocatealpha(Viewer_wizard::$image, 255, 255, 255, 127);
 					imagefill(Viewer_wizard::$image,0,0,$transp);
 					imagesavealpha(Viewer_wizard::$image, true);
-					
+
 					new Arc_cercle($options);
 					if (Viewer_wizard::$is_debug===false)
 						header('Content-type: image/png');
@@ -34,12 +34,12 @@ class Dessiner extends EC_Controller {
 				break;
 				case 'Polygone':
 					$liste_x=explode(',',$options->X);
-					$liste_y=explode(',',$options->Y);					
+					$liste_y=explode(',',$options->Y);
 					Viewer_wizard::$image=imagecreatetruecolor(z(max($liste_x)), z(max($liste_y)));
 					$transp=imagecolorallocatealpha(Viewer_wizard::$image, 255, 255, 255, 127);
 					imagefill(Viewer_wizard::$image,0,0,$transp);
 					imagesavealpha(Viewer_wizard::$image, true);
-					
+
 					new Polygone($options);
 					if (Viewer_wizard::$is_debug===false)
 						header('Content-type: image/png');

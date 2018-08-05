@@ -1,0 +1,21 @@
+{
+  "name": "edgecreator",
+  "version": "1.0.0",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bperel/EdgeCreator.git"
+  },
+  "author": "Bruno Perel",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/bperel/EdgeCreator/issues"
+  },
+  "homepage": "https://github.com/bperel/EdgeCreator#readme",
+  "devDependencies": {
+    "eslint": "^5.2.0",
+    "eslint-config-jquery": "^1.0.1"
+  }
+}

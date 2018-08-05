@@ -40,15 +40,14 @@ class Modele_tranche extends CI_Model {
     function get_just_connected() {
 		return self::$just_connected;
 	}
-	
+
 	function requete_select_dm($requete) {
 		return DmClient::get_query_results_from_dm_site($requete);
 	}
-	
+
 	function get_privilege() {
 	    global $erreur;
 		$privilege=null;
-		$_POST['mode_expert']= isset($_POST['mode_expert']) && $_POST['mode_expert'] === 'true';
 		if (isset($_REQUEST['user'], $_REQUEST['pass'])) {
 			self::$just_connected=true;
             $privilege = $this->get_privilege_from_username($_REQUEST['user'], $_REQUEST['pass'], isset($_REQUEST['is_sha1']));
@@ -59,14 +58,14 @@ class Modele_tranche extends CI_Model {
                 return null;
             }
 
-            $this->creer_id_session($_REQUEST['user'], $_REQUEST['pass'], $privilege, $_POST['mode_expert']);
+            $this->creer_id_session($_REQUEST['user'], $_REQUEST['pass'], $privilege);
         }
 		else {
             $privilege = $this->session->userdata('privilege') ?? 'Affichage';
 		}
 		return $privilege;
 	}
-	
+
 	function setUtilisateurs() {
 	    if (empty(self::$utilisateurs)) {
             $requete_utilisateurs='SELECT ID, username FROM users';
@@ -76,7 +75,7 @@ class Modele_tranche extends CI_Model {
             }
         }
 	}
-	
+
 	function get_privilege_from_username($user, &$pass, $isSha1Pass = false) {
 		if (!$isSha1Pass) {
 		    $pass=sha1($pass);
@@ -95,7 +94,7 @@ class Modele_tranche extends CI_Model {
         }
         return $resultat[0]['privilege'] ?? 'Affichage';
     }
-	
+
 	function username_to_id($username) {
         if (count(self::$utilisateurs) === 0) {
             $this->setUtilisateurs();
@@ -109,13 +108,12 @@ class Modele_tranche extends CI_Model {
         }
         return in_array($user, self::$utilisateurs);
 	}
-	
-	
-	function creer_id_session($user, $pass, $privilege, $mode_expert) {
-		
-		$this->session->set_userdata(['user' => $user, 'pass' => $pass, 'privilege' => $privilege, 'mode_expert'=>$mode_expert]);
+
+
+	function creer_id_session($user, $pass, $privilege) {
+		$this->session->set_userdata(['user' => $user, 'pass' => $pass, 'privilege' => $privilege]);
 	}
-	
+
 	function user_possede_modele($pays=null,$magazine=null,$username=null) {
 		if (is_null($pays)) $pays=self::$pays;
 		if (is_null($magazine)) $magazine=self::$magazine;
@@ -137,11 +135,11 @@ class Modele_tranche extends CI_Model {
 			foreach($options as $option) {
 				$this->insert($option->Pays, $option->Magazine, $option->Ordre, $option->Nom_fonction,
                     $option->Option_nom, $option->Option_valeur, $option->Numero_debut, $option->Numero_fin, null);
-				
+
 			}
 		}
 	}
-	
+
 	function get_modeles_magazine($pays,$magazine,$ordre=null)
 	{
 		$resultats_o= [];
@@ -197,7 +195,7 @@ class Modele_tranche extends CI_Model {
 			    .'WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' AND Option_nom IS NULL '
 				.'AND username = \''.self::$username.'\'';
         $resultats = DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator');
-			
+
 		return $resultats[0]->cpt;
 	}
 
@@ -248,14 +246,14 @@ class Modele_tranche extends CI_Model {
 			$intervalle=$this->getIntervalleShort($this->getIntervalle($resultat->Numero_debut, $resultat->Numero_fin));
 			if (!is_null($numero) && !est_dans_intervalle($numero, $intervalle))
 				continue;
-			
+
 			$numeros_debut[]=$resultat->Numero_debut;
 			$numeros_fin[]=$resultat->Numero_fin;
 		}
 		$resultat_tous_intervalles=$resultat;
 		$resultat_tous_intervalles->Numero_debut=implode(';',$numeros_debut);
 		$resultat_tous_intervalles->Numero_fin=implode(';',$numeros_fin);
-		
+
 		return new Fonction($resultat_tous_intervalles);
 	}
 
@@ -311,7 +309,7 @@ class Modele_tranche extends CI_Model {
 		if (is_null($numero))
 			if (isset($resultats_options->$option_nom))
 				uksort($resultats_options->$option_nom,'trier_intervalles');
-			
+
 		$f=new $nom_fonction($resultats_options,false,$creation,!$nouvelle_etape); // Ajout des champs avec valeurs par défaut
 		if ($inclure_infos_options) {
 			$prop_champs=new ReflectionProperty(get_class($f), 'champs');
@@ -342,7 +340,7 @@ class Modele_tranche extends CI_Model {
 		$valeurs_defaut=$prop_valeurs_defaut->getValue();
 		$prop_descriptions=new ReflectionProperty(get_class($f), 'descriptions');
 		$descriptions=$prop_descriptions->getValue();
-		
+
 		foreach($f->options as $nom_option=>$val) {
 			$intervalles_option=$f->options->$nom_option;
 			$intervalles_option['type']=$champs[$nom_option];
@@ -371,7 +369,7 @@ class Modele_tranche extends CI_Model {
 			    .'INNER JOIN edgecreator_intervalles ON edgecreator_valeurs.ID = edgecreator_intervalles.ID_Valeur '
 				.'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Ordre>='.$etape_debut.' AND username LIKE \''.self::$username.'\' ';
         $resultat = DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator')[0];
-		
+
 		if (!is_null($resultat)) {
 			$etape=$resultat->max_ordre;
 			echo 'Decalage des etapes '.$etape_debut.' a '.$etape."\n";
@@ -386,7 +384,7 @@ class Modele_tranche extends CI_Model {
 		}
 		else
 			echo 'Pas de decalage'."\n";
-		
+
 	}
 
 	function sv_doublons($pays,$magazine) {
@@ -463,11 +461,11 @@ class Modele_tranche extends CI_Model {
 		}
 		echo '<pre>';print_r($groupes_numeros_lisibles);echo '</pre>';
 	}
-	
+
 	function get_pays() {
 		return DmClient::get_service_results_ec(DmClient::$dm_server, 'GET', '/coa/list/countries/fr', []);
 	}
-	
+
 	function get_magazines($pays) {
         return DmClient::get_service_results_ec(DmClient::$dm_server, 'GET', '/coa/list/publications', [$pays]);
 	}
@@ -510,10 +508,10 @@ class Modele_tranche extends CI_Model {
         $resultats = array_merge($resultats, DmClient::get_query_results_from_dm_server($requete_get_options, 'db_edgecreator'));
 
 		$options= [];
-		
+
 		foreach($resultats as $resultat) {
 			$est_ec_v2 = $resultat->EC_v2 == 1;
-			
+
 			foreach($numeros as $numero) {
 				if (( $est_ec_v2 && $numero === $resultat->Numero)
 				 || (!$est_ec_v2 && est_dans_intervalle(
@@ -572,7 +570,7 @@ class Modele_tranche extends CI_Model {
             : (count(array_keys($qualite_etapes, 'warning')) > 0
                 ? 'warning' : 'ok');
     }
-	
+
 	function get_numeros_disponibles($pays,$magazine,$get_prets=false) {
 		self::$pays = $pays;
 		self::$magazine = $magazine;
@@ -628,12 +626,12 @@ class Modele_tranche extends CI_Model {
 
         return $numeros_affiches;
     }
-	
+
 	function valeur_existe($id_valeur) {
 		$requete='SELECT ID FROM edgecreator_valeurs WHERE ID='.$id_valeur;
         return count(DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator')) === 0;
 	}
-	
+
 	function insert(
         $pays,
         $magazine,
@@ -648,20 +646,20 @@ class Modele_tranche extends CI_Model {
 	    // TODO as DM server service
 		$option_nom=is_null($option_nom) ? 'NULL' : '\''.preg_replace("#([^\\\\])'#","$1\\'",$option_nom).'\'';
 		$option_valeur=is_null($option_valeur) ? 'NULL' : '\''.preg_replace("#([^\\\\])'#","$1\\'",$option_valeur).'\'';
-		
-		
+
+
 		$requete='INSERT INTO edgecreator_modeles2 (Pays,Magazine,Ordre,Nom_fonction,Option_nom) VALUES '
 				.'(\''.$pays.'\',\''.$magazine.'\',\''.$etape.'\',\''.$nom_fonction.'\','.$option_nom.') ';
 		echo $requete."\n";
         DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator');
 		$id_option = $this->db->insert_id();
-		
+
 		if (is_null($id_valeur) || !$this->valeur_existe($id_valeur)) {
 			if (is_null($id_valeur))
 				$requete='INSERT INTO edgecreator_valeurs (Option_valeur,ID_Option) VALUES ('.$option_valeur.','.$id_option.')';
 			else
 				$requete='INSERT INTO edgecreator_valeurs (ID,Option_valeur,ID_Option) VALUES ('.$id_valeur.','.$option_valeur.','.$id_option.')';
-				
+
 			echo $requete."\n";
             DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator');
 			$id_valeur = $this->db->insert_id();
@@ -669,7 +667,7 @@ class Modele_tranche extends CI_Model {
 		$requete='INSERT INTO edgecreator_intervalles (ID_Valeur,Numero_debut,Numero_fin,username) VALUES ('.$id_valeur.',\''.$numero_debut.'\',\''.$numero_fin.'\',\''.self::$username.'\')';
 		echo $requete."\n";
         DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator');
-			
+
 	}
 
 	function update_ordre($pays,$magazine,$ordre,$numero_debut,$numero_fin,$nom_fonction,$parametrage) {
@@ -680,12 +678,12 @@ class Modele_tranche extends CI_Model {
         DmClient::get_query_results_from_dm_server($requete_suppr, 'db_edgecreator');
 		echo $requete_suppr."\n";
 		$this->insert($pays, $magazine, $ordre, $nom_fonction, null, null, $numero_debut, $numero_fin);
-		
+
 		foreach($parametrage as $option_nom_intervalle=>$option_valeur) {
 			$option_valeur=str_replace("'","\'",$option_valeur);
 			list($option_nom,$intervalle)=explode('.',$option_nom_intervalle);
 			list($numero_debut,$numero_fin)=explode('~',$intervalle);
-			
+
 			$this->insert($pays, $magazine, $ordre, $nom_fonction, $option_nom, $option_valeur, $numero_debut,
                 $numero_fin);
 		}
@@ -701,10 +699,10 @@ class Modele_tranche extends CI_Model {
 			$option_valeur=str_replace("'","\\'",$option_valeur);
 			list($option_nom,$intervalle)=explode('.',$option_nom_intervalle);
 			list($numero_debut,$numero_fin)=explode('~',$intervalle);
-				
+
 			$this->insert($pays, $magazine, $ordre, $nom_fonction, $option_nom, $option_valeur, $numero_debut,
                 $numero_fin);
-			
+
 		}
 	}
 
@@ -728,13 +726,13 @@ class Modele_tranche extends CI_Model {
 	function insert_valeur_option($pays,$magazine,$etape,$nom_fonction,$option_nom,$valeur,$numero_debut,$numero_fin,$id_valeur=null) {
 		if ($option_nom === 'Actif') {
 			$this->insert($pays, $magazine, $etape, $nom_fonction, null, null, $numero_debut, $numero_fin, $id_valeur);
-			
+
 		}
 		else
 			$this->insert($pays, $magazine, $etape, $nom_fonction, $option_nom, $valeur, $numero_debut, $numero_fin,
                 $id_valeur);
 	}
-	
+
 	function get_id_valeur_max() {
 		$requete='SELECT MAX(ID) AS Max FROM edgecreator_valeurs';
         return DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator')[0]->Max;
@@ -1047,7 +1045,7 @@ DmClient::get_query_results_from_dm_server($req_ajout_nouvel_intervalle, 'db_edg
 		}
 		return $texte;
 	}
-	
+
 	function setPays($pays) {
 		self::$pays=$pays;
 	}
@@ -1075,11 +1073,11 @@ DmClient::get_query_results_from_dm_server($req_ajout_nouvel_intervalle, 'db_edg
 	function setNumerosDisponibles($numeros_disponibles) {
 		self::$numeros_dispos=$numeros_disponibles;
 	}
-	
+
 	function setDropdownNumeros($numeros_disponibles) {
 		self::$dropdown_numeros=$numeros_disponibles;
 	}
-	
+
 	function setDropdownNumerosId($id,$dropdown='static') {
 		if ($dropdown=='static')
 			$dropdown=self::$dropdown_numeros;
@@ -1106,8 +1104,8 @@ DmClient::get_query_results_from_dm_server($req_ajout_nouvel_intervalle, 'db_edg
 					}
 				}
 			 break;
-			case 'Source': 
-			case 'Photos': 
+			case 'Source':
+			case 'Photos':
 				$pays=$arg;
 				$magazine=$arg2;
 				switch($type) {
@@ -1127,7 +1125,7 @@ DmClient::get_query_results_from_dm_server($req_ajout_nouvel_intervalle, 'db_edg
 						if (!@mkdir($rep,0777,true)) {
 							$liste["erreur"]=$rep;
 						}
-							
+
 					}
 					else {
 						$liste["erreur"]=$rep;
@@ -1151,7 +1149,7 @@ DmClient::get_query_results_from_dm_server($req_ajout_nouvel_intervalle, 'db_edg
 				$rep=Fonction_executable::getCheminPhotos($pays).'/';
 				$dir = opendir($rep);
 				while ($f = readdir($dir)) {
-					if ((strpos($f,'.png')===false 
+					if ((strpos($f,'.png')===false
 					  && strpos($f,'.jpg')===false )
 					 || strpos($f, $magazine.'.') !== 0)
 						continue;
@@ -1190,7 +1188,7 @@ DmClient::get_query_results_from_dm_server($req_ajout_nouvel_intervalle, 'db_edg
                     $liste[$username]=($est_photographe ? 'photographe':'').($est_createur ? 'createur':'');
                 }
 			 break;
-			case 'Fonctions':				
+			case 'Fonctions':
 				foreach(self::$noms_fonctions as $nom) {
 					$liste[$nom]=$nom::$libelle;
 				}
@@ -1213,7 +1211,7 @@ DmClient::get_query_results_from_dm_server($req_ajout_nouvel_intervalle, 'db_edg
 		}
 		return $liste;
 	}
-	
+
 	static function rendu_image($save) {
 		if (Viewer_wizard::$is_debug===false)
 			header('Content-type: image/png');
@@ -1226,10 +1224,47 @@ DmClient::get_query_results_from_dm_server($req_ajout_nouvel_intervalle, 'db_edg
             $nom_image=$dossier_image.Viewer_wizard::$random_id.'.png';
             imagepng(Viewer_wizard::$image,$nom_image);
         }
+    }
 
-		exit();
-	} 
-	
+    static function save_image($pays, $magazine, $numero, $image) {
+        $dossier_pays = self::getCheminImages().'/'.$pays;
+        $dossier_gen = $dossier_pays.'/gen';
+        if (!is_dir($dossier_pays)) {
+            @mkdir($dossier_pays);
+        }
+        if (!is_dir($dossier_gen)) {
+            @mkdir($dossier_gen);
+        }
+
+        $chemin_image = $dossier_gen.'/'.$magazine.'.'.$numero.'.png';
+        if (!is_file($chemin_image)) {
+            imagepng($image,$chemin_image);
+        }
+
+        header('Content-type: image/png');
+        imagepng($image);
+    }
+
+    function defaut($pays, $magazine, $numero, $zoom, $largeur, $hauteur) {
+        $image=imagecreatetruecolor($largeur,$hauteur);
+        $blanc=imagecolorallocate($image,255,255,255);
+        $noir = imagecolorallocate($image, 0, 0, 0);
+        imagefilledrectangle($image, 0, 0, $largeur-2, $hauteur-2, $blanc);
+        imagettftext($image,$largeur/2,90,$largeur*7/10,$hauteur-$largeur*4/5,
+            $noir,Modele_tranche::getCheminPolices() . 'Arial.ttf',$pays.'/'.$magazine.' '.$numero);
+
+        $noir=imagecolorallocate($image, 0, 0, 0);
+        for ($i=0; $i<.15* $zoom; $i++) {
+            imagerectangle($image, $i, $i, $largeur - 1 - $i, $hauteur - 1 - $i, $noir);
+        }
+        $gris_250=imagecolorallocate($image, 250,250,250);
+        if (function_exists('imageantialias')) {
+            imageantialias($image, true);
+        }
+        imagefilledrectangle($image, $largeur/4,$largeur/4, $largeur*3/4,$largeur*3/4,$gris_250);
+        return $image;
+    }
+
 }
 
 class Fonction extends Modele_tranche {
@@ -1240,7 +1275,7 @@ class Fonction extends Modele_tranche {
 class Fonction_executable extends Fonction {
 
 	static $descriptions= [];
-	
+
 	function __construct($options,$creation=false,$get_options_defaut=true) {
         parent::__construct();
 		if (!is_object($options)) {
@@ -1330,7 +1365,7 @@ class Fonction_executable extends Fonction {
     static function getCheminPhotosTranchesMultiples() {
 		return Modele_tranche::getCheminImages() .'tranches_multiples';
 	}
-	
+
 	static function getCheminElements($pays=null) {
 		if (is_null($pays))
 			$pays=self::$pays;
@@ -1396,7 +1431,7 @@ class Dimensions extends Fonction_executable {
         'Dimension_x'=>'Largeur de la tranche',
 							   'Dimension_y'=>'Hauteur de la tranche'
     ];
-	
+
 	function __construct($options,$executer=true,$creation=false,$get_options_defaut=true) {
 		parent::__construct($options,$creation,$get_options_defaut);
 		if (!$executer)
@@ -1407,7 +1442,7 @@ class Dimensions extends Fonction_executable {
 		Viewer_wizard::$hauteur=z($this->options->Dimension_y);
 		imagefill(Viewer_wizard::$image,0,0,  imagecolorallocate(Viewer_wizard::$image, 255, 255, 255));
 	}
-	
+
 	function verifier_erreurs() {
 		if ($this->options->Dimension_x < 0 || $this->options->Dimension_y < 0 ) {
 			self::erreur('Dimensions négatives');
@@ -1428,7 +1463,7 @@ class Remplir extends Fonction_executable {
 							   'Pos_y'=>'Ordonn&eacute;e du point de d&eacute;part du remplissage',
 							   'Couleur'=>'Couleur de remplissage'
     ];
-	
+
 	function __construct($options,$executer=true,$creation=false,$get_options_defaut=true) {
 		parent::__construct($options,$creation,$get_options_defaut);
 		if (!$executer)
@@ -1440,7 +1475,7 @@ class Remplir extends Fonction_executable {
 		$couleur=imagecolorallocate(Viewer_wizard::$image, $r,$g,$b);
 		imagefill(Viewer_wizard::$image, $this->options->Pos_x, $this->options->Pos_y, $couleur);
 	}
-	
+
 	function verifier_erreurs() {
 		if ($this->options->Pos_x >= Viewer_wizard::$largeur || $this->options->Pos_y >= Viewer_wizard::$hauteur
 		 || $this->options->Pos_x < 0 || $this->options->Pos_y < 0) {
@@ -1454,16 +1489,16 @@ class Image extends Fonction_executable {
 	static $champs= ['Source'=>'fichier_ou_texte','Decalage_x'=>'quantite','Decalage_y'=>'quantite','Compression_x'=>'quantite','Compression_y'=>'quantite','Position'=>'liste'];
 	static $valeurs_nouveau= ['Source'=>'','Decalage_x'=>'5','Decalage_y'=>'5','Compression_x'=>'0.6','Compression_y'=>'0.6','Position'=>'haut'];
 	static $valeurs_defaut= ['Decalage_x'=>0,'Decalage_y'=>0,'Compression_x'=>1,'Compression_y'=>1,'Position'=>'haut'];
-	
+
 	static $descriptions= [
         'Source'=>'Nom de l\'image',
-							   'Decalage_x'=>'Marge gauche de l\'image', 
+							   'Decalage_x'=>'Marge gauche de l\'image',
 							   'Decalage_y'=>'Marge haute de l\'image<br />(Par rapport au haut de l\'image si Position=haut, sinon par rapport au bas)',
 							   'Compression_x'=>'Compression de la largeur de l\'image',
 							   'Compression_y'=>'Compression de la hauteur de l\'image',
 							   'Position'=>'Position de l\'image par rapport &agrave; la tranche : Haut ou Bas'
     ];
-	
+
 	function __construct($options,$executer=true,$creation=false,$get_options_defaut=true) {
 		parent::__construct($options,$creation,$get_options_defaut);
 		if (!$executer)
@@ -1472,7 +1507,7 @@ class Image extends Fonction_executable {
 		$this->options->Decalage_y=self::toTemplatedString($this->options->Decalage_y);
 		$this->options->Source=self::toTemplatedString($this->options->Source);
 		$this->verifier_erreurs();
-		
+
 		$src = $this->options->Source;
 		$extension_image=strtolower(substr($src, strrpos($src, '.')+1,strlen($src)-strrpos($src, '.')-1));
 		$chemin_reel= self::get_chemin_reel($this->options->Source);
@@ -1505,7 +1540,7 @@ class Image extends Fonction_executable {
 	static function get_chemin_relatif($source) {
 		return Modele_tranche::getCheminImages() . self::$pays.'/elements/'.$source;
 	}
-	
+
 	function verifier_erreurs() {
 		if (empty($this->options->Source)) {
 			self::erreur('Le fichier n\'a pas été défini');
@@ -1522,7 +1557,7 @@ class TexteMyFonts extends Fonction_executable {
 	static $champs= ['URL'=>'texte','Couleur_texte'=>'couleur','Couleur_fond'=>'couleur','Largeur'=>'quantite','Chaine'=>'texte','Pos_x'=>'quantite','Pos_y'=>'quantite','Compression_x'=>'quantite','Compression_y'=>'quantite','Rotation'=>'quantite','Demi_hauteur'=>'liste','Mesure_depuis_haut'=>'liste'];
 	static $valeurs_nouveau= ['URL'=>'redrooster.block-gothic-rr.demi-extra-condensed','Couleur_texte'=>'000000','Couleur_fond'=>'ffffff','Largeur'=>'700','Chaine'=>'Le journal de Mickey','Pos_x'=>'0','Pos_y'=>'5','Compression_x'=>'0.3','Compression_y'=>'0.3','Rotation'=>'90','Demi_hauteur'=>'Oui','Mesure_depuis_haut'=>'Oui'];
 	static $valeurs_defaut= ['Rotation'=>0,'Compression_x'=>'1','Compression_y'=>'1','Mesure_depuis_haut'=>'Oui'];
-	
+
 	static $descriptions= [
         'URL'=>'Nom de la police',
 							   'Couleur_texte'=>'Couleur du texte',
@@ -1562,7 +1597,7 @@ class TexteMyFonts extends Fonction_executable {
             $this->options->Couleur_fond,
             $this->options->Largeur,
             $this->options->Chaine.'                                    .',
-            (int)(Viewer_wizard::$largeur / 1.5) / 0.35 // Précision
+            (int)((Viewer_wizard::$largeur / 1.5) / 0.35) // Précision
         );
 		$texte=$post->im;
 		if ($this->options->Demi_hauteur === 'Oui') {
@@ -1576,7 +1611,7 @@ class TexteMyFonts extends Fonction_executable {
 
 //		$width=imagesx($texte);
 //		$height=imagesy($texte);
-		
+
 //		if ($supprimer_espaces_blancs) {
 //			$espace=imagecreatetruecolor(2*$height, $height);
 //			imagefill($espace, 0, 0, imagecolorallocate($espace,$r, $g, $b));
@@ -1592,10 +1627,10 @@ class TexteMyFonts extends Fonction_executable {
 //				}
 //			}
 //		}
-		
+
 		$fond=imagecolorallocatealpha($texte, $r, $g, $b, 127);
 		imagefill($texte,0,0,$fond);
-		
+
 		if (!is_null($this->options->Rotation)) {
 			$texte=imagerotate($texte, $this->options->Rotation, $fond);
 		}
@@ -1603,7 +1638,7 @@ class TexteMyFonts extends Fonction_executable {
 		if ($options_avancees) {
 			$this->options->Pos_x=self::toTemplatedString($this->options->Pos_x);
 			$this->options->Pos_y=self::toTemplatedString($this->options->Pos_y);
-		
+
 			$width=imagesx($texte);
 			$height=imagesy($texte);
 			$nouvelle_largeur=Viewer_wizard::$largeur*$this->options->Compression_x;
@@ -1616,7 +1651,7 @@ class TexteMyFonts extends Fonction_executable {
 			Viewer_wizard::$image=$texte;
 
 	}
-	
+
 	function verifier_erreurs() {
 		if (is_array($this->options->Couleur_fond) && count($this->options->Couleur_fond) === 0)
 			self::erreur('Couleur de fond indéfinie');
@@ -1630,8 +1665,8 @@ class TexteTTF extends Fonction_executable {
 	static $champs= ['Pos_x'=>'quantite','Pos_y'=>'quantite','Rotation'=>'quantite','Taille'=>'quantite','Couleur'=>'couleur','Chaine'=>'texte','Police'=>'liste','Compression_x'=>'quantite','Compression_y'=>'quantite'];
 	static $valeurs_nouveau= ['Pos_x'=>'3','Pos_y'=>'5','Rotation'=>'-90','Taille'=>'3.5','Couleur'=>'F50D05','Chaine'=>'Texte du num&eacute;ro [Numero]','Police'=>'Arial','Compression_x'=>'1','Compression_y'=>'1'];
 	static $valeurs_defaut= ['Pos_x'=>0,'Pos_y'=>0,'Rotation'=>0,'Compression_x'=>'1','Compression_y'=>'1'];
-	
-	
+
+
 	static $descriptions= [
         'Pos_x'=>'Marge du texte depuis la gauche de la tranche',
 							   'Pos_y'=>'Marge du texte depuis le haut de la tranche',
@@ -1651,7 +1686,7 @@ class TexteTTF extends Fonction_executable {
 		$this->options->Chaine=self::toTemplatedString($this->options->Chaine);
 		list($r,$g,$b)=$this->getRGB($this->options->Couleur);
 		$couleur_texte=imagecolorallocate(Viewer_wizard::$image, $r,$g,$b);
-		
+
 		$centrage_auto_x=$this->options->Pos_x == -1;
 		$centrage_auto_y=$this->options->Pos_y == -1;
 		$p=calculateTextBox($this->options->Chaine, Modele_tranche::getCheminPolices().$this->options->Police.'.ttf', z($this->options->Taille), $this->options->Rotation);
@@ -1679,7 +1714,7 @@ class TexteTTF extends Fonction_executable {
 						 $pos_x_tmp,$pos_y_tmp,
 						 $couleur_texte,Modele_tranche::getCheminPolices().$this->options->Police.'.ttf',$this->options->Chaine);
 			imagepng($image2, Modele_tranche::getCheminImages() . 'tmp/ttfcomp.png');
-			
+
 			imagecopyresampled(Viewer_wizard::$image, $image2, z($this->options->Pos_x)*(Viewer_wizard::$largeur/$largeur_tmp), z($this->options->Pos_y)*(Viewer_wizard::$hauteur/$hauteur_tmp), 0,0, Viewer_wizard::$largeur*$this->options->Compression_x, Viewer_wizard::$hauteur*$this->options->Compression_y, $largeur_tmp, $hauteur_tmp);
 
 		}
@@ -1696,13 +1731,13 @@ class Polygone extends Fonction_executable {
 	static $champs= ['X'=>'texte','Y'=>'texte','Couleur'=>'couleur'];
 	static $valeurs_nouveau= ['X'=>'1,4,7,14','Y'=>'5,25,14,12','Couleur'=>'000000'];
 	static $valeurs_defaut= [];
-	
+
 	static $descriptions= [
         'X'=>'Liste des abscisses des points, s&eacute;par&eacute;es par virgules',
-							   'Y'=>'Liste des ordonn&eacute;es des points, s&eacute;par&eacute;es par virgules', 
+							   'Y'=>'Liste des ordonn&eacute;es des points, s&eacute;par&eacute;es par virgules',
 							   'Couleur'=>'Couleur du polygone'
     ];
-	
+
 
 	function __construct($options,$executer=true,$creation=false,$get_options_defaut=true) {
 		parent::__construct($options,$creation,$get_options_defaut);
@@ -1732,13 +1767,13 @@ class Agrafer extends Fonction_executable {
 	static $champs= ['Y1'=>'quantite','Y2'=>'quantite','Taille_agrafe'=>'quantite'];
 	static $valeurs_nouveau= ['Y1'=>'[Hauteur]*0.2','Y2'=>'[Hauteur]*0.8','Taille_agrafe'=>'[Hauteur]*0.05'];
 	static $valeurs_defaut= ['Y1'=>'[Hauteur]*0.2','Y2'=>'[Hauteur]*0.8','Taille_agrafe'=>'[Hauteur]*0.05'];
-	
+
 	static $descriptions= [
         'Y1'=>'Marge de la 1&egrave;re agrafe par rapport au haut de la tranche',
 							   'Y2'=>'Marge de la 2&egrave;me agrafe par rapport au haut de la tranche',
 							   'Taille_agrafe'=>'Hauteur de chaque agrafe'
     ];
-	
+
 	function __construct($options,$executer=true,$creation=false,$get_options_defaut=true) {
 		parent::__construct($options,$creation,$get_options_defaut);
 		if (!$executer)
@@ -1757,17 +1792,17 @@ class Degrade extends Fonction_executable {
 	static $champs= ['Couleur_debut'=>'couleur','Couleur_fin'=>'couleur','Sens'=>'liste','Pos_x_debut'=>'quantite','Pos_x_fin'=>'quantite','Pos_y_debut'=>'quantite','Pos_y_fin'=>'quantite'];
 	static $valeurs_nouveau= ['Couleur_debut'=>'D01721','Couleur_fin'=>'0000FF','Sens'=>'Vertical','Pos_x_debut'=>'3','Pos_x_fin'=>'[Largeur]-3','Pos_y_debut'=>'3','Pos_y_fin'=>'[Hauteur]*0.5'];
 	static $valeurs_defaut= [];
-	
+
 	static $descriptions= [
         'Couleur_debut'=>'Couleur du d&eacute;but du d&eacute;grad&eacute;',
-							   'Couleur_fin'=>'Couleur du fin du d&eacute;grad&eacute;',  
-							   'Sens'=>'"Horizontal" (de gauche &agrave; droite) ou "Vertical" (de haut en bas)',  
+							   'Couleur_fin'=>'Couleur du fin du d&eacute;grad&eacute;',
+							   'Sens'=>'"Horizontal" (de gauche &agrave; droite) ou "Vertical" (de haut en bas)',
 							   'Pos_x_debut'=>'Marge du d&eacute;but du d&eacute;grad&eacute; par rapport &agrave; la gauche de la tranche',
 							   'Pos_x_fin'=>'Marge de la fin du d&eacute;grad&eacute; par rapport &agrave; la gauche de la tranche',
 							   'Pos_y_debut'=>'Marge du d&eacute;but du d&eacute;grad&eacute; par rapport au haut de la tranche',
 							   'Pos_y_fin'=>'Marge de la fin du d&eacute;grad&eacute; par rapport au haut de la tranche'
     ];
-	
+
 	function __construct($options,$executer=true,$creation=false,$get_options_defaut=true) {
 		parent::__construct($options,$creation,$get_options_defaut);
 		if (!$executer)
@@ -1834,9 +1869,9 @@ class DegradeTrancheAgrafee extends Fonction_executable {
 	static $champs= ['Couleur'=>'couleur'];
 	static $valeurs_nouveau= ['Couleur'=>'D01721'];
 	static $valeurs_defaut= [];
-	
+
 	static $descriptions= ['Couleur'=>'Couleur de la tranche'];
-	
+
 	function __construct($options,$executer=true,$creation=false,$get_options_defaut=true) {
 		parent::__construct($options,$creation,$get_options_defaut);
 		if (!$executer)
@@ -1865,7 +1900,7 @@ class Rectangle extends Fonction_executable {
 	static $champs= ['Couleur'=>'couleur','Pos_x_debut'=>'quantite','Pos_x_fin'=>'quantite','Pos_y_debut'=>'quantite','Pos_y_fin'=>'quantite','Rempli'=>'liste'];
 	static $valeurs_nouveau= ['Couleur'=>'D01721','Pos_x_debut'=>'3','Pos_x_fin'=>'[Largeur]-3','Pos_y_debut'=>'3','Pos_y_fin'=>'[Hauteur]*0.5','Rempli'=>'Non'];
 	static $valeurs_defaut= [];
-	
+
 	static $descriptions= [
         'Couleur'=>'Couleur du rectangle',
 							   'Pos_x_debut'=>'Marge du d&eacute;but du rectangle par rapport &agrave; la gauche de la tranche',
@@ -1874,7 +1909,7 @@ class Rectangle extends Fonction_executable {
 							   'Pos_y_fin'=>'Marge de la fin du rectangle par rapport au haut de la tranche',
 							   'Rempli'=>'"Oui" pour dessiner un rectangle rempli, "Non" pour dessiner seulement le contour'
     ];
-	
+
 	function __construct($options,$executer=true,$creation=false,$get_options_defaut=true) {
 		parent::__construct($options,$creation,$get_options_defaut);
 		if (!$executer)
@@ -1898,7 +1933,7 @@ class Arc_cercle extends Fonction_executable {
 	static $champs= ['Couleur'=>'couleur','Pos_x_centre'=>'quantite','Pos_y_centre'=>'quantite','Largeur'=>'quantite','Hauteur'=>'quantite','Angle_debut'=>'quantite','Angle_fin'=>'quantite','Rempli'=>'liste'];
 	static $valeurs_nouveau= ['Couleur'=>'BBBBBB','Pos_x_centre'=>'10','Pos_y_centre'=>'50','Largeur'=>'10','Hauteur'=>'20','Angle_debut'=>'0','Angle_fin'=>'360','Rempli'=>'Non'];
 	static $valeurs_defaut= [];
-	
+
 	static $descriptions= [
         'Couleur'=>'Couleur de l\'arc de cercle',
 							   'Pos_x_centre'=>'Marge du centre de l\arc par rapport &agrave; la gauche de la tranche',
@@ -1909,7 +1944,7 @@ class Arc_cercle extends Fonction_executable {
 							   'Angle_fin'=>'Angle de la fin de l\'arc de cercle<br />(360 pour un cercle complet)',
 							   'Rempli'=>'"Oui" pour dessiner un arc de cercle rempli, "Non" pour dessiner seulement le trait'
     ];
-	
+
 	function __construct($options,$executer=true,$creation=false,$get_options_defaut=true) {
 		parent::__construct($options,$creation,$get_options_defaut);
 		if (!$executer)
@@ -1962,20 +1997,20 @@ class Rogner {
 		$nom_image_modifiee.=$i.$extension;
 
 //		echo "$nom_image_origine : Rognage vers $nom_image_modifiee : ($x1,$y1) -> ($x2,$y2)";
-		
+
 		$img = imagecreatefromjpeg($nom_image_origine);
 		$width=imagesx($img);
 		$height =imagesy($img);
 		$cropped_img=imagecreatetruecolor(($x2-$x1) * $width / 100,($y2-$y1) * $height / 100);
-		imagecopyresampled ($cropped_img , $img , 
-							0, 0, 
+		imagecopyresampled ($cropped_img , $img ,
+							0, 0,
 							$x1 * $width / 100 , $y1 * $height / 100 ,
-							($x2-$x1) * $width / 100 , ($y2-$y1) * $height / 100 , 
+							($x2-$x1) * $width / 100 , ($y2-$y1) * $height / 100 ,
 							($x2-$x1) * $width / 100 , ($y2-$y1) * $height / 100);
 		imagejpeg($cropped_img,$nom_image_modifiee);
 
 		echo $nom_image_modifiee;
-		
+
 	}
 }
 
@@ -2010,7 +2045,7 @@ function est_dans_intervalle($numero,$intervalle) {
 	}
 	else
 		list($numeros_debut,$numeros_fin)= [explode(';',$intervalle),explode(';',$intervalle)];
-	
+
 	foreach($numeros_debut as $i=>$numero_debut) {
 		$numero_fin=$numeros_fin[$i];
 		if ($numero_debut === $numero_fin) {
@@ -2026,7 +2061,7 @@ function est_dans_intervalle($numero,$intervalle) {
 			if ($numero_dispo==$numero && $numero_debut_trouve) {
 				return true;
 			}
-			if ($numero_dispo==$numero_fin) 
+			if ($numero_dispo==$numero_fin)
 				continue 2;
 		}
 	}
