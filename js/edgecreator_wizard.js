@@ -1,4 +1,40 @@
 (function($){
+	$(window).load(function () {
+		$('#connexion,#deconnexion').button();
+		$('.tip').tooltip();
+
+		if (!username) {
+			// afficher_dialogue_accueil();
+			jquery_connexion();
+		}
+		else {
+			init_action_bar();
+			if (privilege === 'Affichage') {
+				$('#wizard-envoyer-photo').addClass('first');
+				launch_wizard('wizard-envoyer-photo');
+			}
+			else {
+				launch_wizard('wizard-1');
+			}
+		}
+
+		$('#zoom_slider').slider({
+			value: 1 /* Valeur n°1 du tableau, donc = 1.5*/,
+			min: 0,
+			max: valeurs_possibles_zoom.length - 1,
+			step: 1,
+			change: function (event, ui) {
+				zoom = valeurs_possibles_zoom[ui.value];
+				$('#zoom_value').html(zoom);
+				chargement_courant = 0;
+				charger_previews_numeros(chargements[chargement_courant], true);
+			},
+			slide: function (event, ui) {
+				$('#zoom_value').html(valeurs_possibles_zoom[ui.value]);
+			}
+		});
+	});
+
 	$.fn.d = function(){
 		return this.closest('.ui-dialog');
 	};
