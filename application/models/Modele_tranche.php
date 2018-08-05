@@ -1597,7 +1597,7 @@ class TexteMyFonts extends Fonction_executable {
             $this->options->Couleur_fond,
             $this->options->Largeur,
             $this->options->Chaine.'                                    .',
-            (int)(Viewer_wizard::$largeur / 1.5) / 0.35 // Précision
+            (int)((Viewer_wizard::$largeur / 1.5) / 0.35) // Précision
         );
 		$texte=$post->im;
 		if ($this->options->Demi_hauteur === 'Oui') {
