@@ -11,6 +11,10 @@
 	<div id="action_bar" class="cache"><span id="nom_complet_tranche_en_cours"></span><br />
 		<img class="action tip" name="home"
 			 title="Revenir à l'écran d'accueil de EdgeCreator" />
+		<img class="action tip" name="info"
+			 title="Informations sur la conception de tranche avec EdgeCreator" />
+		<img class="action tip" name="dimensions"
+			 title="Modifier les dimensions de la tranche" />
 		<img class="action tip" name="photo"
 			 title="Insérer/Sélectionner une photo de tranche" />
 		<img class="action tip" name="clone"
@@ -20,10 +24,6 @@
 		<img class="action tip" name="valider"
 			 title="Valider cette conception de tranche" />
 	</div>
-
-	<div id="status">
-	</div>
-
 	<div id="status_user">
 		<?php
         if (isset($user)) {

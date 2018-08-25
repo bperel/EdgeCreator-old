@@ -183,6 +183,44 @@ function jqueryui_alert(texte, titre, close_callback) {
 	});
 }
 
+function jquery_connexion() {
+	$("#wizard-login-form").dialog({
+		width: 500,
+		modal: false,
+		open: function() {
+			$("#login-form").keypress(function(e) {
+				if (e.keyCode === $.ui.keyCode.ENTER) {
+					$('#login-form').submit();
+				}
+			});
+		},
+		buttons: [{
+			text: "Connexion",
+			type: "submit",
+			form: "login-form",
+			click: function() {
+				$('#login-form').submit();
+			}
+		}]
+	});
+
+	$('#login-form').submit(function () {
+		$.ajax({
+			url: base_url + 'index.php/edgecreatorg/login',
+			type: 'post',
+			data: 'user=' + $('#username').val() + '&pass=' + $('#password').val() + "&mode_expert=" + $('#mode_expert').prop('checked'),
+			success: function (data) {
+				if (data.indexOf("Erreur") === 0)
+					$("#wizard-login-form").find('.erreurs').html(data);
+				else {
+					location.replace(base_url);
+				}
+			}
+		});
+		return false;
+	});
+}
+
 function logout() {
 	$.ajax({
 		url: base_url + 'index.php/edgecreatorg/logout',

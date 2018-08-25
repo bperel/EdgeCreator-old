@@ -13,7 +13,7 @@ class Creer_Modele_Wizard extends EC_Controller {
         $this->session->set_userdata('pays', $pays);
         $this->session->set_userdata('magazine', $magazine);
         $this->session->set_userdata('numero', $numero);
-		$infos_insertion=$this->Modele_tranche->insert_etape(null, -1, 'Dimensions');
+		$this->Modele_tranche->insert_etape(null, -1, 'Dimensions');
 
         $options = $this->Modele_tranche->get_options_ec_v2( -1, false, false, null);
         if (count($options) > 0) {
@@ -29,7 +29,7 @@ class Creer_Modele_Wizard extends EC_Controller {
         }
 
 		$data = [
-			'infos_insertion'=>$infos_insertion
+			'id_modele'=>$id_modele
         ];
 		
 		$this->load->view('insertview',$data);

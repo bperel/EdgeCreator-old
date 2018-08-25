@@ -1,5 +1,12 @@
 @CHARSET "ISO-8859-1";
 
+body {
+	width: 100%;
+	padding-top: 60px;
+	overflow-x: auto;
+	white-space: nowrap;
+}
+
 iframe {
 	border: 0;
 	display: block;
@@ -60,28 +67,13 @@ iframe {
 	cursor: pointer;
 }
 
-#status {
-	width: 300px;
-	right: 205px;
-}
-
-#status .ui-icon {
-	float: left;
-	margin-right: .3em;
-	margin-top: 4px;
-}
-
-#status .message-label {
-	font-size: 11px;
-}
-
 #status_user {
 	width: 200px;	
 	right: 5px;
 	text-align: right;
 }
 
-#status, #status_user {
+#status_user {
 	position: fixed;
 	top: 0;
 	float: right;
@@ -140,12 +132,36 @@ button#connexion, button#deconnexion {
 }
 
 .ui-dialog {
-    margin: 70px 15px 15px !important;
+    margin-left: 15px !important;
+    margin-right: 15px !important;
+	white-space: normal;
 }
 
-#dialog-wizard-conception, .dialog-preview-etape, .ajout_etape {
+.ui-dialog-titlebar {
+	height: 18px;
+	line-height: 18px;
+}
+
+#dialog-wizard-info-conception.ui-dialog {
+	min-width: 520px;
+}
+
+body>.ui-dialog {
+	margin-top: 80px;
+}
+#current-steps-and-preview {
+	display: inline-block;
+	padding-top: 80px
+}
+
+.dialog-preview-etape, .ajout_etape {
 	position: static;
-	float: right;
+	top: auto !important;
+	left: auto !important;
+	vertical-align: top;
+	margin-top: 25px !important;
+	display: inline-block !important;
+	white-space: normal;
 }
 
 .ajout_etape {
@@ -162,6 +178,7 @@ button#connexion, button#deconnexion {
 
 .ui-dialog .ui-dialog-content.final {
 	white-space: nowrap;
+	text-align: center;
 }
 
 .ui-dialog .ui-dialog-content {
@@ -189,12 +206,6 @@ button#connexion, button#deconnexion {
 
 #wizard-proposition-clonage, #wizard-confirmation-validation-modele {
 	overflow-x: auto !important;
-}
-
-#wizard-conception .texte_presentation_tranche_finale {
-	width: 80%;
-	float: right;
-	text-align: right;
 }
 
 #wizard-1 .liste_numeros {
@@ -390,11 +401,6 @@ label.libelle_tranche {
 	outline: 5px dashed blue;
 }
 
-.dialog-preview-etape .ui-dialog-titlebar {
-	line-height: 15px;
-	height: 20px;
-}
-
 .dialog-preview-etape .ui-dialog-titlebar img {
 	height: 18px;
 	float: left;
@@ -413,14 +419,9 @@ label.libelle_tranche {
 	width: auto !important;
 }
 
-.dialog-preview-etape.finale .ui-dialog-titlebar {
-	line-height: 11px;
-}
-
 .dialog-preview-etape:not(.finale) .image_preview {
 	float: left;
 }
-
 
 #wizard-confirmation-validation-modele-contributeurs .username {
 	display: block;

@@ -53,8 +53,9 @@ header("Content-Type: text/html; charset=UTF-8"); ?>
 	<title><?=$title?></title>
 </head>
 <body id="body" style="margin:0;padding:0">
-	<img class="ajout_etape tip2 template hidden"
-		 src="<?=base_url()?>images/ajouter.png" title="Ajouter une étape ici"/>
+	<div class="ajout_etape tip2 template hidden">
+        <img src="<?=base_url()?>images/ajouter.png" title="Ajouter une étape ici"/>
+    </div>
 	<?php
 	if (!empty($erreur)) {
 		echo $erreur;

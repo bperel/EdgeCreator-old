@@ -105,11 +105,9 @@ var INTERVAL_CHECK_LOGGED_IN=5;
 				setTimeout(check_logged_in, 1000*60*INTERVAL_CHECK_LOGGED_IN);
 			}
 			else {
-				if ($('#wizard-conception').is(":visible")) {
-					jqueryui_alert_from_d($('#wizard-session-expiree'),function() {
-						location.replace(base_url);
-					});
-				}
+				jqueryui_alert_from_d($('#wizard-session-expiree'),function() {
+					location.replace(base_url);
+				});
 			}
 		}
 	});
@@ -412,14 +410,12 @@ function launch_wizard(id, p) {
 		position: 'top',
 		modal: modal,
 		autoResize: true,
-		resizable: dialogue.hasClass('resizable'),
+		resizable: false,
 		buttons: buttons,
 		draggable: dialogue.hasClass('draggable'),
 		open:function() {
 			var dialog=$(this).d();
 			dialog.attr({id: 'dialog-' + $(this).attr('id')});
-			if ($(this).hasClass('main'))
-				dialog.addClass('main');
 
 			$(this).css({maxHeight:(
 										$('#body').height()
@@ -462,6 +458,41 @@ function wizard_do(wizard_courant, action) {
 	}
 	else {
 		switch(wizard_courant.attr('id')) {
+			case 'wizard-1':
+				switch(action) {
+					case 'conception':
+						id_modele=wizard_courant.find('form').serializeObject().choix_tranche_en_cours.split(/_/g)[1];
+
+						//
+						// else { // Nouvelle tranche => paramétrage des dimensions, etc.
+						// 	if (get_option_wizard('wizard-creer-collection','choix_tranche') !== undefined
+						// 		|| get_option_wizard('wizard-creer-hors-collection','wizard_pays') !== undefined) {
+						// 		var tranche_collection = get_option_wizard('wizard-creer-collection','choix_tranche');
+						// 		if (tranche_collection !== undefined) {
+						// 			var tranche=tranche_collection.match(REGEX_NUMERO);
+						// 			pays=tranche[1];
+						// 			magazine=tranche[2];
+						// 			numero=tranche[3];
+						// 		}
+						//
+						// 		if (numero === undefined) {
+						// 			// Ajout du modèle de tranche et de la fonction Dimensions avec les paramétres par défaut
+						// 			var dimension_x = get_option_wizard('wizard-dimensions','Dimension_x');
+						// 			var dimension_y = get_option_wizard('wizard-dimensions','Dimension_y');
+						// 			creer_modele_tranche(pays, magazine, numero, true, function () {
+						// 				dimensions = {x: parseInt(dimension_x), y: parseInt(dimension_y)};
+						// 				charger_etapes_tranche_en_cours();
+						// 			});
+						// 			return;
+						//
+						// 		}
+						// 	}
+						// }
+
+						charger_etapes_tranche_en_cours();
+					break;
+				}
+			break;
 			case 'wizard-dimensions':
 				switch(action) {
 					case 'enregistrer':
@@ -578,7 +609,7 @@ function wizard_check(wizard_id) {
 
 			switch(wizard_id) {
 				case 'wizard-1':
-					if (valeur_choix === 'to-wizard-conception'
+					if (valeur_choix === 'do-in-wizard-conception'
 					 && form.serializeObject().choix_tranche_en_cours === 0) {
 						erreur='Si vous souhaitez poursuivre une création de tranche, cliquez dessus pour la sélectionner.<br />'
 							  +'Sinon, cliquez sur "Créer une tranche de magazine" ou "Modifier une tranche de magazine".';
@@ -872,63 +903,19 @@ function wizard_init(wizard_id) {
 
 		case 'wizard-dimensions':
 			if (dimensions.x) {
-				wizard_goto($('#' + id_wizard_courant), 'wizard-conception');
+				charger_etapes_tranche_en_cours();
 			}
 			else {
-				var dimensions_connues= get_option_wizard('wizard-1','choix') === 'to-wizard-conception';
+				var dimensions_connues= get_option_wizard('wizard-1','choix') === 'do-in-wizard-conception';
 
 				if (dimensions_connues) {
 					creer_modele_tranche(pays, magazine, numero, true, function () {
-						wizard_goto($('#' + id_wizard_courant), 'wizard-conception');
+						charger_etapes_tranche_en_cours();
 					}); // Création du modéle sans les dimensions (qui seront copiées du modéle non affecté)
 				}
 			}
 		break;
 
-		case 'wizard-conception':
-			if (get_option_wizard('wizard-1','choix_tranche_en_cours') !== undefined) {
-				id_modele=get_option_wizard('wizard-1','choix_tranche_en_cours').split(/_/g)[1];
-
-				var est_nouvelle_tranche=get_option_wizard('wizard-1','est_nouvelle_conception_tranche') === 'true';
-
-				if (est_nouvelle_tranche) {
-					wizard_goto($('#'+id_wizard_courant), 'wizard-proposition-clonage');
-					set_option_wizard('wizard-1','est_nouvelle_conception_tranche','false');
-					return;
-				}
-
-				if (typeof numero === 'object') {
-					numero = numero[0];
-				}
-			}
-			else { // Nouvelle tranche => paramétrage des dimensions, etc.
-				if (get_option_wizard('wizard-creer-collection','choix_tranche') !== undefined
-				 || get_option_wizard('wizard-creer-hors-collection','wizard_pays') !== undefined) {
-		  			var tranche_collection = get_option_wizard('wizard-creer-collection','choix_tranche');
-					if (tranche_collection !== undefined) {
-						var tranche=tranche_collection.match(REGEX_NUMERO);
-						pays=tranche[1];
-						magazine=tranche[2];
-						numero=tranche[3];
-					}
-
-					if (numero === undefined) {
-						// Ajout du modéle de tranche et de la fonction Dimensions avec les paramétres par défaut
-						var dimension_x = get_option_wizard('wizard-dimensions','Dimension_x');
-						var dimension_y = get_option_wizard('wizard-dimensions','Dimension_y');
-						creer_modele_tranche(pays, magazine, numero, true, function () {
-							dimensions = {x: parseInt(dimension_x), y: parseInt(dimension_y)};
-							charger_tranches_en_cours();
-						});
-						return;
-
-					}
-				}
-			}
-
-			charger_tranches_en_cours();
-
-		break;
 		case 'wizard-ajout-etape':
 			var etape_existe = $('.wizard.preview_etape:not(.template):not(.final)').length > 0;
 			var accordeon = wizard.find('.accordion');
@@ -1032,7 +1019,7 @@ $.fn.afficher_liste_magazines = function(element_wrapper, classe_template, data,
 	if (tranches.length > 0) {
 		element_wrapper.removeClass('cache');
 		explication.removeClass('cache');
-		wizard.find('#to-wizard-conception').button('option','disabled',false);
+		wizard.find('#do-in-wizard-conception').button('option','disabled',false);
 
 		$.each(tranches, function(i, tranche_en_cours) {
 			var bouton_tranche_en_cours=wizard.find('.template.' + classe_template).clone(true).removeClass('template');
@@ -1044,7 +1031,7 @@ $.fn.afficher_liste_magazines = function(element_wrapper, classe_template, data,
 				.afficher_libelle_numero(id_tranche, tranche_en_cours, peut_editer)
 				.click(function() {
 					wizard.find('[name="est_nouvelle_conception_tranche"]').val($(this).closest('[name="tranches_non_affectees"]').length > 0);
-					wizard.find('#to-wizard-conception').click();
+					wizard.find('#do-in-wizard-conception').click();
 				});
 			if (element_wrapper.find('#'+id_tranche).length === 0) {
 				element_wrapper.append(bouton_tranche_en_cours);
@@ -1284,9 +1271,8 @@ function traiter_tranches(tranches) {
 	return tranches_traitees;
 }
 
-function charger_tranches_en_cours() {
-	var wizard_conception = $('#wizard-conception');
-
+function charger_etapes_tranche_en_cours() {
+	$('#'+id_wizard_courant).dialog().dialog("close");
 	$('.wizard.preview_etape:not(.template)').remove();
 
 	$.ajax({
@@ -1305,7 +1291,6 @@ function charger_tranches_en_cours() {
 				.append(' ' + tranche.str_userfriendly);
 
 			$('#action_bar').removeClass('cache');
-			wizard_conception.dialog().dialog('option', 'position', ['right', 'top']);
 
 			$.ajax({ // Numéros d'étapes
 				url: urls.parametrageg_wizard + ['index'].join('/'),
@@ -1382,9 +1367,6 @@ function charger_tranches_en_cours() {
 									});
 								});
 
-							$('#wizard-conception .chargement').addClass('cache');
-							$('#wizard-conception form').removeClass('cache');
-
 							var wizard_etape_finale = $('.wizard.preview_etape.template').clone(true);
 							wizard_etape_finale
 								.append(
@@ -1396,6 +1378,7 @@ function charger_tranches_en_cours() {
 
 
 							wizard_etape_finale.dialog({
+								appendTo: '#preview',
 								resizable: false,
 								draggable: false,
 								width: LARGEUR_DIALOG_TRANCHE_FINALE,
@@ -1404,9 +1387,6 @@ function charger_tranches_en_cours() {
 								position: ['right', 'top'],
 								closeOnEscape: false,
 								modal: false,
-								create: function() {
-									$('#entete_page').after($(this).d().detach());
-								},
 								open: function () {
 									$(this).removeClass('template').addClass('final');
 									$(this).data('etape', 'finale');
@@ -1417,7 +1397,7 @@ function charger_tranches_en_cours() {
 										padding: '.3em .6em;',
 										textAlign: 'center'
 									})
-										.html('Tranche<br />finale');
+										.html('Preview');
 
 									afficher_photo_tranche(function() {
 										charger_tranches_proches([numero], false, 2, function (tranches_proches, tranches_pretes) {
@@ -1446,14 +1426,6 @@ function charger_tranches_en_cours() {
 											}
 										});
 									});
-								}
-							});
-
-							wizard_etape_finale.d().resize(function () {
-								placer_dialogues_preview();
-								if (modification_etape && modification_etape.find('#options-etape--Polygone').length !== 0) {
-									var options = modification_etape.find('[name="form_options"]');
-									positionner_points_polygone(options);
 								}
 							});
 
@@ -1506,14 +1478,13 @@ function ajouter_preview_etape(num_etape, nom_fonction) {
 		.append(div_preview)
 		.append(div_preview_vide);
 
-	var posX = $('#wizard-conception').parent().offset().left-(etapes_valides.length);
 	wizard_etape.dialog({
+		appendTo: '#current-steps',
 		resizable: false,
 		draggable: false,
 		width: 'auto',
 		minWidth: 0,
 		minHeight: div_preview_vide.height()+'px',
-		position: [posX,0],
 		closeOnEscape: false,
 		modal: false,
 		open:function() {
@@ -1567,7 +1538,6 @@ function ajouter_preview_etape(num_etape, nom_fonction) {
 			var options=modification_etape.find('[name="form_options"]');
 			positionner_points_polygone(options);
 		}
-		placer_dialogues_preview();
 	});
 	chargements.push(num_etape+'');
 }
@@ -1591,6 +1561,7 @@ function ajouter_et_charger_previews() {
 	jQuery.each(etapes_valides, function(i, etape) {
 		ajouter_preview_etape(etape.Ordre, etape.Nom_fonction);
 	});
+	placer_dialogues_preview();
 	charger_previews();
 }
 
@@ -1628,13 +1599,10 @@ function ouvrir_dialogue_preview(dialogue) {
 	section_preview_etape.find('img,.preview_vide').toggleClass('cache');
 
 	var section_preview_vide=dialogue.find('.preview_vide');
-	var largeur_tranche=section_preview_vide.width();
-	section_preview_etape.dialog().dialog('option', 'width', largeur_max_preview_etape_ouverte());
 	dialogue.find('.ui-dialog-titlebar .ui-dialog-title').removeClass('cache');
 	section_preview_vide.after($('#options-etape--'+nom_fonction)
 						.removeClass('cache')
-						.css({marginLeft:(section_preview_vide.position().left+largeur_tranche+5*zoom)+'px',
-							  minHeight:section_preview_vide.height()+'px'}));
+						.css({minHeight:section_preview_vide.height()+'px'}));
 
 	section_preview_etape.dialog().dialog('option','buttons',{
 		Fermer: function() {
@@ -1665,46 +1633,31 @@ function fermer_dialogue_preview(dialogue) {
 }
 
 function placer_dialogues_preview() {
-	var dialogues=$('.dialog-preview-etape').add($('#wizard-conception').d());
-	dialogues.sort(function(dialogue1,dialogue2) { // Triés par numéro d'étape, de droite à gauche
-		return $(dialogue2).data('etape') === 'finale' ? 1 : $(dialogue2).data('etape') - $(dialogue1).data('etape');
-	});
+	var currentSteps = $('#current-steps');
+	var dialogues=currentSteps.find('.dialog-preview-etape').d();
+	var ajoutEtapeTemplate = $('.ajout_etape.template');
 
 	$('.ajout_etape:not(.template)').remove();
 
-	dialogues=$('.dialog-preview-etape:not(.finale)').d();
-	if (dialogues.length === 0) { // Aucune étape n'existe. On crée avec le dialogue de conception pour référence
-		dialogues=$('#wizard-conception').d();
-	}
-	var ajoutEtapeTemplate = $('.ajout_etape.template');
+	currentSteps.prepend(ajoutEtapeTemplate.clone(true).removeClass('template hidden')
+		.data({
+			etape: 0,
+			pos: 'avant'
+		}).tooltip());
 
 	$.each(dialogues,function(i,dialogue) {
 		var elDialogue = $(dialogue);
-		var estDialogueConception = elDialogue.data('etape') === undefined;
-		if (estDialogueConception) { // Dialogue de conception
-			var etape = -1;
-			var positions = ['apres']; // L'étape sera positionnée après l'étape -1 (=dimensions de tranche)
-		}
-		else {
-			elDialogue.addClass('etape');
-			var etape = parseInt(elDialogue.data('etape'));
-			var positions = i===dialogues.length-1 ? ['avant','apres']:['apres'];
-		}
-		$.each(positions,function(j,pos) {
-			var ajout_etape=ajoutEtapeTemplate.clone(true).removeClass('template hidden')
-			   .data({
-				   etape: etape,
-				   pos: pos
-               });
-			if (pos === 'avant') {
-				$(elDialogue).before(ajout_etape);
-			}
-			else {
-				$(elDialogue).after(ajout_etape);
-			}
-		});
+		elDialogue.addClass('etape');
+		var etape = parseInt(elDialogue.data('etape'));
+
+		$(elDialogue).after(
+			ajoutEtapeTemplate.clone(true).removeClass('template hidden')
+				.data({
+					etape: etape,
+					pos: 'apres'
+				}).tooltip()
+		);
 	});
-	$('.tip2').tooltip();
 }
 
 function recuperer_et_alimenter_options_preview(num_etape) {
@@ -3029,6 +2982,7 @@ function creer_modele_tranche(pays, magazine, numero, with_user, callback) {
 	$.ajax({
 		url: urls.creer_modele_wizard+['index',pays,magazine,numero,with_user].join('/'),
 		type: 'post',
+		dataType: 'json',
 		success: function(data) {
 			id_modele = data.id_modele;
 			if (dimensions.x) {
@@ -3099,6 +3053,20 @@ function init_action_bar() {
 				case 'home':
 					location.replace(base_url);
 				break;
+				case 'info':
+					launch_wizard('wizard-info-conception', {
+						modal:true,
+						first: true,
+						closeable: true
+					});
+				break;
+				case 'dimensions':
+					launch_wizard('wizard-dimensions-modifier', {
+						modal:true,
+						first: true,
+						closeable: true
+					});
+				break;
 				case 'photo':
 					$('#wizard-images')
 						.addClass('photo_principale')
@@ -3150,14 +3118,12 @@ function afficher_photo_tranche(callback) {
 				.height(dimensions.y*zoom);
 			$('.dialog-preview-etape.finale').width(Math.max(LARGEUR_DIALOG_TRANCHE_FINALE,
 													dimensions.x * zoom+$(this).width() + 14));
-			jqueryui_clear_message('aucune-image-de-tranche');
 			selecteur_depuis_photo.find('[name="description_selection_couleur"]').toggle(true);
 			selecteur_depuis_photo.find('[name="pas_de_photo_tranche"]').toggle(false);
 			callback();
 		});
 		image.error(function() {
 			$(this).css({display:'none'});
-			jqueryui_message('warning','aucune-image-de-tranche');
 			selecteur_depuis_photo.find('[name="description_selection_couleur"]').toggle(false);
 			selecteur_depuis_photo.find('[name="pas_de_photo_tranche"]').toggle(true);
 			callback();
@@ -3188,9 +3154,7 @@ function maj_photo_principale() {
 		url: urls.update_photo+['index', nom_photo_principale].join('/'),
 		type: 'post',
 		success:function() {
-			if ($('#wizard-conception').is(':visible')) {
-				afficher_photo_tranche();
-			}
+			afficher_photo_tranche();
 		}
 	});
 }
@@ -3327,28 +3291,6 @@ function afficher_erreur_image_inexistante() {
 	var src = $(this).attr('src');
 	var nom_image = src.substring(src.lastIndexOf('/') + 1, src.length);
 	jqueryui_alert('L\'image ' + nom_image + ' n\'existe pas');
-}
-
-function jqueryui_clear_message(id) {
-	var id_message = 'message-'+id;
-	$('#status [name="'+id_message+'"]').remove();
-}
-
-function jqueryui_message(type, id) {
-	var id_message = 'message-'+id;
-	if ($('#status [name="'+id_message+'"]').length === 0) {
-		var libelles = $('#'+id_message);
-		var element_message=$('#template-'+type)
-			.clone(true)
-				.removeAttr('id')
-				.removeClass('cache')
-				.attr({name: id_message, title: libelles.find('.libelle').html(), rel: 'tooltip'})
-				.tooltip();
-		var element_texte_message=element_message.find('.message-label');
-		element_texte_message
-			.html(libelles.find('.titre').html());
-		$('#status').append(element_message);
-	}
 }
 
 function hex2rgb(hex) {

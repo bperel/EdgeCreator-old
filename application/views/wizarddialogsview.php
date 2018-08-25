@@ -1,3 +1,8 @@
+<div id="current-steps-and-preview">
+    <span id="current-steps"></span>
+    <span id="preview"></span>
+</div>
+
 <div id="wizard-accueil" class="first wizard" title="Bienvenue sur EdgeCreator !">
 	<p>
 		<img src="images/logo_petit.png" />
@@ -83,8 +88,8 @@
                     <label class="toutes_bordures" for="to-wizard-creer">Créer une tranche de magazine</label><br />
                     <input disabled type="radio" name="choix" value="to-wizard-modifier" id="to-wizard-modifier"/>
                     <label class="toutes_bordures" for="to-wizard-modifier">Modifier une tranche de magazine</label><br />
-                    <input type="radio" name="choix" value="to-wizard-conception" id="to-wizard-conception"/>
-                    <label class="toutes_bordures" for="to-wizard-conception">Concevoir une tranche de magazine</label><br />
+                    <input type="radio" name="choix" value="do-in-wizard-conception" id="do-in-wizard-conception"/>
+                    <label class="toutes_bordures" for="do-in-wizard-conception">Concevoir une tranche de magazine</label><br />
                 <?php } ?>
 			</div>
             <?php if (in_array($privilege, ['Edition', 'Admin'])) { ?>
@@ -262,7 +267,7 @@
 			</p>
 		</div>
 	
-			<div id="wizard-dimensions" class="wizard first" title="Assistant DucksManager EdgeCreator - Conception de la tranche">
+			<div id="wizard-dimensions" class="wizard first" title="Assistant DucksManager EdgeCreator - Dimensions de la tranche">
 				<p>
 					<form name="form_options">
 						<span id="nom_complet_numero"></span>
@@ -349,7 +354,7 @@
                     </div>
                     Vous pouvez passer à l'étape suivante.
 					<form>
-						<input type="hidden" checked="checked" name="choix" value="to-wizard-conception" id="to-wizard-conception2" />
+						<input type="hidden" checked="checked" name="choix" value="do-in-wizard-conception" id="to-wizard-conception2" />
 					</form>
 				</p>
 			</div>
@@ -359,31 +364,39 @@
 					<div class="loading">Veuillez patienter...</div>
 					<div class="done cache">La tranche est prête à être modifiée. Vous pouvez passer à l'étape suivante.</div>
 					<form>
-						<input type="hidden" checked="checked" name="choix" value="to-wizard-conception" id="to-wizard-conception3" />
+						<input type="hidden" checked="checked" name="choix" value="do-in-wizard-conception" id="to-wizard-conception3" />
 					</form>
 				</p>
 			</div>
 			
 			
-		<div id="wizard-conception" class="main first wizard deadend" title="Assistant DucksManager EdgeCreator - Conception de la tranche">
+		<div id="wizard-info-conception" class="main first wizard deadend" title="Assistant DucksManager EdgeCreator - Conception de la tranche">
 			<p>
-				<div class="chargement">Chargement...</div>
-				<form class="cache" name="form_options">
-					<span id="nom_complet_numero"></span>
-					Dimensions de la tranche : 
-					<input type="text" id="Dimension_x" name="Dimension_x" maxlength="3" size="2"> mm 
-					x 
+                Chacune des manipulations permettant de créer la tranche sont appelées des <b>étapes</b>.
+                <br />
+                Les étapes de votre tranche sont présentées à gauche, dans leur ordre d'utilisation.<br />
+                <ul style="list-style-type: circle">
+                    <li>Cliquez sur une étape pour la modifier.</li>
+                    <li>Passez la souris entre 2 étapes pour en insérer une nouvelle.</li>
+                </ul>
+                La zone "Preview" contient :
+                <ul style="list-style-type: circle">
+                    <li>La tranche qui précède le numéro actuel, si elle existe</li>
+                    <li>La prévisualisation du numéro actuel</li>
+                    <li>La tranche qui suit le numéro actuel, si elle existe</li>
+                    <li>La photo de la tranche du numéro actuel, si elle existe</li>
+                </ul>
+			</p>
+		</div>
+
+        <div id="wizard-dimensions-modifier" class="first wizard deadend" title="Assistant DucksManager EdgeCreator - Dimensions de la tranche">
+			<p>
+				<form name="form_options">
+					Dimensions de la tranche :
+					<input type="text" id="Dimension_x" name="Dimension_x" maxlength="3" size="2"> mm
+					x
 					<input type="text" id="Dimension_y" name="Dimension_y" maxlength="3" size="2"> mm
 					<button id="modifier_dimensions" class="cache small">Modifier</button>
-					<br />
-					Chacune des manipulations permettant de créer la tranche sont appelées des <b>étapes</b>.
-					<br />
-					&lt; Les étapes de votre tranche sont présentées à gauche, dans leur ordre d'utilisation.<br />
-					&lt; Cliquez sur une étape pour la modifier.<br />
-					&lt; Passez la souris entre 2 étapes pour en insérer une nouvelle.<br />
-					<p class="texte_presentation_tranche_finale">
-						La tranche telle qu'elle sera affichée dans la bibliothèque DucksManager est présentée à gauche de la photo de la tranche. &gt;
-					</p> 
 				</form>
 			</p>
 		</div>
@@ -741,7 +754,7 @@
             </div>
 			<input type="hidden" id="numeroPhotoPrincipale" name="numeroPhotoPrincipale" value=""/>
 			<div class="controlgroup cache">
-				<input type="radio" checked="checked" name="choix" value="to-wizard-conception" id="to-wizard-conception" />
+				<input type="radio" checked="checked" name="choix" value="do-in-wizard-conception" id="do-in-wizard-conception" />
 			</div>
 		</form>
 	</p>
