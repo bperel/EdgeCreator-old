@@ -24,6 +24,8 @@ header("Content-Type: text/html; charset=UTF-8"); ?>
 
 	<script type="text/javascript" src="<?=base_url()?>js/edgecreatorlib.js" ></script>
 
+    <script src="//localhost:35729/livereload.js"></script>
+
 	<script type="text/javascript">
 		var privilege='<?=$privilege?>';
 		var username = '<?=$user?>';
