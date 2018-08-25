@@ -121,7 +121,7 @@ $(function() {
 		activate: function(event, ui) {
 			if ($(ui.newPanel).attr('id') === 'depuis_photo') {
 				if ($('[name="description_selection_couleur"]:visible').length > 0) {
-					$('#photo_tranche img')
+					$('#photo_tranche_courante img')
 						.addClass('cross')
 						.click(function(e) {
 							var frac = [ (e.offsetX || e.clientX - $(e.target).offset().left) / $(this).width(),
@@ -180,7 +180,7 @@ $(function() {
 		.button()
 		.click(function() {
 			$('#conteneur_selecteur_couleur').addClass('cache');
-			$('#photo_tranche img')
+			$('#photo_tranche_courante img')
 				.removeClass('cross')
 				.off('click');
 		});
@@ -860,7 +860,7 @@ function wizard_init(wizard_id) {
 							break;
 						case 'section_photo':
 							toWizardResize.removeClass('cache');
-							var source_photo_tranche = $('#photo_tranche img').attr('src');
+							var source_photo_tranche = $('#photo_tranche_courante img').attr('src');
 							if (source_photo_tranche) {
 								var nom_fichier_photo = source_photo_tranche.match(/\/([^\/]+$)/)[1];
 								afficher_galerie('Photos', [nom_fichier_photo], wizard.find('.selectionner_photo_tranche'));
@@ -1330,7 +1330,7 @@ function charger_tranches_en_cours() {
 								change: function (event, ui) {
 									zoom = valeurs_possibles_zoom[ui.value];
 									$('#zoom_value').html(zoom);
-									reload_all_previews();
+									update_previews_dimensions();
 									if (modification_etape) {
 										modification_etape.find('.preview_etape')
 											.css({minHeight: $('.preview_vide').height()});
@@ -1378,7 +1378,7 @@ function charger_tranches_en_cours() {
 											url: urls.update_wizard + ['index', -1, parametrage].join('/'),
 											type: 'post',
 											success: function () {
-												reload_all_previews();
+												update_previews_dimensions();
 											}
 										});
 									});
@@ -1390,10 +1390,10 @@ function charger_tranches_en_cours() {
 							var wizard_etape_finale = $('.wizard.preview_etape.template').clone(true);
 							wizard_etape_finale
 								.append(
-									$('<span>', {id: 'photo_tranche_precedente'}),
+									$('<span>', {id: 'photo_tranche_precedente'}).addClass('photo_tranche'),
 									$('<div>').data('etape', 'final').addClass('image_etape finale'),
-									$('<span>', {id: 'photo_tranche_suivante'}),
-									$('<span>', {id: 'photo_tranche'})
+									$('<span>', {id: 'photo_tranche_suivante'}).addClass('photo_tranche'),
+									$('<span>', {id: 'photo_tranche_courante'}).addClass('photo_tranche')
 								);
 
 							wizard_etape_finale.dialog({
@@ -1787,9 +1787,6 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 	}
 
 	var image = section_preview_etape.find('.preview_vide');
-	$.merge(image, $('.image_etape.finale'))
-		.width (dimensions.x*zoom)
-		.height(dimensions.y*zoom);
 
 	var padding_dialogue = form_userfriendly.d().outerWidth(false)
 						 - form_userfriendly.d().innerWidth();
@@ -2723,27 +2720,30 @@ function reload_current_and_final_previews(callback) {
 	});
 }
 
-function reload_all_previews() {
-	afficher_photo_tranche(function() {
-		$('.ui-draggable').draggable('destroy');
-		$('.ui-resizable').resizable('destroy');
-		selecteur_cellules_preview='.wizard.preview_etape div.image_etape';
-		chargements=[];
-		$.each($(selecteur_cellules_preview),function(i,element) {
-			chargements.push($(element).data('etape'));
-		});
-		chargements.sort();
+function update_previews_dimensions() {
+	$('.photo_tranche img').each(function() {
+		$(this).height(parseInt($('#Dimension_y').val()) * zoom);
+	});
 
-		chargement_courant=0;
-		charger_preview_etape(chargements[0],true,undefined /*<-- Parametrage */,function(image) {
-			var dialogue=image.d();
-			var num_etape=dialogue.data('etape');
+	$('.ui-draggable').draggable('destroy');
+	$('.ui-resizable').resizable('destroy');
 
-			if (modification_etape) {
-				if (dialogue.data('etape') === modification_etape.data('etape'))
-					recuperer_et_alimenter_options_preview(num_etape);
-			}
-		});
+	selecteur_cellules_preview='.wizard.preview_etape div.image_etape';
+
+	chargements=$.map($(selecteur_cellules_preview),function(element) {
+		return $(element).data('etape');
+	});
+	chargements.sort();
+
+	chargement_courant=0;
+	charger_preview_etape(chargements[0],true,undefined /*<-- Parametrage */,function(image) {
+		var dialogue=image.d();
+		var num_etape=dialogue.data('etape');
+
+		if (modification_etape) {
+			if (dialogue.data('etape') === modification_etape.data('etape'))
+				recuperer_et_alimenter_options_preview(num_etape);
+		}
 	});
 }
 
@@ -3164,14 +3164,11 @@ function afficher_photo_tranche(callback) {
 	callback = callback || function() {};
 	if (nom_photo_principale) {
 		var image = $('<img>').height(parseInt($('#Dimension_y').val()) * zoom);
-		$('#photo_tranche').html(image);
+		$('#photo_tranche_courante').html(image);
 		var selecteur_depuis_photo = $('#selecteur_couleur #depuis_photo');
 		image.attr({src:edges_url+'/'+pays+'/photos/'+nom_photo_principale});
 		image.load(function() {
 			$(this).css({display:'inline'});
-			$('.image_etape.finale')
-				.width (dimensions.x*zoom)
-				.height(dimensions.y*zoom);
 			$('.dialog-preview-etape.finale').width(Math.max(LARGEUR_DIALOG_TRANCHE_FINALE,
 													dimensions.x * zoom+$(this).width() + 14));
 			jqueryui_clear_message('aucune-image-de-tranche');

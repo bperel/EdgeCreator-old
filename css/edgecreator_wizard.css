@@ -261,15 +261,15 @@ label.libelle_tranche {
 	display: inline-block;
 }
 
-.wizard.preview_etape #photo_tranche {
+.wizard.preview_etape #photo_tranche_courante {
 	margin-left: 3px;
 }
 
-.wizard.preview_etape #photo_tranche img {
+.wizard.preview_etape #photo_tranche_courante img {
 	outline: 3px solid green;
 }
 
-.wizard.preview_etape #photo_tranche img.cross {
+.wizard.preview_etape #photo_tranche_courante img.cross {
 	cursor: crosshair;
 }
 
@@ -472,6 +472,10 @@ input.couleur.selected {
 
 .tranches_affichees_magazine table tr td span {
 	margin: auto;
+}
+
+#wizard-decouper-photo #ajouter_zone_photo_multiple {
+	font-weight: bold;
 }
 
 #wizard-decouper-photo #image_tranche_multiples {
