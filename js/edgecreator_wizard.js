@@ -1787,6 +1787,9 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 	}
 
 	var image = section_preview_etape.find('.preview_vide');
+	image
+		.width (dimensions.x*zoom)
+		.height(dimensions.y*zoom);
 
 	var padding_dialogue = form_userfriendly.d().outerWidth(false)
 						 - form_userfriendly.d().innerWidth();
