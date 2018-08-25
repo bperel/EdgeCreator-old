@@ -1381,7 +1381,6 @@ function charger_etapes_tranche_en_cours() {
 								appendTo: '#preview',
 								resizable: false,
 								draggable: false,
-								width: LARGEUR_DIALOG_TRANCHE_FINALE,
 								minWidth: 0,
 								height: 'auto',
 								position: ['right', 'top'],
@@ -3116,8 +3115,6 @@ function afficher_photo_tranche(callback) {
 			$('.image_etape.finale')
 				.width (dimensions.x*zoom)
 				.height(dimensions.y*zoom);
-			$('.dialog-preview-etape.finale').width(Math.max(LARGEUR_DIALOG_TRANCHE_FINALE,
-													dimensions.x * zoom+$(this).width() + 14));
 			selecteur_depuis_photo.find('[name="description_selection_couleur"]').toggle(true);
 			selecteur_depuis_photo.find('[name="pas_de_photo_tranche"]').toggle(false);
 			callback();
