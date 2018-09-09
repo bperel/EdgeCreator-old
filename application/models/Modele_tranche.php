@@ -1591,15 +1591,15 @@ class TexteMyFonts extends Fonction_executable {
 
 		$ci =& get_instance();
 		$ci->load->model('Myfonts');
-		$post=new Myfonts(
+		$myFonts=new Myfonts(
             $this->options->URL,
             $this->options->Couleur_texte,
             $this->options->Couleur_fond,
             $this->options->Largeur,
             $this->options->Chaine.'                                    .',
-            (int)((Viewer_wizard::$largeur / 1.5) / 0.35) // Précision
+            Viewer_wizard::$largeur / 2 // Précision
         );
-		$texte=$post->im;
+		$texte=$myFonts->im;
 		if ($this->options->Demi_hauteur === 'Oui') {
 			$width=imagesx($texte);
 			$height=imagesy($texte);
