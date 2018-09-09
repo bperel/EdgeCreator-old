@@ -98,7 +98,7 @@ $(window).scroll(function() {
 var INTERVAL_CHECK_LOGGED_IN=5;
 (function check_logged_in() {
 	$.ajax({
-		url: urls.check_logged_in,
+		url: '/check_logged_in/',
 		type: 'post',
 		success:function(data) {
 			if (data === '1') {
@@ -127,7 +127,7 @@ $(function() {
 							var frac = [ (e.offsetX || e.clientX - $(e.target).offset().left) / $(this).width(),
 										 (e.offsetY || e.clientY - $(e.target).offset().top)  / $(this).height() ];
 							$.ajax({
-								url: urls.couleur_point_photo+['index',frac[0],frac[1]].join('/'),
+								url: '/couleur_point_photo/'+['index',frac[0],frac[1]].join('/'),
 								type: 'post',
 								success:function(data) {
 									colorpicker.val('#'+data).trigger('change');
@@ -279,7 +279,7 @@ function launch_wizard(id, p) {
 					switch(panelOuvert) {
 						case 0: // A partir de zéro
 							$.ajax({
-								url: urls.insert_wizard+['index',formData.pos,formData.etape,formData.nom_fonction].join('/'),
+								url: '/insert_wizard/'+['index',formData.pos,formData.etape,formData.nom_fonction].join('/'),
 								type: 'post',
 								dataType:'json',
 								success:function(data) {
@@ -294,7 +294,7 @@ function launch_wizard(id, p) {
 						break;
 						case 1: // Clonage
 							$.ajax({
-								url: urls.cloner+['index',formData.pos,formData.etape_a_cloner].join('/'),
+								url: '/cloner/'+['index',formData.pos,formData.etape_a_cloner].join('/'),
 								type: 'post',
 								dataType:'json',
 								success:function(data) {
@@ -365,7 +365,7 @@ function launch_wizard(id, p) {
 					})
 						.attr('src').match(/[.0-9]+$/g)[0];
 					$.ajax({
-						url: urls.valider_modele+['index',nom_image,createurs,photographes].join('/'),
+						url: '/valider_modele/'+['index',nom_image,createurs,photographes].join('/'),
 						type: 'post',
 						success:function() {
 							jqueryui_alert_from_d($('#wizard-confirmation-validation-modele-ok'), function() {
@@ -682,7 +682,7 @@ function wizard_init(wizard_id) {
 	switch(wizard_id) {
 		case 'wizard-1':
 			$.ajax({
-				url: urls.tranchesencours+['load'].join('/'),
+				url: '/tranchesencours/'+['load'].join('/'),
 				dataType:'json',
 				type: 'post',
 				success:function(data) {
@@ -757,7 +757,7 @@ function wizard_init(wizard_id) {
 		case 'wizard-creer-collection':
 			chargement_listes=true;
 			$.ajax({
-				url: urls.numerosdispos+['index','null','null','true'].join('/'),
+				url: '/numerosdispos/'+['index','null','null','true'].join('/'),
 				dataType:'json',
 				type: 'post',
 				success:function(data) {
@@ -828,7 +828,7 @@ function wizard_init(wizard_id) {
 			numero=get_option_wizard('wizard-modifier', 'wizard_numero');
 
 			$.ajax({
-				url: urls.etendre+['index',pays,magazine,numero,numero].join('/'),
+				url: '/etendre/'+['index',pays,magazine,numero,numero].join('/'),
 				type: 'post',
 				success:function(data) {
 					wizard.parent().find('.ui-dialog-buttonpane button').button("option", "disabled", false);
@@ -940,7 +940,7 @@ function wizard_init(wizard_id) {
 			wizard.find('.etape_existante').toggle(etape_existe);
 
 			$.ajax({
-				url: urls.listerg+['index','Fonctions'].join('/'),
+				url: '/listerg/'+['index','Fonctions'].join('/'),
 				dataType:'json',
 				type: 'post',
 				success:function(data) {
@@ -980,7 +980,7 @@ function wizard_init(wizard_id) {
 
 		case 'wizard-confirmation-validation-modele-contributeurs':
 			$.ajax({
-				url: urls.listerg+['index','Utilisateurs',[].join('_')].join('/'),
+				url: '/listerg/'+['index','Utilisateurs',[].join('_')].join('/'),
 				type: 'post',
 				dataType:'json',
 				success:function(data) {
@@ -1226,7 +1226,7 @@ function afficher_tranches_proches(tranches_affichees, tranches_pretes, numeros,
 			wizard_do(wizard_courant,'goto_wizard-dimensions');
 		}
 		$.ajax({
-			url: urls.cloner+['est_clonable',pays,magazine,tranches_affichees.join(',')].join('/'),
+			url: '/cloner/'+['est_clonable',pays,magazine,tranches_affichees.join(',')].join('/'),
 			type: 'post',
 			dataType:'json',
 			success: function (tranches_clonables) {
@@ -1250,7 +1250,7 @@ function cloner_numero(numero_a_cloner, nouveaux_numeros) {
 	var nouveau_numero = nouveaux_numeros.shift();
 	wizard.find('.nouveau_numero').html(nouveau_numero);
 	$.ajax({
-		url: urls.etendre + ['index', pays, magazine, numero_a_cloner, nouveau_numero].join('/'),
+		url: '/etendre/' + ['index', pays, magazine, numero_a_cloner, nouveau_numero].join('/'),
 		dataType:'json',
 		type: 'post',
 		success: function (data) {
@@ -1291,7 +1291,7 @@ function charger_tranches_en_cours() {
 	$('.wizard.preview_etape:not(.template)').remove();
 
 	$.ajax({
-		url: urls.tranchesencours + ['load', id_modele].join('/'),
+		url: '/tranchesencours/' + ['load', id_modele].join('/'),
 		type: 'post',
 		dataType: 'json',
 		success: function (data) {
@@ -1310,7 +1310,7 @@ function charger_tranches_en_cours() {
 			wizard_conception.parent().css({left: (wizard_conception.parent().offset().left - LARGEUR_DIALOG_TRANCHE_FINALE - 20) + 'px'});
 
 			$.ajax({ // Numéros d'étapes
-				url: urls.parametrageg_wizard + ['index'].join('/'),
+				url: '/parametrageg_wizard/' + ['index'].join('/'),
 				type: 'post',
 				dataType: 'json',
 				success: function (etapes) {
@@ -1321,7 +1321,7 @@ function charger_tranches_en_cours() {
 					charger_couleurs_frequentes();
 
 					$.ajax({ // Détails des étapes
-						url: urls.parametrageg_wizard + ['index', -1, 'null'].join('/'),
+						url: '/parametrageg_wizard/' + ['index', -1, 'null'].join('/'),
 						type: 'post',
 						dataType: 'json',
 						success: function (data) {
@@ -1375,7 +1375,7 @@ function charger_tranches_en_cours() {
 										var parametrage = form_options.serialize();
 
 										$.ajax({
-											url: urls.update_wizard + ['index', -1, parametrage].join('/'),
+											url: '/update_wizard/' + ['index', -1, parametrage].join('/'),
 											type: 'post',
 											success: function () {
 												update_previews_dimensions();
@@ -1539,7 +1539,7 @@ function ajouter_preview_etape(num_etape, nom_fonction) {
 					"Supprimer": function() {
 						var etape=$('#num_etape_a_supprimer').html();
 						$.ajax({
-							url: urls.supprimer_wizard+['index',etape].join('/'),
+							url: '/supprimer_wizard/'+['index',etape].join('/'),
 							type: 'post',
 							success:function() {
 								$('#wizard-confirmation-suppression').dialog().dialog( "close" );
@@ -1736,7 +1736,7 @@ function recuperer_et_alimenter_options_preview(num_etape) {
 	var section_preview_etape=$('.wizard.preview_etape').getElementsWithData('etape',num_etape);
 	var nom_fonction=section_preview_etape.d().data('nom_fonction');
 	$.ajax({
-		url: urls.parametrageg_wizard+['index',num_etape,'null'].join('/'),
+		url: '/parametrageg_wizard/'+['index',num_etape,'null'].join('/'),
 		type: 'post',
 		dataType:'json',
 		success:function(data) {
@@ -2111,7 +2111,7 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 
 function dessiner(element, type, form_options, callback) {
 	callback = callback || function() {};
-	var url_appel=urls.dessiner+"index/"+type+"/"+zoom+"/0";
+	var url_appel='/dessiner/'+"index/"+type+"/"+zoom+"/0";
 	var options = [];
 	switch(type) {
 		case 'Arc_cercle':
@@ -2431,7 +2431,7 @@ function valider(callback) {
 	else {
 		callback = callback || function(){};
 		$.ajax({
-			url: urls.update_wizard+['index',num_etape_courante,parametrage].join('/'),
+			url: '/update_wizard/'+['index',num_etape_courante,parametrage].join('/'),
 			type: 'post',
 			success:function() {
 				charger_couleurs_frequentes();
@@ -2752,7 +2752,7 @@ function update_previews_dimensions() {
 
 function charger_couleurs_frequentes() {
 	$.ajax({ // Couleurs utilisées dans l'ensemble des étapes de la conception de tranche
-		url: urls.couleurs_frequentes+['index'].join('/'),
+		url: '/couleurs_frequentes/'+['index'].join('/'),
 		type: 'post',
 		dataType:'json',
 		success:function(data) {
@@ -2845,7 +2845,7 @@ function load_myfonts_preview(preview1, preview2, preview3, callback) {
 	images.addClass('loading');
 
 	$.each(images,function() {
-		var url_appel=urls.viewer_myfonts+"index";
+		var url_appel='/viewer_myfonts/'+"index";
 		$.each($(['URL','Couleur_texte','Couleur_fond','Largeur','Chaine','Demi_hauteur']),function(i,nom_option) {
 			url_appel+="/"+form_options.valeur(nom_option).val();
 		});
@@ -2907,7 +2907,7 @@ function wizard_charger_liste_pays() {
 	wizard_pays.html($('<option>').text('Chargement...'));
 
 	$.ajax({
-		url: urls.numerosdispos+['index'].join('/'),
+		url: '/numerosdispos/'+['index'].join('/'),
 		dataType:'json',
 		type: 'post',
 		success:function(data) {
@@ -2939,7 +2939,7 @@ function wizard_charger_liste_magazines(pays_sel) {
 	pays=pays_sel;
 
 	$.ajax({
-		url: urls.numerosdispos+['index',pays].join('/'),
+		url: '/numerosdispos/'+['index',pays].join('/'),
 		type:'post',
 		dataType: 'json',
 		success:function(data) {
@@ -3054,7 +3054,7 @@ function creer_prochain_modele_tranche(tranches_a_creer, i_tranche_a_creer, imag
 
 function creer_modele_tranche(pays, magazine, numero, with_user, callback) {
 	$.ajax({
-		url: urls.creer_modele_wizard+['index',pays,magazine,numero,with_user].join('/'),
+		url: '/creer_modele_wizard/'+['index',pays,magazine,numero,with_user].join('/'),
 		type: 'post',
 		success: function(data) {
 			id_modele = data.id_modele;
@@ -3062,7 +3062,7 @@ function creer_modele_tranche(pays, magazine, numero, with_user, callback) {
 				// Mise à jour de la fonction Dimensions avec les valeurs entrées
 				var parametrage_dimensions =  'Dimension_x='+dimensions.x +'&Dimension_y='+dimensions.y;
 				$.ajax({
-					url: urls.update_wizard+['index',-1,parametrage_dimensions,with_user].join('/'),
+					url: '/update_wizard/'+['index',-1,parametrage_dimensions,with_user].join('/'),
 					type: 'post',
 					success: callback
 				});
@@ -3083,7 +3083,7 @@ function rogner_image(image, nom, source, destination, pays_destination, magazin
 	callback = callback || function() {};
 
 	$.ajax({
-		url: urls.rogner_image + ['index', pays_destination, magazine_destination, numero_image || 'null', numero_destination,
+		url: '/rogner_image/' + ['index', pays_destination, magazine_destination, numero_image || 'null', numero_destination,
 											  nom, source, destination, x1, x2, y1, y2].join('/'),
 		type: 'post',
 		success: callback
@@ -3092,7 +3092,7 @@ function rogner_image(image, nom, source, destination, pays_destination, magazin
 
 function charger_liste_numeros(pays_sel,magazine_sel, callback) {
 	$.ajax({
-		url: urls.numerosdispos+['index',pays_sel,magazine_sel].join('/'),
+		url: '/numerosdispos/'+['index',pays_sel,magazine_sel].join('/'),
 		type: 'post',
 		dataType: 'json',
 		success: callback
@@ -3139,7 +3139,7 @@ function init_action_bar() {
 				case 'corbeille':
 					jqueryui_alert_from_d($('#wizard-confirmation-desactivation-modele'), function() {
 						$.ajax({
-							url: urls.desactiver_modele+['index'].join('/'),
+							url: '/desactiver_modele/'+['index'].join('/'),
 							type: 'post',
 							success:function() {
 								location.replace(base_url);
@@ -3189,7 +3189,7 @@ function afficher_photo_tranche(callback) {
 	}
 	else {
 		$.ajax({
-			url: urls.photo_principale+['index'].join('/'),
+			url: '/photo_principale/'+['index'].join('/'),
 			type: 'post',
 			success:function(nom_photo) {
 				if (nom_photo && nom_photo !== 'null') {
@@ -3209,7 +3209,7 @@ function maj_photo_principale() {
 		return;
 	}
 	$.ajax({
-		url: urls.update_photo+['index', nom_photo_principale].join('/'),
+		url: '/update_photo/'+['index', nom_photo_principale].join('/'),
 		type: 'post',
 		success:function() {
 			if ($('#wizard-conception').is(':visible')) {
@@ -3221,7 +3221,7 @@ function maj_photo_principale() {
 
 function lister_images_gallerie(type_images) {
 	$.ajax({
-		url: urls.listerg+['index',type_images,pays,magazine].join('/'),
+		url: '/listerg/'+['index',type_images,pays,magazine].join('/'),
 		dataType:'json',
 		type: 'post',
 		success: function(data) {

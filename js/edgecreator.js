@@ -46,7 +46,7 @@ function charger_previews_numeros(numero, est_visu, est_externe, callback) {
 	callback = callback || function () {};
 
 	$('#chargement').html('Chargement de la preview de la tranche');
-	charger_image('numero', urls.viewer_wizard + ['index', 0, pays, magazine, numero, zoom_utilise, 'all', URLEncode(JSON.stringify(parametrage)), (est_visu ? 'false' : 'save'), 'false', est_externe].join('/'), numero, callback);
+	charger_image('numero', '/viewer_wizard/' + ['index', 0, pays, magazine, numero, zoom_utilise, 'all', URLEncode(JSON.stringify(parametrage)), (est_visu ? 'false' : 'save'), 'false', est_externe].join('/'), numero, callback);
 }
 
 function charger_preview_etape(etapes_preview, est_visu, parametrage, callback) {
@@ -68,7 +68,7 @@ function charger_preview_etape(etapes_preview, est_visu, parametrage, callback) 
 		if (typeof(etapes_preview) == 'string')
 			etapes_preview = etapes_preview.split(/,/g);
 	}
-	charger_image('etape', urls.viewer_wizard + ['etape', zoom_utilise, etapes_preview.join("-"), parametrage, (est_visu ? 'false' : 'save'), fond_noir, 'false'].join('/'), etapes_preview.join("-"), callback);
+	charger_image('etape', '/viewer_wizard/' + ['etape', zoom_utilise, etapes_preview.join("-"), parametrage, (est_visu ? 'false' : 'save'), fond_noir, 'false'].join('/'), etapes_preview.join("-"), callback);
 }
 
 function charger_image(type_chargement, src, num, callback) {

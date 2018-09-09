@@ -1344,7 +1344,7 @@ class Fonction_executable extends Fonction {
 		$lignes_erreur=explode(';', $erreur);
 		foreach($lignes_erreur as $i=>$ligne) {
 			if ($i === 0)
-				$texte_erreur='Erreur etape '.Viewer_wizard::$etape_en_cours->num_etape.' (Fonction '.Viewer_wizard::$etape_en_cours->nom_fonction.') : '.$ligne;
+				$texte_erreur='Erreur etape '.Viewer_wizard::$etape_en_cours['num_etape'].' (Fonction '.Viewer_wizard::$etape_en_cours['nom_fonction'].') : '.$ligne;
 			else
 				$texte_erreur=$ligne;
 			imagettftext(Viewer_wizard::$image,z(3),90,
