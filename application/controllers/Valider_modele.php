@@ -12,5 +12,8 @@ class Valider_Modele extends EC_Controller {
         if ($this->Modele_tranche->copier_image_temp_vers_gen($nom_image)) {
             $this->Modele_tranche->marquer_modele_comme_pret_publication($createurs,$photographes);
         }
+        else {
+            header("HTTP/1.0 500 Internal Server Error");
+        }
 	}
 }
