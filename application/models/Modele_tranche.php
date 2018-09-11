@@ -1573,7 +1573,7 @@ class TexteMyFonts extends Fonction_executable {
 							   'Mesure_depuis_haut'=>'"Oui" si Pos_y doit repr&eacute;senter la marge jusqu\'au haut du texte, "Non" s\'il s\'agit de la marge jusqu\'au bas du texte'
     ];
 
-	function __construct($options,$executer=true,$creation=false,$get_options_defaut=true,$supprimer_espaces_blancs=true, $options_avancees=true) {
+	function __construct($options, $executer = true, $creation = false, $get_options_defaut = true, $options_avancees = true) {
 		parent::__construct($options,$creation,$get_options_defaut);
 		if (!$executer)
 			return;
@@ -1596,7 +1596,7 @@ class TexteMyFonts extends Fonction_executable {
             $this->options->Couleur_texte,
             $this->options->Couleur_fond,
             $this->options->Largeur,
-            $this->options->Chaine.'                                    .',
+            $this->options->Chaine,
             Viewer_wizard::$largeur / 2 // Précision
         );
 		$texte=$myFonts->im;
@@ -1608,25 +1608,6 @@ class TexteMyFonts extends Fonction_executable {
 			imagecopyresampled($texte2, $texte, 0, 0, 0, 0, $width, $height/2, $width, $height/2);
 			$texte=$texte2;
 		}
-
-//		$width=imagesx($texte);
-//		$height=imagesy($texte);
-
-//		if ($supprimer_espaces_blancs) {
-//			$espace=imagecreatetruecolor(2*$height, $height);
-//			imagefill($espace, 0, 0, imagecolorallocate($espace,$r, $g, $b));
-//          $image_decoupee=imagecreatetruecolor(2*$height, $height);
-//			for ($i=0;$i<$width;$i+=2*$height) {
-//				imagecopyresampled($image_decoupee, $texte, 0, 0, $i, 0, 2*$height, $height, 2*$height, $height);
-//				imagetruecolortopalette($image_decoupee, false, 255);
-//				if (imagecolorstotal($image_decoupee) == 1) { // Image remplie uniformément => découpage
-//					$texte2=imagecreatetruecolor($i, $height);
-//					imagecopy($texte2, $texte, 0, 0, 0, 0, $i, $height);
-//					$texte=$texte2;
-//					break;
-//				}
-//			}
-//		}
 
 		$fond=imagecolorallocatealpha($texte, $r, $g, $b, 127);
 		imagefill($texte,0,0,$fond);

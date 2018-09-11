@@ -76,24 +76,19 @@ class Myfonts extends CI_Model {
 
     /**
      * @param string $url
-     * @param array $_data
+     * @param array $data
      * @return resource
      */
-    private function downloadPreview($url, $_data) {
-        $data = [];
-        foreach ($_data as $n => $v) {
-            $data[] = $n.'='.$v;
-        }
-        $url.='?'.implode('&', $data);
-
-        return imagecreatefrompng($url);
+    private function downloadPreview($url, $data) {
+        return imagecreatefrompng($url.'?'.http_build_query($data));
     }
 	
 	private function build() {
 		$texte_clean=str_replace("'","\'",preg_replace('#[ ]+\.$#','',$this->text));
-		$requete_image_existe='SELECT ID FROM images_myfonts '
-							 .'WHERE Font = \''.$this->font.'\' AND Color = \''.$this->color.'\' AND ColorBG = \''.$this->color_bg.'\''
-							 .' AND Width = \''.$this->width.'\' AND Texte = \''.$texte_clean.'\'';
+		$requete_image_existe="
+          SELECT ID FROM images_myfonts
+          WHERE Font  = '{$this->font}'  AND Color = '{$this->color}' AND ColorBG = '{$this->color_bg}'
+            AND Width = '{$this->width}' AND Texte = '$texte_clean'";
         $requete_image_existe_resultat = DmClient::get_query_results_from_dm_server($requete_image_existe, 'db_edgecreator');
 		$image_existe=count($requete_image_existe_resultat) > 0;
 		if ($image_existe) {
@@ -116,6 +111,7 @@ class Myfonts extends CI_Model {
                 'rs'=>$this->precision*2,
                 'w'=>$this->width,
                 'src'=>'custom',
+                'rbe'=>'fixed',
                 'rt'=>str_replace(' ','%20',$this->text),
                 'fg'=>$this->color,
                 'bg'=>$this->color_bg
