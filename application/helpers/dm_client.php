@@ -142,7 +142,7 @@ class DmClient
             'Cache-Control: no-cache',
             'x-dm-version: 1.0',
         ];
-        if (!is_null(self::$userData['user'])) {
+        if (array_key_exists('user', self::$userData)) {
             $headers[] = 'x-dm-user: ' . self::$userData['user'];
             $headers[] = 'x-dm-pass: ' . self::$userData['pass'];
         }
