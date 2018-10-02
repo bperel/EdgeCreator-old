@@ -1181,7 +1181,7 @@ DmClient::get_query_results_from_dm_server($req_ajout_nouvel_intervalle, 'db_edg
                 $requete_utilisateurs='SELECT username FROM users ORDER BY username';
                 $resultats_utilisateurs=$this->requete_select_dm($requete_utilisateurs);
                 foreach($resultats_utilisateurs as $resultat_utilisateur) {
-                    $username = $resultat_utilisateur['username'];
+                    $username = utf8_encode($resultat_utilisateur['username']);
                     $est_photographe = in_array($username,$photographes);
                     $est_createur = in_array($username,$createurs);
 
