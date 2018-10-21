@@ -490,47 +490,50 @@ class Modele_tranche extends CI_Model {
 			$numeros_esc[]='\''.$numero.'\'';
 		}
 
-        $requete_get_options= "
+        $requete_get_options_ec_v2= "
           SELECT 1 AS EC_v2, Numero, Ordre, Nom_fonction, Option_nom, Option_valeur
           FROM tranches_en_cours_modeles_vue
           WHERE Pays = '$pays' AND Magazine = '$magazine'
           AND Numero IN (".implode(',', $numeros_esc).") 
           ORDER BY Ordre";
-        $resultats = DmClient::get_query_results_from_dm_server($requete_get_options, 'db_edgecreator');
+        $resultats = DmClient::get_query_results_from_dm_server($requete_get_options_ec_v2, 'db_edgecreator');
 
-        $requete_get_options =
-            ' SELECT 0 AS EC_v2, ' . implode(', ', self::$fields) . ',username '
-            . ' FROM edgecreator_modeles2 AS modeles '
-            . ' INNER JOIN edgecreator_valeurs AS valeurs ON modeles.ID = valeurs.ID_Option '
-            . ' INNER JOIN edgecreator_intervalles AS intervalles ON valeurs.ID = intervalles.ID_Valeur '
-            . ' WHERE Pays = \'' . $pays . '\' AND Magazine = \'' . $magazine . '\' '
-            . ' ORDER BY Ordre';
-        $resultats = array_merge($resultats, DmClient::get_query_results_from_dm_server($requete_get_options, 'db_edgecreator'));
+        $requete_get_options_ec_v1 = '
+            SELECT 0 AS EC_v2, ' . implode(', ', self::$fields) . ",username
+            FROM edgecreator_modeles2 AS modeles
+            INNER JOIN edgecreator_valeurs AS valeurs ON modeles.ID = valeurs.ID_Option
+            INNER JOIN edgecreator_intervalles AS intervalles ON valeurs.ID = intervalles.ID_Valeur
+            WHERE Pays = '$pays' AND Magazine = '$magazine'
+            ORDER BY Ordre";
+        $resultats = array_merge($resultats, DmClient::get_query_results_from_dm_server($requete_get_options_ec_v1, 'db_edgecreator'));
 
 		$options= [];
 
 		foreach($resultats as $resultat) {
-			$est_ec_v2 = $resultat->EC_v2 == 1;
+			$est_ec_v2 = $resultat->EC_v2 === '1';
 
 			foreach($numeros as $numero) {
-				if (( $est_ec_v2 && $numero === $resultat->Numero)
-				 || (!$est_ec_v2 && est_dans_intervalle(
-						$numero,
-						$this->getIntervalleShort($this->getIntervalle($resultat->Numero_debut, $resultat->Numero_fin)))
-                    )) {
-					if (!array_key_exists($numero, $options)) {
-						$options[$numero]= ['etapes' => []];
-					}
-					if (!array_key_exists($resultat->Ordre, $options[$numero]['etapes'])) {
-						$options[$numero]['etapes'][$resultat->Ordre]= [
-                            'stepfunctionname' => $resultat->Nom_fonction,
-                            'options' => []
-                        ];
-					}
-					if (!is_null($resultat->Option_nom)) {
-					    $options[$numero]['etapes'][$resultat->Ordre]['options'][$resultat->Option_nom]=$resultat->Option_valeur;
+			    $hasProcessedEcV2Options = array_key_exists($numero, $options) && $options[$numero]['EC_v2'] === true;
+			    if ($est_ec_v2 || !$hasProcessedEcV2Options) {
+                    if (( $est_ec_v2 && $numero === $resultat->Numero)
+                     || (!$est_ec_v2 && est_dans_intervalle(
+                            $numero,
+                            $this->getIntervalleShort($this->getIntervalle($resultat->Numero_debut, $resultat->Numero_fin)))
+                        )) {
+                        if (!array_key_exists($numero, $options)) {
+                            $options[$numero]= ['EC_v2' =>  $est_ec_v2, 'etapes' => []];
+                        }
+                        if (!array_key_exists($resultat->Ordre, $options[$numero]['etapes'])) {
+                            $options[$numero]['etapes'][$resultat->Ordre]= [
+                                'stepfunctionname' => $resultat->Nom_fonction,
+                                'options' => []
+                            ];
+                        }
+                        if (!is_null($resultat->Option_nom)) {
+                            $options[$numero]['etapes'][$resultat->Ordre]['options'][$resultat->Option_nom]=$resultat->Option_valeur;
+                        }
                     }
-				}
+                }
 			}
 		}
 
