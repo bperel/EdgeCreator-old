@@ -16,6 +16,8 @@
   "homepage": "https://github.com/bperel/EdgeCreator#readme",
   "devDependencies": {
     "eslint": "^5.2.0",
-    "eslint-config-jquery": "^1.0.1"
+    "eslint-config-jquery": "^1.0.1",
+    "grunt": "^1.0.3",
+    "grunt-contrib-watch": "^1.1.0"
   }
 }

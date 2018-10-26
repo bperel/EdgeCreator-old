@@ -490,47 +490,50 @@ class Modele_tranche extends CI_Model {
 			$numeros_esc[]='\''.$numero.'\'';
 		}
 
-        $requete_get_options= "
+        $requete_get_options_ec_v2= "
           SELECT 1 AS EC_v2, Numero, Ordre, Nom_fonction, Option_nom, Option_valeur
           FROM tranches_en_cours_modeles_vue
           WHERE Pays = '$pays' AND Magazine = '$magazine'
           AND Numero IN (".implode(',', $numeros_esc).") 
           ORDER BY Ordre";
-        $resultats = DmClient::get_query_results_from_dm_server($requete_get_options, 'db_edgecreator');
+        $resultats = DmClient::get_query_results_from_dm_server($requete_get_options_ec_v2, 'db_edgecreator');
 
-        $requete_get_options =
-            ' SELECT 0 AS EC_v2, ' . implode(', ', self::$fields) . ',username '
-            . ' FROM edgecreator_modeles2 AS modeles '
-            . ' INNER JOIN edgecreator_valeurs AS valeurs ON modeles.ID = valeurs.ID_Option '
-            . ' INNER JOIN edgecreator_intervalles AS intervalles ON valeurs.ID = intervalles.ID_Valeur '
-            . ' WHERE Pays = \'' . $pays . '\' AND Magazine = \'' . $magazine . '\' '
-            . ' ORDER BY Ordre';
-        $resultats = array_merge($resultats, DmClient::get_query_results_from_dm_server($requete_get_options, 'db_edgecreator'));
+        $requete_get_options_ec_v1 = '
+            SELECT 0 AS EC_v2, ' . implode(', ', self::$fields) . ",username
+            FROM edgecreator_modeles2 AS modeles
+            INNER JOIN edgecreator_valeurs AS valeurs ON modeles.ID = valeurs.ID_Option
+            INNER JOIN edgecreator_intervalles AS intervalles ON valeurs.ID = intervalles.ID_Valeur
+            WHERE Pays = '$pays' AND Magazine = '$magazine'
+            ORDER BY Ordre";
+        $resultats = array_merge($resultats, DmClient::get_query_results_from_dm_server($requete_get_options_ec_v1, 'db_edgecreator'));
 
 		$options= [];
 
 		foreach($resultats as $resultat) {
-			$est_ec_v2 = $resultat->EC_v2 == 1;
+			$est_ec_v2 = $resultat->EC_v2 === '1';
 
 			foreach($numeros as $numero) {
-				if (( $est_ec_v2 && $numero === $resultat->Numero)
-				 || (!$est_ec_v2 && est_dans_intervalle(
-						$numero,
-						$this->getIntervalleShort($this->getIntervalle($resultat->Numero_debut, $resultat->Numero_fin)))
-                    )) {
-					if (!array_key_exists($numero, $options)) {
-						$options[$numero]= ['etapes' => []];
-					}
-					if (!array_key_exists($resultat->Ordre, $options[$numero]['etapes'])) {
-						$options[$numero]['etapes'][$resultat->Ordre]= [
-                            'stepfunctionname' => $resultat->Nom_fonction,
-                            'options' => []
-                        ];
-					}
-					if (!is_null($resultat->Option_nom)) {
-					    $options[$numero]['etapes'][$resultat->Ordre]['options'][$resultat->Option_nom]=$resultat->Option_valeur;
+			    $hasProcessedEcV2Options = array_key_exists($numero, $options) && $options[$numero]['EC_v2'] === true;
+			    if ($est_ec_v2 || !$hasProcessedEcV2Options) {
+                    if (( $est_ec_v2 && $numero === $resultat->Numero)
+                     || (!$est_ec_v2 && est_dans_intervalle(
+                            $numero,
+                            $this->getIntervalleShort($this->getIntervalle($resultat->Numero_debut, $resultat->Numero_fin)))
+                        )) {
+                        if (!array_key_exists($numero, $options)) {
+                            $options[$numero]= ['EC_v2' =>  $est_ec_v2, 'etapes' => []];
+                        }
+                        if (!array_key_exists($resultat->Ordre, $options[$numero]['etapes'])) {
+                            $options[$numero]['etapes'][$resultat->Ordre]= [
+                                'stepfunctionname' => $resultat->Nom_fonction,
+                                'options' => []
+                            ];
+                        }
+                        if (!is_null($resultat->Option_nom)) {
+                            $options[$numero]['etapes'][$resultat->Ordre]['options'][$resultat->Option_nom]=$resultat->Option_valeur;
+                        }
                     }
-				}
+                }
 			}
 		}
 
@@ -1181,7 +1184,7 @@ DmClient::get_query_results_from_dm_server($req_ajout_nouvel_intervalle, 'db_edg
                 $requete_utilisateurs='SELECT username FROM users ORDER BY username';
                 $resultats_utilisateurs=$this->requete_select_dm($requete_utilisateurs);
                 foreach($resultats_utilisateurs as $resultat_utilisateur) {
-                    $username = $resultat_utilisateur['username'];
+                    $username = utf8_encode($resultat_utilisateur['username']);
                     $est_photographe = in_array($username,$photographes);
                     $est_createur = in_array($username,$createurs);
 
@@ -1344,7 +1347,7 @@ class Fonction_executable extends Fonction {
 		$lignes_erreur=explode(';', $erreur);
 		foreach($lignes_erreur as $i=>$ligne) {
 			if ($i === 0)
-				$texte_erreur='Erreur etape '.Viewer_wizard::$etape_en_cours->num_etape.' (Fonction '.Viewer_wizard::$etape_en_cours->nom_fonction.') : '.$ligne;
+				$texte_erreur='Erreur etape '.Viewer_wizard::$etape_en_cours['num_etape'].' (Fonction '.Viewer_wizard::$etape_en_cours['nom_fonction'].') : '.$ligne;
 			else
 				$texte_erreur=$ligne;
 			imagettftext(Viewer_wizard::$image,z(3),90,
@@ -1573,7 +1576,7 @@ class TexteMyFonts extends Fonction_executable {
 							   'Mesure_depuis_haut'=>'"Oui" si Pos_y doit repr&eacute;senter la marge jusqu\'au haut du texte, "Non" s\'il s\'agit de la marge jusqu\'au bas du texte'
     ];
 
-	function __construct($options,$executer=true,$creation=false,$get_options_defaut=true,$supprimer_espaces_blancs=true, $options_avancees=true) {
+	function __construct($options, $executer = true, $creation = false, $get_options_defaut = true, $options_avancees = true) {
 		parent::__construct($options,$creation,$get_options_defaut);
 		if (!$executer)
 			return;
@@ -1591,15 +1594,15 @@ class TexteMyFonts extends Fonction_executable {
 
 		$ci =& get_instance();
 		$ci->load->model('Myfonts');
-		$post=new Myfonts(
+		$myFonts=new Myfonts(
             $this->options->URL,
             $this->options->Couleur_texte,
             $this->options->Couleur_fond,
             $this->options->Largeur,
-            $this->options->Chaine.'                                    .',
-            (int)((Viewer_wizard::$largeur / 1.5) / 0.35) // Précision
+            $this->options->Chaine,
+            Viewer_wizard::$largeur / 2 // Précision
         );
-		$texte=$post->im;
+		$texte=$myFonts->im;
 		if ($this->options->Demi_hauteur === 'Oui') {
 			$width=imagesx($texte);
 			$height=imagesy($texte);
@@ -1608,25 +1611,6 @@ class TexteMyFonts extends Fonction_executable {
 			imagecopyresampled($texte2, $texte, 0, 0, 0, 0, $width, $height/2, $width, $height/2);
 			$texte=$texte2;
 		}
-
-//		$width=imagesx($texte);
-//		$height=imagesy($texte);
-
-//		if ($supprimer_espaces_blancs) {
-//			$espace=imagecreatetruecolor(2*$height, $height);
-//			imagefill($espace, 0, 0, imagecolorallocate($espace,$r, $g, $b));
-//          $image_decoupee=imagecreatetruecolor(2*$height, $height);
-//			for ($i=0;$i<$width;$i+=2*$height) {
-//				imagecopyresampled($image_decoupee, $texte, 0, 0, $i, 0, 2*$height, $height, 2*$height, $height);
-//				imagetruecolortopalette($image_decoupee, false, 255);
-//				if (imagecolorstotal($image_decoupee) == 1) { // Image remplie uniformément => découpage
-//					$texte2=imagecreatetruecolor($i, $height);
-//					imagecopy($texte2, $texte, 0, 0, 0, 0, $i, $height);
-//					$texte=$texte2;
-//					break;
-//				}
-//			}
-//		}
 
 		$fond=imagecolorallocatealpha($texte, $r, $g, $b, 127);
 		imagefill($texte,0,0,$fond);

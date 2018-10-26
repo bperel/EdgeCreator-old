@@ -112,7 +112,7 @@ class Viewer_wizard extends EC_Controller {
             self::$parametrage=$parametrage;
             self::$fond_noir=$fond_noir;
             self::$etapes_actives=explode('-', $etapes_actives);
-            self::$etape_en_cours=new stdClass();
+            self::$etape_en_cours=[];
 
             if (empty($id_modele)) {
                 $id_modele = $this->Modele_tranche->get_id_modele($pays,$magazine,$numero);
@@ -133,8 +133,8 @@ class Viewer_wizard extends EC_Controller {
                     }
 
                     if ($num_etape<0 || in_array($num_etape,self::$etapes_actives) || self::$etapes_actives === ['all']) {
-                        self::$etape_en_cours->num_etape=$num_etape;
-                        self::$etape_en_cours->nom_fonction=$nom_fonction;
+                        self::$etape_en_cours['num_etape']=$num_etape;
+                        self::$etape_en_cours['nom_fonction']=$nom_fonction;
                         $options2=$this->Modele_tranche->get_options_ec_v2($num_etape, false, null, null, $id_modele);
                         if ($num_etape === -1)
                             $dimensions=$options2;
