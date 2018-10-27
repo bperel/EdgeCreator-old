@@ -18,8 +18,10 @@ span, td, th {
 }
 
 #entete_page {
-	height: 60px;
 	position: absolute;
+	display: flex;
+	justify-content: space-between;
+	height: 60px;
 	width: 100%;
 	border-bottom: 1px solid gray;
 	z-index: 101;

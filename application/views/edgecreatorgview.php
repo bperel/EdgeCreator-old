@@ -1,4 +1,3 @@
-<div id="barre"></div>
 <div id="entete_page">
 	<?php
 	if ($privilege!='Affichage') {?>

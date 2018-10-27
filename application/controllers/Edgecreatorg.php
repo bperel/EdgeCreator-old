@@ -34,8 +34,8 @@ class EdgeCreatorg extends Ec_Controller {
 				'title' => 'EdgeCreator',
         ];
 		$this->load->view('headergview',$data);
+        $this->load->view('edgecreatorgview',$data);
 		$this->load->view('wizarddialogsview',$data);
-		$this->load->view('edgecreatorgview',$data);
 		$this->load->view('footerview',$data);
 	}
 }

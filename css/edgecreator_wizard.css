@@ -62,17 +62,7 @@ iframe {
 }
 
 #status_user {
-	width: 200px;	
-	right: 5px;
-	text-align: right;
-}
-
-#status_user {
-	position: fixed;
-	top: 0;
-	float: right;
-	height: inherit;
-	overflow-y: auto;
+	padding-right: 5px;
 }
 
 #status_user #utilisateur {
