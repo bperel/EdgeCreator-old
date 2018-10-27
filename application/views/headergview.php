@@ -44,7 +44,7 @@ header("Content-Type: text/html; charset=UTF-8"); ?>
 	<title><?=$title?></title>
 </head>
 <body id="body" style="margin:0;padding:0">
-	<div class="ajout_etape tip2 template hidden">
+	<div class="ajout_etape tip2 template">
         <img src="<?=base_url()?>images/ajouter.png" title="Ajouter une étape ici"/>
     </div>
 	<?php

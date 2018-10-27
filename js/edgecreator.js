@@ -1,7 +1,7 @@
 jQuery.fn.getElementsWithData = function (key, val) {
 	var data = [];
 	this.each(function (i, element) {
-		if (typeof(val) == 'undefined' || $(element).data(key) == val)
+		if (typeof(val) === 'undefined' || $(element).data(key) == val)
 			data.push($(element)[0]);
 	});
 	return $(data);
@@ -46,7 +46,7 @@ function charger_previews_numeros(numero, est_visu, est_externe, callback) {
 	callback = callback || function () {};
 
 	$('#chargement').html('Chargement de la preview de la tranche');
-	charger_image('numero', '/viewer_wizard/' + ['index', 0, pays, magazine, numero, zoom_utilise, 'all', URLEncode(JSON.stringify(parametrage)), (est_visu ? 'false' : 'save'), 'false', est_externe].join('/'), numero, callback);
+	charger_image('numero', '/viewer_wizard/' + ['index', 0, pays, magazine, numero, zoom_utilise, 'all', urlEncode(JSON.stringify(parametrage)), (est_visu ? 'false' : 'save'), 'false', est_externe].join('/'), numero, callback);
 }
 
 function charger_preview_etape(etapes_preview, est_visu, parametrage, callback) {
@@ -56,8 +56,8 @@ function charger_preview_etape(etapes_preview, est_visu, parametrage, callback) 
 	if (etapes_preview === '')
 		etapes_preview = -1;
 	var fond_noir = 'false';
-	if ((typeof(etapes_preview) == 'string' && etapes_preview.indexOf(',') == -1)
-		|| typeof(etapes_preview) == 'number') {
+	if ((typeof(etapes_preview) === 'string' && etapes_preview.indexOf(',') === -1)
+		|| typeof(etapes_preview) === 'number') {
 		$('#chargement').html('Chargement de la preview de l\'&eacute;tape ' + etapes_preview);
 		fond_noir = ($('#fond_noir_' + etapes_preview)
 			&& $('#fond_noir_' + etapes_preview).hasClass('fond_noir_active')) ? 'true' : 'false';
@@ -65,7 +65,7 @@ function charger_preview_etape(etapes_preview, est_visu, parametrage, callback) 
 	}
 	else {
 		$('#chargement').html('Chargement de la preview de la tranche');
-		if (typeof(etapes_preview) == 'string')
+		if (typeof(etapes_preview) === 'string')
 			etapes_preview = etapes_preview.split(/,/g);
 	}
 	charger_image('etape', '/viewer_wizard/' + ['etape', zoom_utilise, etapes_preview.join("-"), parametrage, (est_visu ? 'false' : 'save'), fond_noir, 'false'].join('/'), etapes_preview.join("-"), callback);
@@ -94,9 +94,9 @@ function charger_image(type_chargement, src, num, callback) {
 				break;
 		}
 	}
-	if (type_chargement == 'etape' && num !== null) {
+	if (type_chargement === 'etape' && num !== null) {
 		var etapes_corresp = $(selecteur_cellules_preview).getElementsWithData('etape', num);
-		if (etapes_corresp.length == 0) {// Numéro d'étape non trouvé
+		if (!etapes_corresp.length) {// Numéro d'étape non trouvé
 			jqueryui_alert("Num&eacute;ro d'&eacute;tape non trouv&eacute; lors du chargement de la preview : " + num, "Erreur");
 			charger_image_suivante(null, callback, type_chargement, est_visu);
 		}
@@ -124,7 +124,7 @@ function charger_image(type_chargement, src, num, callback) {
 
 	image.error(function () {
 		var num_etape = chargements[chargement_courant];
-		if (num_etape != 'all') { // Si erreur sur l'étape finale c'est qu'il y a eu erreur sur une étape intermédiaire ; on ne l'affiche pas de nouveau
+		if (num_etape !== 'all') { // Si erreur sur l'étape finale c'est qu'il y a eu erreur sur une étape intermédiaire ; on ne l'affiche pas de nouveau
 			$('#wizard-erreur-generation-image').find('[name="etape"]').text(num_etape);
 			$('#wizard-erreur-generation-image').find('iframe').attr({src: $(this).attr('src') + '/debug'});
 			jqueryui_alert_from_d($('#wizard-erreur-generation-image'));
@@ -150,7 +150,7 @@ function charger_image_suivante(image, callback, type_chargement, est_visu) {
 	else {
 		chargement_courant = 0;
 		chargements = [];
-		if (type_chargement == 'numero')
+		if (type_chargement === 'numero')
 			$('#numero_preview_debut').data('numero', null);
 	}
 }
@@ -166,7 +166,7 @@ function jqueryui_alert(texte, titre, close_callback) {
 	close_callback = close_callback || function () {
 	};
 	var boite = $('<div>', {'title': titre});
-	if (typeof(texte) == 'string')
+	if (typeof(texte) === 'string')
 		boite.append($('<p>').html(texte));
 	else
 		boite.append(texte);
@@ -181,6 +181,10 @@ function jqueryui_alert(texte, titre, close_callback) {
 		},
 		close: close_callback
 	});
+}
+
+function jqueryui_clear_message(id) {
+	$('#status [name="'+'message-'+id+'"]').remove();
 }
 
 function jquery_connexion() {
@@ -231,18 +235,18 @@ function logout() {
 	});
 }
 
-function URLEncode(clearString) {
+function urlEncode(clearString) {
 	var output = '';
 	var x = 0;
 	clearString = clearString.toString();
 	var regex = /(^[a-zA-Z0-9_.]*)/;
 	while (x < clearString.length) {
 		var match = regex.exec(clearString.substr(x));
-		if (match != null && match.length > 1 && match[1] != '') {
+		if (match != null && match.length > 1 && match[1] !== '') {
 			output += match[1];
 			x += match[1].length;
 		} else {
-			if (clearString[x] == ' ')
+			if (clearString[x] === ' ')
 				output += '+';
 			else {
 				var charCode = clearString.charCodeAt(x);
