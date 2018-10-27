@@ -295,8 +295,14 @@ function launch_wizard(id, p) {
 								dataType:'json',
 								success:function(data) {
 									$('#wizard-ajout-etape').dialog().dialog( "close" );
+									$.each(data.infos_insertion.decalages, function() {
+										$('*').getElementsWithData('etape',this.old).data('etape',this.new);
+									});
 									ajouter_preview_etape(data.infos_insertion.numero_etape, data.infos_insertion.nom_fonction);
 									charger_previews(true);
+								},
+								error: function() {
+									jqueryui_alert("Une erreur est survenue lors de la création d'étape", "Erreur");
 								}
 							});
 
@@ -554,7 +560,7 @@ function wizard_do(wizard_courant, action) {
 				}
 			break;
 		}
-		wizard_courant.dialog().dialog("close");
+		wizard_courant.dialog("close");
 	}
 }
 
@@ -714,7 +720,7 @@ function wizard_init(wizard_id) {
 			$.ajax({
 				url: '/tranchesencours/'+['load'].join('/'),
 				dataType:'json',
-				type: 'post',
+				type: 'get',
 				success:function(data) {
 					var tranches_editeur = data.tranches_en_cours;
 					var tranches_en_attente = data.tranches_en_attente;
@@ -1313,17 +1319,8 @@ function charger_etapes_tranche_en_cours() {
 								change: function (event, ui) {
 									zoom = valeurs_possibles_zoom[ui.value];
 									$('#zoom_value').html(zoom);
-									update_previews_dimensions();
-									if (modification_etape) {
-										modification_etape.find('.preview_etape')
-											.css({minHeight: $('.preview_vide').height()});
-
-										var valeurs = modification_etape.find('[name="form_options"]').serializeObject();
-										var section_preview_etape = modification_etape.find('.preview_etape');
-										var nom_fonction = modification_etape.data('nom_fonction');
-										alimenter_options_preview(valeurs, section_preview_etape, nom_fonction);
-									}
 									$('#zoom_slider .ui-slider-handle').blur();
+									update_previews_dimensions();
 								}
 							});
 
@@ -1570,9 +1567,7 @@ function charger_previews(forcer_placement_dialogues) {
 
 	chargement_courant=0;
 	charger_preview_etape(chargements[0],true,'_',function() {
-		if (etapes_valides.length === 1 || forcer_placement_dialogues) {
-			placer_dialogues_preview();
-		}
+		placer_dialogues_preview();
 	});
 }
 
@@ -1637,6 +1632,11 @@ function placer_dialogues_preview() {
 	var ajoutEtapeTemplate = $('.ajout_etape.template');
 
 	$('.ajout_etape:not(.template)').remove();
+
+	dialogues.sort(function(a, b) {
+		return parseInt($(a).data('etape')) < parseInt($(b).data('etape')) ? -1 : 1;
+	});
+	dialogues.detach().appendTo(currentSteps);
 
 	currentSteps.prepend(ajoutEtapeTemplate.clone(true).removeClass('template hidden')
 		.data({
@@ -2652,9 +2652,16 @@ function reload_current_and_final_previews(callback) {
 }
 
 function update_previews_dimensions() {
-	$('.photo_tranche img').each(function() {
-		$(this).height(parseInt($('#Dimension_y').val()) * zoom);
-	});
+	if (modification_etape) {
+		modification_etape.find('.preview_etape').css({minHeight: $('.preview_vide').height()});
+
+		var valeurs = modification_etape.find('[name="form_options"]').serializeObject();
+		var section_preview_etape = modification_etape.find('.preview_etape');
+		var nom_fonction = modification_etape.data('nom_fonction');
+		alimenter_options_preview(valeurs, section_preview_etape, nom_fonction);
+	}
+
+	$('.photo_tranche img').height(parseInt($('#Dimension_y').val()) * zoom);
 
 	$('.ui-draggable').draggable('destroy');
 	$('.ui-resizable').resizable('destroy');
@@ -2662,9 +2669,8 @@ function update_previews_dimensions() {
 	selecteur_cellules_preview='.wizard.preview_etape div.image_etape';
 
 	chargements=$.map($(selecteur_cellules_preview),function(element) {
-		return $(element).data('etape');
+		return parseInt($(element).data('etape')) || 'final';
 	});
-	chargements.sort();
 
 	chargement_courant=0;
 	charger_preview_etape(chargements[0],true,undefined /*<-- Parametrage */,function(image) {
