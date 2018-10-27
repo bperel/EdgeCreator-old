@@ -18,14 +18,12 @@ span, td, th {
 }
 
 #entete_page {
-	top: 0;
-	height:60px;
-	width:100%;
-	border-bottom:1px solid gray;
-	position: fixed;
+	height: 60px;
+	position: absolute;
+	width: 100%;
+	border-bottom: 1px solid gray;
 	z-index: 101;
 	background-color: white;
-	padding-right:10px;
 }
 
 option.tranche_prete {

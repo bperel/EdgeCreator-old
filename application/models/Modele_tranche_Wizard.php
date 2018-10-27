@@ -276,8 +276,13 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		$infos=new stdClass();
 		
 		$infos->decalages=$this->decaler_etapes_a_partir_de($id_modele,$etape_courante, $inclure_avant);
-		
-		$nouvelle_etape=$inclure_avant ? $etape_courante : $etape_courante+1;
+		if ($inclure_avant) {
+            $etape_courante++;
+            $nouvelle_etape=$etape_courante-1;
+        }
+        else {
+            $nouvelle_etape=$etape_courante+1;
+        }
 
         $resultat = DmClient::get_service_results_ec(DmClient::$dm_server, 'POST', "/edgecreator/v2/step/clone/$id_modele/$etape_courante/to/$nouvelle_etape", []
         );

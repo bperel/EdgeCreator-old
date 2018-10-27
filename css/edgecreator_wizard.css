@@ -2,18 +2,12 @@
 
 body {
 	width: 100%;
-	padding-top: 60px;
-	overflow-x: auto;
 	white-space: nowrap;
 }
 
 iframe {
 	border: 0;
 	display: block;
-}
-
-.template {
-    display: none;
 }
 
 .invisible {
@@ -149,9 +143,19 @@ button#connexion, button#deconnexion {
 body>.ui-dialog {
 	margin-top: 80px;
 }
+
 #current-steps-and-preview {
-	display: inline-block;
-	padding-top: 80px
+	display: flex;
+	justify-content: space-between;
+	padding-top: 80px;
+	width: 100%;
+	height: 100%;
+	box-sizing: border-box;
+}
+
+#current-steps {
+	overflow: auto;
+	padding: 0 20px;
 }
 
 .dialog-preview-etape, .ajout_etape {
@@ -159,7 +163,6 @@ body>.ui-dialog {
 	top: auto !important;
 	left: auto !important;
 	vertical-align: top;
-	margin-top: 25px !important;
 	display: inline-block !important;
 	white-space: normal;
 }
@@ -512,4 +515,8 @@ input.couleur.selected {
     top: 100%;
     border: 2px solid black;
     background-color: white;
+}
+
+.template {
+	display: none !important;
 }
