@@ -170,7 +170,6 @@ $(function() {
 		}
 
 		tester_options_preview(options_maj);
-		tester();
 
 		// Don't scroll page
 		e.view.event.preventDefault();
