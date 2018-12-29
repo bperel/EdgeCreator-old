@@ -1,9 +1,11 @@
 <?php
 
-include_once APPPATH.'controllers/Viewer_wizard.php';
-
 class Viewer_defaut extends EC_Controller {
     static $is_debug=false;
+
+    function index() {
+        echo 'Hello';
+    }
 
 	function edges() { // Input path is for instance : /edges/fr/gen/MP.1000.png
 	    list($pays,,$magazine_numero) = func_get_args();

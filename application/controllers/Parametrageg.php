@@ -49,16 +49,13 @@ class ParametrageG extends EC_Controller {
 					$options=$this->Modele_tranche->get_options(self::$pays, self::$magazine, self::$etape,
                         $nom_fonction, null, true, true, $nom_option);
 			}
-			else {
-				
-				if ($this->Modele_tranche->has_no_option(self::$pays, self::$magazine)) {
-					$options=$this->Modele_tranche->get_noms_champs($fonction->Nom_fonction);
-				}
-				else {
-					$options=$this->Modele_tranche->get_options(self::$pays, self::$magazine, self::$etape,
-                        $fonction->Nom_fonction, null, true, false, $nom_option);
-				}
-			}
+			else if ($this->Modele_tranche->has_no_option(self::$pays, self::$magazine)) {
+                $options=$this->Modele_tranche->get_noms_champs($fonction->Nom_fonction);
+            }
+            else {
+                $options=$this->Modele_tranche->get_options(self::$pays, self::$magazine, self::$etape,
+$fonction->Nom_fonction, null, true, false, $nom_option);
+            }
 			
 			$data = [
 				'options'=>$options

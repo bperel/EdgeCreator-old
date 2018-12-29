@@ -791,12 +791,10 @@ DmClient::get_query_results_from_dm_server($req_ajout_nouvel_intervalle, 'db_edg
 	function getRGB($couleurs) {
 		if (is_array($couleurs))
 			return $couleurs;
-		else {
-			if (strpos($couleurs, ','))
-				return explode(',',$couleurs);
-			else
-				return hex2rgb($couleurs);
-		}
+		else if (strpos($couleurs, ','))
+            return explode(',',$couleurs);
+        else
+            return hex2rgb($couleurs);
 	}
 
 	function getValeur($option_nom,$option_valeur) {
@@ -1254,7 +1252,7 @@ DmClient::get_query_results_from_dm_server($req_ajout_nouvel_intervalle, 'db_edg
         $noir = imagecolorallocate($image, 0, 0, 0);
         imagefilledrectangle($image, 0, 0, $largeur-2, $hauteur-2, $blanc);
         imagettftext($image,$largeur/2,90,$largeur*7/10,$hauteur-$largeur*4/5,
-            $noir,Modele_tranche::getCheminPolices() . 'Arial.ttf',$pays.'/'.$magazine.' '.$numero);
+            $noir, self::getCheminPolices() . 'Arial.ttf',$pays.'/'.$magazine.' '.$numero);
 
         $noir=imagecolorallocate($image, 0, 0, 0);
         for ($i=0; $i<.15* $zoom; $i++) {

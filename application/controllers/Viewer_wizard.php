@@ -121,7 +121,6 @@ class Viewer_wizard extends EC_Controller {
             $dimensions= [];
 
 			$fond_noir_fait=false;
-			$options_preview= [];
 			try {
                 foreach($etapes as $num_etape=>$nom_fonction) {
                     if ($num_etape>-1 && $fond_noir && !$fond_noir_fait) {
@@ -152,7 +151,6 @@ class Viewer_wizard extends EC_Controller {
                             exit;
                         }
                         new $nom_classe(clone $options2);
-                        $options_preview[$num_etape]=$options2;
                     }
                 }
 			}
@@ -163,7 +161,7 @@ class Viewer_wizard extends EC_Controller {
 
 			new Dessiner_contour($dimensions);
 			
-			$this->Modele_tranche->rendu_image($save === 'save');
+			$this->Modele_tranche::rendu_image($save === 'save');
 		}
 	}
 }

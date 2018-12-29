@@ -61,16 +61,12 @@ class ModifierG extends EC_Controller {
 					$intervalles=implode(';',$intervalles);
 					$valeurs_preexistantes= [$intervalles=>'on'];
 				}
-				else {
-					if (is_array($options->$nom_option))
-						$valeurs_preexistantes=$options->$nom_option;
-					else {
-						if (is_null($options->$nom_option))
-							$valeurs_preexistantes= [];
-						else
-							$valeurs_preexistantes= ['Tous'=>$options->$nom_option];
-					}
-				}
+				else if (is_array($options->$nom_option))
+                    $valeurs_preexistantes=$options->$nom_option;
+                else if (is_null($options->$nom_option))
+                    $valeurs_preexistantes= [];
+                else
+                    $valeurs_preexistantes= ['Tous'=>$options->$nom_option];
 				
 				$prop_valeurs_defaut=new ReflectionProperty($fonction->Nom_fonction, 'valeurs_defaut');
 				$valeurs_defaut=$prop_valeurs_defaut->getValue();

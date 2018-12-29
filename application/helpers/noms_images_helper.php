@@ -22,13 +22,11 @@ function get_nom_fichier($nom, $multiple, $est_photo_tranche, $pays, $magazine, 
                 $fichier=$magazine.'.'.$numero.'.photo';
             }
         }
-        else { // Photo d'élément
-            if (isset($magazine)) {
-                $fichier = basename($magazine.'.'.$nom);
-            }
-            else {
-                $fichier = basename($nom);
-            }
+        else if (isset($magazine)) {
+            $fichier = basename($magazine.'.'.$nom);
+        }
+        else {
+            $fichier = basename($nom);
         }
         $fichier=get_prochain_nom_fichier_dispo($dossier, $fichier, '.jpg');
     }

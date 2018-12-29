@@ -14,7 +14,7 @@ class Cloner extends EC_Controller {
 		$this->load->model('Modele_tranche_Wizard','Modele_tranche');
 		$this->Modele_tranche->setUsername($this->session->userdata('user'));
 
-		$infos_insertion=$this->Modele_tranche->cloner_etape_numero($pos_relative, intval($etape_courante));
+		$infos_insertion=$this->Modele_tranche->cloner_etape_numero($pos_relative, (int)$etape_courante);
 
 		$data = [
 				'infos_insertion'=>$infos_insertion
