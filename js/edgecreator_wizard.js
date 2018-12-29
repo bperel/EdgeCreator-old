@@ -140,18 +140,18 @@ $(function() {
 	$('#pas_de_photo_tranche').html($('#message-aucune-image-de-tranche .libelle').clone(true));
 
 	// Déplacement des objets
-	$('body').on('keyup', function(e) {
-		// Don't scroll page
-		e.preventDefault();
-
-		var position,
-			draggable = $('.ui-draggable:visible'),
-			distance = 1; // Distance in pixels the draggable should be moved
+	$('body').on('keydown', function(e) {
+		var draggable = $('.ui-draggable:visible');
 
 		if (draggable.length  === 0) {
 			return false;
 		}
-		position = draggable.position();
+
+		var dialogue=$('.wizard.preview_etape.modif').d(),
+			nom_fonction=dialogue.data('nom_fonction'),
+			position = draggable.position(),
+			distance = 1, // Distance in pixels the draggable should be moved
+			options_maj = [];
 
 		// Reposition if one of the directional keys is pressed
 		switch (e.keyCode) {
@@ -161,11 +161,19 @@ $(function() {
 			case 40: position.top  += distance; break; // Down
 			default: return true; // Exit and bubble
 		}
-		draggable
-			.css(position);
+		draggable.css(position);
 
-		tester_options_preview(['Pos_x','Pos_y']);
+		switch(nom_fonction) {
+			case 'Image': options_maj = ['Decalage_x', 'Decalage_y']; break;
+			case 'TexteMyFonts': options_maj = ['Pos_x', 'Pos_y']; break;
+			case 'Rectangle': options_maj = ['Pos_x_debut', 'Pos_x_fin', 'Pos_y_debut', 'Pos_y_fin']; break;
+		}
+
+		tester_options_preview(options_maj);
 		tester();
+
+		// Don't scroll page
+		e.view.event.preventDefault();
 	});
 
 	colorpicker=$('#picker')
