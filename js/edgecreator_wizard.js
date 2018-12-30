@@ -212,7 +212,6 @@ var nom_photo_tranches_multiples;
 
 var NB_MAX_TRANCHES_SIMILAIRES_PROPOSEES=10;
 var LARGEUR_DIALOG_TRANCHE_FINALE=65;
-var LARGEUR_INTER_ETAPES=40;
 
 var COTE_CARRE_DEPLACEMENT=10;
 
@@ -291,7 +290,7 @@ function launch_wizard(id, p) {
 										$('*').getElementsWithData('etape',this.old).data('etape',this.new);
 									});
 									ajouter_preview_etape(data.infos_insertion.numero_etape, formData.nom_fonction);
-									charger_previews(true);
+									charger_previews();
 								}
 							});
 						break;
@@ -306,7 +305,7 @@ function launch_wizard(id, p) {
 										$('*').getElementsWithData('etape',this.old).data('etape',this.new);
 									});
 									ajouter_preview_etape(data.infos_insertion.numero_etape, data.infos_insertion.nom_fonction);
-									charger_previews(true);
+									charger_previews();
 								},
 								error: function() {
 									jqueryui_alert("Une erreur est survenue lors de la création d'étape", "Erreur");
@@ -1521,7 +1520,7 @@ function ajouter_preview_etape(num_etape, nom_fonction) {
 								$('#wizard-confirmation-suppression').dialog().dialog( "close" );
 								$('.dialog-preview-etape,.wizard.preview_etape:not(.template)').getElementsWithData('etape',etape).remove();
 								chargements[0]='final';
-								charger_previews(true);
+								charger_previews();
 							}
 						});
 					},
@@ -1568,22 +1567,13 @@ function ajouter_et_charger_previews() {
 	charger_previews();
 }
 
-function charger_previews(forcer_placement_dialogues) {
-	forcer_placement_dialogues = forcer_placement_dialogues || false;
+function charger_previews() {
 	chargements.push('final'); // On ajoute l'étape finale
 
 	chargement_courant=0;
 	charger_preview_etape(chargements[0],true,'_',function() {
 		placer_dialogues_preview();
 	});
-}
-
-function largeur_max_preview_etape_ouverte() {
-	var largeur_autres=0;
-	$.each($('.wizard.preview_etape:not(.template),#wizard-conception'), function() {
-		largeur_autres+=$(this).dialog().dialog('option','width')+LARGEUR_INTER_ETAPES;
-	});
-	return $(window).width()-largeur_autres;
 }
 
 function ouvrir_dialogue_preview(dialogue) {
@@ -3047,11 +3037,6 @@ function get_option_wizard(id_wizard, nom_option) {
 		return undefined;
 	return options_wizard[nom_option] || undefined;
 }
-
-function set_option_wizard(id_wizard, nom_option, valeur) {
-	wizard_options[id_wizard][nom_option] = valeur;
-}
-
 
 function toFloat2Decimals(floatVal) {
 	return String(floatVal).replace(/([0-9]+)(\.[0-9]{0,2})?.*/g,'$1$2');

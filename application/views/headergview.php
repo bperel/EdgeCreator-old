@@ -22,8 +22,6 @@ header("Content-Type: text/html; charset=UTF-8"); ?>
 	<script type="text/javascript" src="<?=base_url()?>vendor/jrac/jrac/jquery.jrac.js" ></script>
 	<script type="text/javascript" src="<?=base_url()?>vendor/jquery-ui/jquery-ui.js" ></script>
 
-	<script type="text/javascript" src="<?=base_url()?>js/edgecreatorlib.js" ></script>
-
     <script src="//localhost:35729/livereload.js"></script>
 
 	<script type="text/javascript">
