@@ -144,7 +144,7 @@ $(function() {
 		var draggable = $('.ui-draggable:visible');
 
 		if (draggable.length  === 0) {
-			return false;
+			return true;
 		}
 
 		var dialogue=$('.wizard.preview_etape.modif').d(),
