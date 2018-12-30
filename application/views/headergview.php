@@ -3,7 +3,8 @@ header("Expires: " . gmdate( "D, j M Y H:i:s", time() ) . " GMT"); // always mod
 header("Cache-Control: no-store, no-cache, must-revalidate"); // HTTP/1.1
 header("Cache-Control: post-check=0, pre-check=0", FALSE);
 header("Pragma: no-cache");
-header("Content-Type: text/html; charset=UTF-8"); ?>
+header("Content-Type: text/html; charset=UTF-8");
+include_once APPPATH.'helpers/Ec_email_helper.php'; ?>
 
 <html>
 <head>
@@ -29,7 +30,7 @@ header("Content-Type: text/html; charset=UTF-8"); ?>
 		var username = '<?=$user?>';
 
 		var base_url='/';
-		var edges_url='https://edges.ducksmanager.net/edges';
+		var edges_url='<?=get_ec_config('edges_url')?>';
 
 		if (window.location.href.match(/user=/)) {
 			location.replace(base_url);
