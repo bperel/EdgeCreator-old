@@ -115,7 +115,7 @@
 			Les tranches doivent apparaître verticales sur la photo.<br /><br />
 			La photo doit être nette, bien éclairée, et les couleurs fidèles aux tranches originales.
 
-			<iframe src="/helper/index/image_upload.php?photo_tranche=1&multiple"></iframe>
+			<iframe src="/upload_wizard/start/photo/multiple"></iframe>
 		</p>
 	</div>
 
@@ -662,10 +662,10 @@
 				</h3>
 				<div name="upload" class="envoyer_photo">
 					<span class="photo_principale">
-						<iframe src="/helper/index/image_upload.php?photo_tranche=1"></iframe>
+						<iframe src="/upload_wizard/start/photo"></iframe>
 					</span>
 					<span class="autres_photos photos_texte">
-						<iframe src="/helper/index/image_upload.php?photo_tranche=0"></iframe>
+						<iframe src="/upload_wizard/start"></iframe>
 					</span>
 				</div>
 				

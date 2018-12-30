@@ -2,7 +2,12 @@
 
 class Upload_Wizard extends EC_Controller {
 
-    var $contenu = '';
+    function start($est_photo = false, $est_multiple = false) {
+        $this->load->view('upload_startview', [
+            'est_photo' => $est_photo === 'photo',
+            'est_multiple' => $est_multiple === 'multiple'
+        ]);
+    }
 	
 	function index() {
         $this->init_model();
@@ -13,7 +18,7 @@ class Upload_Wizard extends EC_Controller {
             : 0;
 
         if (!isset($_POST['MAX_FILE_SIZE'])) {
-            header('Location: '.preg_replace('#/[^/]+\?#','/image_upload.php?',$_SERVER['REQUEST_URI']));
+            header('Location: /upload_wizard');
             exit;
         }
 

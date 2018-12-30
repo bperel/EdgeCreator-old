@@ -1,7 +1,3 @@
-<?php 
-$est_photo_tranche=(isset($_GET ['photo_tranche']) && $_GET ['photo_tranche'] == '1') 
-				|| (isset($_POST['photo_tranche']) && $_POST['photo_tranche'] == '1');
-?>
 <html>
     <head>
         <script type="text/javascript">
@@ -15,15 +11,15 @@ $est_photo_tranche=(isset($_GET ['photo_tranche']) && $_GET ['photo_tranche'] ==
         </script>
     </head>
     <body>
-        <form method="POST" action="../../upload_wizard" enctype="multipart/form-data">
-            <input type="hidden" name="MAX_FILE_SIZE" value="<?= $est_photo_tranche ? 4000000 : 400000 ?>"/>
-            <?php if (!isset($_GET['multiple'])) { ?>
+        <form method="POST" action="/upload_wizard" enctype="multipart/form-data">
+            <input type="hidden" name="MAX_FILE_SIZE" value="<?= $est_photo ? 4000000 : 400000 ?>"/>
+            <?php if (!$est_multiple) { ?>
                 <input type="hidden" id="pays" name="pays" value=""/>
                 <input type="hidden" id="magazine" name="magazine" value=""/>
                 <input type="hidden" id="numero" name="numero" value=""/>
             <?php } ?>
-            <input type="hidden" id="multiple" name="multiple" value="<?= isset($_GET['multiple']) ? 1 : 0 ?>"/>
-            <input type="hidden" id="photo_tranche" name="photo_tranche" value="<?= $est_photo_tranche ? 1 : 0 ?>"/>
+            <input type="hidden" id="multiple" name="multiple" value="<?= $est_multiple ? 1 : 0 ?>"/>
+            <input type="hidden" id="photo_tranche" name="photo_tranche" value="<?= $est_photo ? 1 : 0 ?>"/>
             <input type="file" name="image" style="width: 260px"/><br/>
             <input type="submit" value="Envoyer"/>
         </form>
