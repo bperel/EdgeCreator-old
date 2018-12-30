@@ -115,7 +115,7 @@
 			Les tranches doivent apparaître verticales sur la photo.<br /><br />
 			La photo doit être nette, bien éclairée, et les couleurs fidèles aux tranches originales.
 
-			<iframe src="<?=base_url()?>index.php/helper/index/image_upload.php?photo_tranche=1&multiple"></iframe>
+			<iframe src="/helper/index/image_upload.php?photo_tranche=1&multiple"></iframe>
 		</p>
 	</div>
 
@@ -193,44 +193,8 @@
             </span>
         </p>
     </div>
-
-
-	<div id="wizard-creer" class="wizard" title="Assistant DucksManager EdgeCreator - Création de tranche">
-		<p>
-			Possédez-vous déjà le numéro dont vous souhaitez créer la tranche 
-			dans votre collection DucksManager ?
-			<form>
-				<div class="controlgroup">
-					<input type="radio" name="choix" value="to-wizard-creer-collection" id="to-wizard-creer-collection" /><label for="to-wizard-creer-collection">Oui</label>
-					<input type="radio" name="choix" checked="checked" value="to-wizard-creer-hors-collection" id="to-wizard-creer-hors-collection" /><label for="to-wizard-creer-hors-collection">Non</label>
-				</div>
-			</form>
-		</p>
-	</div>
-	
-
-
-		<div id="wizard-creer-collection" class="wizard" title="Assistant DucksManager EdgeCreator - Choix de numéro">
-			<p>
-				<span class="explication cache">Sélectionnez le numéro dont vous souhaitez créer la tranche.</span>
-				<span class="chargement">Veuillez patienter...</span>
-				<form>
-					<div id="tranches_non_pretes" class="liste_numeros cache">
-                        <div name="tranches_non_affectees"></div>
-						<div class="template">
-							<input type="radio" id="numero_tranche_non_prete" name="choix_tranche">
-							<label for="numero_tranche_non_prete" class="libelle_tranche">Label</label>
-						</div>
-					</div>
-					<div class="controlgroup cache">
-						<input type="radio" checked="checked" name="choix" value="to-wizard-proposition-clonage" id="to-wizard-proposition-clonage" /><label for="to-wizard-proposition-clonage">J'ai trouvé mon numéro</label>
-					</div>
-				</form>
-				<p class="pas_de_numero cache">Pas de numéro.</p>
-			</p>
-		</div>
 			
-		<div id="wizard-creer-hors-collection" class="wizard" title="Assistant DucksManager EdgeCreator - Choix de numéro">
+		<div id="wizard-creer" class="wizard" title="Assistant DucksManager EdgeCreator - Choix de numéro">
 			<p>
 				Choisissez le ou les numéro(s) que vous souhaitez modéliser.<br />
 				<form>
@@ -698,10 +662,10 @@
 				</h3>
 				<div name="upload" class="envoyer_photo">
 					<span class="photo_principale">
-						<iframe src="<?=base_url()?>index.php/helper/index/image_upload.php?photo_tranche=1"></iframe>
+						<iframe src="/helper/index/image_upload.php?photo_tranche=1"></iframe>
 					</span>
 					<span class="autres_photos photos_texte">
-						<iframe src="<?=base_url()?>index.php/helper/index/image_upload.php?photo_tranche=0"></iframe>
+						<iframe src="/helper/index/image_upload.php?photo_tranche=0"></iframe>
 					</span>
 				</div>
 				

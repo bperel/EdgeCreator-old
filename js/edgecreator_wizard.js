@@ -475,32 +475,6 @@ function wizard_do(wizard_courant, action) {
 					case 'conception':
 						id_modele=wizard_courant.find('form').serializeObject().choix_tranche_en_cours.split(/_/g)[1];
 
-						//
-						// else { // Nouvelle tranche => paramétrage des dimensions, etc.
-						// 	if (get_option_wizard('wizard-creer-collection','choix_tranche') !== undefined
-						// 		|| get_option_wizard('wizard-creer-hors-collection','wizard_pays') !== undefined) {
-						// 		var tranche_collection = get_option_wizard('wizard-creer-collection','choix_tranche');
-						// 		if (tranche_collection !== undefined) {
-						// 			var tranche=tranche_collection.match(REGEX_NUMERO);
-						// 			pays=tranche[1];
-						// 			magazine=tranche[2];
-						// 			numero=tranche[3];
-						// 		}
-						//
-						// 		if (numero === undefined) {
-						// 			// Ajout du modèle de tranche et de la fonction Dimensions avec les paramétres par défaut
-						// 			var dimension_x = get_option_wizard('wizard-dimensions','Dimension_x');
-						// 			var dimension_y = get_option_wizard('wizard-dimensions','Dimension_y');
-						// 			creer_modele_tranche(pays, magazine, numero, true, function () {
-						// 				dimensions = {x: parseInt(dimension_x), y: parseInt(dimension_y)};
-						// 				charger_etapes_tranche_en_cours();
-						// 			});
-						// 			return;
-						//
-						// 		}
-						// 	}
-						// }
-
 						charger_etapes_tranche_en_cours();
 					break;
 				}
@@ -508,10 +482,10 @@ function wizard_do(wizard_courant, action) {
 			case 'wizard-dimensions':
 				switch(action) {
 					case 'enregistrer':
-						var publicationcode=get_option_wizard('wizard-creer-hors-collection','wizard_magazine');
+						var publicationcode=get_option_wizard('wizard-creer','wizard_magazine');
 						pays=publicationcode.split('/')[0];
 						magazine=publicationcode.split('/')[1];
-						numero=get_option_wizard('wizard-creer-hors-collection','wizard_numero');
+						numero=get_option_wizard('wizard-creer','wizard_numero');
 
 						var form_data = wizard_courant.find('form').serializeObject();
 						dimensions = {x: parseInt(form_data.Dimension_x), y: parseInt(form_data.Dimension_y)};
@@ -590,7 +564,7 @@ function wizard_check(wizard_id) {
 				else {
 					if (valeur_choix !== 'to-wizard-numero-inconnu') {
 						switch(wizard_id) {
-							case 'wizard-creer-hors-collection':
+							case 'wizard-creer':
 								if (! verifier_peut_creer_numero_selectionne(wizard)) {
 									erreur='La tranche de ce numéro est déjà disponible ou en cours de conception';
 								}
@@ -625,13 +599,6 @@ function wizard_check(wizard_id) {
 					 && form.serializeObject().choix_tranche_en_cours === 0) {
 						erreur='Si vous souhaitez poursuivre une création de tranche, cliquez dessus pour la sélectionner.<br />'
 							  +'Sinon, cliquez sur "Créer une tranche de magazine" ou "Modifier une tranche de magazine".';
-					}
-				break;
-				case 'wizard-creer-collection':
-					if (chargement_listes)
-						erreur='Veuillez attendre que la liste des numéros soit chargée';
-					else if (form.serializeObject().choix_tranche === 0) {
-						erreur='Veuillez sélectionner un numéro.';
 					}
 				break;
 				case 'wizard-selectionner-numero-photo-multiple':
@@ -796,32 +763,10 @@ function wizard_init(wizard_id) {
 
 		break;
 
-		case 'wizard-creer-collection':
-			chargement_listes=true;
-			$.ajax({
-				url: '/numerosdispos/'+['index','null','null','true'].join('/'),
-				dataType:'json',
-				type: 'post',
-				success:function(data) {
-					if (typeof(data.erreur) !=='undefined')
-						jqueryui_alert(data);
-					else {
-						wizard.afficher_liste_magazines(wizard.find('#tranches_non_pretes'), data.tranches_non_pretes, true);
-					}
-					chargement_listes=false;
-				},
-				error:function(data) {
-					jqueryui_alert('Erreur : '+data);
-				}
-			});
-		break;
-
-		case 'wizard-creer-hors-collection': case 'wizard-modifier':
-			if (get_option_wizard('wizard-creer-hors-collection', 'wizard_pays')
-			 || get_option_wizard('wizard-creer-collection', 'wizard_pays') !== undefined)
-				break;
-
-			wizard_charger_liste_pays();
+		case 'wizard-creer': case 'wizard-modifier':
+			if (get_option_wizard('wizard-creer', 'wizard_pays') === undefined) {
+				wizard_charger_liste_pays();
+			}
 		break;
 
 		case 'wizard-proposition-clonage':
@@ -830,22 +775,14 @@ function wizard_init(wizard_id) {
 			wizard.find('.chargement').removeClass('cache');
 			wizard.find('.tranches_affichees_magazine, .controlgroup').addClass('cache');
 			if (numero === undefined) {
-				if (get_option_wizard('wizard-creer-collection','choix_tranche')!== undefined) {
-					var tranche=get_option_wizard('wizard-creer-collection','choix_tranche').split(/_/g);
-					pays=	 tranche[1];
-					magazine=tranche[2];
-					numero=	 tranche[3];
+				var publicationcode=get_option_wizard('wizard-creer', 'wizard_magazine');
+				pays = publicationcode.split('/')[0];
+				magazine = publicationcode.split('/')[1];
+				numeros_multiples=get_option_wizard('wizard-creer', 'wizard_numero');
+				if (typeof numeros_multiples !== 'object') {
+					numeros_multiples = [numeros_multiples];
 				}
-				else {
-					var publicationcode=get_option_wizard('wizard-creer-hors-collection', 'wizard_magazine');
-					pays = publicationcode.split('/')[0];
-					magazine = publicationcode.split('/')[1];
-					numeros_multiples=get_option_wizard('wizard-creer-hors-collection', 'wizard_numero');
-					if (typeof numeros_multiples !== 'object') {
-						numeros_multiples = [numeros_multiples];
-					}
-					numero=numeros_multiples[0];
-				}
+				numero=numeros_multiples[0];
 			}
 			if (!(numeros_multiples && numeros_multiples.length)) {
 				numeros_multiples = [numero];

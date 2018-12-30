@@ -207,23 +207,23 @@ body>.ui-dialog {
     display: block;
 }
 
-#wizard-creer-hors-collection form fieldset label,
-#wizard-creer-hors-collection form fieldset select {
+#wizard-creer form fieldset label,
+#wizard-creer form fieldset select {
 	display: inline-block;
 	float: left;
 }
 
-#wizard-creer-hors-collection form fieldset label {
+#wizard-creer form fieldset label {
 	width: 70px;
 	clear: both;
 }
 
-#wizard-creer-hors-collection form fieldset select {
+#wizard-creer form fieldset select {
 	min-width: 150px;
 	max-width: 350px;
 }
 
-#wizard-creer-hors-collection form fieldset select[multiple] {
+#wizard-creer form fieldset select[multiple] {
 	height: 100px;
 }
 
