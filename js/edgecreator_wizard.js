@@ -1320,7 +1320,7 @@ function charger_etapes_tranche_en_cours() {
 						type: 'post',
 						dataType: 'json',
 						success: function (data) {
-							$('#zoom').removeClass('cache');
+							$('#zoom').removeClass('invisible');
 							$('#zoom_slider').slider({
 								change: function (event, ui) {
 									zoom = valeurs_possibles_zoom[ui.value];

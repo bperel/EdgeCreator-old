@@ -1,7 +1,7 @@
 <div id="entete_page">
 	<?php
-	if ($privilege!='Affichage') {?>
-		<div id="zoom" class="cache">
+	if ($privilege!=='Affichage') {?>
+		<div id="zoom" class="invisible">
 			Zoom : <span id="zoom_value">1.5</span>
 			<div id="zoom_slider"></div>
 		</div>
