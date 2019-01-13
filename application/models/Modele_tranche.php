@@ -42,7 +42,13 @@ class Modele_tranche extends CI_Model {
 	}
 
 	function requete_select_dm($requete) {
-		return DmClient::get_query_results_from_dm_site($requete);
+        $resultats = DmClient::get_query_results_from_dm_server($requete, 'db_dm');
+        if (is_array($resultats)) {
+            return array_map(function($result) {
+                return (array) $result;
+            }, $resultats);
+        }
+        return [];
 	}
 
 	function get_privilege() {

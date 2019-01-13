@@ -7,9 +7,6 @@ class DmClient
     /** @var $dm_server stdClass */
     static $dm_server;
 
-    /** @var $dm_site stdClass */
-    static $dm_site;
-
     static $chunkable_services = [
         '/coa/list/countries' => 50,
         '/coa/list/publications' => 10
@@ -21,43 +18,19 @@ class DmClient
     {
         self::$userData = $userdata;
         self::$dm_server = null;
-        self::$dm_site = null;
         $servers = parse_ini_file(APPPATH.'config/'.self::$servers_file, true);
 
         foreach ($servers as $name => $server) {
             $serverObject = json_decode(json_encode($server));
 
-            if ($serverObject->dm_server) {
-                $roles = [];
-                array_walk($serverObject->role_passwords, function ($role) use (&$roles) {
-                    list($roleName, $rolePassword) = explode(':', $role);
-                    $roles[$roleName] = $rolePassword;
-                });
-                $serverObject->role_passwords = $roles;
-                self::$dm_server = $serverObject;
-            } else {
-                self::$dm_site = $serverObject;
-            }
+            $roles = [];
+            array_walk($serverObject->role_passwords, function ($role) use (&$roles) {
+                list($roleName, $rolePassword) = explode(':', $role);
+                $roles[$roleName] = $rolePassword;
+            });
+            $serverObject->role_passwords = $roles;
+            self::$dm_server = $serverObject;
         }
-    }
-
-    /**
-     * @param string $query
-     * @return mixed|null
-     */
-    public static function get_query_results_from_dm_site($query) {
-        $output = self::get_secured_page(self::$dm_site, 'sql.php?db=' . self::$dm_site->db_name . '&req=' . urlencode($query));
-        $unserialized = @unserialize($output);
-        if (is_array($unserialized)) {
-            list($champs,$resultats) = $unserialized;
-            foreach($champs as $i_champ=>$nom_champ) {
-                foreach($resultats as $i=>$resultat) {
-                    $resultats[$i][$nom_champ]=$resultat[$nom_champ];
-                }
-            }
-            return $resultats;
-        }
-        return [];
     }
 
     /**
@@ -73,26 +46,6 @@ class DmClient
             'db' => $db
         ], 'rawsql');
     }
-
-    public static function get_page($url) {
-        $handle = @fopen($url, "r");
-
-        if ($handle) {
-            $buffer="";
-            while (!feof($handle)) {
-                $buffer.= fgets($handle, 4096);
-            }
-            fclose($handle);
-            return $buffer;
-        }
-
-        return null;
-    }
-
-    private static function get_secured_page(stdClass $dmServer, $url) {
-        return self::get_page(implode('/', ['http://'.$dmServer->ip, $dmServer->web_root, $url.'&mdp='.sha1($dmServer->db_password)]));
-    }
-
 
     /**
      * @param stdClass $server
