@@ -436,11 +436,12 @@ class Modele_tranche_Wizard extends Modele_tranche {
 	function publier($createurs, $photographes) {
         $id_modele = $this->session->userdata('id_modele');
 
-        DmClient::get_service_results_ec(DmClient::$dm_server, 'PUT', "/edgecreator/publish/$id_modele", [
+        $result = DmClient::get_service_results_ec(DmClient::$dm_server, 'PUT', "/edgecreator/publish/$id_modele", [
             'photographers' => explode(',', $photographes),
             'designers' => explode(',', $createurs)
         ]);
-        DmClient::get_service_results_ec(DmClient::$dm_server, 'PUT', "/edgesprites/from/$id_modele");
+        $id_edge = $result->edgeId;
+        DmClient::get_service_results_ec(DmClient::$dm_server, 'PUT', "/edgesprites/from/$id_edge");
     }
 	
 	function get_couleurs_frequentes() {
