@@ -433,13 +433,14 @@ class Modele_tranche_Wizard extends Modele_tranche {
         return copy($src_image, $dest_image);
     }
 	
-	function marquer_modele_comme_pret_publication($createurs,$photographes) {
+	function publier($createurs, $photographes) {
         $id_modele = $this->session->userdata('id_modele');
 
-        DmClient::get_service_results_ec(DmClient::$dm_server, 'POST', "/edgecreator/model/v2/$id_modele/readytopublish/1", [
+        DmClient::get_service_results_ec(DmClient::$dm_server, 'PUT', "/edgecreator/publish/$id_modele", [
             'photographers' => explode(',', $photographes),
             'designers' => explode(',', $createurs)
         ]);
+        DmClient::get_service_results_ec(DmClient::$dm_server, 'PUT', "/edgesprites/from/$id_modele");
     }
 	
 	function get_couleurs_frequentes() {

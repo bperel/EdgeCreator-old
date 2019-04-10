@@ -10,7 +10,7 @@ class Valider_Modele extends EC_Controller {
 		$this->Modele_tranche->setUsername($username);
 
         if ($this->Modele_tranche->copier_image_temp_vers_gen($nom_image)) {
-            $this->Modele_tranche->marquer_modele_comme_pret_publication($createurs,$photographes);
+            $this->Modele_tranche->publier($createurs,$photographes);
         }
         else {
             header("HTTP/1.0 500 Internal Server Error");

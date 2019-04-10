@@ -140,7 +140,7 @@ class Modele_tranche extends CI_Model {
 			$options=$this->get_modeles_magazine($pays,$magazine);
 			foreach($options as $option) {
 				$this->insert($option->Pays, $option->Magazine, $option->Ordre, $option->Nom_fonction,
-                    $option->Option_nom, $option->Option_valeur, $option->Numero_debut, $option->Numero_fin, null);
+                    $option->Option_nom, $option->Option_valeur, $option->Numero_debut, $option->Numero_fin);
 
 			}
 		}
@@ -428,7 +428,7 @@ class Modele_tranche extends CI_Model {
 						if (!array_key_exists($etape,$numeros_disponibles[$numero]))
 							$numeros_disponibles[$numero][$etape]= [];
 						$valeur=is_null($option->Option_valeur)?'null':$option->Option_valeur;
-						$valeur_calculee=Fonction_executable::toTemplatedString($valeur,true);
+						$valeur_calculee=Fonction_executable::toTemplatedString($valeur);
 						if ($valeur_calculee !== true)
 							$valeur=$valeur_calculee;
 						if ($option->Option_nom === 'Dimension_x')
@@ -469,7 +469,7 @@ class Modele_tranche extends CI_Model {
 	}
 
 	function get_pays() {
-		return DmClient::get_service_results_ec(DmClient::$dm_server, 'GET', '/coa/list/countries/fr', []);
+		return DmClient::get_service_results_ec(DmClient::$dm_server, 'GET', '/coa/list/countries/fr');
 	}
 
 	function get_magazines($pays) {
@@ -1179,20 +1179,22 @@ DmClient::get_query_results_from_dm_server($req_ajout_nouvel_intervalle, 'db_edg
 				$liste['Vertical']='Vertical';
 			 break;
 			case 'Utilisateurs':
-                $id_modele = $this->session->userdata('id_modele');
-                $model = DmClient::get_service_results_ec(DmClient::$dm_server, 'GET', "/edgecreator/v2/model/$id_modele");
 
-                $photographes=explode(';',$model->photographes);
-                $createurs=explode(';',$model->createurs);
-
-                $requete_utilisateurs='SELECT username FROM users ORDER BY username';
+                $requete_utilisateurs='SELECT ID, username FROM users ORDER BY username';
                 $resultats_utilisateurs=$this->requete_select_dm($requete_utilisateurs);
+                $usernames = [];
                 foreach($resultats_utilisateurs as $resultat_utilisateur) {
                     $username = utf8_encode($resultat_utilisateur['username']);
-                    $est_photographe = in_array($username,$photographes);
-                    $est_createur = in_array($username,$createurs);
 
-                    $liste[$username]=($est_photographe ? 'photographe':'').($est_createur ? 'createur':'');
+                    $usernames[$resultat_utilisateur['ID']]=$username;
+                    $liste[$username]='';
+                }
+
+                $id_modele = $this->session->userdata('id_modele');
+                $contributeurs = DmClient::get_service_results_ec(DmClient::$dm_server, 'GET', "/edgecreator/contributors/$id_modele");
+                
+                foreach($contributeurs as $contributeur) {
+                    $liste[$usernames[$contributeur->idUtilisateur]].=$contributeur->contribution;
                 }
 			 break;
 			case 'Fonctions':
@@ -1234,7 +1236,7 @@ DmClient::get_query_results_from_dm_server($req_ajout_nouvel_intervalle, 'db_edg
     }
 
     static function save_image($pays, $magazine, $numero, $image) {
-        $dossier_pays = self::getCheminImages().'/'.$pays;
+        $dossier_pays = self::getCheminImages().$pays;
         $dossier_gen = $dossier_pays.'/gen';
         if (!is_dir($dossier_pays)) {
             @mkdir($dossier_pays);
