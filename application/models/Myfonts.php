@@ -107,7 +107,7 @@ class Myfonts extends CI_Model {
 		try {
             libxml_use_internal_errors(true);
             $this->im = $this->downloadPreview('https://render.myfonts.net/fonts/font_rend.php', [
-                'id'=>123,
+                'id'=>$this->getMyFontsSessionId($fontBrand, $fontFamily, $fontVariant),
                 'rbe'=>'fixed',
                 'rt'=>str_replace(' ','%20',$this->text),
                 'fg'=>$this->color,
