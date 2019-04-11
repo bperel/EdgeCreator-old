@@ -48,26 +48,12 @@ class Myfonts extends CI_Model {
             return $storedMyFontsSessionIds[$fontVariantKey];
         }
         else {
-            $url = "https://www.myfonts.com/fonts/$fontBrand/$fontFamily/";
-            $doc = new DOMDocument();
-            if (!$doc->loadHTML(file_get_contents($url))) {
-                throw new Exception("Couldn't load from URL $url");
+            $url = "https://www.myfonts.com/backbone/fontfamilybyname/$fontVariantKey";
+            $page = json_decode(file_get_contents($url));
+            if (is_null($page)) {
+                throw new Exception("Couldn't decode $url");
             }
-            $xpath = new DOMXpath($doc);
-
-            $elements=$xpath->query("//*[contains(@class, 'testdrive_container')]/a[contains(@href,'/$fontVariant/')]//img");
-            if ($elements->length === 0) {
-                throw new Exception("Couldn't find variant $fontVariant in $url");
-            }
-            $previewUrl = $elements->item(0)->getAttribute('data-src');
-            if (empty($previewUrl)) {
-                throw new Exception("Couldn't find preview's URL for variant $fontVariant in $url");
-            }
-            preg_match('#(?<=id=)[^&]+#', $previewUrl, $match, PREG_OFFSET_CAPTURE, 0);
-            if (count($match) === 0) {
-                throw new Exception("Couldn'f find session ID in URL $previewUrl");
-            }
-            $sessionId = $match[0][0];
+            $sessionId = $page->family->styles[0]->MD5hash;
 
             $this->session->set_userdata(self::$myFontsSessionIdsKey, array_merge($storedMyFontsSessionIds, [$fontVariantKey => $sessionId]));
             return $sessionId;
@@ -105,7 +91,6 @@ class Myfonts extends CI_Model {
         list($fontBrand, $fontFamily, $fontVariant) = explode('/', $this->font);
 
 		try {
-            libxml_use_internal_errors(true);
             $this->im = $this->downloadPreview('https://render.myfonts.net/fonts/font_rend.php', [
                 'id'=>$this->getMyFontsSessionId($fontBrand, $fontFamily, $fontVariant),
                 'rbe'=>'fixed',
@@ -127,9 +112,6 @@ class Myfonts extends CI_Model {
         }
         catch(Exception $e) {
             Fonction_executable::erreur("Erreur : {$e->getMessage()}");
-        }
-        finally {
-            libxml_use_internal_errors(false);
         }
 	}
 }
