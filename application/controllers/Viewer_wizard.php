@@ -90,7 +90,7 @@ class Viewer_wizard extends EC_Controller {
 			if (!self::$is_debug) {
 				header('Content-type: image/png');
 			}
-			$image_externe=imagecreatefrompng('https://www.ducksmanager.net/edges/'.self::$pays.'/gen/'.self::$magazine.'.'.self::$numero.'.png');
+			$image_externe=imagecreatefrompng('https://edges.ducksmanager.net/edges/'.self::$pays.'/gen/'.self::$magazine.'.'.self::$numero.'.png');
             $largeur_externe = imagesx($image_externe);
             $hauteur_externe = imagesy($image_externe);
             $largeur_preview = $largeur_externe * (self::$zoom/self::$zoom_save);
