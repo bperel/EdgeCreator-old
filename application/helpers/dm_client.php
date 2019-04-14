@@ -55,6 +55,18 @@ class DmClient
      * @return array|null|stdClass
      * @throws Exception
      */
+    public static function get_service_results_admin($server, $method, $path, $parameters = []) {
+        return self::get_service_results($server, $method, $path, $parameters, 'admin');
+    }
+
+    /**
+     * @param stdClass $server
+     * @param string   $method
+     * @param string   $path
+     * @param array    $parameters
+     * @return array|null|stdClass
+     * @throws Exception
+     */
     public static function get_service_results_ec($server, $method, $path, $parameters = []) {
         return self::get_service_results($server, $method, $path, $parameters, 'edgecreator');
     }

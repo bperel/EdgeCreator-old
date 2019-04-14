@@ -441,7 +441,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
             'designers' => explode(',', $createurs)
         ]);
         $id_edge = $result->edgeId;
-        DmClient::get_service_results_ec(DmClient::$dm_server, 'PUT', "/edgesprites/from/$id_edge");
+        DmClient::get_service_results_admin(DmClient::$dm_server, 'PUT', "/edgesprites/$id_edge");
     }
 	
 	function get_couleurs_frequentes() {
