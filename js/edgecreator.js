@@ -1,5 +1,5 @@
 jQuery.fn.getElementsWithData = function (key, val) {
-	var data = [];
+	const data = [];
 	this.each(function (i, element) {
 		if (typeof(val) === 'undefined' || $(element).data(key) == val)
 			data.push($(element)[0]);
@@ -8,26 +8,26 @@ jQuery.fn.getElementsWithData = function (key, val) {
 };
 
 jQuery.fn.getData = function (key) {
-	var data = [];
+	const data = [];
 	this.each(function (i, element) {
 		data.push($(element).data(key));
 	});
 	return data;
 };
 
-var pays;
-var magazine;
-var numero;
+let pays;
+let magazine;
+let numero;
 
-var zoom = 2;
-var numeros_dispos;
+let zoom = 2;
+let numeros_dispos;
 
-var chargements = [];
-var chargement_courant;
+let chargements = [];
+let chargement_courant;
 
-var selecteur_cellules_preview = null;
+let selecteur_cellules_preview = null;
 
-var etapes_valides = [];
+let etapes_valides = [];
 
 function reload_numero(numero, est_externe, visu, callback) {
 	est_externe = est_externe || false;
@@ -41,8 +41,8 @@ function reload_numero(numero, est_externe, visu, callback) {
 }
 
 function charger_previews_numeros(numero, est_visu, est_externe, callback) {
-	var parametrage = {};
-	var zoom_utilise = est_visu ? zoom : 1.5;
+	const parametrage = {};
+	const zoom_utilise = est_visu ? zoom : 1.5;
 	callback = callback || function () {};
 
 	$('#chargement').html('Chargement de la preview de la tranche');
@@ -52,10 +52,10 @@ function charger_previews_numeros(numero, est_visu, est_externe, callback) {
 function charger_preview_etape(etapes_preview, est_visu, parametrage, callback) {
 	if (parametrage == undefined)
 		parametrage = '_';
-	var zoom_utilise = est_visu ? zoom : 1.5;
+	const zoom_utilise = est_visu ? zoom : 1.5;
 	if (etapes_preview === '')
 		etapes_preview = -1;
-	var fond_noir = 'false';
+	let fond_noir = 'false';
 	if ((typeof(etapes_preview) === 'string' && etapes_preview.indexOf(',') === -1)
 		|| typeof(etapes_preview) === 'number') {
 		$('#chargement').html('Chargement de la preview de l\'&eacute;tape ' + etapes_preview);
@@ -73,10 +73,10 @@ function charger_preview_etape(etapes_preview, est_visu, parametrage, callback) 
 
 function charger_image(type_chargement, src, num, callback) {
 	callback = callback || function () {};
-	var est_visu = src.indexOf('/save') === -1;
-	var est_etape_ouverte = modification_etape && modification_etape.data('etape') == num;
+	const est_visu = src.indexOf('/save') === -1;
+	const est_etape_ouverte = modification_etape && modification_etape.data('etape') == num;
 
-	var image = $('<img>')
+	const image = $('<img>')
 		.addClass('image_preview' + (est_etape_ouverte ? ' cache' : ''))
 		.toggleClass('save', !est_visu)
 		.data(type_chargement, num);
@@ -95,7 +95,7 @@ function charger_image(type_chargement, src, num, callback) {
 		}
 	}
 	if (type_chargement === 'etape' && num !== null) {
-		var etapes_corresp = $(selecteur_cellules_preview).getElementsWithData('etape', num);
+		const etapes_corresp = $(selecteur_cellules_preview).getElementsWithData('etape', num);
 		if (!etapes_corresp.length) {// Numéro d'étape non trouvé
 			jqueryui_alert("Num&eacute;ro d'&eacute;tape non trouv&eacute; lors du chargement de la preview : " + num, "Erreur");
 			charger_image_suivante(null, callback, type_chargement, est_visu);
@@ -123,7 +123,7 @@ function charger_image(type_chargement, src, num, callback) {
 	});
 
 	image.error(function () {
-		var num_etape = chargements[chargement_courant];
+		const num_etape = chargements[chargement_courant];
 		if (num_etape !== 'all') { // Si erreur sur l'étape finale c'est qu'il y a eu erreur sur une étape intermédiaire ; on ne l'affiche pas de nouveau
 			$('#wizard-erreur-generation-image').find('[name="etape"]').text(num_etape);
 			$('#wizard-erreur-generation-image').find('iframe').attr({src: $(this).attr('src') + '/debug'});
@@ -165,7 +165,7 @@ function jqueryui_alert(texte, titre, close_callback) {
 	titre = titre || 'DucksManager EdgeCreator';
 	close_callback = close_callback || function () {
 	};
-	var boite = $('<div>', {'title': titre});
+	const boite = $('<div>', {'title': titre});
 	if (typeof(texte) === 'string')
 		boite.append($('<p>').html(texte));
 	else
@@ -236,12 +236,12 @@ function logout() {
 }
 
 function urlEncode(clearString) {
-	var output = '';
-	var x = 0;
+	let output = '';
+	let x = 0;
 	clearString = clearString.toString();
-	var regex = /(^[a-zA-Z0-9_.]*)/;
+	const regex = /(^[a-zA-Z0-9_.]*)/;
 	while (x < clearString.length) {
-		var match = regex.exec(clearString.substr(x));
+		const match = regex.exec(clearString.substr(x));
 		if (match != null && match.length > 1 && match[1] !== '') {
 			output += match[1];
 			x += match[1].length;
@@ -249,8 +249,8 @@ function urlEncode(clearString) {
 			if (clearString[x] === ' ')
 				output += '+';
 			else {
-				var charCode = clearString.charCodeAt(x);
-				var hexVal = charCode.toString(16);
+				const charCode = clearString.charCodeAt(x);
+				const hexVal = charCode.toString(16);
 				output += '%' + ( hexVal.length < 2 ? '0' : '' ) + hexVal.toUpperCase();
 			}
 			x++;
