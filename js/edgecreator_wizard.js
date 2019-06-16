@@ -100,8 +100,9 @@ const INTERVAL_CHECK_LOGGED_IN = 5;
 	$.ajax({
 		url: '/check_logged_in/',
 		type: 'post',
+		dataType:'json',
 		success:function(data) {
-			if (data === '1') {
+			if (data.username) {
 				setTimeout(check_logged_in, 1000*60*INTERVAL_CHECK_LOGGED_IN);
 			}
 			else {

@@ -54,7 +54,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
             }
         }
     }
-	
+
 	function get_etapes_by_id($id_modele) {
 		$resultats_ordres= [];
 		$requete="
@@ -79,6 +79,9 @@ class Modele_tranche_Wizard extends Modele_tranche {
           GROUP BY Ordre
           ORDER BY Ordre";
         $resultats = DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator');
+        foreach($resultats as &$resultat) {
+            $resultat->Ordre = (int) $resultat->Ordre;
+        }
 		return $resultats;
 	}
 
@@ -90,7 +93,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
           WHERE ID_Modele = $id_modele AND Ordre=$ordre";
 
         $premier_resultat = DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator')[0];
-		return count($premier_resultat) === 0 ? null : new Fonction($premier_resultat);
+		return !is_object($premier_resultat) ? null : new Fonction($premier_resultat);
 	}
 
     function get_options_ec_v2(
@@ -163,7 +166,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		$requete='SELECT ID FROM edgecreator_valeurs WHERE ID='.$id_valeur;
         return count(DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator')) > 0;
 	}
-	
+
 	function insert_to_modele($id_modele,$ordre,$nom_fonction,$option_nom,$option_valeur) {
 		$option_nom=is_null($option_nom) ? 'NULL' : '\''.preg_replace("#([^\\\\])'#","$1\\'",$option_nom).'\'';
 		$option_valeur=is_null($option_valeur) ? 'NULL' : '\''.preg_replace("#([^\\\\])'#","$1\\'",$option_valeur).'\'';
@@ -172,7 +175,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 				.'('.$id_modele.','.$ordre.',\''.$nom_fonction.'\','.$option_nom.','.$option_valeur.') ';
         DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator');
 	}
-	
+
 	function get_id_modele($pays,$magazine,$numero,$username=null) {
 		if (is_null($username)) {
 			$username = self::$username;
@@ -185,14 +188,14 @@ class Modele_tranche_Wizard extends Modele_tranche {
         $resultat = DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator')[0];
 		return $resultat->ID;
 	}
-	
+
 	function get_nom_fonction($id_modele,$ordre) {
 		$requete='SELECT Nom_fonction FROM tranches_en_cours_valeurs '
 				.'WHERE ID_Modele='.$id_modele.' AND Ordre='.$ordre;
         $resultat = DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator')[0];
 		return $resultat->Nom_fonction;
 	}
-	
+
 	function creer_modele($pays, $magazine, $numero) {
         $est_editeur = in_array($this->get_privilege(), ['Edition', 'Admin']) ? '1' : '0';
         $resultat = DmClient::get_service_results_ec(
@@ -202,7 +205,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
         );
         return $resultat->modelid;
 	}
-	
+
 	function get_photo_principale() {
         $id_modele = $this->session->userdata('id_modele');
         if (is_null($id_modele)) {
@@ -228,7 +231,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
         else {
 		    $infos->decalages = [];
         }
-		
+
 		$nouvelle_fonction=new $nom_fonction(false, null, true);
 		$numero_etape=$inclure_avant ? $etape : $etape+1;
 
@@ -256,7 +259,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
             ['options' => $parametrage]
         );
     }
-	
+
 	function update_photo_principale($nom_photo_principale) {
         $id_modele = $this->session->userdata('id_modele');
 
@@ -274,7 +277,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 
 		$inclure_avant = $pos==='avant' || $pos==='_';
 		$infos=new stdClass();
-		
+
 		$infos->decalages=$this->decaler_etapes_a_partir_de($id_modele,$etape_courante, $inclure_avant);
 		if ($inclure_avant) {
             $etape_courante++;
@@ -286,7 +289,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 
         $resultat = DmClient::get_service_results_ec(DmClient::$dm_server, 'POST', "/edgecreator/v2/step/clone/$id_modele/$etape_courante/to/$nouvelle_etape", []
         );
-		
+
 		$infos->numero_etape=$nouvelle_etape;
 		$infos->nom_fonction=$resultat->functionName;
 		return $infos;
@@ -318,7 +321,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
         DmClient::get_query_results_from_dm_server($requete_suppr_option, 'db_edgecreator');
 		echo $requete_suppr_option."\n";
 	}
-	
+
 	function get_id_modele_tranche_en_cours_max() {
 		$requete='SELECT MAX(ID) AS Max FROM tranches_en_cours_modeles';
         return DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator')[0]->Max;
@@ -375,10 +378,10 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		foreach($resultats as &$resultat) {
 			$resultat['Magazine_complet'] = $noms_magazines[$resultat['Pays'].'/'.$resultat['Magazine']];
 		}
-		
+
 		return $resultats;
 	}
-	
+
 	function desactiver_modele() {
         $id_modele = $this->session->userdata('id_modele');
 
@@ -432,7 +435,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
         echo "Copy of $src_image to $dest_image";
         return copy($src_image, $dest_image);
     }
-	
+
 	function publier($createurs, $photographes) {
         $id_modele = $this->session->userdata('id_modele');
 
@@ -443,7 +446,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
         $id_edge = $result->edgeId;
         DmClient::get_service_results_admin(DmClient::$dm_server, 'PUT', "/edgesprites/$id_edge");
     }
-	
+
 	function get_couleurs_frequentes() {
         $id_modele = $this->session->userdata('id_modele');
 		$couleurs= [];
@@ -457,7 +460,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		}
 		return $couleurs;
 	}
-	
+
 	function get_couleur_point_photo($frac_x,$frac_y) {
         $id_modele = $this->session->userdata('id_modele');
 		$requete_nom_photo = "
@@ -469,12 +472,12 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		";
 
         $resultat_nom_photo = DmClient::get_query_results_from_dm_server($requete_nom_photo, 'db_edgecreator')[0];
-		
+
 		$chemin_photos = Fonction_executable::getCheminPhotos($resultat_nom_photo->Pays);
 		$chemin_photo_tranche = $chemin_photos.'/'.$resultat_nom_photo->NomFichier;
 		$image = imagecreatefromjpeg($chemin_photo_tranche);
 		list($width, $height) = getimagesize($chemin_photo_tranche);
-		
+
 		$rgb = imagecolorat($image, $frac_x*$width, $frac_y*$height);
 		$r = ($rgb >> 16) & 0xFF;
 		$g = ($rgb >> 8) & 0xFF;

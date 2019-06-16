@@ -1,4 +1,4 @@
-FROM php:7.0-apache
+FROM php:7.3-apache
 MAINTAINER Bruno Perel
 
 RUN a2enmod rewrite
@@ -18,9 +18,9 @@ RUN docker-php-ext-configure gd \
 RUN docker-php-ext-install gd opcache
 
 RUN cd /usr/src && \
-    wget http://xdebug.org/files/xdebug-2.5.5.tgz && \
-    tar -xvzf xdebug-2.5.5.tgz && \
-    cd xdebug-2.5.5 && \
+    wget http://xdebug.org/files/xdebug-2.7.2.tgz && \
+    tar -xvzf xdebug-2.7.2.tgz && \
+    cd xdebug-2.7.2 && \
     phpize && \
     ./configure && \
     make && \
