@@ -594,7 +594,7 @@ class Modele_tranche extends CI_Model {
         $numeros_affiches= ['Aucun'=>'Aucun'];
         foreach($numeros as $numero) {
             $numero_clean = self::get_numero_clean($numero);
-            $numeros_affiches[$numero_clean] = $numero_clean;
+            $numeros_affiches[] = $numero_clean;
         }
 
         if ($get_prets) {
@@ -1192,7 +1192,7 @@ DmClient::get_query_results_from_dm_server($req_ajout_nouvel_intervalle, 'db_edg
 
                 $id_modele = $this->session->userdata('id_modele');
                 $contributeurs = DmClient::get_service_results_ec(DmClient::$dm_server, 'GET', "/edgecreator/contributors/$id_modele");
-                
+
                 foreach($contributeurs as $contributeur) {
                     $liste[$usernames[$contributeur->idUtilisateur]].=$contributeur->contribution;
                 }
@@ -1447,9 +1447,11 @@ class Dimensions extends Fonction_executable {
 			return;
 		$this->verifier_erreurs();
 		Viewer_wizard::$image=imagecreatetruecolor(z($this->options->Dimension_x), z($this->options->Dimension_y));
+        imagealphablending(Viewer_wizard::$image, false);
 		Viewer_wizard::$largeur=z($this->options->Dimension_x);
 		Viewer_wizard::$hauteur=z($this->options->Dimension_y);
-		imagefill(Viewer_wizard::$image,0,0,  imagecolorallocate(Viewer_wizard::$image, 255, 255, 255));
+		imagefill(Viewer_wizard::$image,0,0,  imagecolorallocatealpha(Viewer_wizard::$image, 255, 255, 255, 127));
+        imagesavealpha(Viewer_wizard::$image,true);
 	}
 
 	function verifier_erreurs() {
