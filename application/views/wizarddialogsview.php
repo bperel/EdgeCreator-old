@@ -12,8 +12,8 @@
 	<p>
 		L'objectif d'EdgeCreator est de créer des images de tranches.
 		<br />
-		L'image d'une tranche que vous créerez apparaîtra ensuite 
-		dans la section "Ma bibliothèque" de tous les utilisateurs de DucksManager 
+		L'image d'une tranche que vous créerez apparaîtra ensuite
+		dans la section "Ma bibliothèque" de tous les utilisateurs de DucksManager
 		possédant le numéro correspondant.
 		<br />
 		<img style="height:300px" src="images/construction_tranche.png" />
@@ -31,7 +31,7 @@
 			<img style="width: 100%" src="images/appareil_photo.png" />
 			D'un scanner ou un appareil photo (les capteurs photo des téléphones donnent parfois des photos floues)
 		</div>
-		
+
 	</p>
 </div>
 
@@ -80,7 +80,7 @@
 			<div class="controlgroup">
 				<input type="radio" name="choix" value="to-wizard-envoyer-photo" id="to-wizard-envoyer-photo" />
 				<label class="toutes_bordures" for="to-wizard-envoyer-photo">Envoyer des photos de tranche</label><br />
-				
+
 				<div></div>
 
                 <?php if (in_array($privilege, ['Edition', 'Admin'])) { ?>
@@ -193,7 +193,7 @@
             </span>
         </p>
     </div>
-			
+
 		<div id="wizard-creer" class="wizard" title="Assistant DucksManager EdgeCreator - Choix de numéro">
 			<p>
 				Choisissez le ou les numéro(s) que vous souhaitez modéliser.<br />
@@ -230,17 +230,17 @@
 				</form>
 			</p>
 		</div>
-	
+
 			<div id="wizard-dimensions" class="wizard first" title="Assistant DucksManager EdgeCreator - Dimensions de la tranche">
 				<p>
 					<form name="form_options">
 						<span id="nom_complet_numero"></span>
 						Pour concevoir la tranche du magazine, nous devons connaitre ses dimensions.<br />
 						Indiquez ci-dessous l'<b>épaisseur</b> et la <b>hauteur</b> de la tranche, en millimètres.
-						
-						Dimensions de la tranche : 
-						<input type="text" id="Nouvelle_dimension_x" name="Dimension_x" maxlength="3" size="2"> mm 
-						x 
+
+						Dimensions de la tranche :
+						<input type="text" id="Nouvelle_dimension_x" name="Dimension_x" maxlength="3" size="2"> mm
+						x
 						<input type="text" id="Nouvelle_dimension_y" name="Dimension_y" maxlength="3" size="2"> mm
 						<div class="controlgroup cache">
 							<input type="radio" checked="checked" name="choix" id="do-in-wizard-enregistrer" value="do-in-wizard-enregistrer" />
@@ -248,7 +248,7 @@
 						</div>
 					</form>
 				</p>
-			</div>	
+			</div>
 	<div id="wizard-modifier" class="wizard" title="Assistant DucksManager EdgeCreator - Choix de numéro">
 		<p>
 			Choisissez le numéro dont vous souhaitez modifier la modélisation.<br />
@@ -266,7 +266,7 @@
 					<select name="wizard_numero" id="wizard_numero_modifier">
 						<option>Chargement...</option>
 					</select><br />
-					Les tranches sous fond vert sont modifiables. 
+					Les tranches sous fond vert sont modifiables.
 					Si vous souhaitez en créer une nouvelle, repassez à l'écran précédent
 					et choisissez "créer une tranche de magazine".
 				</fieldset>
@@ -277,11 +277,11 @@
 			</form>
 		</p>
 	</div>
-	
+
 		<div id="wizard-proposition-clonage" class="wizard" title="Assistant DucksManager EdgeCreator - Création">
 			<p>
 				Certaines tranches ont déjà été conçues pour le magazine sélectionné.
-				Si l'une des tranches si-dessous est identique à la vôtre, ou bien que seules quelques couleurs ou quelques textes sont différents, sélectionnez cette tranche. 
+				Si l'une des tranches si-dessous est identique à la vôtre, ou bien que seules quelques couleurs ou quelques textes sont différents, sélectionnez cette tranche.
 				Sinon, cliquez sur "créer une tranche originale".
 				<form>
 					<div class="chargement">
@@ -306,7 +306,7 @@
 				</form>
 			</p>
 		</div>
-		
+
 			<div id="wizard-clonage" class="wizard" title="Assistant DucksManager EdgeCreator - Clonage">
 				<p>
 					La tranche du numéro <span class="nouveau_numero"></span> est créée à partir du numéro <span class="numero_similaire"></span>...<br />
@@ -322,7 +322,7 @@
 					</form>
 				</p>
 			</div>
-		
+
 			<div id="wizard-clonage-silencieux" class="wizard" title="Assistant DucksManager EdgeCreator - Préparation de la tranche">
 				<p>
 					<div class="loading">Veuillez patienter...</div>
@@ -332,8 +332,8 @@
 					</form>
 				</p>
 			</div>
-			
-			
+
+
 		<div id="wizard-info-conception" class="main first wizard deadend" title="Assistant DucksManager EdgeCreator - Conception de la tranche">
 			<p>
                 Chacune des manipulations permettant de créer la tranche sont appelées des <b>étapes</b>.
@@ -364,11 +364,11 @@
 				</form>
 			</p>
 		</div>
-		
+
 		<div class="wizard preview_etape template">
-			
+
 		</div>
-		
+
 		<div id="options-etape--Agrafer" class="options_etape cache">
 			<div class="premiere agrafe"></div>
 			<div class="deuxieme agrafe"></div>
@@ -376,22 +376,22 @@
 				&gt; Déplacez et redimensionnez les agrafes.<br />
 			</p>
 		</div>
-		
+
 		<div id="options-etape--Degrade" class="options_etape cache">
 			<div class="rectangle_degrade"></div>
 			<p>
 				&gt; Déplacez et redimensionnez la zone de dégradé.<br />
-				
+
 				&gt; Définissez la première couleur.<br />
 				<label for="option-Couleur_debut">Couleur sélectionnée : </label>
 				<input class="couleur" type="text" name="option-Couleur_debut" maxlength="7"/>
 				<br />
-				
+
 				&gt; Définissez la deuxième couleur.<br />
 				<label for="option-Couleur_fin">Couleur sélectionnée : </label>
 				<input class="couleur" type="text" name="option-Couleur_fin" maxlength="7"/>
 				<br />
-				
+
 				&gt; Indiquez le sens du dégradé.<br />
 				<div style="font-size:16px">
 					<div class="small controlgroup">
@@ -401,7 +401,7 @@
 				</div>
 			</p>
 		</div>
-		
+
 		<div id="options-etape--DegradeTrancheAgrafee" class="options_etape cache">
 			<div class="premiere agrafe"></div>
 			<div class="deuxieme agrafe"></div>
@@ -413,7 +413,7 @@
 				<input class="couleur" type="text" name="option-Couleur" maxlength="7"/>
 			</p>
 		</div>
-		
+
 		<div id="options-etape--Remplir" class="options_etape cache">
 			<div class="rectangle_position" class="cache"></div>
 			<img class="point_remplissage cache" src="images/cross.png" />
@@ -426,7 +426,7 @@
 				<input class="couleur" type="text" name="option-Couleur" maxlength="6"/>
 			</form>
 		</div>
-		
+
 		<div id="options-etape--Arc_cercle" class="options_etape cache">
 			<img class="arc_position cache">
 			<p>
@@ -441,11 +441,11 @@
 				<label for="option-Couleur">Couleur : </label>
 				<input class="couleur" type="text" name="option-Couleur" maxlength="7"/>
 				<br />
-				<input type="checkbox" name="option-Rempli" id="option-Rempli" />&nbsp;<label for="option-Rempli">Remplir l'arc</label> 
-					
+				<input type="checkbox" name="option-Rempli" id="option-Rempli" />&nbsp;<label for="option-Rempli">Remplir l'arc</label>
+
 			</form>
 		</div>
-		
+
 		<div id="options-etape--Polygone" class="options_etape cache">
 			<img class="polygone_position cache">
 			<div class="point_polygone modele cache"></div>
@@ -472,10 +472,10 @@
 				</div>
 				<label for="option-Couleur">Couleur du polygone : </label>
 				<input class="couleur" type="text" name="option-Couleur" maxlength="7"/>
-					
+
 			</form>
 		</div>
-		
+
 		<div id="options-etape--Rectangle" class="options_etape cache">
 			<div class="rectangle_position" class="cache"></div>
 			<p>
@@ -486,25 +486,25 @@
 				<label for="option-Couleur">Couleur : </label>
 				<input class="couleur" type="text" name="option-Couleur" maxlength="7"/>
 				<br />
-				<input type="checkbox" name="option-Rempli" id="option-Rempli" />&nbsp;<label for="option-Rempli">Remplir le rectangle</label> 
-					
+				<input type="checkbox" name="option-Rempli" id="option-Rempli" />&nbsp;<label for="option-Rempli">Remplir le rectangle</label>
+
 			</form>
 		</div>
-		
+
 		<div id="options-etape--Image" class="options_etape cache">
 			<div class="image_position cache"></div>
 			<p>
 				&gt; Déplacez et redimensionnez l'image incrustée.<br />
 			</p>
 			<form id="options_etape">
-				Image utilisée : 
+				Image utilisée :
 				<input type="text" name="option-Source" />
 				<button class="small" name="parcourir">Parcourir</button>
 				<br />
 				<img class="apercu_image hidden" />
 			</form>
 		</div>
-		
+
 		<div id="options-etape--TexteMyFonts" class="options_etape cache">
 			<input type="hidden" name="original_preview_width" />
 			<input type="hidden" name="original_preview_height" />
@@ -557,7 +557,7 @@
 				<div class="finition_texte_genere">
 					Faites glisser le bord droit du texte généré de façon à ce qu'il soit entièrement visible.
 					<br />
-					<input type="checkbox" name="option-Demi_hauteur" id="option-Demi_hauteur" />&nbsp;<label for="option-Demi_hauteur">Cochez cette case pour éviter que le texte apparaisse sur 2 lignes.</label> 
+					<input type="checkbox" name="option-Demi_hauteur" id="option-Demi_hauteur" />&nbsp;<label for="option-Demi_hauteur">Cochez cette case pour éviter que le texte apparaisse sur 2 lignes.</label>
 					<br /><br />
 					<div>
 						<div class="extension_largeur cache">&nbsp;</div>
@@ -591,10 +591,10 @@
 				</div>
 			</div>
 		</div>
-	
+
 		<div id="wizard-numero-inconnu" class="wizard deadend" title="numéro non référencé">
 			<p>
-				Les tranches ne peuvent être reproduites que pour les numéros 
+				Les tranches ne peuvent être reproduites que pour les numéros
 				référencés sur la base <a target="_blank" href="http://coa.inducks.org">Inducks</a>.
 				Référencez votre numéro pour Inducks pour qu'il apparaisse dans les listes.
 			</p>
@@ -608,7 +608,7 @@
 			<div class="accordion">
 				<h3><a href="#">Créer une étape à partir de zéro</a></h3>
 				<div>
-					Que souhaitez-vous faire ? 
+					Que souhaitez-vous faire ?
 					<div id="liste_fonctions"></div>
 					<input type="hidden" name="etape" />
 					<input type="hidden" name="pos" />
@@ -637,16 +637,16 @@
 				Afin d'assurer la meilleure conception de tranche possible, une photo de la tranche est fortement conseillée.<br />
 				La photo doit contenir uniquement la tranche souhaitée, en position verticale.
 				Cette photo sera mise à côté de votre tranche en cours de conception.
-			</span> 
+			</span>
 			<span class="autres_photos">
-				<!-- Si certaines parties de la tranche (des logos par exemple) ne sont pas assez visibles depuis cette photo, 
+				<!-- Si certaines parties de la tranche (des logos par exemple) ne sont pas assez visibles depuis cette photo,
 				cela peut être une bonne idée de les photographier à part.<br /> -->
 				Les photos doivent être nettes, bien éclairées, et les couleurs fidèles à la tranche originale.
 			</span>
 			<span class="photos_texte">
 				Sélectionnez une image contenant le texte, et <u>uniquement</u> le texte. <br />
 				Le texte doit être horizontal et net sur la photo. Pour des résultats optimaux,
-				modifiez manuellement l'image pour en retirer tout élément pouvant nuire à 
+				modifiez manuellement l'image pour en retirer tout élément pouvant nuire à
 				la détection de la police de caractères.
 			</span>
 			<br />
@@ -668,7 +668,7 @@
 						<iframe src="/upload_wizard/start"></iframe>
 					</span>
 				</div>
-				
+
 				<h3 id="section_photo" class="autres_photos photos_texte">
 					<a href="#">
 						<span class="autres_photos photos_texte">A partir de la photo de tranche</span>
@@ -681,7 +681,7 @@
 						</li>
 					</ul>
 				</div>
-				
+
 				<h3 id="gallery">
 					<a href="#">
 						<span class="photo_principale">Sélectionner une photo existante</span>
@@ -710,7 +710,7 @@
 			<br />
 			<span class="photo_principale">Sélectionnez une photo pour poursuivre.</span>
 			<span class="autres_photos photos_texte">Sélectionnez une image pour poursuivre.</span>
-			
+
 			<input type="hidden" name="selected" />
             <div class="photo_principale">
                 <input type="checkbox" id="pasDePhoto" name="pasDePhoto"/>
@@ -746,10 +746,10 @@
 		<div class="explication">
 			Suivez l'assistant ci-dessous : le site MyFonts permet de retrouver la police de caractères d'un texte.
 			<br />
-			Une fois que vous parvenez à la page de proposition de polices de caractères 
+			Une fois que vous parvenez à la page de proposition de polices de caractères
 			(vous verrez l'image <img class="exemple_resultats" src="images/whatthefont_results.png" />en haut de la page),
 			<br />
-			faites un clic droit sur la police ressemblant le plus à celle de votre image, puis un clic gauche sur "Copier l'adresse du lien" 
+			faites un clic droit sur la police ressemblant le plus à celle de votre image, puis un clic gauche sur "Copier l'adresse du lien"
 			(<a class="exemple_cache toggle_exemple" href="#">Voir un exemple</a>
 			 <a class="exemple_affiche toggle_exemple cache" href="#">Cacher l'exemple</a>).
 			<br />
@@ -768,13 +768,13 @@
 
 <div id="wizard-confirmation-rechargement" class="wizard" title="Sauvegarder les changements ?">
 	<p><span class="ui-icon ui-icon-alert confirmation"></span>
-	Vous avez modifié l'étape ouverte sans valider ses modifications. 
+	Vous avez modifié l'étape ouverte sans valider ses modifications.
 	Souhaitez-vous valider ces modifications ?</p>
 </div>
 
 <div id="wizard-confirmation-annulation" class="wizard" title="Sauvegarder les changements ?">
 	<p><span class="ui-icon ui-icon-alert confirmation"></span>
-	Vous avez modifié l'étape que vous souhaitez fermer. 
+	Vous avez modifié l'étape que vous souhaitez fermer.
 	Souhaitez-vous sauvegarder ces modifications ?</p>
 </div>
 
@@ -808,13 +808,13 @@
 <div id="wizard-confirmation-validation-modele" class="wizard" title="Validation d'un modèle EdgeCreator">
 	<p>
 	Votre tranche apparaîtra aux côtés des tranches suivantes dans la bibliothèque DucksManager : <br />
-	
+
 	<div class="tranches_affichees_magazine"></div>
     <br />
     <input type="checkbox" id="cacher_libelles_magazines" name="cacher_libelles_magazines">&nbsp;
     <label for="cacher_libelles_magazines">Cacher les libellés des numéros</label>
     <br /><br />
-	
+
 	Le modèle EdgeCreator en cours de conception va être verrouillé en attendant sa validation. <br />
 	<br /><br />
 	Confirmer ?
@@ -833,7 +833,7 @@
 	    	<span id="createurs" style="margin-left:30px">Créateurs</span>
 			<input type="hidden" checked="checked" name="choix" value="to-wizard-confirmation-validation-modele-ok" id="to-wizard-confirmation-validation-modele-ok" />
 	    </form>
-	    
+
 	</p>
 </div>
 
@@ -857,14 +857,6 @@
 		La génération des images des étapes suivantes a été annulée. <br /><br />
 		Merci de reporter ce problème au webmaster en indiquant le message d'erreur suivant : <br /><br />
 		<iframe></iframe>
-	</p>
-</div>
-
-<div id="wizard-session-expiree" class="wizard" title="Session expirée">
-	<p>
-	Votre session a expiré. 
-	<br />
-	Retour à la page d'accueil d'EdgeCreator.
 	</p>
 </div>
 
@@ -899,7 +891,7 @@
 			Aucune photo générale de tranche.
 		</div>
 		<div class="libelle">
-			Le modèle EdgeCreator en cours de conception ne contient aucune photo générale 
+			Le modèle EdgeCreator en cours de conception ne contient aucune photo générale
 			de la tranche. <br />
 			Spécifier une photo générale de tranche est fortement recommandé
 			car cela permet de faciliter sa conception. <br />

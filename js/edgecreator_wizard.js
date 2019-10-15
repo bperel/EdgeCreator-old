@@ -105,11 +105,6 @@ const INTERVAL_CHECK_LOGGED_IN = 5;
 			if (data.username) {
 				setTimeout(check_logged_in, 1000*60*INTERVAL_CHECK_LOGGED_IN);
 			}
-			else {
-				jqueryui_alert_from_d($('#wizard-session-expiree'),function() {
-					location.replace(base_url);
-				});
-			}
 		}
 	});
 })();
