@@ -7,25 +7,17 @@ RUN apt-get update && apt-get install -y \
       git wget unzip curl gnupg \
       libpng-dev libfreetype6-dev libmcrypt-dev libjpeg-dev libpng-dev
 
-RUN curl -sL https://deb.nodesource.com/setup_6.x | bash - && apt-get install -y nodejs
+RUN curl -sL https://deb.nodesource.com/setup_13.x | bash - && apt-get install -y nodejs
 
 RUN docker-php-ext-configure gd \
-  --enable-gd-native-ttf \
   --with-freetype-dir=/usr/include/freetype2 \
   --with-png-dir=/usr/include \
   --with-jpeg-dir=/usr/include
 
 RUN docker-php-ext-install gd opcache
 
-RUN cd /usr/src && \
-    wget http://xdebug.org/files/xdebug-2.7.2.tgz && \
-    tar -xvzf xdebug-2.7.2.tgz && \
-    cd xdebug-2.7.2 && \
-    phpize && \
-    ./configure && \
-    make && \
-    cp modules/xdebug.so /usr/local/lib/php/extensions/no-debug-non-zts-20151012 && \
-    bash -c "echo -e \"zend_extension = /usr/local/lib/php/extensions/no-debug-non-zts-20151012/xdebug.so\nxdebug.remote_enable=1\nxdebug.remote_host=192.168.0.16\"" > /usr/local/etc/php/php.ini
+RUN pecl install xdebug \
+ && docker-php-ext-enable xdebug
 
 RUN npm install --global bower
 
