@@ -2850,7 +2850,7 @@ function wizard_charger_liste_numeros(publicationcode_sel) {
 		const tranches_pretes = data.tranches_pretes;
 
 		wizard_numero.html('');
-		$.each(numeros_dispos, function(numero_dispo) {
+		$.each(numeros_dispos, function(i, numero_dispo) {
 			if (numero_dispo !== 'Aucun') {
 				const option = $('<option>').val(numero_dispo).html(numero_dispo);
 				const est_dispo = tranches_pretes[numero_dispo] !== undefined;
