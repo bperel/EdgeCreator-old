@@ -1122,7 +1122,7 @@ function charger_tranches_proches(numeros, est_contexte_clonage, max_tranches_pr
 		const tranches_pretes = [];
 		let tranches_affichees = [];
 		let numero_courant_trouve = false;
-		$.each(numeros_existants, function(numero_existant) {
+		$.each(numeros_existants, function(i, numero_existant) {
 			if (numero_existant !== 'Aucun') {
 				const est_tranche_prete = data.tranches_pretes[numero_existant] !== undefined;
 				if (numeros.indexOf(numero_existant) !== -1) {
