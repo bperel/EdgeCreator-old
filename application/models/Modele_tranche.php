@@ -1447,11 +1447,9 @@ class Dimensions extends Fonction_executable {
 			return;
 		$this->verifier_erreurs();
 		Viewer_wizard::$image=imagecreatetruecolor(z($this->options->Dimension_x), z($this->options->Dimension_y));
-        imagealphablending(Viewer_wizard::$image, false);
 		Viewer_wizard::$largeur=z($this->options->Dimension_x);
 		Viewer_wizard::$hauteur=z($this->options->Dimension_y);
 		imagefill(Viewer_wizard::$image,0,0,  imagecolorallocatealpha(Viewer_wizard::$image, 255, 255, 255, 127));
-        imagesavealpha(Viewer_wizard::$image,true);
 	}
 
 	function verifier_erreurs() {
