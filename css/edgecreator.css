@@ -362,3 +362,7 @@ img.loading {
 	color: red;
 	font-weight: bold;
 }
+
+[id^="dialog-wizard-confirmation"] {
+	z-index: 150 !important;
+}
