@@ -15,9 +15,9 @@ jQuery.fn.getData = function (key) {
 	return data;
 };
 
-let pays;
-let magazine;
-let numero;
+var pays;
+var magazine;
+var numero;
 
 let zoom = 2;
 let numeros_dispos;
