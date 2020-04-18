@@ -13,7 +13,7 @@ class Valider_Modele extends EC_Controller {
             $this->Modele_tranche->publier($createurs,$photographes);
         }
         else {
-            header("HTTP/1.0 500 Internal Server Error");
+            header('HTTP/1.0 500 Internal Server Error');
         }
 	}
 }

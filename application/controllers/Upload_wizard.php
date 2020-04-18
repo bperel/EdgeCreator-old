@@ -8,7 +8,7 @@ class Upload_Wizard extends EC_Controller {
             'est_multiple' => $est_multiple === 'multiple'
         ]);
     }
-	
+
 	function index() {
         $this->init_model();
 
@@ -60,7 +60,7 @@ class Upload_Wizard extends EC_Controller {
             $upload_results['proposer_autre_envoi'] = true;
         }
         else {
-            list($dossier,$fichier) = get_nom_fichier($_FILES['image']['name'], $multiple, $est_photo_tranche, $pays, $magazine, $numero);
+            [$dossier, $fichier] = get_nom_fichier($_FILES['image']['name'], $multiple, $est_photo_tranche, $pays, $magazine, $numero);
             $extension = strtolower(strrchr($_FILES['image']['name'], '.'));
 
             $taille_maxi = $_POST['MAX_FILE_SIZE'];

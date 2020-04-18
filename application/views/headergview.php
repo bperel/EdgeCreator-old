@@ -1,9 +1,9 @@
-<?php header("Last-Modified: " . gmdate( "D, j M Y H:i:s" ) . " GMT"); // Date in the past
-header("Expires: " . gmdate( "D, j M Y H:i:s", time() ) . " GMT"); // always modified
-header("Cache-Control: no-store, no-cache, must-revalidate"); // HTTP/1.1
-header("Cache-Control: post-check=0, pre-check=0", FALSE);
-header("Pragma: no-cache");
-header("Content-Type: text/html; charset=UTF-8");
+<?php header('Last-Modified: ' . gmdate('D, j M Y H:i:s') . ' GMT'); // Date in the past
+header('Expires: ' . gmdate( 'D, j M Y H:i:s', time() ) . ' GMT'); // always modified
+header('Cache-Control: no-store, no-cache, must-revalidate'); // HTTP/1.1
+header('Cache-Control: post-check=0, pre-check=0', FALSE);
+header('Pragma: no-cache');
+header('Content-Type: text/html; charset=UTF-8');
 include_once APPPATH.'helpers/Ec_email_helper.php'; ?>
 
 <html>

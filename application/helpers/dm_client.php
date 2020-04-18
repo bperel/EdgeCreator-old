@@ -25,7 +25,7 @@ class DmClient
 
             $roles = [];
             array_walk($serverObject->role_passwords, function ($role) use (&$roles) {
-                list($roleName, $rolePassword) = explode(':', $role);
+                [$roleName, $rolePassword] = explode(':', $role);
                 $roles[$roleName] = $rolePassword;
             });
             $serverObject->role_passwords = $roles;

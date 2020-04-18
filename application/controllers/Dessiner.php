@@ -28,8 +28,9 @@ class Dessiner extends EC_Controller {
 					imagesavealpha(Viewer_wizard::$image, true);
 
 					new Arc_cercle($options);
-					if (Viewer_wizard::$is_debug===false)
-						header('Content-type: image/png');
+					if (Viewer_wizard::$is_debug===false) {
+                        header('Content-type: image/png');
+                    }
 					imagepng(Viewer_wizard::$image);
 				break;
 				case 'Polygone':
@@ -41,8 +42,9 @@ class Dessiner extends EC_Controller {
 					imagesavealpha(Viewer_wizard::$image, true);
 
 					new Polygone($options);
-					if (Viewer_wizard::$is_debug===false)
-						header('Content-type: image/png');
+					if (Viewer_wizard::$is_debug===false) {
+                        header('Content-type: image/png');
+                    }
 					imagepng(Viewer_wizard::$image);
 				break;
 			}

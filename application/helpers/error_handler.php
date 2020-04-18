@@ -21,6 +21,6 @@ class ErrorHandler
             return $trace_step['file'].':'.$trace_step['line'];
         }, debug_backtrace());
 
-        error_log("$message - $message_details in ".implode(" - ", $simple_backtrace), 0, '/var/log/apache2/error.log');
+        error_log("$message - $message_details in ".implode(' - ', $simple_backtrace), 0, '/var/log/apache2/error.log');
     }
 }

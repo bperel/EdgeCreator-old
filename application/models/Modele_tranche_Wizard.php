@@ -15,7 +15,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		}
 		else {
             $resultats = DmClient::get_service_results_ec(
-                DmClient::$dm_server, 'GET', "/edgecreator/v2/model"
+                DmClient::$dm_server, 'GET', '/edgecreator/v2/model'
             );
         }
 		self::assigner_noms_magazines($resultats);
@@ -24,7 +24,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 
     function get_tranches_en_attente() {
         $resultats = DmClient::get_service_results_ec(
-            DmClient::$dm_server, 'GET', "/edgecreator/v2/model/editedbyother/all"
+            DmClient::$dm_server, 'GET', '/edgecreator/v2/model/editedbyother/all'
         );
         self::assigner_noms_magazines($resultats);
 
@@ -33,7 +33,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 
     function get_tranches_en_attente_d_edition() {
         $resultats = DmClient::get_service_results_ec(
-            DmClient::$dm_server, 'GET', "/edgecreator/v2/model/unassigned/all"
+            DmClient::$dm_server, 'GET', '/edgecreator/v2/model/unassigned/all'
         );
         self::assigner_noms_magazines($resultats);
 
@@ -111,9 +111,10 @@ class Modele_tranche_Wizard extends Modele_tranche {
           SELECT Ordre, Nom_fonction, Option_nom, Option_valeur
           FROM tranches_en_cours_valeurs
           WHERE ID_Modele = $id_modele AND Ordre=$ordre AND Option_nom IS NOT NULL ";
-        if (!is_null($nom_option))
-            $requete.="AND Option_nom = '$nom_option' ";
-        $requete.="ORDER BY Option_nom ASC";
+        if (!is_null($nom_option)) {
+            $requete .= "AND Option_nom = '$nom_option' ";
+        }
+        $requete.= 'ORDER BY Option_nom ASC';
 
         $resultats = DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator');
         $resultats_options=new stdClass();
@@ -134,8 +135,9 @@ class Modele_tranche_Wizard extends Modele_tranche {
                 $intervalles_option['valeur']=$f->options->$nom_option;
                 $intervalles_option['type']=$champs[$nom_option];
                 $intervalles_option['description']= $descriptions[$nom_option] ?? '';
-                if (array_key_exists($nom_option, $valeurs_defaut))
-                    $intervalles_option['valeur_defaut']=$valeurs_defaut[$nom_option];
+                if (array_key_exists($nom_option, $valeurs_defaut)) {
+                    $intervalles_option['valeur_defaut'] = $valeurs_defaut[$nom_option];
+                }
                 $f->options->$nom_option=$intervalles_option;
             }
         }
@@ -306,18 +308,20 @@ class Modele_tranche_Wizard extends Modele_tranche {
 	}
 
 	function delete_option($pays,$magazine,$etape,$nom_option) {
-		if ($nom_option === 'Actif')
-			$requete_suppr_option='DELETE modeles, valeurs, intervalles FROM edgecreator_modeles2 modeles '
-								  .'INNER JOIN edgecreator_valeurs AS valeurs ON modeles.ID = valeurs.ID_Option '
-							      .'INNER JOIN edgecreator_intervalles AS intervalles ON valeurs.ID = intervalles.ID_Valeur '
-							      .'WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' '
-								  .'AND Ordre='.$etape.' AND Option_nom IS NULL AND username = \''.self::$username.'\'';
-		else
-			$requete_suppr_option='DELETE modeles, valeurs, intervalles FROM edgecreator_modeles2 modeles '
-								  .'INNER JOIN edgecreator_valeurs AS valeurs ON modeles.ID = valeurs.ID_Option '
-							      .'INNER JOIN edgecreator_intervalles AS intervalles ON valeurs.ID = intervalles.ID_Valeur '
-							      .'WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' '
-								  .'AND Ordre='.$etape.' AND Option_nom = \''.$nom_option.'\' AND username = \''.self::$username.'\'';
+		if ($nom_option === 'Actif') {
+            $requete_suppr_option = 'DELETE modeles, valeurs, intervalles FROM edgecreator_modeles2 modeles '
+                . 'INNER JOIN edgecreator_valeurs AS valeurs ON modeles.ID = valeurs.ID_Option '
+                . 'INNER JOIN edgecreator_intervalles AS intervalles ON valeurs.ID = intervalles.ID_Valeur '
+                . 'WHERE Pays = \'' . $pays . '\' AND Magazine = \'' . $magazine . '\' '
+                . 'AND Ordre=' . $etape . ' AND Option_nom IS NULL AND username = \'' . self::$username . '\'';
+        }
+		else {
+            $requete_suppr_option = 'DELETE modeles, valeurs, intervalles FROM edgecreator_modeles2 modeles '
+                . 'INNER JOIN edgecreator_valeurs AS valeurs ON modeles.ID = valeurs.ID_Option '
+                . 'INNER JOIN edgecreator_intervalles AS intervalles ON valeurs.ID = intervalles.ID_Valeur '
+                . 'WHERE Pays = \'' . $pays . '\' AND Magazine = \'' . $magazine . '\' '
+                . 'AND Ordre=' . $etape . ' AND Option_nom = \'' . $nom_option . '\' AND username = \'' . self::$username . '\'';
+        }
         DmClient::get_query_results_from_dm_server($requete_suppr_option, 'db_edgecreator');
 		echo $requete_suppr_option."\n";
 	}
@@ -354,13 +358,13 @@ class Modele_tranche_Wizard extends Modele_tranche {
 	function get_tranches_non_pretes() {
 		$username = $this->session->userdata('user');
 		$id_user = $this->username_to_id($username);
-		$requete=" SELECT ID, Pays,Magazine,Numero"
-				." FROM numeros"
-				." WHERE ID_Utilisateur=".$id_user
+		$requete= ' SELECT ID, Pays,Magazine,Numero'
+				. ' FROM numeros'
+				. ' WHERE ID_Utilisateur=' .$id_user
 				."   AND CONCAT(Pays,'/',Magazine,' ',Numero) NOT IN"
 				."    (SELECT CONCAT(publicationcode,' ',issuenumber)"
-				."   FROM tranches_pretes)"
-				." ORDER BY Pays, Magazine, Numero";
+				. '   FROM tranches_pretes)'
+				. ' ORDER BY Pays, Magazine, Numero';
 
 		$resultats = $this->requete_select_dm($requete);
 
@@ -414,13 +418,11 @@ class Modele_tranche_Wizard extends Modele_tranche {
 
     public function get_photo_existante($hash)
     {
-        $photos_existante = DmClient::get_service_results_ec(
+        return DmClient::get_service_results_ec(
             DmClient::$dm_server,
             'GET',
             "/edgecreator/multiple_edge_photo/hash/$hash"
         );
-
-        return $photos_existante;
     }
 
     function copier_image_temp_vers_gen($nom_image) {
@@ -476,7 +478,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		$chemin_photos = Fonction_executable::getCheminPhotos($resultat_nom_photo->Pays);
 		$chemin_photo_tranche = $chemin_photos.'/'.$resultat_nom_photo->NomFichier;
 		$image = imagecreatefromjpeg($chemin_photo_tranche);
-		list($width, $height) = getimagesize($chemin_photo_tranche);
+		[$width, $height] = getimagesize($chemin_photo_tranche);
 
 		$rgb = imagecolorat($image, $frac_x*$width, $frac_y*$height);
 		$r = ($rgb >> 16) & 0xFF;
@@ -490,10 +492,8 @@ class Modele_tranche_Wizard extends Modele_tranche {
         $resultats = DmClient::get_service_results_ec(DmClient::$dm_server, 'GET', "/edgecreator/elements/images/$nomFichier");
 
         $userdata = $this->session->userdata();
-        $resultats_sans_modele_courant = array_filter($resultats, function($resultat) use ($userdata) {
+        return array_filter($resultats, function($resultat) use ($userdata) {
             return !($resultat->Pays === $userdata['pays'] && $resultat->Magazine === $userdata['magazine'] && $resultat->Numero_debut === $userdata['numero'] && $resultat->Numero_fin === $userdata['numero']);
         });
-
-        return $resultats_sans_modele_courant;
     }
 }

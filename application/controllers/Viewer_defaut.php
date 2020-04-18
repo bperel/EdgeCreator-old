@@ -8,8 +8,8 @@ class Viewer_defaut extends EC_Controller {
     }
 
 	function edges() { // Input path is for instance : /edges/fr/gen/MP.1000.png
-	    list($pays,,$magazine_numero) = func_get_args();
-	    list($magazine,$numero,) = explode('.', $magazine_numero);
+	    [$pays, , $magazine_numero] = func_get_args();
+	    [$magazine, $numero,] = explode('.', $magazine_numero);
 	    $zoom = 1.5;
 
         $this->init_model();

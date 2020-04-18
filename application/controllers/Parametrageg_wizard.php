@@ -4,16 +4,16 @@ class ParametrageG_wizard extends EC_Controller {
 	static $magazine;
 	static $numero;
 	static $etape;
-	
+
 	function index($etape=null, $nom_option_sel='null') {
 		self::$etape=$etape === 'null' ? null : $etape;
 		$nom_option=$nom_option_sel === 'null' ? null : $nom_option_sel;
 
 		$this->load->helper('url');
 		$this->load->helper('form');
-		
+
 		$this->init_model();
-		
+
 		$this->Modele_tranche->setUsername($this->session->userdata('user'));
 
 		if (is_null(self::$etape)) { // Liste des étapes
@@ -34,8 +34,9 @@ class ParametrageG_wizard extends EC_Controller {
 					$fonction=new stdClass();
 					$fonction->Nom_fonction='Dimensions';
 				}
-				else
-                    $options=$this->Modele_tranche->get_options_ec_v2(self::$etape, true, true, $nom_option);
+				else {
+                    $options = $this->Modele_tranche->get_options_ec_v2(self::$etape, true, true, $nom_option);
+                }
 			}
 			else if ($this->Modele_tranche->has_no_option_ec_v2()) {
                 $options=$this->Modele_tranche->get_noms_champs($fonction->Nom_fonction);
@@ -43,7 +44,7 @@ class ParametrageG_wizard extends EC_Controller {
             else {
 $options=$this->Modele_tranche->get_options_ec_v2(self::$etape, true, false, $nom_option);
             }
-			
+
 			$data = [
 				'options'=>$options
             ];

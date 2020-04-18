@@ -3,9 +3,9 @@ class ParametrageG extends EC_Controller {
 	static $pays;
 	static $magazine;
 	static $etape;
-	
+
 	function index($pays=null,$magazine=null,$etape=null,$nom_fonction='null', $nom_option_sel='null') {
-		
+
 		if (in_array(null, [$pays,$magazine])) {
 			$this->load->view('errorview', ['Erreur'=> 'Nombre d\'arguments insuffisant']);
 			exit();
@@ -18,11 +18,11 @@ class ParametrageG extends EC_Controller {
 
 		$this->load->helper('url');
 		$this->load->helper('form');
-		
+
 		$this->load->model('Modele_tranche_wizard','Modele_tranche');
-		
+
 		$this->Modele_tranche->setUsername($this->session->userdata('user'));
-		
+
 		$numeros_dispos=$this->Modele_tranche->get_numeros_disponibles(self::$pays,self::$magazine);
 		$this->Modele_tranche->setNumerosDisponibles($numeros_dispos);
 		$this->Modele_tranche->setPays(self::$pays);
@@ -45,9 +45,10 @@ class ParametrageG extends EC_Controller {
 					$fonction=new stdClass();
 					$fonction->Nom_fonction='Dimensions';
 				}
-				else
-					$options=$this->Modele_tranche->get_options(self::$pays, self::$magazine, self::$etape,
+				else {
+                    $options = $this->Modele_tranche->get_options(self::$pays, self::$magazine, self::$etape,
                         $nom_fonction, null, true, true, $nom_option);
+                }
 			}
 			else if ($this->Modele_tranche->has_no_option(self::$pays, self::$magazine)) {
                 $options=$this->Modele_tranche->get_noms_champs($fonction->Nom_fonction);
@@ -56,7 +57,7 @@ class ParametrageG extends EC_Controller {
                 $options=$this->Modele_tranche->get_options(self::$pays, self::$magazine, self::$etape,
 $fonction->Nom_fonction, null, true, false, $nom_option);
             }
-			
+
 			$data = [
 				'options'=>$options
             ];

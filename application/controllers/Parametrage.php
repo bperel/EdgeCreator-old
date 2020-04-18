@@ -6,9 +6,9 @@ class Parametrage extends EC_Controller {
 	static $numero_debut;
 	static $numero_fin;
 	static $nom_fonction;
-	
+
 	function index($pays=null,$magazine=null,$ordre=null,$numero_debut=1,$numero_fin=1,$nom_fonction=null,$parametrage='',$appliquer=false) {
-		
+
 		if (in_array(null, [$pays,$magazine,$ordre,$nom_fonction])) {
 			echo 'Erreur : Nombre d\'arguments insuffisant';
 			exit();
@@ -19,11 +19,11 @@ class Parametrage extends EC_Controller {
 		self::$numero_debut=$numero_debut;
 		self::$numero_fin=$numero_fin;
 		self::$nom_fonction=$nom_fonction;
-		
+
 		$this->load->library('session');
 		$this->load->helper('url');
 		$this->load->helper('form');
-		
+
 		$this->init_model();
 		$numeros_dispos=$this->Modele_tranche->get_numeros_disponibles(self::$pays,self::$magazine);
 		$this->Modele_tranche->setNumerosDisponibles($numeros_dispos);
@@ -31,7 +31,7 @@ class Parametrage extends EC_Controller {
 			$parametrage=json_decode($parametrage);
 			$parametrage_f= [];
 			foreach($parametrage as $ordre_fonction=>$options) {
-				list($ordre,$nom_fonction,$numero_debut,$numero_fin)=explode('~',$ordre_fonction);
+				[$ordre, $nom_fonction, $numero_debut, $numero_fin] = explode('~', $ordre_fonction);
 				$parametrage_f[$ordre_fonction]= [];
 				foreach($options as $option_nom_intervalle=>$option_valeur) {
 					$parametrage_f[$ordre_fonction][$option_nom_intervalle]=urldecode(str_replace('^','%',$option_valeur));
@@ -48,7 +48,7 @@ class Parametrage extends EC_Controller {
 			$fonctions=$this->Modele_tranche->get_fonctions($pays,$magazine,$ordre);
 			$fonction=$fonctions[0];
 			$fonction->options=$this->Modele_tranche->get_options($pays, $magazine, $ordre, $nom_fonction);
-			
+
 			$numeros_dispos=$this->Modele_tranche->get_numeros_disponibles(self::$pays,self::$magazine);
 			$this->Modele_tranche->setDropdownNumeros(form_dropdown('', $numeros_dispos));
 			$numeros_debut_globaux=$numeros_fin_globaux= [];

@@ -17,7 +17,7 @@ class Viewer_wizard extends EC_Controller {
 	static $etape_en_cours;
 
     static $zoom_save = 1.5;
-	
+
 	function etape($zoom,$etapes_actives,$parametrage,$save,$fond_noir,$externe,$random_ou_username=null,$debug=false) {
         $id_modele = $this->session->userdata('id_modele');
         $pays = $this->session->userdata('pays');
@@ -28,12 +28,14 @@ class Viewer_wizard extends EC_Controller {
     }
 
 	function index($id_modele,$pays,$magazine,$numero,$zoom,$etapes_actives,$parametrage,$save,$fond_noir,$externe,$random_ou_username=null,$debug=false) {
-		if ($etapes_actives === 'final')
-			$etapes_actives='all';
+		if ($etapes_actives === 'final') {
+            $etapes_actives = 'all';
+        }
 		if ($etapes_actives === 'all') {
 			preg_match('#^(\d+)\.#',$parametrage,$matches_num_etape_parametrage);
-			if (count($matches_num_etape_parametrage) === 0)
-				$num_etape_parametrage=null;
+			if (count($matches_num_etape_parametrage) === 0) {
+                $num_etape_parametrage = null;
+            }
 			else {
 				$num_etape_parametrage=$matches_num_etape_parametrage[1];
 				$parametrage=substr($parametrage,strlen($num_etape_parametrage)+1,strlen($parametrage));
@@ -41,14 +43,15 @@ class Viewer_wizard extends EC_Controller {
 		}
 		parse_str($parametrage,$parametrage);
 		$fond_noir = $fond_noir === 'true';
-		if ($save==='save')
-			$zoom=self::$zoom_save;
+		if ($save==='save') {
+            $zoom = self::$zoom_save;
+        }
 		self::$is_debug=$debug;
 		self::$zoom=$zoom;
 		self::$externe=$externe;
 		$this->load->library('email');
 		$this->load->helper('url');
-		
+
 		$this->init_model();
 
 		if (is_null($pays) || is_null($magazine)) {
@@ -107,8 +110,9 @@ class Viewer_wizard extends EC_Controller {
                 $username_modele=substr($save,strlen('integrate_'));
                 $this->Modele_tranche->setUsername($username_modele);
             }
-            else
+            else {
                 $this->Modele_tranche->setUsername($this->session->userdata('user'));
+            }
             self::$parametrage=$parametrage;
             self::$fond_noir=$fond_noir;
             self::$etapes_actives=explode('-', $etapes_actives);
@@ -135,8 +139,9 @@ class Viewer_wizard extends EC_Controller {
                         self::$etape_en_cours['num_etape']=$num_etape;
                         self::$etape_en_cours['nom_fonction']=$nom_fonction;
                         $options2=$this->Modele_tranche->get_options_ec_v2($num_etape, false, null, null, $id_modele);
-                        if ($num_etape === -1)
-                            $dimensions=$options2;
+                        if ($num_etape === -1) {
+                            $dimensions = $options2;
+                        }
                         if ((self::$etapes_actives === ['all'] && ($num_etape_parametrage == $num_etape || is_null($num_etape_parametrage)))
                             || self::$etapes_actives !== ['all']
                         ) {
@@ -160,7 +165,7 @@ class Viewer_wizard extends EC_Controller {
 			}
 
 			new Dessiner_contour($dimensions);
-			
+
 			$this->Modele_tranche::rendu_image($save === 'save');
 		}
 	}

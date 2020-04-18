@@ -68,7 +68,7 @@ class Myfonts extends CI_Model {
     private function downloadPreview($url, $data) {
         return imagecreatefrompng($url.'?'.http_build_query($data));
     }
-	
+
 	private function build() {
 		$texte_clean=str_replace("'","\'",preg_replace('#[ ]+\.$#','',$this->text));
 		$requete_image_existe="
@@ -88,7 +88,7 @@ class Myfonts extends CI_Model {
             DmClient::get_service_results_ec(DmClient::$dm_server, 'DELETE', '/edgecreator/myfontspreview/' . $id_image, []);
         }
 
-        list($fontBrand, $fontFamily, $fontVariant) = explode('/', $this->font);
+        [$fontBrand, $fontFamily, $fontVariant] = explode('/', $this->font);
 
 		try {
             $this->im = $this->downloadPreview('https://render.myfonts.net/fonts/font_rend.php', [
