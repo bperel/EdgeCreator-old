@@ -117,7 +117,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
         $requete.= 'ORDER BY Option_nom ASC';
 
         $resultats = DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator');
-        $resultats_options=new stdClass();
+        $resultats_options=new CountableObject();
         foreach($resultats as $resultat) {
             $resultats_options->{$resultat->Option_nom} = $resultat->Option_valeur;
         }
@@ -225,7 +225,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 	function insert_etape($pos_relative, $etape, $nom_fonction) {
         $id_modele = $this->session->userdata('id_modele');
 		$inclure_avant = $pos_relative==='avant' || $etape === -1;
-		$infos=new stdClass();
+		$infos=new CountableObject();
 
 		if ($etape > -1) {
 		    $infos->decalages=$this->decaler_etapes_a_partir_de($id_modele,$etape, $inclure_avant);
@@ -278,7 +278,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
         $id_modele = $this->session->userdata('id_modele');
 
 		$inclure_avant = $pos==='avant' || $pos==='_';
-		$infos=new stdClass();
+		$infos=new CountableObject();
 
 		$infos->decalages=$this->decaler_etapes_a_partir_de($id_modele,$etape_courante, $inclure_avant);
 		if ($inclure_avant) {

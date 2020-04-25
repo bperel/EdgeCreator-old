@@ -6,11 +6,11 @@ class Viewer_myfonts extends EC_Controller {
 
 	function index($url,$couleur_texte,$couleur_fond,$largeur,$chaine,$demi_hauteur,$rotation,$largeur_tranche,$debug=false) {
 		self::$is_debug = $debug === 'true';
-		
+
 		$this->init_model();
 		$this->Modele_tranche->setUsername($this->session->userdata('user'));
-				
-		$options=new stdClass();
+
+		$options=new CountableObject();
 		$options->URL=$url;
 		$options->Couleur_texte=$couleur_texte;
 		$options->Couleur_fond=$couleur_fond;
@@ -18,11 +18,11 @@ class Viewer_myfonts extends EC_Controller {
 		$options->Chaine=$chaine;
 		$options->Demi_hauteur=$demi_hauteur;
 		$options->Rotation=$rotation === 'null' ? null : $rotation;
-		
+
 		Viewer_wizard::$largeur = (int)$largeur_tranche * 1.5;
-		
+
 		new TexteMyFonts($options, true, false, true, false);
-		
+
 		if (self::$is_debug===false) {
 			header('Content-type: image/png');
 			imagepng(Viewer_wizard::$image);

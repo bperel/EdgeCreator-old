@@ -286,7 +286,7 @@ class Modele_tranche extends CI_Model {
         $nom_option = null
     ) {
 		$creation=false;
-		$resultats_options=new stdClass();
+		$resultats_options=new CountableObject();
 		$requete='SELECT '.implode(', ', self::$fields).' '
 				.'FROM edgecreator_modeles2 '
 				.'INNER JOIN edgecreator_valeurs ON edgecreator_modeles2.ID = edgecreator_valeurs.ID_Option '
@@ -304,7 +304,7 @@ class Modele_tranche extends CI_Model {
         $resultats = DmClient::get_query_results_from_dm_server($requete, 'db_edgecreator');
 		$option_nom='';
 		foreach($resultats as $resultat) {
-			if ($option_nom!=$resultat->Option_nom) {
+			if ($option_nom!==$resultat->Option_nom) {
 				$option_courante= [];
 				if (!empty($option_nom) && is_null($numero)) {
                     uksort($resultats_options->$option_nom, 'trier_intervalles');
@@ -1344,7 +1344,7 @@ class Fonction_executable extends Fonction {
 	function __construct($options,$creation=false,$get_options_defaut=true) {
         parent::__construct();
 		if (!is_object($options)) {
-			$options=new stdClass();
+			$options=new CountableObject();
 		}
 		$this->options=$options;
 		$classe=get_class($this);

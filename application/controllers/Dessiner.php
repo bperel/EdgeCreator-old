@@ -11,7 +11,7 @@ class Dessiner extends EC_Controller {
 		if (class_exists($nom_fonction)) {
 			Viewer_wizard::$zoom=$arguments[1];
 			Viewer_wizard::$is_debug=$arguments[2] != 0;
-			$options=new stdClass();
+			$options=new CountableObject();
 			$instance_classe=new $nom_fonction(null,false,false,false);
 			$i=3;
 			foreach(array_keys($instance_classe::$champs) as $nom_champ) {

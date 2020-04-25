@@ -93,7 +93,7 @@ class ModifierG extends EC_Controller {
 				}
 			}
 			else {
-				$fonction=new stdClass();
+				$fonction=new CountableObject();
 				$fonction->Nom_fonction='Dimensions';
 			}
 

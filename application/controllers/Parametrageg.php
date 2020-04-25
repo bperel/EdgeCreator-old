@@ -30,7 +30,7 @@ class ParametrageG extends EC_Controller {
 		if (is_null(self::$etape)) { // Liste des étapes
 			$etapes=$this->Modele_tranche->get_etapes_simple_magazine(self::$pays,self::$magazine);
 			if (count($etapes) === 0) {
-				$fonction_dimension=new stdClass();
+				$fonction_dimension=new CountableObject();
 				$fonction_dimension->Ordre=-1;
 				$fonction_dimension->Numero_debut=$fonction_dimension->Numero_fin=-1;
 				$fonction_dimension->Nom_fonction='Dimensions';
@@ -42,7 +42,7 @@ class ParametrageG extends EC_Controller {
 			$fonction=$this->Modele_tranche->get_fonction(self::$pays,self::$magazine,self::$etape);
 			if (is_null($fonction)) {// Etape temporaire ou dimensions
 				if (self::$etape === -1) {
-					$fonction=new stdClass();
+					$fonction=new CountableObject();
 					$fonction->Nom_fonction='Dimensions';
 				}
 				else {

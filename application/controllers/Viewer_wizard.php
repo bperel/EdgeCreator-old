@@ -76,7 +76,7 @@ class Viewer_wizard extends EC_Controller {
             imagettftext(self::$image,z(10),-90,
                          z(5),z(5),
                          $noir,BASEPATH.'fonts/Arial.TTF','Aucun numero selectionne');
-            $dimensions=new stdClass();
+            $dimensions=new CountableObject();
             $dimensions->Dimension_x=$largeur;
             $dimensions->Dimension_y=$hauteur;
             new Dessiner_contour($dimensions);
@@ -128,7 +128,7 @@ class Viewer_wizard extends EC_Controller {
 			try {
                 foreach($etapes as $num_etape=>$nom_fonction) {
                     if ($num_etape>-1 && $fond_noir && !$fond_noir_fait) {
-                        $options=new stdClass();
+                        $options=new CountableObject();
                         $options->Pos_x=$options->Pos_y=0;
                         $options->Couleur='000000';
                         new Remplir($options);

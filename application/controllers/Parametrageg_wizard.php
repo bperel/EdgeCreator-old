@@ -19,7 +19,7 @@ class ParametrageG_wizard extends EC_Controller {
 		if (is_null(self::$etape)) { // Liste des étapes
 			$etapes=$this->Modele_tranche->get_etapes_simple();
 			if (count($etapes) === 0) {
-				$fonction_dimension=new stdClass();
+				$fonction_dimension=new CountableObject();
 				$fonction_dimension->Ordre=-1;
 				$fonction_dimension->Nom_fonction='Dimensions';
 				$etapes[]=$fonction_dimension;
@@ -28,10 +28,10 @@ class ParametrageG_wizard extends EC_Controller {
 		}
 		else {
 			$fonction=$this->Modele_tranche->get_fonction_ec_v2(self::$etape);
-			$options = new stdClass();
+			$options = new CountableObject();
 			if (is_null($fonction)) {// Etape temporaire ou dimensions
 				if (self::$etape === -1) {
-					$fonction=new stdClass();
+					$fonction=new CountableObject();
 					$fonction->Nom_fonction='Dimensions';
 				}
 				else {
