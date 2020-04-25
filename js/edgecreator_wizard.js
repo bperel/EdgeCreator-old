@@ -205,7 +205,7 @@ let etape_ajout_pos;
 
 var valeurs_possibles_zoom = [1, 1.5, 2, 4, 6, 8];
 zoom=1.5;
-let nom_photo_tranches_multiples;
+var nom_photo_tranches_multiples;
 
 const NB_MAX_TRANCHES_SIMILAIRES_PROPOSEES = 10;
 const LARGEUR_DIALOG_TRANCHE_FINALE = 65;
