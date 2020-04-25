@@ -394,15 +394,13 @@ class Modele_tranche_Wizard extends Modele_tranche {
 
     public function ajouter_photo_tranches_multiples($nomFichier, $hash)
     {
-        $photos_jour = DmClient::get_service_results_ec(
+        DmClient::get_service_results_ec(
             DmClient::$dm_server,
             'PUT',
             '/edgecreator/multiple_edge_photo', [
                 'hash' => $hash,
                 'filename' => $nomFichier
         ]);
-
-        return count($photos_jour) > 10;
     }
 
     public function est_limite_photos_atteinte()
