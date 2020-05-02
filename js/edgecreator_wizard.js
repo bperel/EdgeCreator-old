@@ -605,8 +605,11 @@ function wizard_check(wizard_id) {
 					}
 				break;
 				case 'wizard-decouper-photo':
+					if (! $('.rectangle_selection_tranche:not(.template)').length) {
+						erreur='Vous n\'avez pas spécifié de zones sur la photo. Veuillez spécifier au moins une zone.';
+					}
 					if ($('.rectangle_selection_tranche:not(.template)').filter(function() {
-						return $(this).find('.intitule_magazine').length === 0;
+						return ! $(this).find('.intitule_magazine').length;
 					}).length > 0) {
 						erreur='Vous n\'avez pas spécifié les numéros de toutes les zones de la photo.';
 					}
